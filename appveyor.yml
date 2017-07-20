@@ -1,7 +1,6 @@
 version: '0.1.{build}-prerelease'
 
 configuration:
-  - Debug
   - Release
 
 branches:
@@ -15,7 +14,7 @@ init:
   - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
 
 before_build:
-  - appveyor-retry dotnet restore -v Minimal
+  - appveyor-retry dotnet restore src -v Minimal
 
 build_script:
   - dotnet build "src\ConnectQL" -c %CONFIGURATION% --no-dependencies --version-suffix %LABEL%
