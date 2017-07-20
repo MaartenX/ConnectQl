@@ -10,10 +10,17 @@
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.xml</DocumentationFile>
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>False</DelaySign>
     <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'='Release'">
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\key\Key.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'='Debug'">
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
