@@ -19,7 +19,7 @@ init:
 
 install:
   - nuget install secure-file -ExcludeVersion
-  - secure-file\tools\secure-file -decrypt key\Key.snk -secret %KEYSECRET%
+  - secure-file\tools\secure-file -decrypt key\Key.snk.enc -secret %KEYSECRET%
 
 before_build:
   - appveyor-retry msbuild /t:restore src /v:Minimal
