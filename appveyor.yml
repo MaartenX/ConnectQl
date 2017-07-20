@@ -11,9 +11,15 @@ branches:
 
 environment:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  KEYSECRET:
+    secure: R5dL3BcCgnJ4e8l7CXVC+PORgj+8Z/4seFazfXiYZUAzoxFZOpj7GT3/S00dO72vAkKhvsGCPPfnKZAf12WZXj7rOJDaM8OSuvUifZdQ7Oo=
 
 init:
   - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
+
+install:
+  - nuget install secure-file -ExcludeVersion
+  - secure-file\tools\secure-file -decrypt key\Key.snk -secret %KEYSECRET%
 
 before_build:
   - appveyor-retry msbuild /t:restore src /v:Minimal
