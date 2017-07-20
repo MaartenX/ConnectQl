@@ -3,6 +3,8 @@ version: '0.1.{build}-prerelease'
 configuration:
   - Release
 
+image: Visual Studio 2017
+
 branches:
   only:
     - master
