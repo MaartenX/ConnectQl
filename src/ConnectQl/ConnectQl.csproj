@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' != ''">netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
+    <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' == ''">netstandard1.0</TargetFrameworks>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>0.0.1</Version>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.xml</DocumentationFile>
+    <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
+    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <NugetTargetMoniker>.NETPortable,Version=v4.5,Profile=Profile259</NugetTargetMoniker>
+    <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
+    <IncludeProjectPriFile>false</IncludeProjectPriFile> 
+  </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
+    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
+    <TargetPlatform Include="Windows, Version=8.0" />
+    <TargetPlatform Include="WindowsPhoneApp, Version=8.0" />
+    <TargetPlatform Include=".NETFramework, Version=4.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Internal\Intellisense\Protocol\ProtocolDescriptor`1.cs" />
+    <Compile Remove="Internal\Intellisense\Protocol\SerializableStringList.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Scripty.MsBuild" Version="0.7.4">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <AdditionalFiles Include="..\stylecop.json">
+      <Link>stylecop.json</Link>
+    </AdditionalFiles>
+    <!--<Compile Update="$(AtgChildren)">
+      <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
+    </Compile>
+    <None Update="$(AtgChildren)">
+      <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
+    </None>-->
+  </ItemGroup>
+
+  <Target Name="WriteScriptyLogs" AfterTargets="EvaluateScriptyFiles">
+    <ItemGroup>
+      <AtgFiles Include="**\*.atg" />
+    </ItemGroup>
+    <ReadLinesFromFile File="%(AtgFiles.FileName).log">
+      <Output TaskParameter="Lines" ItemName="Log" />
+    </ReadLinesFromFile>
+    <Message Text="Scripty: %(Log.Identity)" Importance="high" />
+  </Target>
+
+</Project>
