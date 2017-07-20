@@ -16,13 +16,13 @@ init:
   - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
 
 before_build:
-  - appveyor-retry dotnet restore src -v Minimal
+  - appveyor-retry msbuild /t:restore src -v Minimal
 
 build_script:
-  - dotnet build "src\ConnectQL" -c %CONFIGURATION% --no-dependencies --version-suffix %LABEL%
+  - msbuild /t:build "src\ConnectQL" -c %CONFIGURATION% --no-dependencies --version-suffix %LABEL%
 
 after_build:
-  - dotnet pack "src\ConnectQL" -c %CONFIGURATION% --no-build --version-suffix %LABEL% -o artifacts
+  - msbuild /t:pack "src\ConnectQL" -c %CONFIGURATION% --no-build --version-suffix %LABEL% -o artifacts
 
 #test_script:
 #- dotnet test "test\MyFirstUnitTests" -c %CONFIGURATION%
