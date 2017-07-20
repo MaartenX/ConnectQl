@@ -25,10 +25,10 @@ before_build:
   - appveyor-retry msbuild /t:restore src /v:Minimal
 
 build_script:
-  - msbuild /t:build "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%VERSION%
+  - msbuild /t:build "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%VERSION% /p:BUILD_ALL_PLATFORMS=1
 
 after_build:
-  - msbuild /t:pack "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%VERSION% /p:PackageOutputPath=artifacts
+  - msbuild /t:pack "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%VERSION% /p:PackageOutputPath=artifacts /p:BUILD_ALL_PLATFORMS=1
 
 #test_script:
 #- dotnet test "test\MyFirstUnitTests" -c %CONFIGURATION%

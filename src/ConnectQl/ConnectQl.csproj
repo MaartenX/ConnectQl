@@ -13,13 +13,13 @@
     <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'='Release'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\key\Key.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'='Debug'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   
