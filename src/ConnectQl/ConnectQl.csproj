@@ -1,15 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  
-  <PropertyGroup>
-    <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' != ''">netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
-    <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' == ''">netstandard1.0</TargetFrameworks>
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>0.0.1</Version>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.xml</DocumentationFile>
-    <NoWarn>CS2002;1701;1702;1705;SA1408;SA14﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
     <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' != ''">netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
