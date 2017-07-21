@@ -7,8 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl", "ConnectQl\Conn
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DD93BAB1-431A-42E3-9285-F0C44CC78783}"
 	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
 		stylecop.json = stylecop.json
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Tests", "ConnectQl.Tests\ConnectQl.Tests.csproj", "{37172183-EE9C-41E6-B165-BE9DFB8FEBF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +23,10 @@ Global
 		{7A245E0E-267D-4115-9A4B-A08C651AFEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A245E0E-267D-4115-9A4B-A08C651AFEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A245E0E-267D-4115-9A4B-A08C651AFEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37172183-EE9C-41E6-B165-BE9DFB8FEBF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37172183-EE9C-41E6-B165-BE9DFB8FEBF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37172183-EE9C-41E6-B165-BE9DFB8FEBF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37172183-EE9C-41E6-B165-BE9DFB8FEBF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
