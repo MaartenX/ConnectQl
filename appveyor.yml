@@ -10,7 +10,6 @@ branches:
     - master
 
 environment:
-  VERSION: "{version}"
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   KEYSECRET:
     secure: R5dL3BcCgnJ4e8l7CXVC+PORgj+8Z/4seFazfXiYZUAzoxFZOpj7GT3/S00dO72vAkKhvsGCPPfnKZAf12WZXj7rOJDaM8OSuvUifZdQ7Oo=
@@ -26,7 +25,7 @@ before_build:
   - appveyor-retry msbuild /t:restore src /v:Minimal
 
 build_script:
-  - msbuild /t:build "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%VERSION% /p:BUILD_ALL_PLATFORMS=1
+  - msbuild /t:build "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:BUILD_ALL_PLATFORMS=1
 
 after_build:
   - msbuild /t:pack "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%VERSION% /p:PackageVersion=%VERSION%-prerelease /p:PackageOutputPath=artifacts /p:BUILD_ALL_PLATFORMS=1
