@@ -70,6 +70,7 @@
     <ItemGroup>
       <AtgFiles Include="**\*.atg" />
     </ItemGroup>
+    <Message Importance="high" Text="Version: $(Version)." />
     <ReadLinesFromFile File="%(AtgFiles.FileName).log">
       <Output TaskParameter="Lines" ItemName="Log" />
     </ReadLinesFromFile>
