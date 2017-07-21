@@ -61,72 +61,11 @@
       <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
     </None>-->
   </ItemGroup>
-
+  
   <Target Name="WriteVersion" BeforeTargets="Build">
-    <Message Importance="high" Text="Version: $(Version)" />
+    <Message Importance="high" Text="Version: $(Version)." />
   </Target>
-      
-  <Target Name="WriteScriptyLogs" AfterTargets="EvaluateScriptyFiles">
-    <ItemGroup>
-      <AtgFiles Include="**\*.atg" />
-    </ItemGroup>
-    <ReadLinesFromFile File="%(AtgFiles.FileName).log">
-      <Output TaskParameter="Lines" ItemName="Log" />
-    </ReadLinesFromFile>
-    <Message Text="Scripty: %(Log.Identity)" Importance="high" />
-  </Target>07</NoWarn>
-    <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\key\Key.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>False</DelaySign>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <SignAssembly>False</SignAssembly>
-  </PropertyGroup>
   
-  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
-    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
-    <NugetTargetMoniker>.NETPortable,Version=v4.5,Profile=Profile259</NugetTargetMoniker>
-    <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
-    <IncludeProjectPriFile>false</IncludeProjectPriFile> 
-  </PropertyGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
-    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
-    <TargetPlatform Include="Windows, Version=8.0" />
-    <TargetPlatform Include="WindowsPhoneApp, Version=8.0" />
-    <TargetPlatform Include=".NETFramework, Version=4.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Internal\Intellisense\Protocol\ProtocolDescriptor`1.cs" />
-    <Compile Remove="Internal\Intellisense\Protocol\SerializableStringList.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Scripty.MsBuild" Version="0.7.4">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <AdditionalFiles Include="..\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
-    <!--<Compile Update="$(AtgChildren)">
-      <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
-    </Compile>
-    <None Update="$(AtgChildren)">
-      <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
-    </None>-->
-  </ItemGroup>
-
   <Target Name="WriteScriptyLogs" AfterTargets="EvaluateScriptyFiles">
     <ItemGroup>
       <AtgFiles Include="**\*.atg" />
