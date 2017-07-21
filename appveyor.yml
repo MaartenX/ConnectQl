@@ -28,7 +28,7 @@ build_script:
   - msbuild /t:build "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:BUILD_ALL_PLATFORMS=1
 
 after_build:
-  - msbuild /t:pack "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%VERSION% /p:PackageVersion=%VERSION%-prerelease /p:PackageOutputPath=artifacts /p:BUILD_ALL_PLATFORMS=1
+  - msbuild /t:pack "src\ConnectQL" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:PackageVersion=%APPVEYOR_BUILD_VERSION%-prerelease /p:PackageOutputPath=artifacts /p:BUILD_ALL_PLATFORMS=1
 
 #test_script:
 #- dotnet test "test\MyFirstUnitTests" -c %CONFIGURATION%
