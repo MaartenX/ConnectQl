@@ -10,6 +10,7 @@ branches:
     - master
 
 environment:
+  VERSION: "{version}"
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   KEYSECRET:
     secure: R5dL3BcCgnJ4e8l7CXVC+PORgj+8Z/4seFazfXiYZUAzoxFZOpj7GT3/S00dO72vAkKhvsGCPPfnKZAf12WZXj7rOJDaM8OSuvUifZdQ7Oo=
