@@ -22,7 +22,7 @@ install:
   - secure-file\tools\secure-file -decrypt key\Key.snk.enc -secret %KEYSECRET%
 
 before_build:
-  - appveyor-retry msbuild /t:restore src /v:Minimal
+  - appveyor-retry msbuild /t:restore src /v:Minimal /p:BUILD_ALL_PLATFORMS=1
 
 build_script:
   - msbuild /t:build "src" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:BUILD_ALL_PLATFORMS=1

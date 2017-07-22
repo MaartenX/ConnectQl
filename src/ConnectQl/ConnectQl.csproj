@@ -1,14 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>0.0.1</Version>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' != ''">netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' == ''">netstandard1.0</TargetFrameworks>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.xml</DocumentationFile>
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
+    
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>    
+    <Version>0.0.1</Version>
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/LICENSE</PackageLicenseUrl>
+    <PackageTags>ConnectQl;SQL;querying</PackageTags>
+    <Title>ConnectQl</Title>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/MaartenX/ConnectQl.github.io</RepositoryUrl>
+    <Copyright>Copyright (c) 2017 Maarten van Sambeek</Copyright>
+    <PackageProjectUrl>https://github.com/maartenx/connectql</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/ConnectQL.png</PackageIconUrl>
+    <Description>Query any datasource using an SQL dialect. Has lots of plugins for all kinds of file formats and applications.</Description>
+    <Authors>Maarten van Sambeek</Authors>
     <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
   </PropertyGroup>
 
@@ -39,37 +51,30 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Internal\Intellisense\Protocol\ProtocolDescriptor`1.cs" />
-    <Compile Remove="Internal\Intellisense\Protocol\SerializableStringList.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Scripty.MsBuild" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
-    <!--<Compile Update="$(AtgChildren)">
+    <Compile Update="$(AtgChildren)">
       <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
     </Compile>
     <None Update="$(AtgChildren)">
       <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
-    </None>-->
+    </None>
   </ItemGroup>
-  
-  <Target Name="WriteVersion" BeforeTargets="Build">
-    <Message Importance="high" Text="Version: $(Version)." />
-  </Target>
   
   <Target Name="WriteScriptyLogs" AfterTargets="EvaluateScriptyFiles">
     <ItemGroup>
       <AtgFiles Include="**\*.atg" />
     </ItemGroup>
-    <Message Importance="high" Text="Version: $(Version)." />
     <ReadLinesFromFile File="%(AtgFiles.FileName).log">
       <Output TaskParameter="Lines" ItemName="Log" />
     </ReadLinesFromFile>
