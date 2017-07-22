@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' != ''">netcoreapp1.1;net452</TargetFrameworks>
-    <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' == ''">netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.1;net452</TargetFrameworks>
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.Tests.xml</DocumentationFile>
   </PropertyGroup>
@@ -11,9 +10,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
     <PackageReference Include="xunit" Version="2.2.0" />
-    <PackageReference Include="xunit.core" Version="2.2.0" />
-    <PackageReference Include="xunit.extensibility.core" Version="2.2.0" />
-    <PackageReference Include="xunit.extensibility.execution" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
     <PackageReference Include="xunit.runner.console" Version="2.2.0" Condition="'$(TargetFramework)' == 'net452'" />
   </ItemGroup>

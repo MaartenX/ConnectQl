@@ -1,8 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' != ''">netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
-    <TargetFrameworks Condition="'$(BUILD_ALL_PLATFORMS)' == ''">netstandard1.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <Version>0.0.1</Version>
     <AssemblyVersion>0.0.1.0</AssemblyVersion>
@@ -13,13 +12,13 @@
     <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' And Exists('..\..\key\Key.snk')">
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\key\Key.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or !Exists('..\..\key\Key.snk')">
     <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   
