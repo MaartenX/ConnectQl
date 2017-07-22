@@ -32,6 +32,7 @@ namespace ConnectQl.AsyncEnumerables
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.AsyncEnumerables;
     using ConnectQl.Internal.AsyncEnumerables.Enumerators;
+    using ConnectQl.Internal.Comparers;
     using ConnectQl.Internal.Extensions;
 
     /// <summary>
@@ -485,7 +486,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static IAsyncEnumerable<IAsyncEnumerable<TSource>> Batch<TSource, TValue>(this IAsyncEnumerable<TSource> source, int batchSize, Func<TSource, TValue> valueSelector, IComparer<TValue> comparer = null)
         {
-            return source.Policy.CreateAsyncEnumerable(() => new ValueBatchesEnumerator<TSource, TValue>(source, source.Policy, batchSize, valueSelector, comparer ?? Comparer<TValue>.Default));
+            return source.Policy.CreateAsyncEnumerable(() => new ValueBatchesEnumerator<TSource, TValue>(source, source.Policy, batchSize, valueSelector, comparer ?? DefaultComparer.Create<TValue>()));
         }
 
         /// <summary>
@@ -634,7 +635,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static IAsyncEnumerable<TSource> Distinct<TSource>(this IAsyncEnumerable<TSource> source, IComparer<TSource> comparer)
         {
-            return source.Policy.CreateAsyncEnumerable(() => new DistinctEnumerator<TSource>(source, comparer ?? Comparer<TSource>.Default));
+            return source.Policy.CreateAsyncEnumerable(() => new DistinctEnumerator<TSource>(source, comparer ?? DefaultComparer.Create<TSource>()));
         }
 
         /// <summary>
@@ -845,7 +846,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static IAsyncEnumerable<IAsyncGrouping<TSource, TKey>> GroupBy<TSource, TKey>(this IAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer = null)
         {
-            return source.Policy.CreateAsyncEnumerable(() => new GroupByEnumerator<TSource, TKey>(source, keySelector, comparer ?? Comparer<TKey>.Default));
+            return source.Policy.CreateAsyncEnumerable(() => new GroupByEnumerator<TSource, TKey>(source, keySelector, comparer ?? DefaultComparer.Create<TKey>()));
         }
 
         /// <summary>
@@ -888,7 +889,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static IAsyncEnumerable<TResult> Join<TLeft, TRight, TKey, TResult>(this IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TKey> leftKeySelector, Func<TRight, TKey> rightKeySelector, Func<TLeft, TRight, TResult> resultSelector, IComparer<TKey> comparer = null)
         {
-            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(true, false, left, right, leftKeySelector, ExpressionType.Equal, rightKeySelector, null, resultSelector, comparer ?? Comparer<TKey>.Default));
+            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(true, false, left, right, leftKeySelector, ExpressionType.Equal, rightKeySelector, null, resultSelector, comparer ?? DefaultComparer.Create<TKey>()));
         }
 
         /// <summary>
@@ -942,7 +943,7 @@ namespace ConnectQl.AsyncEnumerables
                 throw new ArgumentOutOfRangeException(nameof(joinOperator), "Invalid join operator");
             }
 
-            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(false, false, left, right, leftKeySelector, joinOperator, rightKeySelector, resultFilter, resultSelector, comparer ?? Comparer<TKey>.Default));
+            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(false, false, left, right, leftKeySelector, joinOperator, rightKeySelector, resultFilter, resultSelector, comparer ?? DefaultComparer.Create<TKey>()));
         }
 
         /// <summary>
@@ -1074,7 +1075,7 @@ namespace ConnectQl.AsyncEnumerables
                 throw new ArgumentOutOfRangeException(nameof(joinOperator), "Invalid join operator");
             }
 
-            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(true, false, left, right, leftKeySelector, joinOperator, rightKeySelector, resultFilter, resultSelector, comparer ?? Comparer<TKey>.Default));
+            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(true, false, left, right, leftKeySelector, joinOperator, rightKeySelector, resultFilter, resultSelector, comparer ?? DefaultComparer.Create<TKey>()));
         }
 
         /// <summary>
@@ -1129,7 +1130,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static Task<TItem> MaxAsync<TItem>(this IAsyncEnumerable<TItem> source, IComparer<TItem> comparer)
         {
-            comparer = comparer ?? Comparer<TItem>.Default;
+            comparer = comparer ?? DefaultComparer.Create<TItem>();
 
             return source.AggregateAsync(default(TItem), (maxItem, item) => comparer.Compare(item, maxItem) > 0 ? item : maxItem);
         }
@@ -1166,7 +1167,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static Task<TItem> MinAsync<TItem>(this IAsyncEnumerable<TItem> source, IComparer<TItem> comparer)
         {
-            comparer = comparer ?? Comparer<TItem>.Default;
+            comparer = comparer ?? DefaultComparer.Create<TItem>();
 
             return source.AggregateAsync(default(TItem), (maxItem, item) => comparer.Compare(item, maxItem) < 0 ? item : maxItem);
         }
@@ -1194,7 +1195,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static IOrderedAsyncEnumerable<TSource> OrderBy<TSource, TKey>(this IAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer = null)
         {
-            Comparison<TSource> compareLambda = (first, second) => (comparer ?? Comparer<TKey>.Default).Compare(keySelector(first), keySelector(second));
+            Comparison<TSource> compareLambda = (first, second) => (comparer ?? DefaultComparer.Create<TKey>()).Compare(keySelector(first), keySelector(second));
 
             return new OrderedAsyncEnumerable<TSource>(source, compareLambda);
         }
@@ -1265,7 +1266,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static IOrderedAsyncEnumerable<TSource> OrderByDescending<TSource, TKey>(this IAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer = null)
         {
-            Comparison<TSource> compareLambda = (first, second) => (comparer ?? Comparer<TKey>.Default).Compare(keySelector(second), keySelector(first));
+            Comparison<TSource> compareLambda = (first, second) => (comparer ?? DefaultComparer.Create<TKey>()).Compare(keySelector(second), keySelector(first));
 
             return new OrderedAsyncEnumerable<TSource>(source, compareLambda);
         }
@@ -1353,7 +1354,7 @@ namespace ConnectQl.AsyncEnumerables
                 throw new ArgumentOutOfRangeException(nameof(joinOperator), "Invalid join operator");
             }
 
-            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(false, true, left, right, leftKeySelector, joinOperator, rightKeySelector, resultFilter, resultSelector, comparer ?? Comparer<TKey>.Default));
+            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(false, true, left, right, leftKeySelector, joinOperator, rightKeySelector, resultFilter, resultSelector, comparer ?? DefaultComparer.Create<TKey>()));
         }
 
         /// <summary>
@@ -1409,7 +1410,7 @@ namespace ConnectQl.AsyncEnumerables
                 throw new ArgumentOutOfRangeException(nameof(joinOperator), "Invalid join operator");
             }
 
-            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(true, true, left, right, leftKeySelector, joinOperator, rightKeySelector, resultFilter, resultSelector, comparer ?? Comparer<TKey>.Default));
+            return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(true, true, left, right, leftKeySelector, joinOperator, rightKeySelector, resultFilter, resultSelector, comparer ?? DefaultComparer.Create<TKey>()));
         }
 
         /// <summary>
@@ -1678,7 +1679,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         public static IAsyncEnumerable<TSource> Union<TSource>(this IAsyncEnumerable<TSource> first, IAsyncEnumerable<TSource> second, IComparer<TSource> comparer = null)
         {
-            return first.Policy.CreateAsyncEnumerable(() => new UnionEnumerator<TSource>(first, second, comparer ?? Comparer<TSource>.Default));
+            return first.Policy.CreateAsyncEnumerable(() => new UnionEnumerator<TSource>(first, second, comparer ?? DefaultComparer.Create<TSource>()));
         }
 
         /// <summary>

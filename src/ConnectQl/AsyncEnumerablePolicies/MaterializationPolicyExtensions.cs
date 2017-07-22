@@ -25,8 +25,9 @@ namespace ConnectQl.AsyncEnumerablePolicies
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq.Expressions;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Internal.AsyncEnumerables;
     using ConnectQl.Internal.AsyncEnumerables.Enumerators;
@@ -352,7 +353,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// </returns>
         public static IAsyncEnumerable<T> CreateEmptyAsyncEnumerable<T>(this IMaterializationPolicy policy)
         {
-            return new FactoryEnumerable<T>(policy, () => new EmptyEnumerator<T>());
+            return policy.CreateAsyncEnumerable(() => new EmptyEnumerator<T>());
         }
 
         /// <summary>
@@ -441,9 +442,9 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        internal static IAsyncEnumerable<T> CreateAsyncEnumerable<T>(this IMaterializationPolicy policy, Func<IAsyncEnumerator<T>> factory)
+        internal static IAsyncEnumerable<T> CreateAsyncEnumerable<T>(this IMaterializationPolicy policy, Expression<Func<IAsyncEnumerator<T>>> factory)
         {
-            return new FactoryEnumerable<T>(policy, factory);
+            return new FactoryEnumerable<T>(policy, factory.Compile(), factory.Body.Type.Name);
         }
 
         /// <summary>
@@ -498,6 +499,11 @@ namespace ConnectQl.AsyncEnumerablePolicies
             private readonly Func<IAsyncEnumerator<TElement>> factory;
 
             /// <summary>
+            /// The name of the enumerable.
+            /// </summary>
+            private string name;
+
+            /// <summary>
             /// Initializes a new instance of the <see cref="FactoryEnumerable{TElement}"/> class.
             /// </summary>
             /// <param name="policy">
@@ -506,10 +512,14 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <param name="factory">
             /// The factory.
             /// </param>
-            public FactoryEnumerable(IMaterializationPolicy policy, Func<IAsyncEnumerator<TElement>> factory)
+            /// <param name="name">
+            /// The name of the enumerator Used for debugging.
+            /// </param>
+            public FactoryEnumerable(IMaterializationPolicy policy, Func<IAsyncEnumerator<TElement>> factory, string name)
             {
                 this.Policy = policy;
                 this.factory = factory;
+                this.name = name;
             }
 
             /// <summary>
@@ -524,6 +534,17 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// The enumerator.
             /// </returns>
             public IAsyncEnumerator<TElement> GetAsyncEnumerator() => this.factory();
+
+            /// <summary>
+            /// Converts the enuemrable to a string.
+            /// </summary>
+            /// <returns>
+            /// The string representation of the enumerable.
+            /// </returns>
+            public override string ToString()
+            {
+                return Regex.Replace(this.name.Replace("Enumerator", "Enumerable"), "`[0-9]+$", string.Empty);
+            }
         }
 
         /// <summary>

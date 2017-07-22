@@ -55,7 +55,12 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <summary>
         /// The offset.
         /// </summary>
-        private long offset;
+        private long currentOffset;
+
+        /// <summary>
+        /// The start offset of the batch.
+        /// </summary>
+        private long startOffset;
 
         /// <summary>
         /// The source.
@@ -144,8 +149,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
                     if (!await this.enumerator.NextBatchAsync().ConfigureAwait(false))
                     {
                         this.state = 2;
-                        var count = this.offset % this.batchSize;
-                        return count == 0 ? null : EnumerateItem(new Batch<TSource>(this.materialized, this.offset - count, count));
+                        return this.startOffset == this.currentOffset ? null : EnumerateItem(new Batch<TSource>(this.materialized, this.startOffset, this.currentOffset - this.startOffset));
                     }
 
                     return this.EnumerateBatches();
@@ -182,21 +186,21 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         {
             while (this.enumerator.MoveNext())
             {
-                if (this.offset % this.batchSize == 0 && this.offset != 0)
+                if (this.currentOffset - this.batchSize == this.startOffset)
                 {
-                    yield return new Batch<TSource>(this.materialized, this.offset - this.batchSize, this.batchSize);
+                    yield return new Batch<TSource>(this.materialized, this.startOffset, this.batchSize);
+
+                    this.startOffset += this.batchSize;
                 }
 
-                this.offset++;
+                this.currentOffset++;
             }
 
             if (this.enumerator.IsSynchronous)
             {
-                var count = this.offset % this.batchSize;
-
-                if (count != 0)
+                if (this.startOffset != this.currentOffset)
                 {
-                    yield return new Batch<TSource>(this.materialized, this.offset - count, count);
+                    yield return new Batch<TSource>(this.materialized, this.startOffset, this.currentOffset - this.startOffset);
                 }
 
                 // We're done.

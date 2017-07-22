@@ -25,8 +25,7 @@ before_build:
   - appveyor-retry msbuild /t:restore src /v:Minimal
 
 build_script:
-  - msbuild /t:build "src\ConnectQl" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:BUILD_ALL_PLATFORMS=1
-  - msbuild /t:build "src\ConnectQl.Tests" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:BUILD_ALL_PLATFORMS=1
+  - msbuild /t:build "src" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:BUILD_ALL_PLATFORMS=1
 
 after_build:
   - msbuild /t:pack "src\ConnectQl" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:PackageVersion=%APPVEYOR_BUILD_VERSION%-prerelease /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
