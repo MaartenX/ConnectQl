@@ -29,7 +29,7 @@ build_script:
 
 after_build:
   - msbuild /t:pack "src\ConnectQl" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:PackageVersion=%APPVEYOR_BUILD_VERSION%-prerelease /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
-  - appveyor PushArtifact artifacats\*.nupkg
+  - ps: Get-ChildItem artifacts\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build
