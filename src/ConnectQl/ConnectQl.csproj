@@ -18,7 +18,7 @@
     <RepositoryUrl>https://github.com/MaartenX/ConnectQl.github.io</RepositoryUrl>
     <Copyright>Copyright (c) 2017 Maarten van Sambeek</Copyright>
     <PackageProjectUrl>https://github.com/maartenx/connectql</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/ConnectQL.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/ConnectQl.png</PackageIconUrl>
     <Description>Query any datasource using an SQL dialect. Has lots of plugins for all kinds of file formats and applications.</Description>
     <Authors>Maarten van Sambeek</Authors>
     <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
