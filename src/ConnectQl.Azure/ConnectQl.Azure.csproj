@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\ConnectQl.Defaults.targets" />
+  
+  <PropertyGroup>
+    <TargetFramework>netstandard1.1</TargetFramework>
+    <PackageTags>ConnectQl;SQL;querying;Azure;Table;Blob</PackageTags>
+    <Description>ConnectQl plugin for querying Azure Tables and Blobs.</Description>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="WindowsAzure.Storage" Version="8.2.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>
