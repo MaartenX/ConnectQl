@@ -3,7 +3,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.xml</DocumentationFile>
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>0.0.1</Version>
+    <Version Condition="'$(Version)' == ''">0.0.0</Version>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/LICENSE</PackageLicenseUrl>
@@ -13,6 +13,7 @@
     <Copyright>Copyright (c) 2017 Maarten van Sambeek</Copyright>
     <PackageProjectUrl>https://github.com/MaartenX/ConnectQl</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/ConnectQl.png</PackageIconUrl>
+    <MinClientVersion>3.4</MinClientVersion>
     <Authors>Maarten van Sambeek</Authors>
   </PropertyGroup>
 

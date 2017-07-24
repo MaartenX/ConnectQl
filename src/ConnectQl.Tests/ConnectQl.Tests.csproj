@@ -4,6 +4,7 @@
     <TargetFrameworks>netcoreapp1.1;net452</TargetFrameworks>
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.Tests.xml</DocumentationFile>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
