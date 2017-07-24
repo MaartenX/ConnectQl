@@ -16,7 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Tests", "ConnectQ
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{99F0D03C-293D-466B-A4AA-A6586ED7CE49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectQl.Azure", "ConnectQl.Azure\ConnectQl.Azure.csproj", "{1D2A0D73-7FF7-4213-8B26-42E858371BAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Azure", "ConnectQl.Azure\ConnectQl.Azure.csproj", "{1D2A0D73-7FF7-4213-8B26-42E858371BAA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Platform", "ConnectQl.Platform\ConnectQl.Platform.csproj", "{980B8259-20F0-402D-893B-2EB4B17C69DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,11 +38,16 @@ Global
 		{1D2A0D73-7FF7-4213-8B26-42E858371BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D2A0D73-7FF7-4213-8B26-42E858371BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D2A0D73-7FF7-4213-8B26-42E858371BAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{980B8259-20F0-402D-893B-2EB4B17C69DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{980B8259-20F0-402D-893B-2EB4B17C69DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{980B8259-20F0-402D-893B-2EB4B17C69DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{980B8259-20F0-402D-893B-2EB4B17C69DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1D2A0D73-7FF7-4213-8B26-42E858371BAA} = {99F0D03C-293D-466B-A4AA-A6586ED7CE49}
+		{980B8259-20F0-402D-893B-2EB4B17C69DF} = {99F0D03C-293D-466B-A4AA-A6586ED7CE49}
 	EndGlobalSection
 EndGlobal

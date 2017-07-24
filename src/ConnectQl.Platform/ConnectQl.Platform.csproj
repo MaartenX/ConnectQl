@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' != ''">netstandard1.5;net45</TargetFrameworks>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' == ''">netstandard1.5</TargetFrameworks>
+    <PackageTags>ConnectQl;SQL;querying;plugins;csv;json;appsettings;connection strings</PackageTags>
+    <Description>ConnectQl plugin for loading of plugins and CSV and JSON file formats.</Description>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Defaults.targets" />
+  
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" Condition="'$(TargetFramework)' == 'netstandard1.5'" />
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
+    <Reference Include="System.Configuration" Version="4.0" Condition="'$(TargetFramework)' == 'net45'" />
+  </ItemGroup>
+
+</Project>

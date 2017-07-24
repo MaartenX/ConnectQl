@@ -1,6 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <Import Project="..\ConnectQl.Defaults.targets" />
   
   <PropertyGroup>
     <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' != ''">netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
@@ -9,6 +7,8 @@
     <Description>Query any datasource using an SQL dialect.</Description>
     <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
   </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Defaults.targets" />
 
   <ItemGroup>
     <Compile Update="$(AtgChildren)">
