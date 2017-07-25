@@ -2,12 +2,38 @@ version: '0.1.{build}'
 
 configuration:
   - Release
+- 
+  only_commits:
+    files:
+      - appveyor.yml
 
-only_commits:
-  files:
-    - src/
-    - tools/
-    - appveyor.yml
+  build_script:
+    - msbuild /t:pack "src" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
+
+- 
+  only_commits:
+    files:
+      - src/ConnectQl
+      - tools/
+
+  build_script:
+    - msbuild /t:pack "src/ConnectQl" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
+
+- 
+  only_commits:
+    files:
+      - src/ConnectQl.Azure
+
+  build_script:
+    - msbuild /t:pack "src/ConnectQl.Azure" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
+    
+- 
+  only_commits:
+    files:
+      - src/ConnectQl.Platform
+
+  build_script:
+    - msbuild /t:pack "src/ConnectQl.Platform" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
 
 image: Visual Studio 2017
 
@@ -34,12 +60,6 @@ install:
 
 before_build:
   - appveyor-retry msbuild /t:restore src /p:Configuration=%CONFIGURATION% /p:BUILD_ALL_PLATFORMS=1
-
-build_script:
-  - msbuild /t:build "src" /p:Configuration=%CONFIGURATION% /p:BUILD_ALL_PLATFORMS=1
-
-after_build:
-  - msbuild /t:pack "src" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build
