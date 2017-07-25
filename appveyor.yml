@@ -24,8 +24,7 @@ environment:
 init:
   - ps: >-
       $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0");
-      $Env:FILES = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 )) -join "|"
-
+      
 install:
   - ps: >-
       if ("$env:APPVEYOR_PULL_REQUEST_NUMBER" -eq "") 
