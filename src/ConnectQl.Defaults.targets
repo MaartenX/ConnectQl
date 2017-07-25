@@ -29,6 +29,7 @@
     <Message Importance="high" Text="APPVEYOR_PULL_REQUEST_NUMBER:  $(APPVEYOR_PULL_REQUEST_NUMBER)" />
     <Message Importance="high" Text="APPVEYOR_REPO_BRANCH:          $(APPVEYOR_REPO_BRANCH)" />
     <Message Importance="high" Text="APPVEYOR_BUILD_VERSION:        $(APPVEYOR_BUILD_VERSION)" />
+    <Message Importance="high" Text="SignAssembly:                  $(SignAssembly)" />
   </Target>
   
   <ItemGroup>
