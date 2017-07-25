@@ -3,7 +3,11 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.xml</DocumentationFile>
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version Condition="'$(Version)' == ''">0.0.0</Version>
+    <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
+    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.0.1</VersionPrefix>
+    <VersionSufix Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''">-pullrequest-$(APPVEYOR_PULL_REQUEST_NUMBER)</VersionSufix>
+    <VersionSufix Condition="'$(APPVEYOR_REPO_BRANCH)'!='master'">-prerelease</VersionSufix>
+    <VersionSufix Condition="'$(APPVEYOR_REPO_BRANCH)'=='master'"></VersionSufix>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/LICENSE</PackageLicenseUrl>
