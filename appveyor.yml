@@ -23,7 +23,7 @@ environment:
 
 init:
   - ps: >-
-      $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
+      $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0");
       $Env:FILES = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 )) -join "|"
 
 install:
@@ -39,11 +39,11 @@ before_build:
 
 build_script:
   - ps: >-
-      msbuild /t:build src /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
+      msbuild /t:build src /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1;
       ;
-      $changed = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 ))
-      $changedFolders = $changed | % { Split-Path $_ } | where { $_.Length -gt 0 }
-      $projects = ((ls *.csproj -r).FullName | Resolve-Path -Relative) -replace "^\.\\", ""
+      $changed = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 ));
+      $changedFolders = $changed | % { Split-Path $_ } | where { $_.Length -gt 0 };
+      $projects = ((ls *.csproj -r).FullName | Resolve-Path -Relative) -replace "^\.\\", "";
       ;
       if ($changed -contains "appveyor.yml") {
         $projectsToPack = $projects
