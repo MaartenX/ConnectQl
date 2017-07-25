@@ -53,7 +53,7 @@ build_script:
       }
       Write-Host $projectsToPack
       ;
-      $projectsToPack | % { msbuild /t:build "$_" /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1 }
+      $projectsToPack | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1 }
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build
