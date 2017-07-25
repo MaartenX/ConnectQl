@@ -36,10 +36,10 @@ install:
       }
 
 before_build:
-  - appveyor-retry msbuild /t:restore /v:minimal src /p:Configuration=%CONFIGURATION% /p:BUILD_ALL_PLATFORMS=1
+  - msbuild /t:restore /v:minimal src /p:BUILD_ALL_PLATFORMS=1
 
 build_script:
-  - msbuild /t:build src /p:BUILD_ALL_PLATFORMS=1;
+  - msbuild /t:build src /p:BUILD_ALL_PLATFORMS=1
   - ps: >-
       $changed = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 ));
       $changedFolders = $changed | % { Split-Path $_ } | where { $_.Length -gt 0 };
