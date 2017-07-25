@@ -22,8 +22,7 @@ environment:
     secure: R5dL3BcCgnJ4e8l7CXVC+PORgj+8Z/4seFazfXiYZUAzoxFZOpj7GT3/S00dO72vAkKhvsGCPPfnKZAf12WZXj7rOJDaM8OSuvUifZdQ7Oo=
 
 init:
-  - ps: >-
-      $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0");
+  - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0");
       
 install:
   - ps: >-
