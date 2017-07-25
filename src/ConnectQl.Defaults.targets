@@ -5,10 +5,10 @@
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.0.1</VersionPrefix>
-    <VersionSufix Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''">-pullrequest-$(APPVEYOR_PULL_REQUEST_NUMBER)</VersionSufix>
-    <VersionSufix Condition="'$(APPVEYOR_REPO_BRANCH)'!='master'">-prerelease</VersionSufix>
-    <VersionSufix Condition="'$(APPVEYOR_REPO_BRANCH)'=='master'"></VersionSufix>
-    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <VersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)'!='master'">prerelease</VersionSuffix>
+    <VersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)'=='master'"></VersionSuffix>
+    <VersionSuffix Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''">pullrequest-$(APPVEYOR_PULL_REQUEST_NUMBER)</VersionSuffix>
+    <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/LICENSE</PackageLicenseUrl>
     <PackageTags>ConnectQl;SQL;querying</PackageTags>
@@ -21,6 +21,16 @@
     <Authors>Maarten van Sambeek</Authors>
   </PropertyGroup>
 
+  <Target Name="WriteVersions" BeforeTargets="CoreBuild">
+    <Message Importance="high" Text="Version:                       $(Version)" />
+    <Message Importance="high" Text="VersionSuffix:                 $(VersionSuffix)" />
+    <Message Importance="high" Text="VersionPrefix:                 $(VersionPrefix)" />
+    <Message Importance="high" Text="PackageVersion:                $(PackageVersion)" />
+    <Message Importance="high" Text="APPVEYOR_PULL_REQUEST_NUMBER:  $(APPVEYOR_PULL_REQUEST_NUMBER)" />
+    <Message Importance="high" Text="APPVEYOR_REPO_BRANCH:          $(APPVEYOR_REPO_BRANCH)" />
+    <Message Importance="high" Text="APPVEYOR_BUILD_VERSION:        $(APPVEYOR_BUILD_VERSION)" />
+  </Target>
+  
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json">
       <Link>stylecop.json</Link>

@@ -25,17 +25,17 @@ init:
   - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
 
 install:
-  - if [%APPVEYOR_BUILD_NUMBER%] == [] nuget install secure-file -ExcludeVersion
-  - if [%APPVEYOR_BUILD_NUMBER%] == [] secure-file\tools\secure-file -decrypt key\Key.snk.enc -secret %KEYSECRET%
+  - if "%APPVEYOR_BUILD_NUMBER%" == "" (nuget install secure-file -ExcludeVersion)
+  - if "%APPVEYOR_BUILD_NUMBER%" == "" (secure-file\tools\secure-file -decrypt key\Key.snk.enc -secret %KEYSECRET%)
 
 before_build:
-  - appveyor-retry msbuild /t:restore src /v:Minimal /p:BUILD_ALL_PLATFORMS=1
+  - appveyor-retry msbuild /t:restore src /p:Configuration=%CONFIGURATION% /p:BUILD_ALL_PLATFORMS=1
 
 build_script:
-  - msbuild /t:build "src" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:BUILD_ALL_PLATFORMS=1
+  - msbuild /t:build "src" /p:Configuration=%CONFIGURATION% /p:BUILD_ALL_PLATFORMS=1
 
 after_build:
-  - msbuild /t:pack "src" /p:Configuration=%CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% /p:PackageVersion=%APPVEYOR_BUILD_VERSION%-prerelease /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
+  - msbuild /t:pack "src" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build
