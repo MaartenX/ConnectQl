@@ -2,38 +2,12 @@ version: '0.1.{build}'
 
 configuration:
   - Release
-- 
-  only_commits:
-    files:
-      - appveyor.yml
 
-  build_script:
-    - msbuild /t:pack "src" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
-
-- 
-  only_commits:
-    files:
-      - src/ConnectQl
-      - tools/
-
-  build_script:
-    - msbuild /t:pack "src/ConnectQl" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
-
-- 
-  only_commits:
-    files:
-      - src/ConnectQl.Azure
-
-  build_script:
-    - msbuild /t:pack "src/ConnectQl.Azure" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
-    
-- 
-  only_commits:
-    files:
-      - src/ConnectQl.Platform
-
-  build_script:
-    - msbuild /t:pack "src/ConnectQl.Platform" /p:Configuration=%CONFIGURATION% /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
+only_commits:
+  files:
+    - src
+    - tools
+    - appveyor.yml
 
 image: Visual Studio 2017
 
@@ -48,7 +22,9 @@ environment:
     secure: R5dL3BcCgnJ4e8l7CXVC+PORgj+8Z/4seFazfXiYZUAzoxFZOpj7GT3/S00dO72vAkKhvsGCPPfnKZAf12WZXj7rOJDaM8OSuvUifZdQ7Oo=
 
 init:
-  - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
+  - ps: >=
+      $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
+      $Env:FILES = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 )) -join "|"
 
 install:
   - ps: >-
@@ -59,7 +35,25 @@ install:
       }
 
 before_build:
-  - appveyor-retry msbuild /t:restore src /p:Configuration=%CONFIGURATION% /p:BUILD_ALL_PLATFORMS=1
+  - appveyor-retry msbuild /t:restore /v:minimal src /p:Configuration=%CONFIGURATION% /p:BUILD_ALL_PLATFORMS=1
+
+build_script:
+  - ps: >=
+
+      msbuild /t:build src /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1
+
+      $changed = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 ))
+      $changedFolders = $changed | % { Split-Path $_ } | where { $_.Length -gt 0 }
+      $projects = ((ls *.csproj -r).FullName | Resolve-Path -Relative) -replace "^\.\\", ""
+
+      if ($changed -contains "appveyor.yml") {
+        $projectsToPack = $projects
+      }
+      else {
+        $projectsToPack = $projects | where { $changed -contains (Split-Path $_) }
+      }
+
+      $projectsToPack | % { msbuild /t:build "$_" /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1 }
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build
