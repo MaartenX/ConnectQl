@@ -10,9 +10,9 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
   
   <ItemGroup>
+    <PackageReference Include="ConnectQl" Version="0.1.51-prerelease" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" Condition="'$(TargetFramework)' == 'netstandard1.5'" />
-    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
     <Reference Include="System.Configuration" Version="4.0" Condition="'$(TargetFramework)' == 'net45'" />
   </ItemGroup>
 

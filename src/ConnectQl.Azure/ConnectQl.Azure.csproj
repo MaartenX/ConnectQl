@@ -10,11 +10,8 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
 
   <ItemGroup>
+    <PackageReference Include="ConnectQl" Version="0.1.51-prerelease" />
     <PackageReference Include="WindowsAzure.Storage" Version="8.2.0" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
   </ItemGroup>
   
 </Project>
