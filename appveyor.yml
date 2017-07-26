@@ -44,7 +44,7 @@ build_script:
       $changed = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 ));
       $changedFolders = $changed | % { Split-Path $_ } | where { $_.Length -gt 0 };
       $projects = ((ls *.csproj -r).FullName | Resolve-Path -Relative) -replace "^\.\\", "";
-      $projects = if ($changed -contains "appveyor.yml") { $projects } else { $projects | where { $changed -contains (Split-Path $_) }
+      $projects = if ($changed -contains "appveyor.yml") { $projects } else { $projects | where { $changed -contains (Split-Path $_) } }
       $projects | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1 }
 
 test_script:
