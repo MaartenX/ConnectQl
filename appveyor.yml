@@ -7,8 +7,8 @@ configuration: Release
 
 only_commits:
   files:
-    - src
-    - tools
+    - src/
+    - tools/
     - appveyor.yml
 
 image: Visual Studio 2017
