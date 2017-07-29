@@ -3,8 +3,7 @@ version: '0.1.{build}'
 nuget:
   project_feed: true
 
-configuration:
-  - Release
+configuration: Release
 
 only_commits:
   files:
@@ -20,7 +19,8 @@ branches:
     - development
 
 environment:
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  APITOKEN:
+    secure: 5TI2LVqKI0e9RN6tfKGY1kOGqQPnzVT5nVvGhEmNXZ4=
   KEYSECRET:
     secure: R5dL3BcCgnJ4e8l7CXVC+PORgj+8Z/4seFazfXiYZUAzoxFZOpj7GT3/S00dO72vAkKhvsGCPPfnKZAf12WZXj7rOJDaM8OSuvUifZdQ7Oo=
 
@@ -29,7 +29,7 @@ init:
       
 install:
   - ps: >-
-      if ("$env:APPVEYOR_PULL_REQUEST_NUMBER" -eq "") 
+      if ("$Env:APPVEYOR_PULL_REQUEST_NUMBER" -eq "") 
       { 
         nuget install secure-file -ExcludeVersion;
         secure-file\tools\secure-file -decrypt key\Key.snk.enc -secret $env:KEYSECRET
@@ -40,12 +40,7 @@ before_build:
 
 build_script:
   - msbuild /t:build src /p:BUILD_ALL_PLATFORMS=1
-  - ps: >-
-      $changed = (git diff-tree -r --name-only --no-commit-id ( & git rev-parse --short HEAD~1 ));
-      $changedFolders = $changed | % { Split-Path $_ } | where { $_.Length -gt 0 };
-      $projects = ((ls *.csproj -r).FullName | Resolve-Path -Relative) -replace "^\.\\", "";
-      $projects = if ($changed -contains "appveyor.yml") { $projects } else { $projects | where { $changed -contains (Split-Path $_) } }
-      $projects | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1 }
+  - ps: .\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1 }
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build
