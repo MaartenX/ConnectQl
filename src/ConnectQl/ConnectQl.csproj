@@ -17,6 +17,9 @@
     <None Update="$(AtgChildren)">
       <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
     </None>
+    <PackageReference Include="Scripty.MsBuild" Version="0.7.4">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   
   <Target Name="WriteScriptyLogs" AfterTargets="EvaluateScriptyFiles">

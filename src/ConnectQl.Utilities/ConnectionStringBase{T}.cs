@@ -48,20 +48,32 @@ namespace ConnectQl.Utilities
         private static readonly Dictionary<PropertyInfo, string> PropertyToName;
 
         /// <summary>
+        /// Stores the exception when initialization fails.
+        /// </summary>
+        private static readonly Exception Exception;
+
+        /// <summary>
         /// Initializes static members of the <see cref="ConnectionStringBase{T}"/> class.
         /// </summary>
         static ConnectionStringBase()
         {
-            var propertyAttributes =
-                typeof(T)
-                    .GetRuntimeProperties()
-                    .Where(prop => prop.CanRead && prop.CanWrite && prop.GetMethod.IsPublic && prop.SetMethod.IsPublic)
-                    .Select(prop => new { Property = prop, Names = prop.GetCustomAttribute<ConnectionStringPartAttribute>()?.GetNames(prop) })
-                    .Where(pa => pa.Names != null)
-                    .ToList();
+            try
+            {
+                var propertyAttributes =
+                    typeof(T)
+                        .GetRuntimeProperties()
+                        .Where(prop => prop.CanRead && prop.CanWrite && prop.GetMethod.IsPublic && prop.SetMethod.IsPublic)
+                        .Select(prop => new { Property = prop, Names = prop.GetCustomAttribute<ConnectionStringPartAttribute>()?.GetNames(prop) })
+                        .Where(pa => pa.Names != null)
+                        .ToList();
 
-            NameToProperty = propertyAttributes.SelectMany(pa => pa.Names.Select(name => new { Name = name, pa.Property })).ToDictionary(np => np.Name, np => np.Property, StringComparer.OrdinalIgnoreCase);
-            PropertyToName = propertyAttributes.ToDictionary(pa => pa.Property, pa => pa.Names.First());
+                NameToProperty = propertyAttributes.SelectMany(pa => pa.Names.Select(name => new { Name = name, pa.Property })).ToDictionary(np => np.Name, np => np.Property, StringComparer.OrdinalIgnoreCase);
+                PropertyToName = propertyAttributes.ToDictionary(pa => pa.Property, pa => pa.Names.First());
+            }
+            catch (Exception e)
+            {
+                Exception = e;
+            }
         }
 
         /// <summary>
@@ -71,25 +83,38 @@ namespace ConnectQl.Utilities
         /// <returns>
         /// The parsed connection string.
         /// </returns>
+        /// <exception cref="ParseException">Thrown when parsing fails.</exception>
         public static T Parse(string connectionString)
         {
-            var values = new DbConnectionStringBuilder() { ConnectionString = connectionString }.Cast<KeyValuePair<string, object>>();
-            var result = new T();
-
-            foreach (var keyValue in values)
+            if (Exception != null)
             {
-                if (NameToProperty.TryGetValue(keyValue.Key, out var propertyInfo))
-                {
-                    var value = ConvertTo(keyValue.Value, propertyInfo.PropertyType);
-
-                    if (value != null)
-                    {
-                        propertyInfo.SetValue(result, value);
-                    }
-                }
+                throw new ParseException(Exception);
             }
 
-            return result;
+            try
+            {
+                var values = new DbConnectionStringBuilder() { ConnectionString = connectionString }.Cast<KeyValuePair<string, object>>();
+                var result = new T();
+
+                foreach (var keyValue in values)
+                {
+                    if (NameToProperty.TryGetValue(keyValue.Key, out var propertyInfo))
+                    {
+                        var value = ConvertTo(keyValue.Value, propertyInfo.PropertyType);
+
+                        if (value != null)
+                        {
+                            propertyInfo.SetValue(result, value);
+                        }
+                    }
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new ParseException(e);
+            }
         }
 
         /// <summary>
