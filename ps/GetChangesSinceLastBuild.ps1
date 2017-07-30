@@ -8,9 +8,12 @@ param(
 
 $projects = ls *.csproj -r
 
+# Files that will trigger a complete rebuild. All other files will check if they are in a project folder.
+$filesForRebuildAll = "appveyor.yml", "src\ConnectQl.Defaults.targets", "ps\GetChangesSinceLastBuild.ps1"
+
 if ("$apiToken" -eq "")
 {
-	$result = $projects
+	$result = $projects | ? { $_ -eq "asdf" }
 }
 else 
 {
@@ -22,8 +25,9 @@ else
 	$lastBuildCommitId = ($json.builds | ? { $_.status -eq 'success' -and $_.branch -eq $env:APPVEYOR_REPO_BRANCH } | select -First 1).commitId
 	$changedFiles = (git diff-tree -r --name-only --no-commit-id $lastBuildCommitId HEAD | Get-Item)
 	$changedFolders = $changedFiles.Directory.FullName | % { $_ + $slash }
+    $rebuildAll = ($changedFiles | ? { $filesForRebuildAll -contains $_ }).Count -gt 0
 
-	if ($changedFiles.Name -contains "appveyor.yml" -or $changedFiles.Name -contains "src\ConnectQl.Defaults.targets") {
+	if ($rebuildAll) {
 		$result = $projects
 	}
 	else {
@@ -31,5 +35,10 @@ else
 	}
 }
 
-Write-Host "Packaging projects:"
-Write-Host $result.Name -join "\n"
+if ($result.Count -eq 0) {
+    Write-Host "Not packaging any projects."
+}
+else {
+    Write-Host "Packaging projects:"
+    $result.Name | % { Write-Host $_ }
+}
