@@ -27,9 +27,6 @@ else
 	$changedFolders = $changedFiles.Directory.FullName | % { $_ + $slash }
     $rebuildAll = ($changedFiles.Name | ? { $filesForRebuildAll -contains $_ }).Count -gt 0
 
-    Write-Host "Changed files:"
-    $changedFiles | % { Write-Host $_ }
-
 	if ($rebuildAll) {
 		$result = $projects
 	}
@@ -45,3 +42,5 @@ else {
     Write-Host "Packaging projects:"
     $result.Name | % { Write-Host $_ }
 }
+
+return $result
