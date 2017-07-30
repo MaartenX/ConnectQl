@@ -16,7 +16,7 @@ $changedFiles = (git diff-tree -r --name-only --no-commit-id $lastBuildCommitId 
 $changedFolders = $changedFiles.Directory.FullName | % { $_ + $slash }
 $projects = ls *.csproj -r
 
-if ($changedFiles.Name -contains "appveyor.yml") {
+if ($changedFiles.Name -contains "appveyor.yml" -or $changedFiles.Name -contains "src\ConnectQl.Defaults.targets") {
     $projects
 }
 else {
