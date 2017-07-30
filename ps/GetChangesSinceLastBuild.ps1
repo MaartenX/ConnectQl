@@ -9,7 +9,7 @@ param(
 $projects = ls *.csproj -r
 
 # Files that will trigger a complete rebuild. All other files will check if they are in a project folder.
-$filesForRebuildAll = "appveyor.yml", "src\ConnectQl.Defaults.targets", "ps\GetChangesSinceLastBuild.ps1"
+$filesForRebuildAll = "appveyor.yml", "ConnectQl.Defaults.targets", "GetChangesSinceLastBuild.ps1"
 
 if ("$apiToken" -eq "")
 {
@@ -25,7 +25,7 @@ else
 	$lastBuildCommitId = ($json.builds | ? { $_.status -eq 'success' -and $_.branch -eq $env:APPVEYOR_REPO_BRANCH } | select -First 1).commitId
 	$changedFiles = (git diff-tree -r --name-only --no-commit-id $lastBuildCommitId HEAD | Get-Item)
 	$changedFolders = $changedFiles.Directory.FullName | % { $_ + $slash }
-    $rebuildAll = ($changedFiles | ? { $filesForRebuildAll -contains $_ }).Count -gt 0
+    $rebuildAll = ($changedFiles.Name | ? { $filesForRebuildAll -contains $_ }).Count -gt 0
 
     Write-Host "Changed files:"
     $changedFiles | % { Write-Host $_ }
