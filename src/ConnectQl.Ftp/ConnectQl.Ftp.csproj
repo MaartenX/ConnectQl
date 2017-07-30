@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' != ''">netstandard1.3;net45</TargetFrameworks>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' == ''">netstandard1.3</TargetFrameworks>
+    <PackageTags>ConnectQl;SQL;querying;plugins;ftp;ftps;sftp</PackageTags>
+    <Description>ConnectQl plugin that supports the FTP, SFTP and FTPS protocols.</Description>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Defaults.targets" />
+  
+  <ItemGroup>
+    <PackageReference Include="ConnectQl" Version="0.1.65-prerelease" />
+    <PackageReference Include="SSH.NET" Version="2016.0.0" />
+  </ItemGroup>
+</Project>

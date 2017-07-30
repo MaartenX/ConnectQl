@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' != ''">netstandard1.2;portable-net451+win81+wpa81</TargetFrameworks>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' == ''">portable-net451+win81+wpa81</TargetFrameworks>
+    <PackageTags>ConnectQl;SQL;querying;utility</PackageTags>
+    <Description>Utilities for ConnectQl Connection strings.</Description>
+    <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Defaults.targets" />
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Remove="ConnectionStringBase`1.cs" />
+    <Compile Remove="PartdAttribute1.cs" />
+  </ItemGroup>
+
+</Project>

@@ -21,17 +21,6 @@
     <Authors>Maarten van Sambeek</Authors>
   </PropertyGroup>
 
-  <Target Name="WriteVersions" BeforeTargets="CoreBuild">
-    <Message Importance="high" Text="Version:                       $(Version)" />
-    <Message Importance="high" Text="VersionSuffix:                 $(VersionSuffix)" />
-    <Message Importance="high" Text="VersionPrefix:                 $(VersionPrefix)" />
-    <Message Importance="high" Text="PackageVersion:                $(PackageVersion)" />
-    <Message Importance="high" Text="APPVEYOR_PULL_REQUEST_NUMBER:  $(APPVEYOR_PULL_REQUEST_NUMBER)" />
-    <Message Importance="high" Text="APPVEYOR_REPO_BRANCH:          $(APPVEYOR_REPO_BRANCH)" />
-    <Message Importance="high" Text="APPVEYOR_BUILD_VERSION:        $(APPVEYOR_BUILD_VERSION)" />
-    <Message Importance="high" Text="SignAssembly:                  $(SignAssembly)" />
-  </Target>
-  
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json">
       <Link>stylecop.json</Link>
@@ -63,11 +52,26 @@
     <IncludeProjectPriFile>false</IncludeProjectPriFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net451+win81+wpa81'">
+    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile151</TargetFrameworkProfile>
+    <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile151</NugetTargetMoniker>
+    <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
+    <IncludeProjectPriFile>false</IncludeProjectPriFile>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
     <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
     <TargetPlatform Include="Windows, Version=8.0" />
     <TargetPlatform Include="WindowsPhoneApp, Version=8.0" />
     <TargetPlatform Include=".NETFramework, Version=4.5" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'portable-net451+win81+wpa81'">
+    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
+    <TargetPlatform Include="Windows, Version=8.1" />
+    <TargetPlatform Include=".NETFramework, Version=4.5.1" />
   </ItemGroup>
 
 </Project>
