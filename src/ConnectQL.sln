@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectQl Solution Items", 
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
 		ConnectQl.Defaults.targets = ConnectQl.Defaults.targets
+		..\ps\GetChangesSinceLastBuild.ps1 = ..\ps\GetChangesSinceLastBuild.ps1
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
