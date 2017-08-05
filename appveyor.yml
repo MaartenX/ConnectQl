@@ -20,6 +20,7 @@ branches:
     - development
 
 environment:
+  BUILD_ALL_PLATFORMS: 1
   APITOKEN:
     secure: 5TI2LVqKI0e9RN6tfKGY1kOGqQPnzVT5nVvGhEmNXZ4=
   KEYSECRET:
@@ -37,11 +38,11 @@ install:
       }
 
 before_build:
-  - msbuild /t:restore /v:minimal src /p:BUILD_ALL_PLATFORMS=1
+  - msbuild /t:restore /v:minimal src
 
 build_script:
-  - msbuild /t:build src /p:BUILD_ALL_PLATFORMS=1
-  - ps: .\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts /p:BUILD_ALL_PLATFORMS=1 }
+  - msbuild /t:build src
+  - ps: .\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts }
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build
