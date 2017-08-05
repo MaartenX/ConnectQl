@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectQl Solution Items", 
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
 		ConnectQl.Defaults.targets = ConnectQl.Defaults.targets
+		..\ConnectQl.png = ..\ConnectQl.png
 		..\ps\GetChangesSinceLastBuild.ps1 = ..\ps\GetChangesSinceLastBuild.ps1
 		stylecop.json = stylecop.json
 	EndProjectSection
@@ -32,6 +33,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{7F768DA1-C780-4AEC-9E7B-451AED1901FD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Utilities.Tests", "ConnectQl.Utilities.Tests\ConnectQl.Utilities.Tests.csproj", "{20D52E81-07C1-4B10-96D0-1C95171DFEC0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vsix", "Vsix", "{A475CC76-E742-4CC6-9CBB-4BAD5492C064}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Tools", "ConnectQl.Tools\ConnectQl.Tools.csproj", "{9D47A2AD-1D5E-4780-BF86-6DAA924352A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Tools.AssemblyLoader", "ConnectQl.Tools.AssemblyLoader\ConnectQl.Tools.AssemblyLoader.csproj", "{98A930B7-1A10-4C8D-88CF-E620BF421902}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectQl.Tools.ItemTemplate", "ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj", "{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +76,18 @@ Global
 		{20D52E81-07C1-4B10-96D0-1C95171DFEC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20D52E81-07C1-4B10-96D0-1C95171DFEC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20D52E81-07C1-4B10-96D0-1C95171DFEC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D47A2AD-1D5E-4780-BF86-6DAA924352A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D47A2AD-1D5E-4780-BF86-6DAA924352A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D47A2AD-1D5E-4780-BF86-6DAA924352A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D47A2AD-1D5E-4780-BF86-6DAA924352A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98A930B7-1A10-4C8D-88CF-E620BF421902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98A930B7-1A10-4C8D-88CF-E620BF421902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98A930B7-1A10-4C8D-88CF-E620BF421902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98A930B7-1A10-4C8D-88CF-E620BF421902}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +100,8 @@ Global
 		{7EE7037D-0E96-48A9-90F2-6D4F6105E59E} = {99F0D03C-293D-466B-A4AA-A6586ED7CE49}
 		{9015CDFA-88B2-4746-B190-229528AC5645} = {FD0DC86B-D190-4632-BCB8-749437D7B48C}
 		{20D52E81-07C1-4B10-96D0-1C95171DFEC0} = {9886DE0E-C3F7-46E6-A335-A56C95AAE0E9}
+		{9D47A2AD-1D5E-4780-BF86-6DAA924352A9} = {A475CC76-E742-4CC6-9CBB-4BAD5492C064}
+		{98A930B7-1A10-4C8D-88CF-E620BF421902} = {A475CC76-E742-4CC6-9CBB-4BAD5492C064}
+		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4} = {A475CC76-E742-4CC6-9CBB-4BAD5492C064}
 	EndGlobalSection
 EndGlobal
