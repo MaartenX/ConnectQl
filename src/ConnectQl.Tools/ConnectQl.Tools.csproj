@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Shell.14.0" Version="[14.3.25407,15.0)" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="14.3.25407" />
     <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.1.192" />
+    <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
     <PackageReference Include="VSLangProj140" Version="14.0.25029" />
   </ItemGroup>
 
@@ -47,5 +48,15 @@
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VsSDKInstall)\Microsoft.VsSDK.targets" Condition="'$(vsSDKInstall)' != '' And Exists('$(VsSDKInstall)\Microsoft.VsSDK.targets')" />
+
+  <PropertyGroup Condition="'$(APPVEYOR)'!=''">
+    <ArtifactsFolder>..\..\artifacts\</ArtifactsFolder>
+    <TargetVsixContainer>$(ArtifactsFolder)$(TargetName)-$(VersionPrefix).0.vsix</TargetVsixContainer>
+  </PropertyGroup>
+  
+  <Target Name="UpdateVsixVersion" BeforeTargets="Build" Condition="'$(APPVEYOR)'!=''">
+    <MakeDir Directories="$(ArtifactsFolder)" ContinueOnError="true" />
+    <XmlUpdate Prefix="n" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" XPath="//n:PackageManifest/n:Metadata/n:Identity/@Version" XmlFileName="source.extension.vsixmanifest" Value="$(VersionPrefix).0" />
+  </Target>
   
 </Project>
