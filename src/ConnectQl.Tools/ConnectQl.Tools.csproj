@@ -48,9 +48,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="System.ComponentModel.Composition" />
-    <ProjectReference Include="..\ConnectQl.Tools.AssemblyLoader\ConnectQl.Tools.AssemblyLoader.csproj" AdditionalProperties="TargetFramework=net46" />
+    <ProjectReference Include="..\ConnectQl.Tools.AssemblyLoader\ConnectQl.Tools.AssemblyLoader.csproj" AdditionalProperties="TargetFramework=net452" />
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" AdditionalProperties="TargetFramework=portable-net45+win8+wpa81+wp8" />
-    <ProjectReference Include="..\ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj" AdditionalProperties="TargetFramework=net46">
+    <ProjectReference Include="..\ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj" AdditionalProperties="TargetFramework=net452">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
