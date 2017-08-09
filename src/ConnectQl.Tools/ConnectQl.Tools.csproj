@@ -4,11 +4,10 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
   
   <PropertyGroup>
-    <VsixType>v3</VsixType>
-    <TargetFramework>net46</TargetFramework>
+    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFramework>net452</TargetFramework>
     <IsPackable>false</IsPackable>
-    <DeployExtension Condition="'$(APPVEYOR)'==''">True</DeployExtension>
-    <DeployExtension Condition="'$(APPVEYOR)'!=''">False</DeployExtension>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
   
   <ItemGroup>
@@ -26,9 +25,29 @@
 
   <ItemGroup>
     <Content Include="..\..\ConnectQl.png" Link="Resources\ConnectQl.png" CopyToOutputDirectory="Always" IncludeInVSIX="true" />
+    <Content Include="Icons\Monikers.imagemanifest" IncludeInVSIX="true" />
+    <Content Include="Icons.pkgdef" IncludeInVSIX="true" />
+    <Content Include="source.extension.ico" DependentUpon="source.extension.vsixmanifest" />
+    
+    <VSCTCompile Include="ConnectQl.Tools.vsct" Generator="VsctGenerator" DependentUpon="source.extension.vsixmanifest" ResourceName="Menus.ctmenu" />
+    
+    <Resource Include="Icons\cql.*.png" />
+    
+    <EmbeddedResource Include="source.extension.resx">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+    </EmbeddedResource>
+
+    <Compile Update="VSPackage.Designer.cs" DependentUpon="source.extension.resx" />
   </ItemGroup>
-  
+
   <ItemGroup>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="System.ComponentModel.Composition" />
     <ProjectReference Include="..\ConnectQl.Tools.AssemblyLoader\ConnectQl.Tools.AssemblyLoader.csproj" AdditionalProperties="TargetFramework=net46" />
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" AdditionalProperties="TargetFramework=portable-net45+win8+wpa81+wp8" />
     <ProjectReference Include="..\ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj" AdditionalProperties="TargetFramework=net46">
@@ -40,16 +59,16 @@
     <!-- Helps to resolve the project references, name is missing when building using the new csproj. -->
     <ProjectReference Update="@(ProjectReference)" Name="%(FileName)" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VsSDKInstall)\Microsoft.VsSDK.targets" Condition="'$(vsSDKInstall)' != '' And Exists('$(VsSDKInstall)\Microsoft.VsSDK.targets')" />
 
+  <PropertyGroup>
+    <UseCodebase>true</UseCodebase>
+    <DeployExtension Condition="'$(APPVEYOR)'==''">True</DeployExtension>
+    <DeployExtension Condition="'$(APPVEYOR)'!=''">False</DeployExtension>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(APPVEYOR)'!=''">
     <ArtifactsFolder>..\..\artifacts\</ArtifactsFolder>
     <TargetVsixContainer Condition="'$(VersionSuffix)'==''">$(ArtifactsFolder)$(TargetName)-$(VersionPrefix).0.vsix</TargetVsixContainer>
