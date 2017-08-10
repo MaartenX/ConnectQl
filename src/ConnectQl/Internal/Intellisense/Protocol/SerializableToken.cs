@@ -23,6 +23,7 @@
 namespace ConnectQl.Internal.Intellisense.Protocol
 {
     using System.ComponentModel;
+    using System.Diagnostics;
 
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
@@ -30,6 +31,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     /// <summary>
     /// The serializable token.
     /// </summary>
+    [DebuggerDisplay("{Start,nq}-{End,nq} {Classification,nq} {Value}")]
     internal class SerializableToken : IClassifiedToken
     {
         /// <summary>

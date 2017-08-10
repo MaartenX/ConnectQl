@@ -82,7 +82,7 @@ namespace ConnectQl.Internal.Intellisense
         /// </returns>
         public static IReadOnlyCollection<IClassifiedToken> Classify(IValidationContext context, Block block, IList<Token> tokens)
         {
-            var tokenList = tokens.Select(t => new ConnectQlContext.ClassifiedToken(t.CharPos, t.CharPos + t.Val.Length, Classification.Comment /* ClassifyToken(t)*/, t.Kind, t.Val)).ToList();
+            var tokenList = tokens.Select(t => new ConnectQlContext.ClassifiedToken(t.CharPos, t.CharPos + t.Val.Length, ClassifyToken(t), t.Kind, t.Val)).ToList();
             var classifier = new Classifier(context.NodeData, tokenList);
 
             classifier.Visit(block);
@@ -246,7 +246,6 @@ namespace ConnectQl.Internal.Intellisense
             return base.VisitWildCardSqlExpression(node);
         }
 
-        /*
         /// <summary>
         /// The classify token.
         /// </summary>
@@ -258,20 +257,20 @@ namespace ConnectQl.Internal.Intellisense
         /// </returns>
         private static Classification ClassifyToken(Token token)
         {
-            switch (token.kind)
+            switch (token.Kind)
             {
-                case Parser.Comment0Token:
-                case Parser.Comment1Token:
-                case Parser.Comment2Token:
+                case Parser.Comment0Symbol:
+                case Parser.Comment1Symbol:
+                case Parser.Comment2Symbol:
                     return Classification.Comment;
-                case Parser.IdentifierToken:
-                case Parser.BracketedidentifierToken:
+                case Parser.IdentifierSymbol:
+                case Parser.BracketedidentifierSymbol:
                     return Classification.Identifier;
-                case Parser.NumberToken:
+                case Parser.NumberSymbol:
                     return Classification.Number;
-                case Parser.StringToken:
+                case Parser.StringSymbol:
                     return Classification.String;
-                case Parser.VariableToken:
+                case Parser.VariableSymbol:
                     return Classification.Variable;
 
                 case Parser.UseLiteral:
@@ -347,6 +346,7 @@ namespace ConnectQl.Internal.Intellisense
             return Classification.Unknown;
         }
 
+        /*
         /// <summary>
         /// Gets the scope for the production stack.
         /// </summary>

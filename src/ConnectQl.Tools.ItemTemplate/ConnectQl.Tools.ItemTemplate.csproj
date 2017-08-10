@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\ConnectQl.Tools\source.extension.vsixmanifest" Link="source.extension.vsixmanifest" />
     <Content Include="source.extension.ico" />
     <VSTemplate Include="ConnectQl.Tools.ItemTemplate.CSharp.vstemplate" OutputSubPath="ConnectQl" SubType="Designer" />
   </ItemGroup>

@@ -72,7 +72,10 @@ namespace ConnectQl.Tools.AssemblyLoader
         /// <param name="assemblies">
         /// The assemblies.
         /// </param>
-        public AppDomainIntellisenseSession(IList<string> assemblies)
+        /// <param name="fallbackConnectQl">
+        /// The fallback ConnectQl assembly when no reference is available in the project.
+        /// </param>
+        public AppDomainIntellisenseSession(IList<string> assemblies, string fallbackConnectQl)
         {
             AppDomain.CurrentDomain.AssemblyLoad += (o, e) =>
                 {
@@ -107,11 +110,22 @@ namespace ConnectQl.Tools.AssemblyLoader
                 }
             }
 
+            var connectQl = GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
+
+            if (connectQl == null)
+            {
+                var pdb = Regex.Replace(fallbackConnectQl, @"\.dll$", ".pdb", RegexOptions.IgnoreCase);
+                var assembly = Assembly.Load(File.ReadAllBytes(fallbackConnectQl), File.Exists(pdb) ? File.ReadAllBytes(pdb) : null, SecurityContextSource.CurrentAppDomain);
+                referencedAssemblies.Add(assembly);
+                loadedAssemblies.Add(new LoadedAssembly(assembly, fallbackConnectQl));
+
+                connectQl = GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
+            }
+
             var assemblyLookup = loadedAssemblies.ToDictionary(a => a.Assembly.GetName().ToString());
 
             LoadReferencesRecursively(loadedAssemblies, assemblyLookup);
 
-            var connectQl = GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
             var pluginLoader = Activator.CreateInstance(connectQl.GetType("ConnectQl.Intellisense.AssemblyPluginResolver"), referencedAssemblies);
             var sessionType = connectQl.GetType("ConnectQl.Intellisense.IntellisenseSession");
 

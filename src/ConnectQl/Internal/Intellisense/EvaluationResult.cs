@@ -25,11 +25,10 @@ namespace ConnectQl.Internal.Intellisense
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
-
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
-    using ConnectQl.DataSources;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Ast.Statements;
     using ConnectQl.Internal.Intellisense.Protocol;
@@ -251,7 +250,9 @@ namespace ConnectQl.Internal.Intellisense
             {
                 if (this.variablesValues.TryGetValue(variable, out object value))
                 {
-                    return typeof(T) == typeof(object) ? (T)value : (T)Convert.ChangeType(value, typeof(T));
+                    return typeof(T) == typeof(object) || typeof(T).GetTypeInfo().IsAssignableFrom(value.GetType().GetTypeInfo())
+                        ? (T)value
+                        : (T)Convert.ChangeType(value, typeof(T));
                 }
             }
             catch

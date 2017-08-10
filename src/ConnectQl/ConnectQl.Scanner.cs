@@ -15,7 +15,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// Gets or sets a value indicating whether the token is comment.
         /// </summary>
-        public bool IsComment { get; set; }
+        public bool IsComment { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the tokens index.
@@ -626,25 +626,25 @@ namespace ConnectQl.Internal
         bool Comment0()
         {
             int level = 1, pos0 = pos, line0 = line, col0 = col, charPos0 = charPos;
-            NextCh();
+            AddCh();
             if (ch == '-')
             {
-                NextCh();
+                AddCh();
                 for (; ; )
                 {
                     if (ch == 10)
                     {
                         level--;
                         if (level == 0) { oldEols = line - line0; AddCh(); if (this.EmitComments) { t.Val = new String(tval, 0, tlen); tlen = 0; t.Kind = 6; } return true; }
-                        NextCh();
+                        AddCh();
                     }
                     else if (ch == Buffer.Eof) return false;
-                    else NextCh();
+                    else AddCh();
                 }
             }
             else
             {
-                this.Buffer.Pos = pos0; NextCh(); line = line0; col = col0; charPos = charPos0;
+                this.Buffer.Pos = pos0; AddCh(); line = line0; col = col0; charPos = charPos0;
             }
             return false;
         }
@@ -652,25 +652,25 @@ namespace ConnectQl.Internal
         bool Comment1()
         {
             int level = 1, pos0 = pos, line0 = line, col0 = col, charPos0 = charPos;
-            NextCh();
+            AddCh();
             if (ch == '/')
             {
-                NextCh();
+                AddCh();
                 for (; ; )
                 {
                     if (ch == 10)
                     {
                         level--;
                         if (level == 0) { oldEols = line - line0; AddCh(); if (this.EmitComments) { t.Val = new String(tval, 0, tlen); tlen = 0; t.Kind = 7; } return true; }
-                        NextCh();
+                        AddCh();
                     }
                     else if (ch == Buffer.Eof) return false;
-                    else NextCh();
+                    else AddCh();
                 }
             }
             else
             {
-                this.Buffer.Pos = pos0; NextCh(); line = line0; col = col0; charPos = charPos0;
+                this.Buffer.Pos = pos0; AddCh(); line = line0; col = col0; charPos = charPos0;
             }
             return false;
         }
@@ -678,29 +678,29 @@ namespace ConnectQl.Internal
         bool Comment2()
         {
             int level = 1, pos0 = pos, line0 = line, col0 = col, charPos0 = charPos;
-            NextCh();
+            AddCh();
             if (ch == '*')
             {
-                NextCh();
+                AddCh();
                 for (; ; )
                 {
                     if (ch == '*')
                     {
-                        NextCh();
+                        AddCh();
                         if (ch == '/')
                         {
                             level--;
                             if (level == 0) { oldEols = line - line0; AddCh(); if (this.EmitComments) { t.Val = new String(tval, 0, tlen); tlen = 0; t.Kind = 8; } return true; }
-                            NextCh();
+                            AddCh();
                         }
                     }
                     else if (ch == Buffer.Eof) return false;
-                    else NextCh();
+                    else AddCh();
                 }
             }
             else
             {
-                this.Buffer.Pos = pos0; NextCh(); line = line0; col = col0; charPos = charPos0;
+                this.Buffer.Pos = pos0; AddCh(); line = line0; col = col0; charPos = charPos0;
             }
             return false;
         }

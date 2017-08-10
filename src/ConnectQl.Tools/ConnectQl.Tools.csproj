@@ -14,9 +14,10 @@
     <PackageReference Include="EnvDTE100" Version="10.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Editor" Version="14.3.25407" />
     <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="14.3.25407" />
+    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="14.3.25407" />
     <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="14.3.25407" />
     <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="14.3.25407" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.14.0" Version="[14.3.25407,15.0)" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.14.0" Version="14.3.25407" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="14.3.25407" />
     <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.1.192" />
     <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
@@ -78,6 +79,15 @@
   <Target Name="UpdateVsixVersion" BeforeTargets="PrepareForBuild" Condition="'$(APPVEYOR)'!=''">
     <MakeDir Directories="$(ArtifactsFolder)" ContinueOnError="true" />
     <XmlUpdate Prefix="n" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" XPath="//n:PackageManifest/n:Metadata/n:Identity/@Version" XmlFileName="source.extension.vsixmanifest" Value="$(VersionPrefix).0" />
+  </Target>
+  
+  <!-- Embeds the design time interop types instead of linking them. See also https://www.nuget.org/packages/Microsoft.VisualStudio.SDK.EmbedInteropTypes -->
+  <Target Name="LinkVSSDKEmbeddableAssemblies" AfterTargets="ResolveReferences" BeforeTargets="FindReferenceAssembliesForReferences">
+    <ItemGroup>
+      <ReferencePath Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(FileName)', 'Interop.\d+.\d+.DesignTime$'))">
+        <EmbedInteropTypes>true</EmbedInteropTypes>
+      </ReferencePath>
+    </ItemGroup>
   </Target>
   
 </Project>

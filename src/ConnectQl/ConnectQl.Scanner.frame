@@ -43,7 +43,7 @@ using System.Collections.Generic;
 		/// <summary>
 		/// Gets or sets a value indicating whether the token is comment.
 		/// </summary>
-		public bool IsComment { get; set; }
+		public bool IsComment { get; set; } = true;
 
 		/// <summary>
 		/// Gets or sets the tokens index.

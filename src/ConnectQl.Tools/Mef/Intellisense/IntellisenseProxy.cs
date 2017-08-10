@@ -219,7 +219,8 @@ namespace ConnectQl.Tools.Mef.Intellisense
 
                         object[] arguments =
                             {
-                                assemblies
+                                assemblies,
+                                typeof(ConnectQlContext).Assembly.Location
                             };
 
                         this.watchPaths = assemblies

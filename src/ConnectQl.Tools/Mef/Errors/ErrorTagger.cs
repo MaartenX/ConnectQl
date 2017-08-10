@@ -99,8 +99,8 @@ namespace ConnectQl.Tools.Mef.Errors
                         continue;
                     }
 
-                    var start = tokens[message.Start.TokenIndex].Start;
-                    var end = tokens[message.End.TokenIndex].End;
+                    var start = Math.Min(tokens[message.Start.TokenIndex].Start, span.Snapshot.Length);
+                    var end = Math.Min(tokens[message.End.TokenIndex].End, span.Snapshot.Length);
 
                     yield return new TagSpan<ErrorTag>(new SnapshotSpan(span.Snapshot, start, end - start), new ErrorTag("syntax error", message.Text));
                 }

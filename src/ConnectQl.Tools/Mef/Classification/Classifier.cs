@@ -65,7 +65,7 @@ namespace ConnectQl.Tools.Mef.Classification
                         Classification.Number, PredefinedClassificationTypeNames.Number
                     },
                     {
-                        Classification.Function, ClassifierNames.Function
+                        Classification.Function, PredefinedClassificationTypeNames.SymbolReference
                     },
                     {
                         Classification.Keyword, PredefinedClassificationTypeNames.Keyword

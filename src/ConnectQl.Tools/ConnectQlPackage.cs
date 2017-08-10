@@ -27,7 +27,7 @@ namespace ConnectQl.Tools
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Utilities;
     using static Microsoft.VisualStudio.VSConstants;
-    
+
     /// <summary>
     /// The Visual Studio Package.
     /// </summary>
@@ -49,6 +49,8 @@ namespace ConnectQl.Tools
         /// The package id.
         /// </summary>
         public const string PackageId = "16dce247-ec5c-460f-b9e7-c0327a7799f1";
+
+#pragma warning disable CS0169
 
         /// <summary>
         /// The ConnectQl content type definition.
@@ -73,5 +75,8 @@ namespace ConnectQl.Tools
         [FileExtension(".connectql")]
         [ContentType("ConnectQl")]
         private static FileExtensionToContentTypeDefinition connectqlFileExtensionDefinition;
+
+#pragma warning restore CS0169
+
     }
 }
