@@ -6,6 +6,7 @@
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
+    <IsPackable>false</IsPackable>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
     <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
