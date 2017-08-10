@@ -181,15 +181,29 @@ namespace ConnectQl.Tools.Mef.Intellisense
                             return;
                         }
 
-                        this.referencesEvents = visualStudioProject.Events.ReferencesEvents;
-                        this.importsEvents = visualStudioProject.Events.ImportsEvents;
+                        try
+                        {
+                            this.referencesEvents = visualStudioProject.Events.ReferencesEvents;
 
-                        this.referencesEvents.ReferenceAdded += this.ReferencesUpdated;
-                        this.referencesEvents.ReferenceChanged += this.ReferencesUpdated;
-                        this.referencesEvents.ReferenceRemoved += this.ReferencesUpdated;
+                            this.referencesEvents.ReferenceAdded += this.ReferencesUpdated;
+                            this.referencesEvents.ReferenceChanged += this.ReferencesUpdated;
+                            this.referencesEvents.ReferenceRemoved += this.ReferencesUpdated;
+                        }
+                        catch (NotImplementedException)
+                        {
+                            Debug.WriteLine("ImportsEvents not implemented for this project.");
+                        }
 
-                        this.importsEvents.ImportAdded += this.ImportsUpdated;
-                        this.importsEvents.ImportRemoved += this.ImportsUpdated;
+                        try
+                        {
+                            this.importsEvents = visualStudioProject.Events.ImportsEvents;
+                            this.importsEvents.ImportAdded += this.ImportsUpdated;
+                            this.importsEvents.ImportRemoved += this.ImportsUpdated;
+                        }
+                        catch (NotImplementedException)
+                        {
+                            Debug.WriteLine("ImportsEvents not implemented for this project.");
+                        }
 
                         var configFile = visualStudioProject.Project.ProjectItems.OfType<ProjectItem>().FirstOrDefault(i => i.Name.EndsWith(".config", StringComparison.OrdinalIgnoreCase))?.FileNames[0];
 
