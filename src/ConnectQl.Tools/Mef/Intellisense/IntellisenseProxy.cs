@@ -191,7 +191,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                         }
                         catch (NotImplementedException)
                         {
-                            Debug.WriteLine("ImportsEvents not implemented for this project.");
+                            Debug.WriteLine("ReferencesEvents not implemented for this project.");
                         }
 
                         try
@@ -435,7 +435,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
             }
 
             this.watchers = new List<FileSystemWatcher>();
-            var paths = arguments.Select(Path.GetDirectoryName).OrderBy(argument => argument).ToArray();
+            var paths = arguments.Select(Path.GetDirectoryName).OrderBy(argument => argument).Where(argument => argument != null).ToArray();
             var last = paths[0];
 
             this.watchers.Add(new FileSystemWatcher
