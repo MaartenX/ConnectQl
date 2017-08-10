@@ -19,11 +19,7 @@
 
   <ItemGroup>
     <Content Include="source.extension.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
     <VSTemplate Include="ConnectQl.Tools.ItemTemplate.CSharp.vstemplate" OutputSubPath="ConnectQl" SubType="Designer" />
-    <VSTemplate Include="ConnectQl.Tools.ItemTemplate.Dnx.vstemplate" OutputSubPath="ConnectQl" SubType="Designer" />
   </ItemGroup>
 
   <ItemGroup>
