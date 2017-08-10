@@ -44,7 +44,7 @@ namespace ConnectQl
     /// <summary>
     ///     The ConnectQl context.
     /// </summary>
-    public class ConnectQlContext : IPluginContext
+    public class ConnectQlContext : IDisposable
     {
         /// <summary>
         /// The default plugin resolver.
@@ -57,6 +57,11 @@ namespace ConnectQl
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Dictionary<string, IFunctionDescriptor> functions = new Dictionary<string, IFunctionDescriptor>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// <c>true</c> if we are disposed.
+        /// </summary>
+        private bool disposed;
 
         /// <summary>
         ///     Stores the logger.
@@ -92,8 +97,6 @@ namespace ConnectQl
         public ConnectQlContext(IPluginResolver resolver)
         {
             this.PluginResolver = resolver;
-            this.Functions = new ConnectQlFunctions(this.functions, () => this.Log);
-            this.FileFormats = new FileFormatsImplementation();
         }
 
         /// <summary>
@@ -111,21 +114,6 @@ namespace ConnectQl
                 defaultPluginResolver = value;
             }
         }
-
-        /// <summary>
-        ///     Gets or sets the default resolver name.
-        /// </summary>
-        public string DefaultProviderName { get; set; }
-
-        /// <summary>
-        ///     Gets the file formats.
-        /// </summary>
-        public IFileFormats FileFormats { get; }
-
-        /// <summary>
-        ///     Gets the registered functions.
-        /// </summary>
-        public IConnectQlFunctions Functions { get; }
 
         /// <summary>
         ///     Gets or sets the job runner.
@@ -271,6 +259,14 @@ namespace ConnectQl
         }
 
         /// <summary>
+        /// Disposes the context.
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        /// <summary>
         ///     Parses the stream into an AST <see cref="Block" /> node.
         /// </summary>
         /// <param name="content">
@@ -298,10 +294,7 @@ namespace ConnectQl
                                   EmitComments = parseForIntellisense,
                               };
 
-            var parser = new Parser(scanner, data, messages)
-                             {
-                                 DefaultProvider = this.DefaultProviderName,
-                             };
+            var parser = new Parser(scanner, data, messages);
 
             var ctx = parser.Mark();
 
@@ -320,6 +313,25 @@ namespace ConnectQl
         }
 
         /// <summary>
+        /// Disposes the context.
+        /// </summary>
+        /// <param name="disposing">
+        /// <c>true</c> if we were called from <see cref="Dispose" />.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    this.functions.Clear();
+                }
+
+                this.disposed = true;
+            }
+        }
+
+        /// <summary>
         ///     Implementation of the execute.
         /// </summary>
         /// <param name="filename">
@@ -333,6 +345,11 @@ namespace ConnectQl
         /// </returns>
         private async Task<IExecuteResult> ExecuteInternalAsync(string filename, Stream content)
         {
+            if (this.disposed)
+            {
+                throw new ObjectDisposedException(this.GetType().Name);
+            }
+
             var script = this.GetParsedScript(filename, content, false);
 
             if (script == null)

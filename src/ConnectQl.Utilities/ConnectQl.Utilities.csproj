@@ -12,10 +12,5 @@
   <ItemGroup>
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Remove="ConnectionStringBase`1.cs" />
-    <Compile Remove="PartdAttribute1.cs" />
-  </ItemGroup>
 
 </Project>

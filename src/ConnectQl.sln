@@ -40,7 +40,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Tools", "ConnectQ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Tools.AssemblyLoader", "ConnectQl.Tools.AssemblyLoader\ConnectQl.Tools.AssemblyLoader.csproj", "{98A930B7-1A10-4C8D-88CF-E620BF421902}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectQl.Tools.ItemTemplate", "ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj", "{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Tools.ItemTemplate", "ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj", "{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{61674303-473A-4C5A-83D2-6F0C9157B8CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Sample.NetCore", "ConnectQl.Sample.NetCore\ConnectQl.Sample.NetCore.csproj", "{4A05E1D8-B98E-4888-A248-785245B5E2C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +92,10 @@ Global
 		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A05E1D8-B98E-4888-A248-785245B5E2C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A05E1D8-B98E-4888-A248-785245B5E2C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A05E1D8-B98E-4888-A248-785245B5E2C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A05E1D8-B98E-4888-A248-785245B5E2C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,5 +111,6 @@ Global
 		{9D47A2AD-1D5E-4780-BF86-6DAA924352A9} = {A475CC76-E742-4CC6-9CBB-4BAD5492C064}
 		{98A930B7-1A10-4C8D-88CF-E620BF421902} = {A475CC76-E742-4CC6-9CBB-4BAD5492C064}
 		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4} = {A475CC76-E742-4CC6-9CBB-4BAD5492C064}
+		{4A05E1D8-B98E-4888-A248-785245B5E2C6} = {61674303-473A-4C5A-83D2-6F0C9157B8CB}
 	EndGlobalSection
 EndGlobal

@@ -15,18 +15,19 @@
     <CopyVsixManifestToOutput>false</CopyVsixManifestToOutput>
     <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
-    <UseCodebase>true</UseCodebase>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.1.192" />
+    <Content Include="source.extension.ico" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <VSTemplate Include="ConnectQl.Tools.ItemTemplate.vstemplate">
-      <OutputSubPath>ConnectQl</OutputSubPath>
-      <SubType>Designer</SubType>
-    </VSTemplate>
+    <VSTemplate Include="ConnectQl.Tools.ItemTemplate.CSharp.vstemplate" OutputSubPath="ConnectQl" SubType="Designer" />
+    <VSTemplate Include="ConnectQl.Tools.ItemTemplate.Dnx.vstemplate" OutputSubPath="ConnectQl" SubType="Designer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.1.192" />
   </ItemGroup>
   
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />

@@ -4,7 +4,8 @@
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
-    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.0.1</VersionPrefix>
+    <!-- Set the version to something ridiculously high, so we always override nuget-packages. -->
+    <VersionPrefix Condition="'$(VersionPrefix)' == ''">100.0.1</VersionPrefix>
     <VersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)'!='master'">prerelease</VersionSuffix>
     <VersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)'=='master'"></VersionSuffix>
     <VersionSuffix Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''">pullrequest-$(APPVEYOR_PULL_REQUEST_NUMBER)</VersionSuffix>

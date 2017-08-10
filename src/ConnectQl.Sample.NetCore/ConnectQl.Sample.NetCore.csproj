@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Defaults.targets" />
+
+  <ItemGroup>
+    <None Remove="Example.cql" />
+    <None Remove="Example.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Example.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Example.cql" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectQl.Excel\ConnectQl.Excel.csproj" />
+    <ProjectReference Include="..\ConnectQl.Platform\ConnectQl.Platform.csproj" />
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Update="C:\Users\Maarten\Source\Repos\ConnectQl\src\stylecop.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="Example.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Example.cql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

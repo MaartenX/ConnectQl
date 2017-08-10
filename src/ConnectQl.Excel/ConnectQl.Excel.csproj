@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
     <PackageTags>ConnectQl;SQL;querying;plugins;xlsx;Excel;Office</PackageTags>
     <Description>ConnectQl plugin that supports the Excel file format (.xlsx).</Description>
   </PropertyGroup>
@@ -10,7 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="ConnectQl" Version="0.1.64-prerelease" />
-    <PackageReference Include="EPPlus" Version="4.1.0" />
+    <PackageReference Include="EPPlus" Version="4.1.0" Condition="'$(TargetFramework)'=='net45'" />
+    <PackageReference Include="EPPlus.Core" Version="1.5.1" Condition="'$(TargetFramework)'=='netstandard1.3'" />
   </ItemGroup>
 
 </Project>

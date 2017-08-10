@@ -35,11 +35,6 @@ namespace ConnectQl.Internal
     internal partial class Parser
     {
         /// <summary>
-        /// Gets or sets the default data provider.
-        /// </summary>
-        public string DefaultProvider { get; set; }
-
-        /// <summary>
         /// Gets the pos.
         /// </summary>
         private Position Pos
@@ -87,14 +82,16 @@ namespace ConnectQl.Internal
             {
             }
 
-            var end = new Position
-                          {
-                              Line = this.Tokens[idx - 1].Line,
-                              Column = this.Tokens[idx - 1].Col + this.Tokens[idx - 1].Val.Length,
-                              TokenIndex = idx,
-                          };
+            var end = idx > 0
+                ? new Position
+                {
+                    Line = this.Tokens[idx - 1].Line,
+                    Column = this.Tokens[idx - 1].Col + this.Tokens[idx - 1].Val.Length,
+                    TokenIndex = idx,
+                }
+                : null;
 
-            this.data.Set<IParserContext>(node, "Context", new FrozenContext(context.Start, end));
+            this.data.Set<IParserContext>(node, "Context", new FrozenContext(context.Start, end ?? context.Start));
 
             return node;
         }

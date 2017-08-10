@@ -950,51 +950,27 @@ namespace ConnectQl.Internal
             else if (this.LookAhead.Kind == 4)
             {
                 Identifier(out name);
-                if (StartOf(10))
+                var args = new List<SqlExpressionBase>(); SqlExpressionBase e;
+                Expect(30);
+                if (StartOf(3))
                 {
-                    if (this.LookAhead.Kind == 30)
+                    Expression(out e);
+                    args.Add(e);
+                    while (this.LookAhead.Kind == 14)
                     {
-                        var args = new List<SqlExpressionBase>(); SqlExpressionBase e;
                         Get();
-                        if (StartOf(3))
-                        {
-                            Expression(out e);
-                            args.Add(e);
-                            while (this.LookAhead.Kind == 14)
-                            {
-                                Get();
-                                Expression(out e);
-                                args.Add(e);
-                            }
-                        }
-                        Expect(31);
-                        function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
-                        if (this.LookAhead.Kind == 48)
-                        {
-                            Get();
-                        }
-                        Name(out alias);
-                        source = CatchAll(() => this.SetContext(new FunctionSource(function, alias), ctx));
-                    }
-                    else
-                    {
-                        var args = new SqlExpressionBase[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-                        function = this.SetContext(new FunctionCallSqlExpression(this.DefaultProvider, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
-
-                        if (this.LookAhead.Kind == 48)
-                        {
-                            Get();
-                        }
-                        Name(out alias);
+                        Expression(out e);
+                        args.Add(e);
                     }
                 }
-                if (source == null)
+                Expect(31);
+                function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
+                if (this.LookAhead.Kind == 48)
                 {
-                    var args = new[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-                    function = function ?? this.SetContext(new FunctionCallSqlExpression(this.DefaultProvider, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
-                    source = CatchAll(() => this.SetContext(new FunctionSource(function, alias ?? name), ctx));
+                    Get();
                 }
-
+                Name(out alias);
+                source = CatchAll(() => this.SetContext(new FunctionSource(function, alias), ctx));
             }
             else SynErr(85);
         }
@@ -1030,7 +1006,7 @@ namespace ConnectQl.Internal
             SqlExpressionBase expr; string op; var ctx = Mark();
             AddExpression(out expr);
             expression = expr;
-            while (StartOf(11))
+            while (StartOf(10))
             {
                 switch (this.LookAhead.Kind)
                 {
@@ -1097,7 +1073,7 @@ namespace ConnectQl.Internal
             SqlExpressionBase expr; string op; var ctx = Mark();
             Unary(out expr);
             expression = expr;
-            while (StartOf(12))
+            while (StartOf(11))
             {
                 if (this.LookAhead.Kind == 58)
                 {
@@ -1216,7 +1192,7 @@ namespace ConnectQl.Internal
             if (this.LookAhead.Kind == 4)
             {
                 Identifier(out first);
-                if (StartOf(13))
+                if (StartOf(12))
                 {
                     if (this.LookAhead.Kind == 66)
                     {
@@ -1324,7 +1300,6 @@ namespace ConnectQl.Internal
         {true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,true,true,false,true,true,false,true,false,true,true,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,true,true,false,true,true,false,true,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,true,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
-        {false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false},
         {true,false,false,false,false,false,false,false,false,true,false,false,true,true,true,false,false,false,false,false,true,false,true,true,true,false,true,true,false,true,false,true,true,true,true,true,true,true,true,true,true,true,true,false,true,false,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,true,false,false}
