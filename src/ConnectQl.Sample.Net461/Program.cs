@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using ConnectQl.Platform;
 
 namespace ConnectQl.Sample.Net461
 {
+    using ConnectQl.Platform;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -40,7 +40,7 @@ namespace ConnectQl.Sample.Net461
         /// </returns>
         public static async Task MainAsync(string[] args)
         {
-            using (var context = new ConnectQlContext())
+            using (var context = new ConnectQlContext(new PluginResolver()))
             {
                 var result = await context.ExecuteFileAsync("Example.cql");
             }

@@ -24,7 +24,10 @@ namespace ConnectQl.Tools
 {
     using System.ComponentModel.Composition;
     using System.Runtime.InteropServices;
+    using System.Windows.Media;
+    using ConnectQl.Tools.Mef.Classification;
     using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Text.Classification;
     using Microsoft.VisualStudio.Utilities;
     using static Microsoft.VisualStudio.VSConstants;
 
@@ -53,6 +56,13 @@ namespace ConnectQl.Tools
 #pragma warning disable CS0169
 
         /// <summary>
+        /// The function type.
+        /// </summary>
+        [Export]
+        [Name(ClassifierNames.Function)]
+        private static ClassificationTypeDefinition functionType;
+
+        /// <summary>
         /// The ConnectQl content type definition.
         /// </summary>
         [Export]
@@ -78,5 +88,23 @@ namespace ConnectQl.Tools
 
 #pragma warning restore CS0169
 
+        /// <summary>
+        /// The function format definition.
+        /// </summary>
+        [Export(typeof(EditorFormatDefinition))]
+        [ClassificationType(ClassificationTypeNames = ClassifierNames.Function)]
+        [UserVisible(true)]
+        [Name(ClassifierNames.Function)]
+        private sealed class FunctionFormatDefinition : ClassificationFormatDefinition
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="FunctionFormatDefinition"/> class.
+            /// </summary>
+            public FunctionFormatDefinition()
+            {
+                this.ForegroundColor = Color.FromRgb(255, 0, 255);
+                this.DisplayName = "StorageSQL Function";
+            }
+        }
     }
 }

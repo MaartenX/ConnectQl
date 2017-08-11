@@ -287,7 +287,7 @@ namespace ConnectQl.Tools.AssemblyLoader
                     var name = a.Assembly.GetName();
 
                     return name.Name.Equals(assemblyName, StringComparison.InvariantCultureIgnoreCase) &&
-                           name.GetPublicKey().SequenceEqual(PublicKey);
+                           (PublicKey.Length == 0 || name.GetPublicKey().SequenceEqual(PublicKey));
                 })?.Assembly;
         }
 

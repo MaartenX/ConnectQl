@@ -63,22 +63,27 @@ namespace ConnectQl.Intellisense
         /// </returns>
         public IEnumerable<IConnectQlPlugin> EnumerateAvailablePlugins()
         {
+            if (this.plugins != null)
+            {
+                return this.plugins;
+            }
+
             var typeName = typeof(IConnectQlPlugin).FullName;
 
-            return this.plugins ?? (this.plugins = this.assemblies
+            return this.plugins = this.assemblies
                                         .SelectMany(a => a.ExportedTypes
                                             .Select(type => new
-                                                                {
-                                                                    Type = type,
-                                                                    TypeInfo = type.GetTypeInfo(),
-                                                                })
+                                            {
+                                                Type = type,
+                                                TypeInfo = type.GetTypeInfo(),
+                                            })
                                             .Where(
                                                 type =>
                                                     type.TypeInfo.IsPublic && !type.TypeInfo.IsAbstract && type.TypeInfo.IsClass
                                                     && type.TypeInfo.ImplementedInterfaces.Any(i => i.FullName == typeName))
                                             .Select(type => Activator.CreateInstance(type.Type))
                                             .Cast<IConnectQlPlugin>())
-                                        .ToArray());
+                                        .ToArray();
         }
     }
 }

@@ -48,7 +48,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <summary>
         /// The parsed script.
         /// </summary>
-        private ParsedScript parsedScript;
+        private ParsedDocument parsedScript;
 
         /// <summary>
         /// The statements.
@@ -77,7 +77,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The <see cref="EvaluationResult"/>.
         /// </returns>
-        internal static IEvaluationResult GetIntellisenseData(ParsedScript parsedScript, IReadOnlyList<IClassifiedToken> tokens)
+        internal static IEvaluationResult GetIntellisenseData(ParsedDocument parsedScript, IReadOnlyList<IClassifiedToken> tokens)
         {
             var evaluator = new Evaluator
                                 {

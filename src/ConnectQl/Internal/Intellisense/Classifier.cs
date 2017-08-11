@@ -22,184 +22,48 @@
 
 namespace ConnectQl.Internal.Intellisense
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Ast;
-    using ConnectQl.Internal.Ast.Expressions;
-    using ConnectQl.Internal.Ast.Sources;
     using ConnectQl.Internal.Ast.Statements;
-    using ConnectQl.Internal.Ast.Visitors;
     using ConnectQl.Internal.Interfaces;
 
     /// <summary>
     /// Changes classifications for the tokens.
     /// </summary>
-    internal class Classifier : NodeVisitor
+    internal static class Classifier
     {
-        /// <summary>
-        /// The data.
-        /// </summary>
-        private readonly INodeDataProvider data;
-
-        /// <summary>
-        /// The tokens.
-        /// </summary>
-        private readonly IList<ConnectQlContext.ClassifiedToken> tokens;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Classifier"/> class.
-        /// </summary>
-        /// <param name="data">
-        /// The data.
-        /// </param>
-        /// <param name="tokens">
-        /// The tokens.
-        /// </param>
-        private Classifier(INodeDataProvider data, List<ConnectQlContext.ClassifiedToken> tokens)
-        {
-            this.data = data;
-            this.tokens = tokens;
-        }
-
         /// <summary>
         /// Classifies the tokens.
         /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="block">
-        /// The block.
-        /// </param>
         /// <param name="tokens">
         /// The tokens.
         /// </param>
         /// <returns>
         /// The classified tokens.
         /// </returns>
-        public static IReadOnlyCollection<IClassifiedToken> Classify(IValidationContext context, Block block, IList<Token> tokens)
+        public static IReadOnlyCollection<IClassifiedToken> Classify(IList<Token> tokens)
         {
-            var tokenList = tokens.Select(t => new ConnectQlContext.ClassifiedToken(t.CharPos, t.CharPos + t.Val.Length, ClassifyToken(t), t.Kind, t.Val)).ToList();
-            var classifier = new Classifier(context.NodeData, tokenList);
+            var result = new List<ConnectQlContext.ClassifiedToken>(tokens.Count);
 
-            classifier.Visit(block);
-
-            return tokenList;
-        }
-
-        /// <summary>
-        /// Visits the node and ensures the result is of type <typeparamref name="T"/>. When node is <c>null</c>, returns
-        ///     <c>null</c>.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the result.
-        /// </typeparam>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// The <typeparamref name="T"/>.
-        /// </returns>
-        protected internal override T Visit<T>(T node)
-        {/*
-            if (node != null && this.data.TryGet(node, "Context", out IParserContext context) && this.data.TryGet(node, "ProductionStack", out Parser.Production[] productionStack) && context.Start.TokenIndex != -1)
+            if (tokens.Count > 0)
             {
-                var scope = GetScope(productionStack);
+                var current = tokens[0];
+                var last = (Token)null;
 
-                for (var i = context.Start.TokenIndex; i <= context.End.TokenIndex; i++)
+                foreach (var next in tokens.Skip(1).Concat(new Token[] { null }))
                 {
-                    this.tokens[i].Scope = scope ?? this.tokens[i].Scope;
-                }
-            }
-            */
-            return base.Visit(node);
-        }
+                    result.Add(new ConnectQlContext.ClassifiedToken(
+                        current.CharPos,
+                        current.CharPos + current.Val.Length,
+                        ClassifyToken(last, current, next),
+                        current.Kind,
+                        current.Val));
 
-        /// <summary>
-        /// Visits a <see cref="FieldReferenceSqlExpression"/> expression.
-        /// </summary>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// The node, or a new version of the node.
-        /// </returns>
-        protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
-        {
-            if (node.Source != null)
-            {
-                var context = this.data.Get<IParserContext>(node, "Context");
-
-                this.tokens[context.Start.TokenIndex].Classification = Classification.Source;
-            }
-
-            return base.VisitFieldReferenceSqlExpression(node);
-        }
-
-        /// <summary>
-        /// Visits a <see cref="FunctionCallSqlExpression"/> expression.
-        /// </summary>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// The node, or a new version of the node.
-        /// </returns>
-        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallSqlExpression node)
-        {
-            if (this.data.TryGet(node, "Context", out IParserContext context))
-            {
-                this.tokens[context.Start.TokenIndex].Classification = Classification.Function;
-            }
-
-            return base.VisitFunctionCallSqlExpression(node);
-        }
-
-        /// <summary>
-        /// Visits a <see cref="FunctionSource"/>.
-        /// </summary>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// The node, or a new version of the node.
-        /// </returns>
-        protected internal override Node VisitFunctionSource(FunctionSource node)
-        {
-            if (this.data.TryGet(node, "Context", out IParserContext context))
-            {
-                this.tokens[context.End.TokenIndex].Classification = Classification.Source;
-            }
-
-            return base.VisitFunctionSource(node);
-        }
-
-        /// <summary>
-        /// Visits a <see cref="SelectFromStatement"/>.
-        /// </summary>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// The node, or a new version of the node.
-        /// </returns>
-        protected internal override Node VisitSelectFromStatement(SelectFromStatement node)
-        {
-            var result = base.VisitSelectFromStatement(node);
-
-            if (this.data.TryGet(node, "Context", out IParserContext context))
-            {
-                for (var i = context.Start.TokenIndex + 1; i <= context.End.TokenIndex; i++)
-                {
-                    if ("FROM".Equals(this.tokens[i].Value, StringComparison.OrdinalIgnoreCase))
-                    {
-                        break;
-                    }
-
-                    this.tokens[i].Scope = ClassificationScope.SelectExpression;
+                    last = current;
+                    current = next;
                 }
             }
 
@@ -207,55 +71,21 @@ namespace ConnectQl.Internal.Intellisense
         }
 
         /// <summary>
-        /// The visit select source.
-        /// </summary>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Node"/>.
-        /// </returns>
-        protected internal override Node VisitSelectSource(SelectSource node)
-        {
-            if (this.data.TryGet(node, "Context", out IParserContext context))
-            {
-                this.tokens[context.End.TokenIndex].Classification = Classification.Source;
-            }
-
-            return base.VisitSelectSource(node);
-        }
-
-        /// <summary>
-        /// Visits a <see cref="WildcardSqlExpression"/>.
-        /// </summary>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// The node, or a new version of the node.
-        /// </returns>
-        protected internal override Node VisitWildCardSqlExpression(WildcardSqlExpression node)
-        {
-            if (node.Source != null)
-            {
-                var context = this.data.Get<IParserContext>(node, "Context");
-
-                this.tokens[context.Start.TokenIndex].Classification = Classification.Source;
-            }
-
-            return base.VisitWildCardSqlExpression(node);
-        }
-
-        /// <summary>
         /// The classify token.
         /// </summary>
+        /// <param name="previous">
+        /// The previous token.
+        /// </param>
         /// <param name="token">
         /// The token.
+        /// </param>
+        /// <param name="next">
+        /// The next token.
         /// </param>
         /// <returns>
         /// The <see cref="Classification"/>.
         /// </returns>
-        private static Classification ClassifyToken(Token token)
+        private static Classification ClassifyToken(Token previous, Token token, Token next)
         {
             switch (token.Kind)
             {
@@ -263,13 +93,32 @@ namespace ConnectQl.Internal.Intellisense
                 case Parser.Comment1Symbol:
                 case Parser.Comment2Symbol:
                     return Classification.Comment;
+
                 case Parser.IdentifierSymbol:
+                    if (previous?.Kind == Parser.RightParenLiteral)
+                    {
+                        return Classification.Source;
+                    }
+
+                    switch (next?.Kind)
+                    {
+                        case Parser.DotLiteral:
+                            return Classification.SourceReference;
+                        case Parser.LeftParenLiteral:
+                            return Classification.Function;
+                        default:
+                            return Classification.Identifier;
+                    }
+
                 case Parser.BracketedidentifierSymbol:
                     return Classification.Identifier;
+
                 case Parser.NumberSymbol:
                     return Classification.Number;
+
                 case Parser.StringSymbol:
                     return Classification.String;
+
                 case Parser.VariableSymbol:
                     return Classification.Variable;
 
@@ -312,6 +161,7 @@ namespace ConnectQl.Internal.Intellisense
                 case Parser.AndLiteral:
                 case Parser.NotLiteral:
                     return Classification.Keyword;
+
                 case Parser.LeftParenLiteral:
                 case Parser.RightParenLiteral:
                     return Classification.Parens;
@@ -345,39 +195,5 @@ namespace ConnectQl.Internal.Intellisense
 
             return Classification.Unknown;
         }
-
-        /*
-        /// <summary>
-        /// Gets the scope for the production stack.
-        /// </summary>
-        /// <param name="productions">
-        /// The productions.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ClassificationScope"/>.
-        /// </returns>
-        private static ClassificationScope? GetScope(Parser.Production[] productions)
-        {
-            foreach (var production in productions)
-            {
-                switch (production)
-                {
-                    case Parser.Production.ImportStatement:
-                        return ClassificationScope.Import;
-                    case Parser.Production.VariableDeclaration:
-                        return ClassificationScope.Expression;
-                    case Parser.Production.Expression:
-                        return ClassificationScope.Expression;
-                    case Parser.Production.FunctionName:
-                        return ClassificationScope.FunctionName;
-                    case Parser.Production.Function:
-                        return ClassificationScope.Function;
-                    case Parser.Production.Join:
-                        return ClassificationScope.Source;
-                }
-            }
-
-            return null;
-        }*/
     }
 }

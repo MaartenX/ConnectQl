@@ -387,7 +387,7 @@ namespace ConnectQl
         /// <returns>
         ///     The parsed script, or <c>null</c> if errors occurred.
         /// </returns>
-        private ParsedScript GetParsedScript(string filename, Stream content, bool emitComments)
+        private ParsedDocument GetParsedScript(string filename, Stream content, bool emitComments)
         {
             var context = new ExecutionContextImplementation(this, filename);
             var script = this.Parse(content, context.NodeData, context.Messages, emitComments);
@@ -399,7 +399,7 @@ namespace ConnectQl
 
             script = Validator.Validate(context, script);
 
-            return this.HandleErrors(context) ? new ParsedScript(context, script) : null;
+            return this.HandleErrors(context) ? new ParsedDocument(context, script) : null;
         }
 
         /// <summary>

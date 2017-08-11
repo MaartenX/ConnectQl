@@ -138,7 +138,9 @@ namespace ConnectQl.Internal.Intellisense
                 {
                     try
                     {
-                        var delta = this.GetChanges(this.ParseDocument(documentText, out ParsedScript parsedScript));
+                        var descriptor = new SerializableDocumentDescriptor();
+                        var parsedDocument = this.ParseContent(documentText, descriptor);
+                        var delta = this.GetChanges(descriptor);
 
                         if (delta != null)
                         {
@@ -147,7 +149,7 @@ namespace ConnectQl.Internal.Intellisense
 
                         if (this.contents == documentText)
                         {
-                            var data = Evaluator.GetIntellisenseData(parsedScript, this.document.Tokens);
+                            var data = Evaluator.GetIntellisenseData(parsedDocument, descriptor.Tokens);
 
                             delta = this.GetChanges(new SerializableDocumentDescriptor
                                                         {
@@ -178,6 +180,7 @@ namespace ConnectQl.Internal.Intellisense
                         if (shouldUpdate)
                         {
                             documentText = this.contents;
+
                             Task.Run(updateIntellisenseData);
                         }
                     }
@@ -217,18 +220,12 @@ namespace ConnectQl.Internal.Intellisense
         }
 
         /// <summary>
-        /// Parses the content to a SerializableDocument.
+        /// Parses the content into a document and stores the tokens into the descriptor.
         /// </summary>
-        /// <param name="content">
-        /// The content.
-        /// </param>
-        /// <param name="script">
-        /// The script.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SerializableDocumentDescriptor"/>.
-        /// </returns>
-        private SerializableDocumentDescriptor ParseDocument(string content, out ParsedScript script)
+        /// <param name="content">The content to parse.</param>
+        /// <param name="descriptorToUpdate">The document to update.</param>
+        /// <returns>The parsed document.</returns>
+        private ParsedDocument ParseContent(string content, SerializableDocumentDescriptor descriptorToUpdate)
         {
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(content)))
             {
@@ -236,22 +233,30 @@ namespace ConnectQl.Internal.Intellisense
                 var context = new ExecutionContextImplementation(this.session.Context, this.Filename);
                 var root = this.session.Context.Parse(stream, context.NodeData, context.Messages, true, tokens);
 
-                root = Validator.Validate(context, root, out ILookup<string, IFunctionDescriptor> functionDefinitions);
+                descriptorToUpdate.Tokens = Classifier.Classify(tokens).Select(token => new SerializableToken(token)).ToArray();
 
-                var classifiedTokens = Classifier.Classify(context, root, tokens).Select(token => new SerializableToken(token)).ToArray();
-                var messages = context.Messages.Select(message => new SerializableMessage(message)).ToArray();
-                var functions = functionDefinitions.SelectMany(lookup => lookup.Select(function => new SerializableFunctionDescriptor(lookup.Key, function))).ToArray();
-
-                script = new ParsedScript(context, root);
-
-                return new SerializableDocumentDescriptor
-                           {
-                               Tokens = classifiedTokens,
-                               Messages = messages,
-                               Functions = functions,
-                               Plugins = new List<string>(context.GetPlugins().Select(p => p.Name)),
-                           };
+                return new ParsedDocument(context, root);
             }
+        }
+
+        /// <summary>
+        /// Validates the document and updates the descriptor.
+        /// </summary>
+        /// <param name="document">
+        /// The document.
+        /// </param>
+        /// <param name="descriptorToUpdate">
+        /// The descriptor to update.
+        /// </param>
+        private void ValidateDocument(ParsedDocument document, SerializableDocumentDescriptor descriptorToUpdate)
+        {
+            var root = Validator.Validate(document.Context, document.Root, out ILookup<string, IFunctionDescriptor> functionDefinitions);
+            var messages = document.Context.Messages.Select(message => new SerializableMessage(message)).ToArray();
+            var functions = functionDefinitions.SelectMany(lookup => lookup.Select(function => new SerializableFunctionDescriptor(lookup.Key, function))).ToArray();
+
+            descriptorToUpdate.Messages = messages;
+            descriptorToUpdate.Functions = functions;
+            descriptorToUpdate.Plugins = document.Context.GetPlugins().Select(p => p.Name).ToList();
         }
 
         /// <summary>

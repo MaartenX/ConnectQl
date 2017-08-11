@@ -62,10 +62,13 @@ namespace ConnectQl.Tools.Mef.Classification
                         Classification.Source, PredefinedClassificationTypeNames.SymbolDefinition
                     },
                     {
+                        Classification.SourceReference, PredefinedClassificationTypeNames.SymbolReference
+                    },
+                    {
                         Classification.Number, PredefinedClassificationTypeNames.Number
                     },
                     {
-                        Classification.Function, PredefinedClassificationTypeNames.SymbolReference
+                        Classification.Function, ClassifierNames.Function
                     },
                     {
                         Classification.Keyword, PredefinedClassificationTypeNames.Keyword

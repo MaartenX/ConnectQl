@@ -27,10 +27,10 @@ namespace ConnectQl.Internal
     /// <summary>
     /// The parsed script.
     /// </summary>
-    internal class ParsedScript
+    internal class ParsedDocument
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParsedScript"/> class.
+        /// Initializes a new instance of the <see cref="ParsedDocument"/> class.
         /// </summary>
         /// <param name="context">
         /// The context.
@@ -38,7 +38,7 @@ namespace ConnectQl.Internal
         /// <param name="root">
         /// The script root.
         /// </param>
-        public ParsedScript(ExecutionContextImplementation context, Block root)
+        public ParsedDocument(ExecutionContextImplementation context, Block root)
         {
             this.Root = root;
             this.Context = context;
