@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using ConnectQl.Platform;
+
 namespace ConnectQl.Sample.Net461
 {
     using System.Threading.Tasks;

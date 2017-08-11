@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Linq;
+
 namespace ConnectQl
 {
     using System;
@@ -432,7 +434,11 @@ namespace ConnectQl
                     }
                 }
 
-                throw new Exception("Error");
+                var errors = context.Messages
+                    .Where(m => m.Type == ResultMessageType.Error).Select(m => $"- {m.Text}")
+                    .ToArray();
+
+                throw new Exception($"{(errors.Length == 1 ? "An error occurred:" : "Multiple errors occurred:")}\n\n{string.Join("\n", errors)}");
             }
 
             return true;
