@@ -20,6 +20,8 @@
     <PackageIconUrl>https://raw.githubusercontent.com/MaartenX/ConnectQl/master/ConnectQl.png</PackageIconUrl>
     <MinClientVersion>3.4</MinClientVersion>
     <Authors>Maarten van Sambeek</Authors>
+    <DevelopingLocally Condition="'$(APPVEYOR)'==''">true</DevelopingLocally>
+    <DevelopingLocally Condition="'$(APPVEYOR)'!=''">false</DevelopingLocally>
   </PropertyGroup>
 
   <ItemGroup>

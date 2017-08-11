@@ -20,11 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-
 namespace ConnectQl.Sample.Net461
 {
-    using ConnectQl.Platform;
     using System.Threading.Tasks;
+    using ConnectQl.Platform;
 
     /// <summary>
     /// Sample program that executes a query using .NET Core.
