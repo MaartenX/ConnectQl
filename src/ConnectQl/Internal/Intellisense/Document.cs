@@ -39,13 +39,8 @@ namespace ConnectQl.Internal.Intellisense
     /// <summary>
     /// The document.
     /// </summary>
-    internal class Document
+    internal class Document : IDocumentDescriptor
     {
-        /// <summary>
-        /// The document that was sent last.
-        /// </summary>
-        private readonly SerializableDocumentDescriptor document;
-
         /// <summary>
         /// The session.
         /// </summary>
@@ -81,10 +76,9 @@ namespace ConnectQl.Internal.Intellisense
         public Document(IntellisenseSession session, string filename, string contents)
         {
             this.session = session;
-            this.Filename = filename;
             this.Contents = contents;
 
-            this.document = new SerializableDocumentDescriptor();
+            this.Descriptor = new SerializableDocumentDescriptor { Filename = filename };
         }
 
         /// <summary>
@@ -122,7 +116,44 @@ namespace ConnectQl.Internal.Intellisense
         /// <summary>
         /// Gets the filename.
         /// </summary>
-        public string Filename { get; }
+        public string Filename => this.Descriptor.Filename;
+
+        /// <summary>
+        /// Gets the functions.
+        /// </summary>
+        public IReadOnlyList<IFunctionDescriptor> Functions => this.Descriptor.Functions;
+
+        /// <summary>
+        /// Gets the tokens.
+        /// </summary>
+        public IReadOnlyList<IClassifiedToken> Tokens => this.Descriptor.Tokens;
+
+        /// <summary>
+        /// Gets the messages.
+        /// </summary>
+        public IReadOnlyList<IMessage> Messages => this.Descriptor.Messages;
+        /// <summary>
+        /// Gets the variables.
+        /// </summary>
+        public IReadOnlyList<IVariableDescriptorRange> Variables => this.Descriptor.Variables;
+
+        /// <summary>
+        /// Gets the sources.
+        /// </summary>
+        public IReadOnlyList<IDataSourceDescriptorRange> Sources => this.Descriptor.Sources;
+
+        /// <summary>
+        /// Gets the plugins.
+        /// </summary>
+        public IReadOnlyList<string> Plugins => this.Descriptor.Plugins;
+
+        /// <summary>
+        /// Gets the descriptor.
+        /// </summary>
+        /// <value>
+        /// The descriptor.
+        /// </value>
+        internal SerializableDocumentDescriptor Descriptor { get; }
 
         /// <summary>
         /// Parses this document.
@@ -144,7 +175,19 @@ namespace ConnectQl.Internal.Intellisense
 
                         if (delta != null)
                         {
-                            this.session.OnClassificationChanged(this.Filename, delta);
+                            this.session.OnDocumentChanged(this.Filename, delta);
+                        }
+
+                        if (this.contents == documentText)
+                        {
+                            this.ValidateDocument(parsedDocument, descriptor);
+
+                            delta = this.GetChanges(descriptor);
+
+                            if (delta != null)
+                            {
+                                this.session.OnDocumentChanged(this.Filename, delta);
+                            }
                         }
 
                         if (this.contents == documentText)
@@ -159,7 +202,7 @@ namespace ConnectQl.Internal.Intellisense
 
                             if (delta != null)
                             {
-                                this.session.OnClassificationChanged(this.Filename, delta);
+                                this.session.OnDocumentChanged(this.Filename, delta);
                             }
                         }
 
@@ -282,7 +325,7 @@ namespace ConnectQl.Internal.Intellisense
             var propertyInfo = (PropertyInfo)((MemberExpression)selector.Body).Member;
             var getValue = selector.Compile();
             var newValue = getValue(newDocument);
-            var existingValue = getValue(this.document);
+            var existingValue = getValue(this.Descriptor);
 
             if (newValue == null || existingValue != null && EnumerableComparer.Equals(newValue, existingValue))
             {
@@ -290,7 +333,7 @@ namespace ConnectQl.Internal.Intellisense
             }
 
             propertyInfo.SetValue(delta, newValue);
-            propertyInfo.SetValue(this.document, newValue);
+            propertyInfo.SetValue(this.Descriptor, newValue);
 
             return true;
         }

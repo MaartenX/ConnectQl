@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,48 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Interfaces
+namespace ConnectQl.Intellisense
 {
-    using System.Collections.Generic;
-
     /// <summary>
-    /// The DocumentDescriptor interface.
+    /// Extensions for the <see cref="ConnectQlContext"/>.
     /// </summary>
-    public interface IDocumentDescriptor
+    public static class ConnectQlExtensions
     {
         /// <summary>
-        /// Gets the filename.
+        /// Creates the intellisense session.
         /// </summary>
-        string Filename { get; }
-
-        /// <summary>
-        /// Gets the functions.
-        /// </summary>
-        IReadOnlyList<IFunctionDescriptor> Functions { get; }
-
-        /// <summary>
-        /// Gets the tokens.
-        /// </summary>
-        IReadOnlyList<IClassifiedToken> Tokens { get; }
-
-        /// <summary>
-        /// Gets the messages.
-        /// </summary>
-        IReadOnlyList<IMessage> Messages { get; }
-
-        /// <summary>
-        /// Gets the variables.
-        /// </summary>
-        IReadOnlyList<IVariableDescriptorRange> Variables { get; }
-
-        /// <summary>
-        /// Gets the sources.
-        /// </summary>
-        IReadOnlyList<IDataSourceDescriptorRange> Sources { get; }
-
-        /// <summary>
-        /// Gets the plugins.
-        /// </summary>
-        IReadOnlyList<string> Plugins { get; }
+        /// <param name="context">The context.</param>
+        /// <returns>The intellisense session.</returns>
+        public static IIntellisenseSession CreateIntellisenseSession(this ConnectQlContext context)
+        {
+            return new IntellisenseSession(context);
+        }
     }
 }

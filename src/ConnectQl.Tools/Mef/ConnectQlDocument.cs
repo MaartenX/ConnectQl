@@ -36,11 +36,6 @@ namespace ConnectQl.Tools.Mef
     internal class ConnectQlDocument : IDocument
     {
         /// <summary>
-        /// The session.
-        /// </summary>
-        private readonly IntellisenseSession session;
-
-        /// <summary>
         /// The filename.
         /// </summary>
         private readonly string filename;
@@ -78,15 +73,11 @@ namespace ConnectQl.Tools.Mef
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectQlDocument"/> class.
         /// </summary>
-        /// <param name="session">
-        /// The session.
-        /// </param>
         /// <param name="filename">
         /// The filename.
         /// </param>
-        public ConnectQlDocument(IntellisenseSession session, string filename)
+        public ConnectQlDocument(string filename)
         {
-            this.session = session;
             this.filename = filename;
         }
 

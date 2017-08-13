@@ -33,7 +33,7 @@ namespace ConnectQl.Intellisense
     /// <summary>
     /// The <c>Intellisense</c> session.
     /// </summary>
-    public class IntellisenseSession
+    internal class IntellisenseSession : IIntellisenseSession
     {
         /// <summary>
         /// The documents.
@@ -43,20 +43,24 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// Initializes a new instance of the <see cref="IntellisenseSession"/> class.
         /// </summary>
-        /// <param name="pluginResolver">
-        /// The plugin resolver.
+        /// <param name="context">
+        /// The context to create the intellisense session for.
         /// </param>
-        public IntellisenseSession(IPluginResolver pluginResolver)
+        internal IntellisenseSession(ConnectQlContext context)
         {
-            this.Plugins = pluginResolver?.EnumerateAvailablePlugins()?.ToArray() ?? new IConnectQlPlugin[0];
-
-            this.Context = new ConnectQlContext(pluginResolver);
+            this.Plugins = context.PluginResolver?.EnumerateAvailablePlugins()?.ToArray() ?? new IConnectQlPlugin[0];
+            this.Context = context;
         }
 
         /// <summary>
-        /// The classification changed.
+        /// Occurs when a document is updated.
         /// </summary>
-        public event EventHandler<Tuple<string, byte[]>> ClassificationChanged;
+        public event EventHandler<DocumentUpdatedEventArgs> DocumentUpdated;
+
+        /// <summary>
+        /// Occurs when a document is updated (used internally for cross-appdomain communication).
+        /// </summary>
+        internal event EventHandler<byte[]> InternalDocumentUpdated;
 
         /// <summary>
         /// Gets the plugins.
@@ -83,17 +87,31 @@ namespace ConnectQl.Intellisense
         }
 
         /// <summary>
-        /// Gets the document by its path.
+        /// Gets the document as byte array.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <returns>
+        /// The byte array.
+        /// </returns>
+        public byte[] GetDocumentAsByteArray(string filename)
+        {
+            return this.documents.TryGetValue(filename, out var document)
+                ? null
+                : ProtocolSerializer.Serialize(document.Descriptor);
+        }
+
+        /// <summary>
+        /// Gets .
         /// </summary>
         /// <param name="filename">
-        /// The filename.
+        /// The filename of the document.
         /// </param>
         /// <returns>
-        /// The <see cref="int"/>.
+        /// <c>true</c> if the document is in the session, false otherwise.
         /// </returns>
-        public string GetDocument(string filename)
+        public IDocumentDescriptor GetDocument(string filename)
         {
-            return this.documents.ContainsKey(filename) ? filename : null;
+            return this.documents.TryGetValue(filename, out var result) ? result : null;
         }
 
         /// <summary>
@@ -156,6 +174,13 @@ namespace ConnectQl.Intellisense
         }
 
         /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
+        /// <summary>
         /// Sends the classification changed event.
         /// </summary>
         /// <param name="filename">
@@ -164,9 +189,10 @@ namespace ConnectQl.Intellisense
         /// <param name="document">
         /// The serialized document.
         /// </param>
-        internal void OnClassificationChanged(string filename, SerializableDocumentDescriptor document)
+        internal void OnDocumentChanged(string filename, SerializableDocumentDescriptor document)
         {
-            this.ClassificationChanged?.Invoke(this, Tuple.Create(filename, ProtocolSerializer.Serialize(document)));
+            this.DocumentUpdated?.Invoke(this, new DocumentUpdatedEventArgs(document));
+            this.InternalDocumentUpdated?.Invoke(this, ProtocolSerializer.Serialize(document));
         }
     }
 }

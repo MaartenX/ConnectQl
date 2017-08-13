@@ -28,6 +28,7 @@ namespace ConnectQl.Intellisense
 
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
+    using ConnectQl.Internal.Intellisense.Protocol;
 
     /// <summary>
     /// The descriptor.
@@ -83,6 +84,16 @@ namespace ConnectQl.Intellisense
         public static IDataSourceDescriptor ForDataSource(string alias, IEnumerable<IColumnDescriptor> columns, bool allowsAnyColumnName = false)
         {
             return new DataSourceDescriptor(alias, columns, allowsAnyColumnName);
+        }
+
+        /// <summary>
+        /// Creates a document descriptor from the specified byte array.
+        /// </summary>
+        /// <param name="bytes">The bytes array.</param>
+        /// <returns>The descriptor.</returns>
+        public static IDocumentDescriptor Document(byte[] bytes)
+        {
+            return bytes == null ? null : ProtocolSerializer.Deserialize<SerializableDocumentDescriptor>(bytes);
         }
     }
 }

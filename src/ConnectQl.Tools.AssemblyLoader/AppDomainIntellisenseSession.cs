@@ -131,19 +131,19 @@ namespace ConnectQl.Tools.AssemblyLoader
 
             this.session = Activator.CreateInstance(sessionType, pluginLoader);
 
-            this.getDocument = sessionType.GetMethod("GetDocument");
+            this.getDocument = sessionType.GetMethod("GetDocumentAsByteArray");
             this.removeDocument = sessionType.GetMethod("RemoveDocument");
             this.updateDocument = sessionType.GetMethod("UpdateDocument");
             this.updateDocumentSpan = sessionType.GetMethod("UpdateDocumentSpan");
 
-            sessionType.GetEvent("ClassificationChanged")
-                .AddEventHandler(this.session, Delegate.CreateDelegate(typeof(EventHandler<Tuple<string, byte[]>>), this, nameof(this.HandleEvent)));
+            sessionType.GetEvent("InternalDocumentUpdated", BindingFlags.NonPublic | BindingFlags.Instance)
+                .AddEventHandler(this.session, Delegate.CreateDelegate(typeof(EventHandler<byte[]>), this, nameof(this.HandleEvent)));
         }
 
         /// <summary>
         /// The classification has changed.
         /// </summary>
-        public event EventHandler<Tuple<string, byte[]>> ClassificationChanged;
+        public event EventHandler<byte[]> DocumentUpdated;
 
         /// <summary>
         /// Gets the document by its path.
@@ -154,14 +154,14 @@ namespace ConnectQl.Tools.AssemblyLoader
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public string GetDocument(string path)
+        public byte[] GetDocumentAsByteArray(string path)
         {
             object[] arguments =
                 {
                     path
                 };
 
-            return (string)this.getDocument.Invoke(this.session, arguments);
+            return (byte[])this.getDocument.Invoke(this.session, arguments);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace ConnectQl.Tools.AssemblyLoader
         /// <param name="span">
         /// The span.
         /// </param>
-        public void UpdateDocumentSpan(int document, int startIndex, int endIndex, string span)
+        public void UpdateDocumentSpan(string document, int startIndex, int endIndex, string span)
         {
             object[] arguments =
                 {
@@ -363,9 +363,9 @@ namespace ConnectQl.Tools.AssemblyLoader
         /// <param name="eventArgs">
         /// The event args.
         /// </param>
-        private void HandleEvent(object sender, Tuple<string, byte[]> eventArgs)
+        private void HandleEvent(object sender, byte[] eventArgs)
         {
-            this.ClassificationChanged?.Invoke(this, eventArgs);
+            this.DocumentUpdated?.Invoke(this, eventArgs);
         }
 
         /// <summary>

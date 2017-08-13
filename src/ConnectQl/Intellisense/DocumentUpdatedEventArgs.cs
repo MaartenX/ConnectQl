@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,48 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Interfaces
+namespace ConnectQl.Intellisense
 {
-    using System.Collections.Generic;
+    using System;
+    using ConnectQl.Interfaces;
+    using ConnectQl.Internal.Intellisense.Protocol;
 
     /// <summary>
-    /// The DocumentDescriptor interface.
+    /// Event arguments for the <see cref="IIntellisenseSession.DocumentUpdated" /> event.
     /// </summary>
-    public interface IDocumentDescriptor
+    public class DocumentUpdatedEventArgs : EventArgs
     {
         /// <summary>
-        /// Gets the filename.
+        /// Initializes a new instance of the <see cref="DocumentUpdatedEventArgs"/> class.
         /// </summary>
-        string Filename { get; }
+        /// <param name="document">The document.</param>
+        public DocumentUpdatedEventArgs(IDocumentDescriptor document)
+        {
+            this.Document = document;
+        }
 
         /// <summary>
-        /// Gets the functions.
+        /// Initializes a new instance of the <see cref="DocumentUpdatedEventArgs"/> class.
         /// </summary>
-        IReadOnlyList<IFunctionDescriptor> Functions { get; }
+        /// <param name="serializedDocument">The serialized document.</param>
+        public DocumentUpdatedEventArgs(byte[] serializedDocument)
+        {
+            this.Document = ProtocolSerializer.Deserialize<SerializableDocumentDescriptor>(serializedDocument);
+        }
 
         /// <summary>
-        /// Gets the tokens.
+        /// Gets the document.
         /// </summary>
-        IReadOnlyList<IClassifiedToken> Tokens { get; }
-
-        /// <summary>
-        /// Gets the messages.
-        /// </summary>
-        IReadOnlyList<IMessage> Messages { get; }
-
-        /// <summary>
-        /// Gets the variables.
-        /// </summary>
-        IReadOnlyList<IVariableDescriptorRange> Variables { get; }
-
-        /// <summary>
-        /// Gets the sources.
-        /// </summary>
-        IReadOnlyList<IDataSourceDescriptorRange> Sources { get; }
-
-        /// <summary>
-        /// Gets the plugins.
-        /// </summary>
-        IReadOnlyList<string> Plugins { get; }
+        public IDocumentDescriptor Document { get; }
     }
 }

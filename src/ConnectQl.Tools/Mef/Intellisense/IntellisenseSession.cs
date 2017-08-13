@@ -24,6 +24,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
 {
     using System;
     using System.Collections.Generic;
+    using ConnectQl.Intellisense;
     using ConnectQl.Tools.Interfaces;
     using Microsoft.VisualStudio.Text;
 
@@ -90,7 +91,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
             }
 
             result = this.documents[document.FilePath] =
-                         new ConnectQlDocument(this, document.FilePath)
+                         new ConnectQlDocument(document.FilePath)
                              {
                                  Content = textBuffer.CurrentSnapshot.GetText()
                              };
@@ -113,7 +114,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         private void ProxyOnDocumentUpdated(object sender, DocumentUpdatedEventArgs documentUpdatedEventArgs)
         {
-            if (this.documents.TryGetValue(documentUpdatedEventArgs.Filename, out var doc))
+            if (this.documents.TryGetValue(documentUpdatedEventArgs.Document.Filename, out var doc))
             {
                 doc.UpdateClassification(documentUpdatedEventArgs.Document);
             }

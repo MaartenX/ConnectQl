@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,41 +20,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Tools.Mef
+namespace ConnectQl.Intellisense
 {
     using System;
-
     using ConnectQl.Interfaces;
 
     /// <summary>
-    /// The document updated event args.
+    /// The intellisense session.
     /// </summary>
-    public class DocumentUpdatedEventArgs : EventArgs
+    public interface IIntellisenseSession : IDisposable
     {
-        private byte[] bytes;
+        /// <summary>
+        /// Occurs when a document is updated.
+        /// </summary>
+        event EventHandler<DocumentUpdatedEventArgs> DocumentUpdated;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentUpdatedEventArgs"/> class.
+        /// Updates the document span.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="endIndex">The end index.</param>
+        /// <param name="span">The new text for the span.</param>
+        void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string span);
+
+        /// <summary>
+        /// Updates the document or creates a new one if it didn't exist yet.
+        /// </summary>
+        /// <param name="filename">The name of the document.</param>
+        /// <param name="newContents">The updated contents of the document.</param>
+        void UpdateDocument(string filename, string newContents);
+
+        /// <summary>
+        /// Removes the document.
         /// </summary>
         /// <param name="filename">
         /// The filename.
         /// </param>
-        /// <param name="document">
-        /// The document.
-        /// </param>
-        public DocumentUpdatedEventArgs(IDocumentDescriptor document)
-        {
-            this.Document = document;
-        }
-
-        public DocumentUpdatedEventArgs(byte[] bytes)
-        {
-            this.Document = ConnectQl.Intellisense.IntellisenseSession.Deserialize(bytes)
-        }
+        void RemoveDocument(string filename);
 
         /// <summary>
         /// Gets the document.
         /// </summary>
-        public IDocumentDescriptor Document { get; }
+        /// <param name="filename">
+        /// The filename of the document.
+        /// </param>
+        /// <returns>
+        /// The document, or <c>null</c> if it doesn't exist in the session.
+        /// </returns>
+        IDocumentDescriptor GetDocument(string filename);
     }
 }

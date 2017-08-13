@@ -29,6 +29,8 @@ namespace ConnectQl.Tools.Mef.Intellisense
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using ConnectQl.Intellisense;
+    using ConnectQl.Interfaces;
     using ConnectQl.Tools.AssemblyLoader;
     using EnvDTE;
     using EnvDTE80;
@@ -41,7 +43,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
     /// <summary>
     /// The intellisense proxy.
     /// </summary>
-    internal class IntellisenseProxy : IDisposable
+    internal class IntellisenseProxy : IDisposable, IIntellisenseSession
     {
         /// <summary>
         /// The app domain.
@@ -56,7 +58,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// <summary>
         /// The handler.
         /// </summary>
-        private RemoteEventHandler<Tuple<string, byte[]>> handler;
+        private RemoteEventHandler<byte[]> handler;
 
         /// <summary>
         /// The imports events.
@@ -93,7 +95,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         }
 
         /// <summary>
-        /// The document updated.
+        /// Occurs when a document is updated.
         /// </summary>
         public event EventHandler<DocumentUpdatedEventArgs> DocumentUpdated;
 
@@ -143,7 +145,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
             {
                 if (this.handler != null)
                 {
-                    this.intellisenseSession.ClassificationChanged -= this.handler.Handler;
+                    this.intellisenseSession.DocumentUpdated -= this.handler.Handler;
                     this.handler = null;
                 }
 
@@ -245,7 +247,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
 
                         this.WatchPaths(this.watchPaths);
 
-                        this.handler = new RemoteEventHandler<Tuple<string, byte[]>>(this.IntellisenseSessionOnClassificationChanged);
+                        this.handler = new RemoteEventHandler<byte[]>(this.IntellisenseSessionOnDocumentUpdated);
 
                         this.intellisenseSession = (AppDomainIntellisenseSession)this.appDomain.CreateInstanceFromAndUnwrap(
                             typeof(AppDomainIntellisenseSession).Assembly.Location ?? string.Empty,
@@ -257,7 +259,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                             CultureInfo.CurrentCulture,
                             null);
 
-                        this.intellisenseSession.ClassificationChanged += this.handler.Handler;
+                        this.intellisenseSession.DocumentUpdated += this.handler.Handler;
 
                         foreach (var keyValuePair in documents)
                         {
@@ -300,6 +302,41 @@ namespace ConnectQl.Tools.Mef.Intellisense
         public void UpdateDocument(string filename, string contents)
         {
             this.intellisenseSession.UpdateDocument(filename, contents);
+        }
+
+        /// <summary>
+        /// Updates the document span.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="endIndex">The end index.</param>
+        /// <param name="newSpan">The new span text.</param>
+        public void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string newSpan)
+        {
+            this.intellisenseSession.UpdateDocumentSpan(filename, startIndex, endIndex, newSpan);
+        }
+
+        /// <summary>
+        /// Removes a document.
+        /// </summary>
+        /// <param name="filename">
+        /// The name of the document to remove.
+        /// </param>
+        public void RemoveDocument(string filename)
+        {
+            this.intellisenseSession.RemoveDocument(filename);
+        }
+
+        /// <summary>
+        /// Gets the document.
+        /// </summary>
+        /// <param name="filename">The file name.</param>
+        /// <returns>
+        /// The document desciptor or <c>null</c> if it wasn't found.
+        /// </returns>
+        public IDocumentDescriptor GetDocument(string filename)
+        {
+            return Descriptor.Document(this.intellisenseSession.GetDocumentAsByteArray(filename));
         }
 
         /// <summary>
@@ -397,17 +434,17 @@ namespace ConnectQl.Tools.Mef.Intellisense
         }
 
         /// <summary>
-        /// Handles the <see cref="AppDomainIntellisenseSession.ClassificationChanged"/> event.
+        /// Handles the <see cref="AppDomainIntellisenseSession.DocumentUpdated"/> event.
         /// </summary>
         /// <param name="sender">
         /// The sender.
         /// </param>
-        /// <param name="tuple">
-        /// The tuple.
+        /// <param name="serializedDocumentDescriptor">
+        /// The serialized document descriptor.
         /// </param>
-        private void IntellisenseSessionOnClassificationChanged(object sender, Tuple<string, byte[]> tuple)
+        private void IntellisenseSessionOnDocumentUpdated(object sender, byte[] serializedDocumentDescriptor)
         {
-            this.DocumentUpdated?.Invoke(this, new DocumentUpdatedEventArgs(tuple.Item1, ConnectQl.Intellisense.IntellisenseSession.Deserialize(tuple.Item2)));
+            this.DocumentUpdated?.Invoke(this, new DocumentUpdatedEventArgs(serializedDocumentDescriptor));
         }
 
         /// <summary>

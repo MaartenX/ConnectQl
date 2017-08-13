@@ -34,6 +34,8 @@
     
     <Resource Include="Icons\cql.*.png" />
     
+    <Compile Remove="Mef\DocumentUpdatedEventArgs.cs" />
+    
     <EmbeddedResource Include="source.extension.resx">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -59,6 +61,10 @@
 
     <!-- Helps to resolve the project references, name is missing when building using the new csproj. -->
     <ProjectReference Update="@(ProjectReference)" Name="%(FileName)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Intellisense\Mef\" />
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
