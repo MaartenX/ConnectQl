@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Condition="$(DevelopingLocally)" />
-    <PackageReference Include="ConnectQl" Version="0.1.92-prerelease" Condition="!$(DevelopingLocally)" />
+    <PackageReference Include="ConnectQl" Version="0.1.96-prerelease" Condition="!$(DevelopingLocally)" />
     <PackageReference Include="WindowsAzure.Storage" Version="8.2.0" />
   </ItemGroup>
   
