@@ -238,7 +238,7 @@ namespace ConnectQl.Internal
                 throw new InvalidOperationException($"No URI resolver registered, cannot open '{uri}'.");
             }
 
-            return this.ParentContext.UriResolver(uri, mode);
+            return this.ParentContext.UriResolver(Path.IsPathRooted(uri) ? uri : Path.Combine(Path.GetDirectoryName(this.Filename), uri), mode);
         }
 
         /// <summary>

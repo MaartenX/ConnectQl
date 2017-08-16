@@ -43,15 +43,15 @@ namespace ConnectQl.Sample.Net461
         {
             using (var context = new ConnectQlContext(new PluginResolver()))
             {
-                //using (var c = context.CreateIntellisenseSession())
-                //{
-                //    c.DocumentUpdated += (o, e) => { };
+                using (var c = context.CreateIntellisenseSession())
+                {
+                    c.DocumentUpdated += (o, e) => { };
 
-                //    c.UpdateDocument("Example.cql", File.ReadAllText("Example.cql"));
+                    c.UpdateDocument("Example.cql", File.ReadAllText("Example.cql"));
 
 
-                //    await Task.Delay(1000000);
-                //}
+                    await Task.Delay(1000000);
+                }
             }
 
             /*

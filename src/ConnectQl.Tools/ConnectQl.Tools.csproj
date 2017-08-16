@@ -63,10 +63,6 @@
     <ProjectReference Update="@(ProjectReference)" Name="%(FileName)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Intellisense\Mef\" />
-  </ItemGroup>
-
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VsSDKInstall)\Microsoft.VsSDK.targets" Condition="'$(vsSDKInstall)' != '' And Exists('$(VsSDKInstall)\Microsoft.VsSDK.targets')" />
 
