@@ -175,7 +175,7 @@ namespace ConnectQl.Internal.Intellisense
 
                         if (delta != null)
                         {
-                            this.session.OnDocumentChanged(this.Filename, delta);
+                            this.session.OnDocumentChanged(delta);
                         }
 
                         if (this.contents == documentText)
@@ -186,7 +186,7 @@ namespace ConnectQl.Internal.Intellisense
 
                             if (delta != null)
                             {
-                                this.session.OnDocumentChanged(this.Filename, delta);
+                                this.session.OnDocumentChanged(delta);
                             }
                         }
 
@@ -202,7 +202,7 @@ namespace ConnectQl.Internal.Intellisense
 
                             if (delta != null)
                             {
-                                this.session.OnDocumentChanged(this.Filename, delta);
+                                this.session.OnDocumentChanged(delta);
                             }
                         }
 
@@ -250,7 +250,7 @@ namespace ConnectQl.Internal.Intellisense
         /// </returns>
         private SerializableDocumentDescriptor GetChanges(SerializableDocumentDescriptor currentDocument)
         {
-            var result = new SerializableDocumentDescriptor();
+            var result = new SerializableDocumentDescriptor { Filename = this.Filename };
 
             var updated = this.TryUpdate(currentDocument, result, d => d.Tokens) |
                           this.TryUpdate(currentDocument, result, d => d.Functions) |

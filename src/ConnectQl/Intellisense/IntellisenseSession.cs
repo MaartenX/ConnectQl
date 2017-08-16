@@ -60,7 +60,7 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// Occurs when a document is updated (used internally for cross-appdomain communication).
         /// </summary>
-        internal event EventHandler<byte[]> InternalDocumentUpdated;
+        public event EventHandler<byte[]> InternalDocumentUpdated;
 
         /// <summary>
         /// Gets the plugins.
@@ -183,13 +183,10 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// Sends the classification changed event.
         /// </summary>
-        /// <param name="filename">
-        /// The filename.
-        /// </param>
         /// <param name="document">
         /// The serialized document.
         /// </param>
-        internal void OnDocumentChanged(string filename, SerializableDocumentDescriptor document)
+        internal void OnDocumentChanged(SerializableDocumentDescriptor document)
         {
             this.DocumentUpdated?.Invoke(this, new DocumentUpdatedEventArgs(document));
             this.InternalDocumentUpdated?.Invoke(this, ProtocolSerializer.Serialize(document));

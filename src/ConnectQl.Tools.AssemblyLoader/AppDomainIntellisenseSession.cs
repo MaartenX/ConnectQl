@@ -127,16 +127,19 @@ namespace ConnectQl.Tools.AssemblyLoader
             LoadReferencesRecursively(loadedAssemblies, assemblyLookup);
 
             var pluginLoader = Activator.CreateInstance(connectQl.GetType("ConnectQl.Intellisense.AssemblyPluginResolver"), referencedAssemblies);
+            var contextType = connectQl.GetType("ConnectQl.ConnectQlContext");
+            var createSession = connectQl.GetType("ConnectQl.Intellisense.ConnectQlExtensions").GetMethod("CreateIntellisenseSession");
             var sessionType = connectQl.GetType("ConnectQl.Intellisense.IntellisenseSession");
 
-            this.session = Activator.CreateInstance(sessionType, pluginLoader);
+            var context = Activator.CreateInstance(contextType, pluginLoader);
 
+            this.session = createSession.Invoke(null, new[] { context });
             this.getDocument = sessionType.GetMethod("GetDocumentAsByteArray");
             this.removeDocument = sessionType.GetMethod("RemoveDocument");
             this.updateDocument = sessionType.GetMethod("UpdateDocument");
             this.updateDocumentSpan = sessionType.GetMethod("UpdateDocumentSpan");
 
-            sessionType.GetEvent("InternalDocumentUpdated", BindingFlags.NonPublic | BindingFlags.Instance)
+            sessionType.GetEvent("InternalDocumentUpdated", BindingFlags.Public | BindingFlags.Instance)
                 .AddEventHandler(this.session, Delegate.CreateDelegate(typeof(EventHandler<byte[]>), this, nameof(this.HandleEvent)));
         }
 
