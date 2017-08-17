@@ -48,8 +48,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Sample.NetCore", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Sample.Net461", "ConnectQl.Sample.Net461\ConnectQl.Sample.Net461.csproj", "{F7AA26AE-B2BC-4D21-B3F0-A64FCFC1A75C}"
 EndProject
-Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "ConnectQl.Docs", "ConnectQl.Docs\ConnectQl.Docs.shfbproj", "{6CF04D6F-BA6C-4502-9A1F-D666C96FE38F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,10 +102,6 @@ Global
 		{F7AA26AE-B2BC-4D21-B3F0-A64FCFC1A75C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7AA26AE-B2BC-4D21-B3F0-A64FCFC1A75C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7AA26AE-B2BC-4D21-B3F0-A64FCFC1A75C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CF04D6F-BA6C-4502-9A1F-D666C96FE38F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CF04D6F-BA6C-4502-9A1F-D666C96FE38F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CF04D6F-BA6C-4502-9A1F-D666C96FE38F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CF04D6F-BA6C-4502-9A1F-D666C96FE38F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
