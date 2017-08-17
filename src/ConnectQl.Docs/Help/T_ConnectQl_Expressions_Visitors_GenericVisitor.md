@@ -1,0 +1,160 @@
+# GenericVisitor Class
+ 
+
+The generic visitor.
+
+
+## Inheritance Hierarchy
+<a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">System.Object</a><br />&nbsp;&nbsp;<a href="http://msdn2.microsoft.com/en-us/library/dd323984" target="_blank">System.Linq.Expressions.ExpressionVisitor</a><br />&nbsp;&nbsp;&nbsp;&nbsp;ConnectQl.Expressions.Visitors.GenericVisitor<br />
+**Namespace:**&nbsp;<a href="N_ConnectQl_Expressions_Visitors">ConnectQl.Expressions.Visitors</a><br />**Assembly:**&nbsp;ConnectQl (in ConnectQl.dll) Version: 100.0.1-prerelease
+
+## Syntax
+
+**C#**<br />
+``` C#
+public class GenericVisitor : ExpressionVisitor, 
+	IEnumerable<Object>, IEnumerable
+```
+
+The GenericVisitor type exposes the following members.
+
+
+## Constructors
+&nbsp;<table><tr><th></th><th>Name</th><th>Description</th></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor__ctor">GenericVisitor</a></td><td>
+Initializes a new instance of the GenericVisitor class</td></tr></table>&nbsp;
+<a href="#genericvisitor-class">Back to Top</a>
+
+## Methods
+&nbsp;<table><tr><th></th><th>Name</th><th>Description</th></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add">Add(Func(CatchBlock, CatchBlock))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add_1">Add(Func(ElementInit, ElementInit))</a></td><td>
+Adds an <a href="http://msdn2.microsoft.com/en-us/library/bb548865" target="_blank">ElementInit</a> handler to the visitor.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add_2">Add(Func(LabelTarget, LabelTarget))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add_3">Add(Func(MemberAssignment, MemberAssignment))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add_4">Add(Func(MemberBinding, MemberBinding))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add_5">Add(Func(MemberListBinding, MemberListBinding))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add_6">Add(Func(MemberMemberBinding, MemberMemberBinding))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add_7">Add(Func(SwitchCase, SwitchCase))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add__1">Add(T)(Action(T))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add__1_2">Add(T)(Func(T, Expression))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add__1_1">Add(T)(Action(GenericVisitor, T))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Add__1_3">Add(T)(Func(GenericVisitor, T, Expression))</a></td><td>
+The add.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Create__1">Create(T)(Action(T))</a></td><td>
+Creates a GenericVisitor with the specified action.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Create__1_1">Create(T)(Func(T, Expression))</a></td><td>
+Creates a GenericVisitor with the specified action.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Create__2">Create(T1, T2)(Action(T1), Action(T2))</a></td><td>
+Creates a GenericVisitor with the specified action.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Create__2_1">Create(T1, T2)(Func(T1, Expression), Func(T2, Expression))</a></td><td>
+Creates a GenericVisitor with the specified action.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Create__3">Create(T1, T2, T3)(Action(T1), Action(T2), Action(T3))</a></td><td>
+Creates a GenericVisitor with the specified action.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Create__3_1">Create(T1, T2, T3)(Func(T1, Expression), Func(T2, Expression), Func(T3, Expression))</a></td><td>
+Creates a GenericVisitor with the specified action.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Default">Default(Action(Expression))</a></td><td>
+Registers a function to call when no other handler is registered.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Default_1">Default(Func(Expression, Expression))</a></td><td>
+Registers a function to call when no other handler is registered.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Default_2">Default(Func(GenericVisitor, Expression, Expression))</a></td><td>
+Registers a function to call when no other handler is registered.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/bsc2ak47" target="_blank">Equals</a></td><td>
+Determines whether the specified object is equal to the current object.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/4k87zsw7" target="_blank">Finalize</a></td><td>
+Allows an object to try to free resources and perform other cleanup operations before it is reclaimed by garbage collection.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/zdee4b3y" target="_blank">GetHashCode</a></td><td>
+Serves as the default hash function.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/dfwy45w9" target="_blank">GetType</a></td><td>
+Gets the <a href="http://msdn2.microsoft.com/en-us/library/42892f65" target="_blank">Type</a> of the current instance.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/57ctke0a" target="_blank">MemberwiseClone</a></td><td>
+Creates a shallow copy of the current <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/7bxwbwt2" target="_blank">ToString</a></td><td>
+Returns a string that represents the current object.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">Object</a>.)</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/dd324058" target="_blank">Visit(ReadOnlyCollection(Expression))</a></td><td>
+Dispatches the list of expressions to one of the more specialized visit methods in this class.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/dd323984" target="_blank">ExpressionVisitor</a>.)</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Visit">Visit(Expression)</a></td><td>
+Dispatches the expression to one of the more specialized visit methods in this class.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323929" target="_blank">ExpressionVisitor.Visit(Expression)</a>.)</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Visit__1">Visit(T)(Action(T), Expression)</a></td><td>
+Creates a GenericVisitor, visits the *expression* and returns the result.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Visit__1_1">Visit(T)(Func(T, Expression), Expression)</a></td><td>
+Creates a GenericVisitor, visits the *expression* and returns the result.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Visit__2">Visit(T1, T2)(Action(T1), Action(T2), Expression)</a></td><td>
+Creates a GenericVisitor, visits the *expression* and returns the result.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Visit__2_1">Visit(T1, T2)(Func(T1, Expression), Func(T2, Expression), Expression)</a></td><td>
+Creates a GenericVisitor, visits the *expression* and returns the result.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Visit__3">Visit(T1, T2, T3)(Action(T1), Action(T2), Action(T3), Expression)</a></td><td>
+Creates a GenericVisitor, visits the *expression* and returns the result.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_Visit__3_1">Visit(T1, T2, T3)(Func(T1, Expression), Func(T2, Expression), Func(T3, Expression), Expression)</a></td><td>
+Creates a GenericVisitor, visits the *expression* and returns the result.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/dd324027" target="_blank">VisitAndConvert(T)(T, String)</a></td><td>
+Visits an expression, casting the result back to the original expression type.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/dd323984" target="_blank">ExpressionVisitor</a>.)</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/dd324042" target="_blank">VisitAndConvert(T)(ReadOnlyCollection(T), String)</a></td><td>
+Visits an expression, casting the result back to the original expression type.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/dd323984" target="_blank">ExpressionVisitor</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitBinary">VisitBinary</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb347796" target="_blank">BinaryExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324046" target="_blank">ExpressionVisitor.VisitBinary(BinaryExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitBlock">VisitBlock</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd323975" target="_blank">BlockExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323996" target="_blank">ExpressionVisitor.VisitBlock(BlockExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitCatchBlock">VisitCatchBlock</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd294112" target="_blank">CatchBlock</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324115" target="_blank">ExpressionVisitor.VisitCatchBlock(CatchBlock)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitConditional">VisitConditional</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb352032" target="_blank">ConditionalExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323943" target="_blank">ExpressionVisitor.VisitConditional(ConditionalExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitConstant">VisitConstant</a></td><td>
+Visits the <a href="http://msdn2.microsoft.com/en-us/library/bb338985" target="_blank">ConstantExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324096" target="_blank">ExpressionVisitor.VisitConstant(ConstantExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitDebugInfo">VisitDebugInfo</a></td><td>
+Visits the <a href="http://msdn2.microsoft.com/en-us/library/dd324128" target="_blank">DebugInfoExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd402770" target="_blank">ExpressionVisitor.VisitDebugInfo(DebugInfoExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitDefault">VisitDefault</a></td><td>
+Visits the <a href="http://msdn2.microsoft.com/en-us/library/dd323990" target="_blank">DefaultExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324053" target="_blank">ExpressionVisitor.VisitDefault(DefaultExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/dd323964" target="_blank">VisitDynamic</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd383753" target="_blank">DynamicExpression</a>.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/dd323984" target="_blank">ExpressionVisitor</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitElementInit">VisitElementInit</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb548865" target="_blank">ElementInit</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323959" target="_blank">ExpressionVisitor.VisitElementInit(ElementInit)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitExtension">VisitExtension</a></td><td>
+Visits the children of the extension expression.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323938" target="_blank">ExpressionVisitor.VisitExtension(Expression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitGoto">VisitGoto</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd323991" target="_blank">GotoExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323978" target="_blank">ExpressionVisitor.VisitGoto(GotoExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitIndex">VisitIndex</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd413369" target="_blank">IndexExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323933" target="_blank">ExpressionVisitor.VisitIndex(IndexExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitInvocation">VisitInvocation</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb351981" target="_blank">InvocationExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324010" target="_blank">ExpressionVisitor.VisitInvocation(InvocationExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitLabel">VisitLabel</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd324050" target="_blank">LabelExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323906" target="_blank">ExpressionVisitor.VisitLabel(LabelExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitLabelTarget">VisitLabelTarget</a></td><td>
+Visits the <a href="http://msdn2.microsoft.com/en-us/library/dd268061" target="_blank">LabelTarget</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324067" target="_blank">ExpressionVisitor.VisitLabelTarget(LabelTarget)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="http://msdn2.microsoft.com/en-us/library/dd324035" target="_blank">VisitLambda(T)(Expression(T))</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb335710" target="_blank">Expression(TDelegate)</a>.
+ (Inherited from <a href="http://msdn2.microsoft.com/en-us/library/dd323984" target="_blank">ExpressionVisitor</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitLambda__1">VisitLambda(T)(Expression(T))</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb335710" target="_blank">Expression(TDelegate)</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324035" target="_blank">ExpressionVisitor.VisitLambda(T)(Expression(T))</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitListInit">VisitListInit</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb348800" target="_blank">ListInitExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324106" target="_blank">ExpressionVisitor.VisitListInit(ListInitExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitLoop">VisitLoop</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd323882" target="_blank">LoopExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323983" target="_blank">ExpressionVisitor.VisitLoop(LoopExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitMember">VisitMember</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb353260" target="_blank">MemberExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd402768" target="_blank">ExpressionVisitor.VisitMember(MemberExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitMemberAssignment">VisitMemberAssignment</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb338556" target="_blank">MemberAssignment</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd402794" target="_blank">ExpressionVisitor.VisitMemberAssignment(MemberAssignment)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitMemberBinding">VisitMemberBinding</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb340458" target="_blank">MemberBinding</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323920" target="_blank">ExpressionVisitor.VisitMemberBinding(MemberBinding)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitMemberInit">VisitMemberInit</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb348857" target="_blank">MemberInitExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323891" target="_blank">ExpressionVisitor.VisitMemberInit(MemberInitExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitMemberListBinding">VisitMemberListBinding</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb341814" target="_blank">MemberListBinding</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324109" target="_blank">ExpressionVisitor.VisitMemberListBinding(MemberListBinding)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitMemberMemberBinding">VisitMemberMemberBinding</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb347918" target="_blank">MemberMemberBinding</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd402789" target="_blank">ExpressionVisitor.VisitMemberMemberBinding(MemberMemberBinding)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitMethodCall">VisitMethodCall</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb357368" target="_blank">MethodCallExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323893" target="_blank">ExpressionVisitor.VisitMethodCall(MethodCallExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitNew">VisitNew</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb346134" target="_blank">NewExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323916" target="_blank">ExpressionVisitor.VisitNew(NewExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitNewArray">VisitNewArray</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb353983" target="_blank">NewArrayExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323960" target="_blank">ExpressionVisitor.VisitNewArray(NewArrayExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitParameter">VisitParameter</a></td><td>
+Visits the <a href="http://msdn2.microsoft.com/en-us/library/bb302740" target="_blank">ParameterExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd402797" target="_blank">ExpressionVisitor.VisitParameter(ParameterExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitRuntimeVariables">VisitRuntimeVariables</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd324055" target="_blank">RuntimeVariablesExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323884" target="_blank">ExpressionVisitor.VisitRuntimeVariables(RuntimeVariablesExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitSwitch">VisitSwitch</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd323880" target="_blank">SwitchExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd402760" target="_blank">ExpressionVisitor.VisitSwitch(SwitchExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitSwitchCase">VisitSwitchCase</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd294227" target="_blank">SwitchCase</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd323972" target="_blank">ExpressionVisitor.VisitSwitchCase(SwitchCase)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitTry">VisitTry</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/dd323973" target="_blank">TryExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd402754" target="_blank">ExpressionVisitor.VisitTry(TryExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitTypeBinary">VisitTypeBinary</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb337895" target="_blank">TypeBinaryExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324021" target="_blank">ExpressionVisitor.VisitTypeBinary(TypeBinaryExpression)</a>.)</td></tr><tr><td>![Protected method](media/protmethod.gif "Protected method")</td><td><a href="M_ConnectQl_Expressions_Visitors_GenericVisitor_VisitUnary">VisitUnary</a></td><td>
+Visits the children of the <a href="http://msdn2.microsoft.com/en-us/library/bb360491" target="_blank">UnaryExpression</a>.
+ (Overrides <a href="http://msdn2.microsoft.com/en-us/library/dd324066" target="_blank">ExpressionVisitor.VisitUnary(UnaryExpression)</a>.)</td></tr></table>&nbsp;
+<a href="#genericvisitor-class">Back to Top</a>
+
+## Extension Methods
+&nbsp;<table><tr><th></th><th>Name</th><th>Description</th></tr><tr><td>![Public Extension Method](media/pubextension.gif "Public Extension Method")</td><td><a href="M_System_Collections_Generic_EnumerableExtensions_ActionIfEmpty__1">ActionIfEmpty(Object)</a></td><td>
+Returns the same enumerable, but executes an action if the enumerable is empty.
+ (Defined by <a href="T_System_Collections_Generic_EnumerableExtensions">EnumerableExtensions</a>.)</td></tr><tr><td>![Public Extension Method](media/pubextension.gif "Public Extension Method")</td><td><a href="M_System_Collections_Generic_EnumerableExtensions_AggregateAsync__2">AggregateAsync(Object, TResult)</a></td><td>
+Aggregates an enumerable asynchronously.
+ (Defined by <a href="T_System_Collections_Generic_EnumerableExtensions">EnumerableExtensions</a>.)</td></tr></table>&nbsp;
+<a href="#genericvisitor-class">Back to Top</a>
+
+## See Also
+
+
+#### Reference
+<a href="N_ConnectQl_Expressions_Visitors">ConnectQl.Expressions.Visitors Namespace</a><br />

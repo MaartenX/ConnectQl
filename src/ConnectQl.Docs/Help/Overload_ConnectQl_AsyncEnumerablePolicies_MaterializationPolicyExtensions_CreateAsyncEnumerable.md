@@ -1,0 +1,21 @@
+# MaterializationPolicyExtensions.CreateAsyncEnumerable Method 
+ 
+
+
+## Overload List
+&nbsp;<table><tr><th></th><th>Name</th><th>Description</th></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions_CreateAsyncEnumerable__1">CreateAsyncEnumerable(T)(IMaterializationPolicy, IEnumerable(T))</a></td><td>
+Creates an asynchronous enumerable from an <a href="http://msdn2.microsoft.com/en-us/library/9eekhta0" target="_blank">IEnumerable(T)</a>.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions_CreateAsyncEnumerable__1_1">CreateAsyncEnumerable(T)(IMaterializationPolicy, Func(Task(IAsyncEnumerable(T))))</a></td><td>
+Creates an <a href="T_ConnectQl_AsyncEnumerables_IAsyncEnumerable_1">IAsyncEnumerable(T)</a> from a generator.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions_CreateAsyncEnumerable__2_4">CreateAsyncEnumerable(T, TState)(IMaterializationPolicy, Func(TState, Task(IEnumerable(T))), Action(TState))</a></td><td>
+Creates an <a href="T_ConnectQl_AsyncEnumerables_IAsyncEnumerable_1">IAsyncEnumerable(T)</a> from a generator.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions_CreateAsyncEnumerable__2_5">CreateAsyncEnumerable(T, TState)(IMaterializationPolicy, Func(TState, Task(T)), Action(TState))</a></td><td>
+Creates an <a href="T_ConnectQl_AsyncEnumerables_IAsyncEnumerable_1">IAsyncEnumerable(T)</a> from a generator.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions_CreateAsyncEnumerable__2">CreateAsyncEnumerable(T, TState)(IMaterializationPolicy, Func(Task(TState)), Func(TState, Task(IEnumerable(T))), Action(TState))</a></td><td>
+Creates an <a href="T_ConnectQl_AsyncEnumerables_IAsyncEnumerable_1">IAsyncEnumerable(T)</a> from a generator.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions_CreateAsyncEnumerable__2_1">CreateAsyncEnumerable(T, TState)(IMaterializationPolicy, Func(Task(TState)), Func(TState, Task(T)), Action(TState))</a></td><td>
+Creates an <a href="T_ConnectQl_AsyncEnumerables_IAsyncEnumerable_1">IAsyncEnumerable(T)</a> from a generator.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions_CreateAsyncEnumerable__2_2">CreateAsyncEnumerable(T, TState)(IMaterializationPolicy, Func(TState), Func(TState, Task(IEnumerable(T))), Action(TState))</a></td><td>
+Creates an <a href="T_ConnectQl_AsyncEnumerables_IAsyncEnumerable_1">IAsyncEnumerable(T)</a> from a generator.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions_CreateAsyncEnumerable__2_3">CreateAsyncEnumerable(T, TState)(IMaterializationPolicy, Func(TState), Func(TState, Task(T)), Action(TState))</a></td><td>
+Creates an <a href="T_ConnectQl_AsyncEnumerables_IAsyncEnumerable_1">IAsyncEnumerable(T)</a> from a generator.</td></tr></table>&nbsp;
+<a href="#materializationpolicyextensions.createasyncenumerable-method">Back to Top</a>
+
+## See Also
+
+
+#### Reference
+<a href="T_ConnectQl_AsyncEnumerablePolicies_MaterializationPolicyExtensions">MaterializationPolicyExtensions Class</a><br /><a href="N_ConnectQl_AsyncEnumerablePolicies">ConnectQl.AsyncEnumerablePolicies Namespace</a><br />

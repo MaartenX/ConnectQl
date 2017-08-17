@@ -1,0 +1,20 @@
+# ConnectQlFunctionsExtensions.AddWithSideEffects Method 
+ 
+
+
+## Overload List
+&nbsp;<table><tr><th></th><th>Name</th><th>Description</th></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Interfaces_ConnectQlFunctionsExtensions_AddWithSideEffects__1">AddWithSideEffects(TResult)(IConnectQlFunctions, String, Expression(Func(TResult)))</a></td><td>
+Adds a key/value pair of key'0 => function to the dictionary.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Interfaces_ConnectQlFunctionsExtensions_AddWithSideEffects__2">AddWithSideEffects(TArgument, TResult)(IConnectQlFunctions, String, Expression(Func(TArgument, TResult)))</a></td><td>
+Adds a key/value pair of key'1 => function to the dictionary. The function has side effects and will not be evaluated by intellisense.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Interfaces_ConnectQlFunctionsExtensions_AddWithSideEffects__3">AddWithSideEffects(TArgument1, TArgument2, TResult)(IConnectQlFunctions, String, Expression(Func(TArgument1, TArgument2, TResult)))</a></td><td>
+Adds a key/value pair of key'2 => function to the dictionary.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Interfaces_ConnectQlFunctionsExtensions_AddWithSideEffects__4">AddWithSideEffects(TArgument1, TArgument2, TArgument3, TResult)(IConnectQlFunctions, String, Expression(Func(TArgument1, TArgument2, TArgument3, TResult)))</a></td><td>
+Adds a key/value pair of key'3 => function to the dictionary.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Interfaces_ConnectQlFunctionsExtensions_AddWithSideEffects__5">AddWithSideEffects(TArgument1, TArgument2, TArgument3, TArgument4, TResult)(IConnectQlFunctions, String, Expression(Func(TArgument1, TArgument2, TArgument3, TArgument4, TResult)))</a></td><td>
+Adds a key/value pair of key'4 => function to the dictionary.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Interfaces_ConnectQlFunctionsExtensions_AddWithSideEffects__6">AddWithSideEffects(TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult)(IConnectQlFunctions, String, Expression(Func(TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult)))</a></td><td>
+Adds a key/value pair of key'5 => function to the dictionary.</td></tr><tr><td>![Public method](media/pubmethod.gif "Public method")![Static member](media/static.gif "Static member")</td><td><a href="M_ConnectQl_Interfaces_ConnectQlFunctionsExtensions_AddWithSideEffects__7">AddWithSideEffects(TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult)(IConnectQlFunctions, String, Expression(Func(TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult)))</a></td><td>
+Adds a key/value pair of key'6 => function to the dictionary.</td></tr></table>&nbsp;
+<a href="#connectqlfunctionsextensions.addwithsideeffects-method">Back to Top</a>
+
+## See Also
+
+
+#### Reference
+<a href="T_ConnectQl_Interfaces_ConnectQlFunctionsExtensions">ConnectQlFunctionsExtensions Class</a><br /><a href="N_ConnectQl_Interfaces">ConnectQl.Interfaces Namespace</a><br />
