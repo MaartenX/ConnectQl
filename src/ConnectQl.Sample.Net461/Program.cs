@@ -22,10 +22,10 @@
 
 namespace ConnectQl.Sample.Net461
 {
-    using System.Threading.Tasks;
-    using ConnectQl.Platform;
     using System.IO;
+    using System.Threading.Tasks;
     using ConnectQl.Intellisense;
+    using ConnectQl.Platform;
 
     /// <summary>
     /// Sample program that executes a query using .NET Core.
@@ -49,7 +49,6 @@ namespace ConnectQl.Sample.Net461
 
                     c.UpdateDocument("Example.cql", File.ReadAllText("Example.cql"));
 
-
                     await Task.Delay(1000000);
                 }
             }
@@ -58,7 +57,7 @@ namespace ConnectQl.Sample.Net461
                 var result = await context.ExecuteFileAsync("Example.cql");
             }*/
         }
-        
+
         /// <summary>
         /// The entry point.
         /// </summary>

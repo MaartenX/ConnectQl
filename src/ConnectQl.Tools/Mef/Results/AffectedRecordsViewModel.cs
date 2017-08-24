@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,41 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Tools.Mef
+namespace ConnectQl.Tools.Mef.Results
 {
-    using System;
-
-    using ConnectQl.Interfaces;
-
     /// <summary>
-    /// The document updated event args.
+    /// The affected records view model.
     /// </summary>
-    public class DocumentUpdatedEventArgs : EventArgs
+    public class AffectedRecordsViewModel
     {
-        private byte[] bytes;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentUpdatedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="AffectedRecordsViewModel"/> class.
         /// </summary>
-        /// <param name="filename">
-        /// The filename.
-        /// </param>
-        /// <param name="document">
-        /// The document.
-        /// </param>
-        public DocumentUpdatedEventArgs(IDocumentDescriptor document)
+        /// <param name="numberOfRecords">The number of records.</param>
+        public AffectedRecordsViewModel(long numberOfRecords)
         {
-            this.Document = document;
-        }
-
-        public DocumentUpdatedEventArgs(byte[] bytes)
-        {
-            this.Document = ConnectQl.Intellisense.IntellisenseSession.Deserialize(bytes)
+            this.NumberOfRecordsAffected = numberOfRecords;
         }
 
         /// <summary>
-        /// Gets the document.
+        /// Gets the number of records affected.
         /// </summary>
-        public IDocumentDescriptor Document { get; }
+        public long NumberOfRecordsAffected { get; }
     }
 }

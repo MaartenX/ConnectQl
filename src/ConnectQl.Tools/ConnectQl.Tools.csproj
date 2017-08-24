@@ -2,14 +2,20 @@
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\ConnectQl.Defaults.targets" />
-  
+
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
     <TargetFramework>net452</TargetFramework>
     <IsPackable>false</IsPackable>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+
+    <!-- 
+      WPF generates a temporary project file with a .tmp_proj extension. The Microsoft.NET.Sdk cannot handle this, because it derives the 
+      $(LanguageTargets) from the project file extension. Let's help the project system a bit. 
+    -->
+    <LanguageTargets Condition="'$(MSBuildProjectExtension)' != '.csproj' and Exists('$(MSBuildProjectDirectory)\$(AssemblyName).csproj')">$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="EnvDTE100" Version="10.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Editor" Version="14.3.25407" />
@@ -29,13 +35,9 @@
     <Content Include="Icons\Monikers.imagemanifest" IncludeInVSIX="true" />
     <Content Include="Icons.pkgdef" IncludeInVSIX="true" />
     <Content Include="source.extension.ico" DependentUpon="source.extension.vsixmanifest" />
-    
-    <VSCTCompile Include="ConnectQl.Tools.vsct" Generator="VsctGenerator" DependentUpon="source.extension.vsixmanifest" ResourceName="Menus.ctmenu" />
-    
-    <Resource Include="Icons\cql.*.png" />
-    
-    <Compile Remove="Mef\DocumentUpdatedEventArgs.cs" />
-    
+    <Compile Update="VSPackage.Designer.cs" DependentUpon="source.extension.resx" />
+    <Compile Update="Mef\Results\ResultsPanel.xaml.cs" DependentUpon="Mef\Results\ResultsPanel.xaml" />
+
     <EmbeddedResource Include="source.extension.resx">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -44,10 +46,16 @@
       <ManifestResourceName>VSPackage</ManifestResourceName>
     </EmbeddedResource>
 
-    <Compile Update="VSPackage.Designer.cs" DependentUpon="source.extension.resx" />
+    <Page Include="Mef\Results\ResultsPanel.xaml" Generator="MSBuild:Compile" />
+
+    <Resource Include="Icons\cql.*.png" />
+
+    <VSCTCompile Include="ConnectQl.Tools.vsct" Generator="VsctGenerator" DependentUpon="source.extension.vsixmanifest" ResourceName="Menus.ctmenu" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -59,6 +67,8 @@
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
     </ProjectReference>
 
+    
+    
     <!-- Helps to resolve the project references, name is missing when building using the new csproj. -->
     <ProjectReference Update="@(ProjectReference)" Name="%(FileName)" />
   </ItemGroup>
@@ -71,18 +81,18 @@
     <DeployExtension Condition="'$(APPVEYOR)'==''">True</DeployExtension>
     <DeployExtension Condition="'$(APPVEYOR)'!=''">False</DeployExtension>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(APPVEYOR)'!=''">
     <ArtifactsFolder>..\..\artifacts\</ArtifactsFolder>
     <TargetVsixContainer Condition="'$(VersionSuffix)'==''">$(ArtifactsFolder)$(TargetName)-$(VersionPrefix).0.vsix</TargetVsixContainer>
     <TargetVsixContainer Condition="'$(VersionSuffix)'!=''">$(ArtifactsFolder)$(TargetName)-$(VersionPrefix).0-$(VersionSuffix).vsix</TargetVsixContainer>
   </PropertyGroup>
-  
+
   <Target Name="UpdateVsixVersion" BeforeTargets="PrepareForBuild" Condition="'$(APPVEYOR)'!=''">
     <MakeDir Directories="$(ArtifactsFolder)" ContinueOnError="true" />
     <XmlUpdate Prefix="n" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" XPath="//n:PackageManifest/n:Metadata/n:Identity/@Version" XmlFileName="source.extension.vsixmanifest" Value="$(VersionPrefix).0" />
   </Target>
-  
+
   <!-- Embeds the design time interop types instead of linking them. See also https://www.nuget.org/packages/Microsoft.VisualStudio.SDK.EmbedInteropTypes -->
   <Target Name="LinkVSSDKEmbeddableAssemblies" AfterTargets="ResolveReferences" BeforeTargets="FindReferenceAssembliesForReferences">
     <ItemGroup>
@@ -91,5 +101,12 @@
       </ReferencePath>
     </ItemGroup>
   </Target>
-  
+
+  <!-- Creates Intellisense information for the xaml files. See also https://github.com/dotnet/project-system/issues/2488 -->
+  <Target Name="WorkaroundForXAMLIntellisenseBuildIssue" AfterTargets="_CheckCompileDesignTimePrerequisite">
+    <PropertyGroup>
+      <BuildingProject>false</BuildingProject>
+    </PropertyGroup>
+  </Target>
+
 </Project>

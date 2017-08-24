@@ -129,17 +129,21 @@ namespace ConnectQl.Tools.Mef.Intellisense
                 this.importsEvents = null;
             }
 
-            foreach (var watcher in this.watchers)
+            if (this.watchers != null)
             {
-                watcher.Changed -= this.FileChanged;
-                watcher.Renamed -= this.FileChanged;
-                watcher.Deleted -= this.FileChanged;
-                watcher.Created -= this.FileChanged;
+                foreach (var watcher in this.watchers)
+                {
+                    watcher.Changed -= this.FileChanged;
+                    watcher.Renamed -= this.FileChanged;
+                    watcher.Deleted -= this.FileChanged;
+                    watcher.Created -= this.FileChanged;
 
-                watcher.Dispose();
+                    watcher.Dispose();
+                }
+
+                this.watchers.Clear();
+                this.watchers = null;
             }
-
-            this.watchers.Clear();
 
             if (this.intellisenseSession != null)
             {

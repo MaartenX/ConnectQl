@@ -31,4 +31,9 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VsSDKInstall)\Microsoft.VsSDK.targets" Condition="'$(vsSDKInstall)' != '' And Exists('$(VsSDKInstall)\Microsoft.VsSDK.targets')" />
 
+  <!--  
+    Gets rid of VSSDK1039: Source.extension.vsixmanifest file not found in new project system. This also disables most Intellisense, but who needs
+    that in an item template.
+  -->
+  <Target Name="CompileDesignTime"></Target>
 </Project>

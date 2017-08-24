@@ -79,7 +79,7 @@ namespace ConnectQl.Tools.Mef
         {
             this.DocumentFactoryService.TryGetTextDocument(textBuffer, out var document);
 
-            var uniqueName = this.dte.Solution.FindProjectItem(document.FilePath).ContainingProject.UniqueName;
+            var uniqueName = this.dte.Solution.FindProjectItem(document.FilePath)?.ContainingProject?.UniqueName ?? "Unknown project";
 
             if (!this.projects.TryGetValue(uniqueName, out var session))
             {

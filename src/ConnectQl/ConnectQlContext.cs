@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Linq;
-
 namespace ConnectQl
 {
     using System;
@@ -29,9 +27,9 @@ namespace ConnectQl
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;

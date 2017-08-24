@@ -132,6 +132,7 @@ namespace ConnectQl.Internal.Intellisense
         /// Gets the messages.
         /// </summary>
         public IReadOnlyList<IMessage> Messages => this.Descriptor.Messages;
+
         /// <summary>
         /// Gets the variables.
         /// </summary>

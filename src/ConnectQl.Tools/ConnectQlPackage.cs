@@ -22,14 +22,18 @@
 
 namespace ConnectQl.Tools
 {
+    using System;
     using System.ComponentModel.Composition;
     using System.Runtime.InteropServices;
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Media;
     using ConnectQl.Tools.Mef.Classification;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text.Classification;
     using Microsoft.VisualStudio.Utilities;
     using static Microsoft.VisualStudio.VSConstants;
+    using Task = System.Threading.Tasks.Task;
 
     /// <summary>
     /// The Visual Studio Package.
@@ -87,6 +91,19 @@ namespace ConnectQl.Tools
         private static FileExtensionToContentTypeDefinition connectqlFileExtensionDefinition;
 
 #pragma warning restore CS0169
+
+        /// <summary>
+        /// Initializes the package asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="progress">The progress.</param>
+        /// <returns>
+        /// The task that completes when initialization is done.
+        /// </returns>
+        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        {
+            await base.InitializeAsync(cancellationToken, progress);
+        }
 
         /// <summary>
         /// The function format definition.
