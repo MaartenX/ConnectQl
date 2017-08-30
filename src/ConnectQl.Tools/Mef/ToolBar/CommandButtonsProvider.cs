@@ -20,36 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Tools.Mef.Results
+namespace ConnectQl.Tools.Mef.CommandButtons
 {
     using System.ComponentModel.Composition;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Utilities;
-    using Microsoft.VisualStudio.Text.Classification;
 
     /// <summary>
     /// Provides the results panel.
     /// </summary>
     [Export(typeof(IWpfTextViewMarginProvider))]
-    [Name(nameof(ResultsPanelProvider))]
-    [Order(Before = PredefinedMarginNames.BottomControl)]
-    [MarginContainer(PredefinedMarginNames.Bottom)]
+    [Name(nameof(CommandButtonsProvider))]
+    [Order(Before = PredefinedMarginNames.Top)]
+    [MarginContainer(PredefinedMarginNames.Top)]
     [ContentType("ConnectQl")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)] // This is to prevent the margin from loading in the diff view
-    public class ResultsPanelProvider : IWpfTextViewMarginProvider
+
+    internal class CommandButtonsProvider : IWpfTextViewMarginProvider
     {
         /// <summary>
         /// Gets or sets the document factory service.
         /// </summary>
         [Import]
         internal ITextDocumentFactoryService DocumentFactoryService { get; set; }
-
-        /// <summary>
-        /// Gets or sets the format map service.
-        /// </summary>
-        [Import]
-        internal IEditorFormatMapService FormatMapService { get; set; }
 
         /// <summary>
         /// Creates an <see cref="T:Microsoft.VisualStudio.Text.Editor.IWpfTextViewMargin" /> for the given <see cref="T:Microsoft.VisualStudio.Text.Editor.IWpfTextViewHost" />.
@@ -66,7 +60,7 @@ namespace ConnectQl.Tools.Mef.Results
                 return null;
             }
 
-            return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(() => new ResultsPanel(wpfTextViewHost.TextView, document));
+            return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(() => new CommandButtons(wpfTextViewHost.TextView, document));
         }
     }
 }

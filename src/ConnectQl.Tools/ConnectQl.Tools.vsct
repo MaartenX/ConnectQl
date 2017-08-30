@@ -5,4 +5,42 @@
   <Extern href="vsshlids.h"/>
   <Include href="KnownImageIds.vsct"/>
 
+  <Commands package="guidConnectQlPackage">
+    <Menus>
+      <Menu guid="guidConnectQlCommandSet" id="ConnectQlToolBar" type="Toolbar" priority="0x0050">
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <Strings>
+          <ButtonText>ConnectQl</ButtonText>
+          <CommandName>ConnectQl</CommandName>
+        </Strings>
+      </Menu> 
+    </Menus>
+    <Groups>
+      <Group guid="guidConnectQlCommandSet" id="ConnectQlToolBarGroup" priority="0x0000">
+        <Parent guid="guidConnectQlCommandSet" id="ConnectQlToolBar" />
+      </Group>
+    </Groups>
+    <Buttons>
+      <Button guid="guidConnectQlCommandSet" id="RunScriptId" priority="0x0100" type="Button">
+        <Parent guid="guidConnectQlCommandSet" id="ConnectQlToolBarGroup" />
+        <Icon guid="ImageCatalogGuid" id="Run" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>RouteToDocs</CommandFlag>
+        <CommandFlag>IconAndText</CommandFlag>
+        <Strings>
+          <ButtonText>Run Script</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+    
+  <Symbols>
+    <GuidSymbol name="guidConnectQlPackage" value="{16dce247-ec5c-460f-b9e7-c0327a7799f1}" />
+    <GuidSymbol name="guidConnectQlCommandSet" value="{5ea5a5f2-d344-423e-99fa-1546f86445c8}">
+      <IDSymbol name="ConnectQlToolBar" value="0x2281" />
+      <IDSymbol name="ConnectQlToolBarGroup" value="0x1050" />
+      <IDSymbol name="RunScriptId" value="0x2001" />  
+    </GuidSymbol>
+  </Symbols>
+  
 </CommandTable>

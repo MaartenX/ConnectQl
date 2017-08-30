@@ -37,6 +37,7 @@ namespace ConnectQl.Tools.Mef.Completion
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Text;
+    using ConnectQl.Tools.Mef.Helpers;
 
     /// <summary>
     /// The ConnectQl completion source.
@@ -46,37 +47,37 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <summary>
         /// The function.
         /// </summary>
-        private static readonly ImageSource Function = GetIcon(KnownMonikers.ScalarFunction);
+        private static readonly ImageSource Function = ImageHelper.GetIcon(KnownMonikers.ScalarFunction);
 
         /// <summary>
         /// The aggregate.
         /// </summary>
-        private static readonly ImageSource Aggregate = GetIcon(KnownMonikers.AutoSum);
+        private static readonly ImageSource Aggregate = ImageHelper.GetIcon(KnownMonikers.AutoSum);
 
         /// <summary>
         /// The variable.
         /// </summary>
-        private static readonly ImageSource Variable = GetIcon(KnownMonikers.MemberVariable);
+        private static readonly ImageSource Variable = ImageHelper.GetIcon(KnownMonikers.MemberVariable);
 
         /// <summary>
         /// The plugin.
         /// </summary>
-        private static readonly ImageSource Plugin = GetIcon(KnownMonikers.AddIn);
+        private static readonly ImageSource Plugin = ImageHelper.GetIcon(KnownMonikers.AddIn);
 
         /// <summary>
         /// The column.
         /// </summary>
-        private static readonly ImageSource Column = GetIcon(KnownMonikers.Field);
+        private static readonly ImageSource Column = ImageHelper.GetIcon(KnownMonikers.Field);
 
         /// <summary>
         /// The field.
         /// </summary>
-        private static readonly ImageSource Source = GetIcon(KnownMonikers.DataTable);
+        private static readonly ImageSource Source = ImageHelper.GetIcon(KnownMonikers.DataTable);
 
         /// <summary>
         /// The keyword.
         /// </summary>
-        private static readonly ImageSource Keyword = GetIcon(KnownMonikers.IntellisenseKeyword);
+        private static readonly ImageSource Keyword = ImageHelper.GetIcon(KnownMonikers.IntellisenseKeyword);
 
         /// <summary>
         /// The root completions.
@@ -171,42 +172,6 @@ namespace ConnectQl.Tools.Mef.Completion
                 document.GetAvailableFunctions().Select(f => new Completion($"{f.Name.ToUpperInvariant()} ( {string.Join(", ", f.Arguments.Select(a => a.Name))} )", f.Name.ToUpperInvariant(), f.Description, f.IsAggregateFunction ? Aggregate : Function, "function")));
         }
 
-        /// <summary>
-        /// The get icon.
-        /// </summary>
-        /// <param name="moniker">
-        /// The moniker.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ImageSource"/>.
-        /// </returns>
-        private static ImageSource GetIcon(ImageMoniker moniker)
-        {
-            var iconService = ServiceProvider.GlobalProvider.GetService(typeof(SVsImageService)) as IVsImageService2;
-
-            if (iconService == null)
-            {
-                return null;
-            }
-
-            var imageAttributes = new ImageAttributes
-                                      {
-                                          Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags,
-                                          ImageType = (uint)_UIImageType.IT_Bitmap,
-                                          Format = (uint)_UIDataFormat.DF_WPF,
-                                          LogicalHeight = 20,
-                                          LogicalWidth = 20,
-                                          StructSize = Marshal.SizeOf(typeof(ImageAttributes))
-                                      };
-
-            iconService.GetImage(moniker, imageAttributes).get_Data(out var data);
-
-            var glyph = data as BitmapSource;
-
-            glyph?.Freeze();
-
-            return glyph;
-        }
 
         /// <summary>
         /// The get keyword completions.
