@@ -44,6 +44,13 @@ build_script:
   - msbuild /t:build src
   - ps: .\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts }
 
+deploy:
+  provider: NuGet
+  server: https://www.myget.org/F/connectql/api/v2/package
+  api_key:
+    secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
+  skip_symbols: true
+
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build --no-restore
 
