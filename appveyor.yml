@@ -21,6 +21,8 @@ branches:
 
 environment:
   BUILD_ALL_PLATFORMS: 1
+  MYGETAPITOKEN:
+    secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
   APITOKEN:
     secure: 5TI2LVqKI0e9RN6tfKGY1kOGqQPnzVT5nVvGhEmNXZ4=
   KEYSECRET:
@@ -47,15 +49,12 @@ build_script:
 deploy:
   - provider: NuGet
     server: https://www.myget.org/F/connectql/api/v2/package
-    api_key:
+    api_key: 
       secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
     skip_symbols: true
-  - provider: NuGet
-    server: https://www.myget.org/F/connectql/api/v2/package/
-    api_key:
-      secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
-    skip_symbols: true
-    artifact: /.*\.vsix/
+
+deploy_script:
+  - ps: ls ..\..\artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN }
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build --no-restore
