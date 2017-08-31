@@ -55,7 +55,7 @@ deploy:
     api_key:
       secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
     skip_symbols: true
-    artifacts: /.*\.vsix/
+    artifact: /.*\.vsix/
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build --no-restore
