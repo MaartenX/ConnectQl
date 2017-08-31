@@ -45,7 +45,7 @@ build_script:
   - ps: .\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts }
 
 test_script:
-  - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build
+  - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build --no-restore
 
 artifacts:
   - path: artifacts\**\*.*
