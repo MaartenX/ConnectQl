@@ -51,7 +51,7 @@ deploy:
       secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
     skip_symbols: true
   - provider: NuGet
-    server: https://www.myget.org/F/connectql/vsix/api/v2/package/
+    server: https://www.myget.org/F/connectql/api/v2/package/
     api_key:
       secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
     skip_symbols: true
