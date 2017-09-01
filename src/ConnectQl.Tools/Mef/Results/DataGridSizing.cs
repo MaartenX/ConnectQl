@@ -32,6 +32,15 @@ namespace ConnectQl.Tools.Mef.Results
     public static class DataGridSizing
     {
         /// <summary>
+        /// The initial width property.
+        /// </summary>
+        public static readonly DependencyProperty InitialWidthProperty = DependencyProperty.RegisterAttached(
+            "InitialWidth",
+            typeof(double),
+            typeof(DataGridSizing),
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsMeasure, InitialWidthChanged));
+
+        /// <summary>
         /// The initial width changed callback.
         /// </summary>
         private static readonly PropertyChangedCallback InitialWidthChanged = (o, e) =>
@@ -45,15 +54,6 @@ namespace ConnectQl.Tools.Mef.Results
                 column.Width = total == 0 ? newValue / columns.Count : column.ActualWidth * newValue / total;
             }
         };
-
-        /// <summary>
-        /// The initial width property.
-        /// </summary>
-        public static readonly DependencyProperty InitialWidthProperty = DependencyProperty.RegisterAttached(
-            "InitialWidth",
-            typeof(double),
-            typeof(DataGridSizing),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsMeasure, InitialWidthChanged));
 
         /// <summary>
         /// Sets the initial width.

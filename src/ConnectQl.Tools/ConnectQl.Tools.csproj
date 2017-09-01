@@ -37,13 +37,24 @@
     <Content Include="Icons.pkgdef" IncludeInVSIX="true" />
     <Content Include="source.extension.ico" DependentUpon="source.extension.vsixmanifest" />
     <Compile Update="Mef\Results\ResultsPanel.xaml.cs" DependentUpon="Mef\Results\ResultsPanel.xaml" />
+    <Compile Update="Resources\source.extension.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>source.extension.resx</DependentUpon>
+    </Compile>
 
+    <None Include="Resources\source.extension.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </None>
+    
     <EmbeddedResource Include="Resources\source.extension.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
       <MergeWithCTO>true</MergeWithCTO>
       <LogicalName>VSPackage.en.Resources</LogicalName>
     </EmbeddedResource>
 
     <EmbeddedResource Include="Resources\source.extension.nl.resx">
+      <DependentUpon>Resources\source.extension.resx</DependentUpon>
       <MergeWithCTO>true</MergeWithCTO>
       <LogicalName>VSPackage.nl.Resources</LogicalName>
     </EmbeddedResource>
@@ -51,6 +62,8 @@
     <Page Include="Mef\Results\ResultsPanel.xaml" Generator="MSBuild:Compile" />
 
     <Resource Include="Icons\cql.*.png" />
+
+    <Compile Remove="Mef\ToolBar\CommandButtons.cs" />
 
     <Compile Remove="Mef\ToolBar\RunScriptCommand.cs" />
 

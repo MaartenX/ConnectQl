@@ -25,19 +25,14 @@ namespace ConnectQl.Tools.Mef.Completion
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using System.Windows.Media;
-    using System.Windows.Media.Imaging;
     using ConnectQl.Interfaces;
     using ConnectQl.Tools.Extensions;
     using ConnectQl.Tools.Interfaces;
-    using Microsoft.VisualStudio.Imaging;
-    using Microsoft.VisualStudio.Imaging.Interop;
-    using Microsoft.VisualStudio.Language.Intellisense;
-    using Microsoft.VisualStudio.Shell;
-    using Microsoft.VisualStudio.Shell.Interop;
-    using Microsoft.VisualStudio.Text;
     using ConnectQl.Tools.Mef.Helpers;
+    using Microsoft.VisualStudio.Imaging;
+    using Microsoft.VisualStudio.Language.Intellisense;
+    using Microsoft.VisualStudio.Text;
 
     /// <summary>
     /// The ConnectQl completion source.
@@ -171,7 +166,6 @@ namespace ConnectQl.Tools.Mef.Completion
                 spanToReplace,
                 document.GetAvailableFunctions().Select(f => new Completion($"{f.Name.ToUpperInvariant()} ( {string.Join(", ", f.Arguments.Select(a => a.Name))} )", f.Name.ToUpperInvariant(), f.Description, f.IsAggregateFunction ? Aggregate : Function, "function")));
         }
-
 
         /// <summary>
         /// The get keyword completions.

@@ -27,13 +27,10 @@ namespace ConnectQl.Tools.Mef.Results
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Media;
     using ConnectQl.Results;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Text.Classification;
-    using System.Windows.Media;
-    using System.ComponentModel;
-    using System.Linq;
 
     /// <summary>
     /// Interaction logic for ResultsViewer.xaml
@@ -87,16 +84,6 @@ namespace ConnectQl.Tools.Mef.Results
         /// The items.
         /// </value>
         public ObservableCollection<object> Items { get; } = new ObservableCollection<object>();
-
-
-        public Brush EditorBackgroundBrush
-        {
-            get
-            {
-
-                return null;
-            }
-        }
 
         /// <summary>
         /// Gets the <see cref="T:System.Windows.FrameworkElement" /> that renders the margin.
@@ -159,11 +146,6 @@ namespace ConnectQl.Tools.Mef.Results
         ITextViewMargin ITextViewMargin.GetTextViewMargin(string marginName)
         {
             return this;
-        }
-
-        private void OnAutogeneratingColumn(object sender ,DataGridAutoGeneratingColumnEventArgs e)
-        {
-            e.Column.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
         }
 
         /// <summary>

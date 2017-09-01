@@ -26,7 +26,6 @@ namespace ConnectQl.Tools.Mef.Results
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Utilities;
-    using Microsoft.VisualStudio.Text.Classification;
 
     /// <summary>
     /// Provides the results panel.

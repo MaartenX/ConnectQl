@@ -41,7 +41,6 @@
                             <DataGrid 
                                 ItemsSource="{Binding Path=Rows}"
                                 AutoGenerateColumns="True"
-                                AutoGeneratingColumn="OnAutogeneratingColumn"
                                 CanUserResizeColumns="True"                        
                                 CanUserResizeRows="False" 
                                 CanUserAddRows="False" 

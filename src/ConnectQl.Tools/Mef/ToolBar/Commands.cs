@@ -30,11 +30,6 @@ namespace ConnectQl.Tools.Mef.ToolBar
     internal class Commands
     {
         /// <summary>
-        /// The Connect Ql command set.
-        /// </summary>
-        public static readonly Guid ConnectQlCommandSet = new Guid("5ea5a5f2-d344-423e-99fa-1546f86445c8");
-
-        /// <summary>
         /// The Connect Ql tool bar group identifier.
         /// </summary>
         public const int ConnectQlToolBarGroupId = 0x1000;
@@ -48,5 +43,10 @@ namespace ConnectQl.Tools.Mef.ToolBar
         /// The run script command identifier.
         /// </summary>
         public const int RunScriptCommandId = 0x2001;
+
+        /// <summary>
+        /// The Connect Ql command set.
+        /// </summary>
+        public static readonly Guid ConnectQlCommandSet = new Guid("5ea5a5f2-d344-423e-99fa-1546f86445c8");
     }
 }

@@ -26,11 +26,9 @@ namespace ConnectQl.Tools.Mef.Results
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
-    using System.Windows.Media;
+    using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Shell;
-    using Microsoft.VisualStudio.PlatformUI;
 
     /// <summary>
     /// Scroll bar for the results panel.
@@ -68,8 +66,8 @@ namespace ConnectQl.Tools.Mef.Results
             {
                 RowDefinitions =
                 {
-                    new RowDefinition { Height = new GridLength(5, GridUnitType.Pixel)},
-                    new RowDefinition { Height = new GridLength(1, GridUnitType.Auto)}
+                    new RowDefinition { Height = new GridLength(5, GridUnitType.Pixel) },
+                    new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) }
                 },
                 Children =
                 {
