@@ -20,13 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+[assembly: System.Resources.NeutralResourcesLanguage("en", System.Resources.UltimateResourceFallbackLocation.Satellite)]
+
 namespace ConnectQl.Tools
 {
     using System;
     using System.ComponentModel.Composition;
+    using System.ComponentModel.Design;
     using System.Runtime.InteropServices;
     using System.Threading;
-    using System.Threading.Tasks;
     using System.Windows.Media;
     using ConnectQl.Tools.Mef.Classification;
     using Microsoft.VisualStudio.Shell;
@@ -34,7 +36,6 @@ namespace ConnectQl.Tools
     using Microsoft.VisualStudio.Utilities;
     using static Microsoft.VisualStudio.VSConstants;
     using Task = System.Threading.Tasks.Task;
-    using System.ComponentModel.Design;
 
     /// <summary>
     /// The Visual Studio Package.
@@ -42,7 +43,7 @@ namespace ConnectQl.Tools
     [Guid(PackageId)]
     [ComVisible(true)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = false)]
     [InstalledProductRegistration("#110", "#112", "1.0.0.0", IconResourceID = 400)]
     [ProvideAutoLoad("1501ac94-e5fa-4e6b-b780-0959421d99a4")]
     [ProvideUIContextRule(
@@ -105,20 +106,6 @@ namespace ConnectQl.Tools
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await base.InitializeAsync(cancellationToken, progress);
-
-            if (this.GetService(typeof(IMenuCommandService)) is OleMenuCommandService commandService)
-            {
-                var menuCommandID = new CommandID(new Guid("5ea5a5f2-d344-423e-99fa-1546f86445c8"), 0x9437);
-                var menuItem = new MenuCommand(
-                    (o, e) =>
-                {
-
-                },
-                menuCommandID);
-
-                commandService.AddCommand(menuItem);
-            }
-
         }
 
         /// <summary>

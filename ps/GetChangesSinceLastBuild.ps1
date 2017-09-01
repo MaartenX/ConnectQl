@@ -23,7 +23,7 @@ else
 
 	$json = Invoke-RestMethod -Uri $api -Headers $headers
 	$lastBuildCommitId = ($json.builds | ? { $_.status -eq 'success' -and $_.branch -eq $env:APPVEYOR_REPO_BRANCH } | select -First 1).commitId
-	$changedFiles = (git diff-tree -r --name-only --no-commit-id $lastBuildCommitId HEAD | Get-Item)
+	$changedFiles = (git diff-tree -r --name-only --no-commit-id $lastBuildCommitId HEAD | Get-Item -ErrorAction Ignore)
 	$changedFolders = $changedFiles.Directory.FullName | % { $_ + $slash }
     $rebuildAll = ($changedFiles.Name | ? { $filesForRebuildAll -contains $_ }).Count -gt 0
 

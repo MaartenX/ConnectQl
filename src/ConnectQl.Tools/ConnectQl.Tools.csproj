@@ -4,6 +4,7 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
 
   <PropertyGroup>
+    <UICulture>en</UICulture>
     <SchemaVersion>2.0</SchemaVersion>
     <TargetFramework>net452</TargetFramework>
     <IsPackable>false</IsPackable>
@@ -35,24 +36,26 @@
     <Content Include="Icons\Monikers.imagemanifest" IncludeInVSIX="true" />
     <Content Include="Icons.pkgdef" IncludeInVSIX="true" />
     <Content Include="source.extension.ico" DependentUpon="source.extension.vsixmanifest" />
-    <Compile Update="VSPackage.Designer.cs" DependentUpon="source.extension.resx" />
     <Compile Update="Mef\Results\ResultsPanel.xaml.cs" DependentUpon="Mef\Results\ResultsPanel.xaml" />
 
-    <EmbeddedResource Include="source.extension.resx">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    <EmbeddedResource Include="Resources\source.extension.en.resx">
       <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
+      <LogicalName>VSPackage.en.Resources</LogicalName>
     </EmbeddedResource>
 
+    <EmbeddedResource Include="Resources\source.extension.nl.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <LogicalName>VSPackage.nl.Resources</LogicalName>
+    </EmbeddedResource>
+    
     <Page Include="Mef\Results\ResultsPanel.xaml" Generator="MSBuild:Compile" />
 
     <Resource Include="Icons\cql.*.png" />
 
     <Compile Remove="Mef\ToolBar\RunScriptCommand.cs" />
 
-    <VSCTCompile Include="ConnectQl.Tools.vsct" Generator="VsctGenerator" DependentUpon="source.extension.vsixmanifest" ResourceName="Menus.ctmenu" />
+    <VSCTCompile Include="Vsct\ConnectQl.Tools.en.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />
+    <VSCTCompile Include="Vsct\ConnectQl.Tools.nl.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />
   </ItemGroup>
 
   <ItemGroup>

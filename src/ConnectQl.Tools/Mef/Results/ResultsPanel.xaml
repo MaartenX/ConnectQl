@@ -12,10 +12,6 @@
              HorizontalAlignment="Stretch"
              x:ClassModifier="internal">
     
-    <UserControl.Resources>
-        <local:MinusConverter x:Key="MinusOne" Amount="1" />
-    </UserControl.Resources>
-    
     <Grid>
 
         <Grid.RowDefinitions>
