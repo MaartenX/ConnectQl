@@ -36,6 +36,7 @@ namespace ConnectQl.Tools
     using Microsoft.VisualStudio.Utilities;
     using static Microsoft.VisualStudio.VSConstants;
     using Task = System.Threading.Tasks.Task;
+    using Microsoft.VisualStudio.ComponentHost;
 
     /// <summary>
     /// The Visual Studio Package.
@@ -106,6 +107,17 @@ namespace ConnectQl.Tools
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await base.InitializeAsync(cancellationToken, progress);
+            
+            var componentModel = (IComponentModel)this.GetService(typeof(SComponentModel));
+            var errorListProvider = componentModel.GetService<IErrorListProvider>();
+
+            errorListProvider.ErrorList = new UpdatedErrorListProvider(this)
+            {
+                ProviderGuid = new Guid("9D4593EC-FF68-465A-8F84-0AF9CBE9E990"),
+                ProviderName = "ConnectQl Errors"
+            };
+
+            errorListProvider.ErrorList.Show();
         }
 
         /// <summary>
