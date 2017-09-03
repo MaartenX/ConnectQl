@@ -288,4 +288,4 @@ __pycache__/
 *.xsd.cs
 /.vscode
 /.vscode
-/src/msbuild.binlog
+*.binlog
