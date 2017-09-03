@@ -36,6 +36,7 @@ namespace ConnectQl.Tools
     using Microsoft.VisualStudio.Utilities;
     using static Microsoft.VisualStudio.VSConstants;
     using Task = System.Threading.Tasks.Task;
+    using ConnectQl.Tools.Resources;
 
     /// <summary>
     /// The Visual Studio Package.
@@ -105,6 +106,8 @@ namespace ConnectQl.Tools
         /// </returns>
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
+            var r = Resource.Get("112");
+
             await base.InitializeAsync(cancellationToken, progress);
         }
 

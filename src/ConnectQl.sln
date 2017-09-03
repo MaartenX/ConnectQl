@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl", "ConnectQl\ConnectQl.csproj", "{7A245E0E-267D-4115-9A4B-A08C651AFEA5}"
 EndProject
@@ -119,5 +119,8 @@ Global
 		{DEA2AA6B-3E62-4909-BA85-498C7FEF07C4} = {A475CC76-E742-4CC6-9CBB-4BAD5492C064}
 		{4A05E1D8-B98E-4888-A248-785245B5E2C6} = {61674303-473A-4C5A-83D2-6F0C9157B8CB}
 		{F7AA26AE-B2BC-4D21-B3F0-A64FCFC1A75C} = {61674303-473A-4C5A-83D2-6F0C9157B8CB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {96CB5CB7-2BD6-4A82-80BE-43958461705E}
 	EndGlobalSection
 EndGlobal
