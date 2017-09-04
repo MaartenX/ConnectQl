@@ -11,7 +11,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Version="$(Version)" Condition="$(DevelopingLocally)" />
-    <PackageReference Include="ConnectQl" Version="0.1.98-prerelease" Condition="!$(DevelopingLocally)" />
+    <PackageReference Include="ConnectQl" Version="$(ConnectQlPluginReferenceVersion)" Condition="!$(DevelopingLocally)" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" Condition="'$(TargetFramework)' == 'netstandard1.5'" />
     <Reference Include="System.Configuration" Version="4.0" Condition="'$(TargetFramework)' == 'net45'" />

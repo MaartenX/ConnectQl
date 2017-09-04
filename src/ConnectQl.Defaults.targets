@@ -1,4 +1,10 @@
 <Project>
+
+  <PropertyGroup>
+    <!-- This is the version number of the nuget that the plugins will references. -->
+    <ConnectQlPluginReferenceVersion>0.1.122-prerelease</ConnectQlPluginReferenceVersion>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <DocumentationFile>bin\doc\$(AssemblyName).xml</DocumentationFile>
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
