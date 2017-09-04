@@ -205,7 +205,7 @@ namespace ConnectQl.Internal
 
                 case "WEEK":
                 case "WEEKS":
-                    return TimeSpan.FromMilliseconds(value * 7);
+                    return TimeSpan.FromDays(value * 7);
 
                 default:
                     this.SemErr($"Invalid time unit specified: '{unit.ToUpperInvariant()}', must be MILLISECOND[S], SECOND[S], MINUTE[S], HOUR[S], DAY[S] or WEEK[S].");

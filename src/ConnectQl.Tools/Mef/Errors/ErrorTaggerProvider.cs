@@ -44,6 +44,12 @@ namespace ConnectQl.Tools.Mef.Errors
         internal IDocumentProvider DocumentProvider { get; set; }
 
         /// <summary>
+        /// Gets or sets the error list provider.
+        /// </summary>
+        [Import]
+        internal IErrorListProvider ErrorListProvider { get; set; }
+
+        /// <summary>
         /// Creates a tag provider for the specified view and buffer.
         /// </summary>
         /// <returns>

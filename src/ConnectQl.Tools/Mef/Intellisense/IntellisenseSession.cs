@@ -24,8 +24,14 @@ namespace ConnectQl.Tools.Mef.Intellisense
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using ConnectQl.Intellisense;
+    using ConnectQl.Interfaces;
+    using ConnectQl.Results;
     using ConnectQl.Tools.Interfaces;
+    using ConnectQl.Tools.Mef.Errors;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Text;
 
     /// <summary>
@@ -42,6 +48,16 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// The project unique name.
         /// </summary>
         private readonly string projectUniqueName;
+
+        /// <summary>
+        /// The project hierarchy item.
+        /// </summary>
+        private readonly IVsHierarchy projectHierarchyItem;
+
+        /// <summary>
+        /// The error list.
+        /// </summary>
+        private readonly UpdatedErrorListProvider errorList;
 
         /// <summary>
         /// The provider.
@@ -62,10 +78,18 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// <param name="projectUniqueName">
         /// The project unique name.
         /// </param>
-        public IntellisenseSession(ConnectQlDocumentProvider provider, string projectUniqueName)
+        /// <param name="projectHierarchyItem">
+        /// The hierarchy item for the project for this intellisense session.
+        /// </param>
+        /// <param name="errorList">
+        /// The error list to report errors to.
+        /// </param>
+        public IntellisenseSession(ConnectQlDocumentProvider provider, string projectUniqueName, IVsHierarchy projectHierarchyItem, UpdatedErrorListProvider errorList)
         {
             this.provider = provider;
             this.projectUniqueName = projectUniqueName;
+            this.projectHierarchyItem = projectHierarchyItem;
+            this.errorList = errorList;
 
             var newProxy = new IntellisenseProxy(projectUniqueName, this.documents);
 
@@ -104,6 +128,46 @@ namespace ConnectQl.Tools.Mef.Intellisense
         }
 
         /// <summary>
+        /// Converts a message to a task.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>
+        /// The task.
+        /// </returns>
+        private Task ToTask(IDocument document, IMessage message)
+        {
+            var result = new ErrorTask
+            {
+                Text = message.Text,
+                Line = message.Start.Line - 1,
+                Column = message.Start.Column - 1,
+                Document = document.Filename,
+                HierarchyItem = this.projectHierarchyItem
+            };
+
+            switch (message.Type)
+            {
+                case ResultMessageType.Error:
+                    result.ErrorCategory = TaskErrorCategory.Error;
+                    break;
+
+                case ResultMessageType.Warning:
+                    result.ErrorCategory = TaskErrorCategory.Warning;
+                    break;
+
+                case ResultMessageType.Information:
+                    result.ErrorCategory = TaskErrorCategory.Message;
+                    break;
+
+                default:
+                    throw new ArgumentException($"Invalid message type: {message.Type}.", nameof(message));
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// The proxy on document updated.
         /// </summary>
         /// <param name="sender">
@@ -117,7 +181,38 @@ namespace ConnectQl.Tools.Mef.Intellisense
             if (this.documents.TryGetValue(documentUpdatedEventArgs.Document.Filename, out var doc))
             {
                 doc.UpdateClassification(documentUpdatedEventArgs.Document);
+
+                if (documentUpdatedEventArgs.Document.Messages != null)
+                {
+                    this.UpdateErrorList(doc);
+                }
             }
+        }
+
+        /// <summary>
+        /// Updates the error list.
+        /// </summary>
+        /// <param name="document">The document that was changed.</param>
+        private async void UpdateErrorList(IDocument document)
+        {
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                this.errorList.SuspendRefresh();
+
+                foreach (var task in this.errorList.Tasks.OfType<ErrorTask>().Where(et => et.Document == document.Filename).ToList())
+                {
+                    this.errorList.Tasks.Remove(task);
+                }
+
+                foreach (var task in document.GetMessages().Select(message => ToTask(document, message)))
+                {
+                    task.Navigate += (o, e) => this.errorList.NavigateToTask(task, new Guid(EnvDTE.Constants.vsViewKindCode));
+
+                    this.errorList.Tasks.Add(task);
+                }
+
+                this.errorList.ResumeRefresh();
+            });
         }
 
         /// <summary>

@@ -46,6 +46,7 @@ namespace ConnectQl.Tools.Mef
         /// The DTE.
         /// </summary>
         private readonly DTE dte;
+        private readonly IVsSolution vsSolution;
 
         /// <summary>
         /// The projects.
@@ -58,6 +59,7 @@ namespace ConnectQl.Tools.Mef
         public ConnectQlDocumentProvider()
         {
             this.dte = (DTE)Package.GetGlobalService(typeof(SDTE));
+            this.vsSolution = (IVsSolution)Package.GetGlobalService(typeof(SVsSolution));
         }
 
         /// <summary>
@@ -65,6 +67,15 @@ namespace ConnectQl.Tools.Mef
         /// </summary>
         [Import]
         internal ITextDocumentFactoryService DocumentFactoryService { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error list provider.
+        /// </summary>
+        /// <value>
+        /// The error list provider.
+        /// </value>
+        [Import]
+        internal IErrorListProvider ErrorListProvider { get; set; }
 
         /// <summary>
         /// The get document.
@@ -81,9 +92,11 @@ namespace ConnectQl.Tools.Mef
 
             var uniqueName = this.dte.Solution.FindProjectItem(document.FilePath)?.ContainingProject?.UniqueName ?? "Unknown project";
 
+            this.vsSolution.GetProjectOfUniqueName(uniqueName, out var projectHierarchyItem);
+
             if (!this.projects.TryGetValue(uniqueName, out var session))
             {
-                session = this.projects[uniqueName] = new IntellisenseSession(this, uniqueName);
+                session = this.projects[uniqueName] = new IntellisenseSession(this, uniqueName, projectHierarchyItem, this.ErrorListProvider.ErrorList);
             }
 
             return session.GetDocument(textBuffer);

@@ -30,6 +30,8 @@ namespace ConnectQl.Tools
     using System.Runtime.InteropServices;
     using System.Threading;
     using System.Windows.Media;
+    using ConnectQl.Tools.Mef.Errors;
+    using ConnectQl.Tools.Interfaces;
     using ConnectQl.Tools.Mef.Classification;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text.Classification;
@@ -37,7 +39,7 @@ namespace ConnectQl.Tools
     using static Microsoft.VisualStudio.VSConstants;
     using Task = System.Threading.Tasks.Task;
     using ConnectQl.Tools.Resources;
-    using Microsoft.VisualStudio.ComponentHost;
+    using Microsoft.VisualStudio.ComponentModelHost;
 
     /// <summary>
     /// The Visual Studio Package.
@@ -110,17 +112,6 @@ namespace ConnectQl.Tools
             var r = Resource.Get("112");
 
             await base.InitializeAsync(cancellationToken, progress);
-            
-            var componentModel = (IComponentModel)this.GetService(typeof(SComponentModel));
-            var errorListProvider = componentModel.GetService<IErrorListProvider>();
-
-            errorListProvider.ErrorList = new UpdatedErrorListProvider(this)
-            {
-                ProviderGuid = new Guid("9D4593EC-FF68-465A-8F84-0AF9CBE9E990"),
-                ProviderName = "ConnectQl Errors"
-            };
-
-            errorListProvider.ErrorList.Show();
         }
 
         /// <summary>

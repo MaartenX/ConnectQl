@@ -156,7 +156,10 @@ namespace ConnectQl.Tools.Mef.Intellisense
                 this.intellisenseSession = null;
             }
 
-            AppDomain.Unload(this.appDomain);
+            if (this.appDomain != null)
+            {
+                AppDomain.Unload(this.appDomain);
+            }
 
             this.appDomain = null;
         }
@@ -179,54 +182,55 @@ namespace ConnectQl.Tools.Mef.Intellisense
                     try
                     {
                         var visualStudioProject = GetVisualStudioProjectByUniqueName(projectId);
+                        var projectName = "Unknown project";
+                        var configFile = (string)null;
+                        var assemblies = new string[0];
 
-                        if (visualStudioProject == null)
+                        if (visualStudioProject != null)
                         {
-                            this.Dispose();
+                            projectName = visualStudioProject.Project.Name;
 
-                            return;
-                        }
+                            try
+                            {
+                                this.referencesEvents = visualStudioProject.Events.ReferencesEvents;
 
-                        try
-                        {
-                            this.referencesEvents = visualStudioProject.Events.ReferencesEvents;
+                                this.referencesEvents.ReferenceAdded += this.ReferencesUpdated;
+                                this.referencesEvents.ReferenceChanged += this.ReferencesUpdated;
+                                this.referencesEvents.ReferenceRemoved += this.ReferencesUpdated;
+                            }
+                            catch (NotImplementedException)
+                            {
+                                Debug.WriteLine("ReferencesEvents not implemented for this project.");
+                            }
 
-                            this.referencesEvents.ReferenceAdded += this.ReferencesUpdated;
-                            this.referencesEvents.ReferenceChanged += this.ReferencesUpdated;
-                            this.referencesEvents.ReferenceRemoved += this.ReferencesUpdated;
-                        }
-                        catch (NotImplementedException)
-                        {
-                            Debug.WriteLine("ReferencesEvents not implemented for this project.");
-                        }
+                            try
+                            {
+                                this.importsEvents = visualStudioProject.Events.ImportsEvents;
+                                this.importsEvents.ImportAdded += this.ImportsUpdated;
+                                this.importsEvents.ImportRemoved += this.ImportsUpdated;
+                            }
+                            catch (NotImplementedException)
+                            {
+                                Debug.WriteLine("ImportsEvents not implemented for this project.");
+                            }
 
-                        try
-                        {
-                            this.importsEvents = visualStudioProject.Events.ImportsEvents;
-                            this.importsEvents.ImportAdded += this.ImportsUpdated;
-                            this.importsEvents.ImportRemoved += this.ImportsUpdated;
-                        }
-                        catch (NotImplementedException)
-                        {
-                            Debug.WriteLine("ImportsEvents not implemented for this project.");
-                        }
+                            configFile = visualStudioProject.Project.ProjectItems.OfType<ProjectItem>().FirstOrDefault(i => i.Name.EndsWith(".config", StringComparison.OrdinalIgnoreCase))?.FileNames[0];
 
-                        var configFile = visualStudioProject.Project.ProjectItems.OfType<ProjectItem>().FirstOrDefault(i => i.Name.EndsWith(".config", StringComparison.OrdinalIgnoreCase))?.FileNames[0];
-
-                        var assemblies = visualStudioProject.References.Cast<Reference>()
-                            .Where(r =>
-                                {
-                                    try
+                            assemblies = visualStudioProject.References.Cast<Reference>()
+                                .Where(r =>
                                     {
-                                        return !string.IsNullOrEmpty(r.Path);
-                                    }
-                                    catch
-                                    {
-                                        return false;
-                                    }
-                                })
-                            .Select(r => r.Path)
-                            .ToArray();
+                                        try
+                                        {
+                                            return !string.IsNullOrEmpty(r.Path);
+                                        }
+                                        catch
+                                        {
+                                            return false;
+                                        }
+                                    })
+                                .Select(r => r.Path)
+                                .ToArray();
+                        }
 
                         var setupInfomation = AppDomain.CurrentDomain.SetupInformation;
 
@@ -235,7 +239,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
 
                         AppDomain.CurrentDomain.AssemblyResolve += AppDomainFix;
 
-                        this.appDomain = AppDomain.CreateDomain($"Intellisense project {visualStudioProject.Project.Name} domain", null, setupInfomation);
+                        this.appDomain = AppDomain.CreateDomain($"Intellisense project {projectName} domain", null, setupInfomation);
 
                         object[] arguments =
                             {
@@ -470,13 +474,14 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         private void WatchPaths(IReadOnlyCollection<string> arguments)
         {
-            if (arguments.Count == 0)
+            this.watchers = new List<FileSystemWatcher>();
+            var paths = arguments.Select(Path.GetDirectoryName).OrderBy(argument => argument).Where(argument => argument != null).ToArray();
+
+            if (paths.Length == 0)
             {
                 return;
             }
 
-            this.watchers = new List<FileSystemWatcher>();
-            var paths = arguments.Select(Path.GetDirectoryName).OrderBy(argument => argument).Where(argument => argument != null).ToArray();
             var last = paths[0];
 
             this.watchers.Add(new FileSystemWatcher

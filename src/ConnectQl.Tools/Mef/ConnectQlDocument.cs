@@ -92,6 +92,11 @@ namespace ConnectQl.Tools.Mef
         public string Content { get; set; }
 
         /// <summary>
+        /// Gets the filename.
+        /// </summary>
+        public string Filename => this.filename;
+
+        /// <summary>
         /// Gets the classified tokens for the specified span.
         /// </summary>
         /// <param name="span">
@@ -140,6 +145,17 @@ namespace ConnectQl.Tools.Mef
         /// The messages.
         /// </returns>
         public IEnumerable<IMessage> GetMessages(SnapshotSpan span)
+        {
+            return this.messages;
+        }
+
+        /// <summary>
+        /// Gets the messages for the document.
+        /// </summary>
+        /// <returns>
+        /// All messages for this document.
+        /// </returns>
+        public IEnumerable<IMessage> GetMessages()
         {
             return this.messages;
         }

@@ -25,6 +25,7 @@ namespace ConnectQl.Tools.Interfaces
     using System;
     using System.Collections.Generic;
     using ConnectQl.Interfaces;
+    using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text;
 
     /// <summary>
@@ -36,6 +37,11 @@ namespace ConnectQl.Tools.Interfaces
         /// Raised when the document changed.
         /// </summary>
         event EventHandler<DocumentChangedEventArgs> DocumentChanged;
+
+        /// <summary>
+        /// Gets the filename.
+        /// </summary>
+        string Filename { get; }
 
         /// <summary>
         /// Gets the classified tokens for the specified span.
@@ -72,6 +78,12 @@ namespace ConnectQl.Tools.Interfaces
 
         /// <summary>
         /// Gets the messages for the document.
+        /// </summary>
+        /// <returns>All messages for this document.</returns>
+        IEnumerable<IMessage> GetMessages();
+
+        /// <summary>
+        /// Gets the messages for the specified span.
         /// </summary>
         /// <param name="span">
         /// The span.

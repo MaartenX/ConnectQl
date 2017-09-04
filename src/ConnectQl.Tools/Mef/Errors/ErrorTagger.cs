@@ -26,9 +26,12 @@ namespace ConnectQl.Tools.Mef.Errors
     using System.Collections.Generic;
     using System.Linq;
     using ConnectQl.Tools.Interfaces;
+    using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Tagging;
+    using Microsoft.VisualStudio.Text.Adornments;
+    using ConnectQl.Results;
 
     /// <summary>
     /// The error tagger.
@@ -39,6 +42,11 @@ namespace ConnectQl.Tools.Mef.Errors
         /// The document.
         /// </summary>
         private readonly IDocument document;
+
+        /// <summary>
+        /// The error tagger provider.
+        /// </summary>
+        private readonly ErrorTaggerProvider provider;
 
         /// <summary>
         /// The view.
@@ -62,6 +70,7 @@ namespace ConnectQl.Tools.Mef.Errors
             ITextView view,
             ITextBuffer buffer)
         {
+            this.provider = provider;
             this.view = view;
             this.document = provider.DocumentProvider.GetDocument(buffer);
             this.document.DocumentChanged += (o, e) =>
@@ -102,7 +111,7 @@ namespace ConnectQl.Tools.Mef.Errors
                     var start = Math.Min(tokens[message.Start.TokenIndex].Start, span.Snapshot.Length);
                     var end = Math.Min(tokens[message.End.TokenIndex].End, span.Snapshot.Length);
 
-                    yield return new TagSpan<ErrorTag>(new SnapshotSpan(span.Snapshot, start, end - start), new ErrorTag("syntax error", message.Text));
+                    yield return new TagSpan<ErrorTag>(new SnapshotSpan(span.Snapshot, start, end - start), message.Type == ResultMessageType.Error ? new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message.Text) : message.Type == ResultMessageType.Warning ? new ErrorTag(PredefinedErrorTypeNames.Warning, message.Text) : new ErrorTag(PredefinedErrorTypeNames.Suggestion, message.Text));
                 }
             }
         }
