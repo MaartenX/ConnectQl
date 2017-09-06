@@ -3,6 +3,7 @@
   <PropertyGroup>
     <!-- This is the version number of the nuget that the plugins will references. -->
     <ConnectQlPluginReferenceVersion>0.1.122-prerelease</ConnectQlPluginReferenceVersion>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
   
   <PropertyGroup>

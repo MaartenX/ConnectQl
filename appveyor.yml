@@ -51,7 +51,8 @@ deploy:
     server: https://www.myget.org/F/connectql/api/v2/package
     api_key: 
       secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
-    skip_symbols: true
+    skip_symbols: false
+    symbol_server : https://www.myget.org/F/connectql/symbols/api/v2/package
 
 after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
