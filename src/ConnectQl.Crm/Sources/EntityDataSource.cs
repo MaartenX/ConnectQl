@@ -34,6 +34,7 @@ namespace ConnectQl.Crm.Sources
     using Microsoft.Xrm.Sdk.Messages;
     using Microsoft.Xrm.Sdk.Metadata;
     using Microsoft.Xrm.Tooling.Connector;
+    using System.Diagnostics;
 
     /// <summary>
     /// The entity data source.
@@ -153,7 +154,11 @@ namespace ConnectQl.Crm.Sources
         /// <returns>The organization service.</returns>
         private IOrganizationService GetService(Interfaces.IExecutionContext context)
         {
-            return this.client ?? (this.client = new CrmServiceClient(this.connectionString ?? context.GetDefault("connectionstring", this) as string));
+            var connectionString = this.connectionString ?? context.GetDefault("connectionstring", this) as string;
+
+            Trace.WriteLine(connectionString);
+
+            return this.client ?? (this.client = new CrmServiceClient(connectionString));
         }
     }
 }
