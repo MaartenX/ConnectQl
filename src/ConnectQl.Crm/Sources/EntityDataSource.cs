@@ -23,7 +23,9 @@
 namespace ConnectQl.Crm.Sources
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
@@ -31,10 +33,10 @@ namespace ConnectQl.Crm.Sources
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
     using Microsoft.Xrm.Sdk;
+    using Microsoft.Xrm.Sdk.Client;
     using Microsoft.Xrm.Sdk.Messages;
     using Microsoft.Xrm.Sdk.Metadata;
     using Microsoft.Xrm.Tooling.Connector;
-    using System.Diagnostics;
 
     /// <summary>
     /// The entity data source.
@@ -55,6 +57,14 @@ namespace ConnectQl.Crm.Sources
         /// The client.
         /// </summary>
         private IOrganizationService client;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="EntityDataSource"/> class.
+        /// </summary>
+        static EntityDataSource()
+        {
+            typeof(OrganizationServiceProxy).GetField("_xrmSdkAssemblyFileVersion", BindingFlags.NonPublic | BindingFlags.Static).SetValue(null, "8.2.0.362");
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityDataSource"/> class.
