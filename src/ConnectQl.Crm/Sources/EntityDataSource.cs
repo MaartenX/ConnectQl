@@ -23,7 +23,6 @@
 namespace ConnectQl.Crm.Sources
 {
     using System;
-    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -56,7 +55,7 @@ namespace ConnectQl.Crm.Sources
         /// <summary>
         /// The client.
         /// </summary>
-        private IOrganizationService client;
+        private CrmServiceClient client;
 
         /// <summary>
         /// Initializes static members of the <see cref="EntityDataSource"/> class.
@@ -164,11 +163,14 @@ namespace ConnectQl.Crm.Sources
         /// <returns>The organization service.</returns>
         private IOrganizationService GetService(Interfaces.IExecutionContext context)
         {
-            var connectionString = this.connectionString ?? context.GetDefault("connectionstring", this) as string;
+            var result = this.client ?? (this.client = new CrmServiceClient(this.connectionString ?? (string)context.GetDefault("connectionstring", this)));
 
-            Trace.WriteLine(connectionString);
+            if (!result.IsReady)
+            {
+                throw new Exception($"Unable to connect to CRM: {result.LastCrmError}.");
+            }
 
-            return this.client ?? (this.client = new CrmServiceClient(connectionString));
+            return result;
         }
     }
 }

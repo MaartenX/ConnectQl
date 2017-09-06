@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ConnectQl.Excel\ConnectQl.Excel.csproj" />
     <ProjectReference Include="..\ConnectQl.Platform\ConnectQl.Platform.csproj" />
-    <ProjectReference Include="..\ConnectQl.Platform\ConnectQl.Crm.csproj" />
+    <ProjectReference Include="..\ConnectQl.Crm\ConnectQl.Crm.csproj" />
   </ItemGroup>
 
   <ItemGroup>
