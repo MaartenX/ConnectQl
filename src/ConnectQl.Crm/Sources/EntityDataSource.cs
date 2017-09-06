@@ -105,7 +105,7 @@ namespace ConnectQl.Crm.Sources
             return Task.FromResult(
                 Descriptor.ForDataSource(
                 sourceAlias,
-                metadata.Attributes.Select(a => Descriptor.ForColumn(a.LogicalName, ToType(a.AttributeType), a.Description.UserLocalizedLabel.Label)).Where(a => a.Type != null),
+                metadata.Attributes.Select(a => Descriptor.ForColumn(a.LogicalName, ToType(a.AttributeType), a.DisplayName?.UserLocalizedLabel?.Label)).Where(a => a.Type != null),
                 false));
         }
 
