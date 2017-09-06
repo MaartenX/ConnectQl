@@ -28,7 +28,7 @@ namespace ConnectQl.Crm
     /// <summary>
     /// The Microsoft Dynamics CRM plugin.
     /// </summary>
-    public class Plugin
+    public class Plugin : IConnectQlPlugin
     {
         /// <summary>
         /// Gets the name.
