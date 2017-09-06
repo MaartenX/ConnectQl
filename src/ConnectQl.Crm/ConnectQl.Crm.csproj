@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net452</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Defaults.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Condition="$(DevelopingLocally)" />
+    <PackageReference Include="ConnectQl" Version="$(ConnectQlPluginReferenceVersion)" Condition="!$(DevelopingLocally)" />
+    <PackageReference Include="Microsoft.CrmSdk.XrmTooling.CoreAssembly" Version="8.2.0.5" />
+  </ItemGroup>
+  
+</Project>
