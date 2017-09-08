@@ -268,86 +268,88 @@ namespace ConnectQl.Tools.Mef.Completion
 
             var spanToReplace = extend.Span;
 
-            if (current != null)
-            {
-                switch (current.Scope)
-                {
-                    case ClassificationScope.SelectExpression:
+            var completions = document.GetAutoCompletions(current);
 
-                        if (extend.Span.GetText() == ".")
-                        {
-                            var sourceName = navigator.GetExtentOfWord(extend.Span.Start - 1).Span.GetText();
-                            var source = document.GetAvailableSources(extend.Span.Start - 1).FirstOrDefault(s => s.Alias.Equals(sourceName, StringComparison.OrdinalIgnoreCase));
+            //if (current != null)
+            //{
+            //    switch (current.Scope)
+            //    {
+            //        case ClassificationScope.Select:
 
-                            if (source != null)
-                            {
-                                return GetColumnCompletions(new SnapshotSpan(extend.Span.Start + 1, 0), source);
-                            }
-                        }
+            //            if (extend.Span.GetText() == ".")
+            //            {
+            //                var sourceName = navigator.GetExtentOfWord(extend.Span.Start - 1).Span.GetText();
+            //                var source = document.GetAvailableSources(extend.Span.Start - 1).FirstOrDefault(s => s.Alias.Equals(sourceName, StringComparison.OrdinalIgnoreCase));
 
-                        return GetFunctionCompletions(spanToReplace, document)
-                            .Concat(GetVariableCompletions(spanToReplace, document))
-                            .Concat(GetSourceCompletions(spanToReplace, document));
+            //                if (source != null)
+            //                {
+            //                    return GetColumnCompletions(new SnapshotSpan(extend.Span.Start + 1, 0), source);
+            //                }
+            //            }
 
-                    case ClassificationScope.Expression:
+            //            return GetFunctionCompletions(spanToReplace, document)
+            //                .Concat(GetVariableCompletions(spanToReplace, document))
+            //                .Concat(GetSourceCompletions(spanToReplace, document));
 
-                        return GetFunctionCompletions(spanToReplace, document)
-                            .Concat(GetVariableCompletions(spanToReplace, document));
+            //        case ClassificationScope.Expression:
 
-                    case ClassificationScope.Function:
+            //            return GetFunctionCompletions(spanToReplace, document)
+            //                .Concat(GetVariableCompletions(spanToReplace, document));
 
-                        return GetFunctionCompletions(spanToReplace, document);
+            //        case ClassificationScope.Function:
 
-                    case ClassificationScope.Import:
+            //            return GetFunctionCompletions(spanToReplace, document);
 
-                        if (previous.Is("IMPORT"))
-                        {
-                            return GetKeywordCompletions(spanToReplace, "PLUGIN");
-                        }
+            //        case ClassificationScope.Import:
 
-                        return GetPluginCompletions(extend.IncludeLeft("'").Span, document);
+            //            if (previous.Is("IMPORT"))
+            //            {
+            //                return GetKeywordCompletions(spanToReplace, "PLUGIN");
+            //            }
 
-                    case ClassificationScope.Root:
+            //            return GetPluginCompletions(extend.IncludeLeft("'").Span, document);
 
-                        switch (previous.Scope)
-                        {
-                            case ClassificationScope.Import:
+            //        case ClassificationScope.Root:
 
-                                if (previous.Is("PLUGIN"))
-                                {
-                                    return GetPluginCompletions(extend.IncludeLeft("'").Span, document);
-                                }
+            //            switch (previous.Scope)
+            //            {
+            //                case ClassificationScope.Import:
 
-                                break;
+            //                    if (previous.Is("PLUGIN"))
+            //                    {
+            //                        return GetPluginCompletions(extend.IncludeLeft("'").Span, document);
+            //                    }
 
-                            case ClassificationScope.Root:
+            //                    break;
 
-                                if (previous.Is("DEFAULT"))
-                                {
-                                    return GetFunctionCompletions(spanToReplace, document);
-                                }
+            //                case ClassificationScope.Root:
 
-                                break;
-                        }
+            //                    if (previous.Is("DEFAULT"))
+            //                    {
+            //                        return GetFunctionCompletions(spanToReplace, document);
+            //                    }
 
-                        if (current.Is("USE") || previous.Is("USE") && !current.Is("DEFAULT"))
-                        {
-                            return GetKeywordCompletions(spanToReplace, "DEFAULT");
-                        }
+            //                    break;
+            //            }
 
-                        if (current.In("INSERT", "UPSERT") || (previous.In("INSERT", "UPSERT") && !current.Is("INTO")))
-                        {
-                            return GetKeywordCompletions(spanToReplace, "INTO");
-                        }
+            //            if (current.Is("USE") || previous.Is("USE") && !current.Is("DEFAULT"))
+            //            {
+            //                return GetKeywordCompletions(spanToReplace, "DEFAULT");
+            //            }
 
-                        return GetKeywordCompletions(spanToReplace, RootCompletions);
-                }
+            //            if (current.In("INSERT", "UPSERT") || (previous.In("INSERT", "UPSERT") && !current.Is("INTO")))
+            //            {
+            //                return GetKeywordCompletions(spanToReplace, "INTO");
+            //            }
 
-                if (current.Start > subjectTriggerPoint)
-                {
-                    return GetKeywordCompletions(new SnapshotSpan(subjectTriggerPoint, 1), RootCompletions);
-                }
-            }
+            //            return GetKeywordCompletions(spanToReplace, RootCompletions);
+            //    }
+
+            //    if (current.Start > subjectTriggerPoint)
+            //    {
+            //        return GetKeywordCompletions(new SnapshotSpan(subjectTriggerPoint, 1), RootCompletions);
+            //    }
+            //}
 
             return GetKeywordCompletions(spanToReplace);
         }

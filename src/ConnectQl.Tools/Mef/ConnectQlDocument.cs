@@ -29,6 +29,7 @@ namespace ConnectQl.Tools.Mef
     using ConnectQl.Tools.Interfaces;
     using ConnectQl.Tools.Mef.Intellisense;
     using Microsoft.VisualStudio.Text;
+    using ConnectQl.Internal.Intellisense;
 
     /// <summary>
     /// The ConnectQl document.
@@ -174,6 +175,8 @@ namespace ConnectQl.Tools.Mef
             return this.tokens.SkipWhile(t => t.End < point.Position).FirstOrDefault();
         }
 
+
+
         /// <summary>
         /// Updates the classifications for this document.
         /// </summary>
@@ -280,6 +283,11 @@ namespace ConnectQl.Tools.Mef
         public IEnumerable<string> GetAvailablePlugins()
         {
             return this.plugins;
+        }
+
+        public IAutoCompletions GetAutoCompletions(IClassifiedToken current)
+        {
+            return AutoComplete.GetCompletions(this.tokens, current);
         }
     }
 }

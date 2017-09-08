@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,49 +20,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Interfaces
+using System;
+
+namespace ConnectQl.Intellisense
 {
     /// <summary>
-    /// The classification scope.
+    /// Specifies what type of auto completions are available.
     /// </summary>
-    public enum ClassificationScope
+    [Flags]
+    public enum AutoCompleteType
     {
         /// <summary>
-        /// The root.
+        /// No auto complete possible.
         /// </summary>
-        Root,
+        None = 0,
 
         /// <summary>
-        /// Inside an IMPORT PLUGIN statement.
+        /// Can be completed using the literals that were provided in the AutoCompleteOptions.
         /// </summary>
-        Import,
+        Literal = 1,
 
         /// <summary>
-        /// Inside a select expression
+        /// Can be completed by an expression.
         /// </summary>
-        Select,
+        Expression = 2,
 
         /// <summary>
-        /// Inside an expression.
+        /// Can be completed by a source alias.
         /// </summary>
-        Expression,
+        SourceAlias = 4,
 
         /// <summary>
-        /// The function name.
+        /// Can be completed by a source field.
         /// </summary>
-        FunctionName,
+        Field = 8,
 
         /// <summary>
-        /// The function.
+        /// Can be completed by a plugin name.
         /// </summary>
-        Function,
-
-        /// <summary>
-        /// The source.
-        /// </summary>
-        Source,
-        Use,
-        Insert,
-        Union,
+        Plugin = 16,
+        Operator = 32,
+        Source = 64,
+        Target = 128,
     }
 }

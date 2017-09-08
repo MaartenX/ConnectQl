@@ -52,7 +52,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             this.Start = token.Start;
             this.Classification = token.Classification;
             this.Value = token.Value;
-            this.Scope = token.Scope;
+            this.Kind = token.Kind;
         }
 
         /// <summary>
@@ -71,14 +71,14 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         public int Length => this.Value.Length;
 
         /// <summary>
-        /// Gets or sets the scope.
-        /// </summary>
-        public ClassificationScope Scope { get; set; }
-
-        /// <summary>
         /// Gets or sets the start.
         /// </summary>
         public int Start { get; set; }
+
+        /// <summary>
+        /// Gets or sets the kind of token (internal representation).
+        /// </summary>
+        public int Kind { get; set; }
 
         /// <summary>
         /// Gets or sets the value.
@@ -100,8 +100,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             var other = obj as SerializableToken;
 
             return other != null &&
-                   this.Scope == other.Scope &&
                    this.Classification == other.Classification &&
+                   this.Kind == other.Kind &&
                    this.Start == other.Start &&
                    string.Equals(this.Value, other.Value);
         }
@@ -117,7 +117,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             unchecked
             {
                 var hashCode = (int)this.Classification;
-                hashCode = (hashCode * 397) ^ (int)this.Scope;
+                hashCode = (hashCode * 397) ^ this.Kind;
                 hashCode = (hashCode * 397) ^ this.Start;
                 hashCode = (hashCode * 397) ^ (this.Value?.GetHashCode() ?? 0);
                 return hashCode;

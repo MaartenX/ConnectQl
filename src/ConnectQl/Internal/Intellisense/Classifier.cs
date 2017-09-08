@@ -22,6 +22,7 @@
 
 namespace ConnectQl.Internal.Intellisense
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -29,6 +30,79 @@ namespace ConnectQl.Internal.Intellisense
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Ast.Statements;
     using ConnectQl.Internal.Interfaces;
+
+    public class AutoCompletions : IAutoCompletions
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
+        /// </summary>
+        /// <param name="literals">The literals.</param>
+        public AutoCompletions(IReadOnlyList<string> literals)
+            : this(AutoCompleteType.Literal, literals)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        public AutoCompletions(AutoCompleteType type)
+            : this(type, (IReadOnlyList<string>)null)
+        {
+            if (type.HasFlag(AutoCompleteType.Literal))
+            {
+                throw new ArgumentException("When AutoCompleteOptions.Literal is set, parameter literals must be supplied.", nameof(type));
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="literals">The literals.</param>
+        public AutoCompletions(AutoCompleteType type, params IEnumerable<string>[] literals)
+            : this(type, literals.Where(l => l != null).SelectMany(l => l).Distinct().ToArray())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="keyword">The keyword.</param>
+        public AutoCompletions(AutoCompleteType type, string keyword)
+            : this(type, new[] { keyword })
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="literals">The literals.</param>
+        public AutoCompletions(AutoCompleteType type, IReadOnlyList<string> literals)
+        {
+            this.Type = type;
+            this.Literals = literals;
+        }
+
+        /// <summary>
+        /// Gets the auto complete type that is valid at this point.
+        /// </summary>
+        /// <value>
+        /// The type.
+        /// </value>
+        public AutoCompleteType Type { get; }
+
+        /// <summary>
+        /// Gets the literals that are valid at this point. This property is <c>null</c> when <see cref="Type"/> does not have the
+        /// flag <see cref="AutoCompleteType.Literal"/> set.
+        /// </summary>
+        /// <value>
+        /// The literals.
+        /// </value>
+        public IReadOnlyList<string> Literals { get; }
+    }
 
     /// <summary>
     /// Changes classifications for the tokens.
@@ -44,31 +118,69 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The classified tokens.
         /// </returns>
-        public static IReadOnlyCollection<IClassifiedToken> Classify(IList<Token> tokens)
+        public static IReadOnlyList<ConnectQlContext.ClassifiedToken> Classify(IList<Token> tokens)
         {
             var result = new List<ConnectQlContext.ClassifiedToken>(tokens.Count);
 
             if (tokens.Count > 0)
             {
-                var current = tokens[0];
-                var last = (Token)null;
-
-                foreach (var next in tokens.Skip(1).Concat(new Token[] { null }))
+                foreach (var classifiedToken in GetClassificiations(tokens))
                 {
                     result.Add(new ConnectQlContext.ClassifiedToken(
-                        current.CharPos,
-                        current.CharPos + current.Val.Length,
-                        ClassifyToken(last, current, next),
-                        current.Kind,
-                        current.Val));
-
-                    last = current;
-                    current = next;
+                        classifiedToken.Token.CharPos,
+                        classifiedToken.Token.CharPos + classifiedToken.Token.Val.Length,
+                        classifiedToken.Classification,
+                        classifiedToken.Token.Kind,
+                        classifiedToken.Token.Val));
                 }
             }
 
             return result;
         }
+
+        private class TokenInfo
+        {
+            public TokenInfo(Token token, Classification classification)
+                : this(token, classification, null)
+            {
+
+            }
+
+            public TokenInfo(Token token, Classification classification, AutoCompletions completions)
+            {
+                this.Token = token;
+                this.Classification = classification;
+                this.AutoCompletions = completions;
+            }
+
+            public Token Token { get; }
+
+            public Classification Classification { get; }
+
+            public AutoCompletions AutoCompletions { get; }
+        }
+
+
+        private static IEnumerable<TokenInfo> GetClassificiations(IEnumerable<Token> tokens)
+        {
+            Token current = null, last = null;
+
+            foreach (var next in tokens.Concat(new Token[] { null }))
+            {
+                if (current == null)
+                {
+                    current = next;
+
+                    continue;
+                }
+
+                yield return new TokenInfo(current, ClassifyToken(last, current, next));
+
+                last = current;
+                current = next;
+            }
+        }
+
 
         /// <summary>
         /// The classify token.

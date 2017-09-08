@@ -93,19 +93,21 @@ namespace ConnectQl.Crm.Sources
         /// <returns>
         /// The <see cref="T:System.Threading.Tasks.Task" />.
         /// </returns>
-        public Task<IDataSourceDescriptor> GetDataSourceDescriptorAsync(string sourceAlias, Interfaces.IExecutionContext context)
+        public async Task<IDataSourceDescriptor> GetDataSourceDescriptorAsync(string sourceAlias, Interfaces.IExecutionContext context)
         {
-            var metadata = ((RetrieveEntityResponse)this.GetService(context).Execute(new RetrieveEntityRequest
+            return await Task.Run(() =>
             {
-                LogicalName = this.entityName,
-                EntityFilters = EntityFilters.Attributes
-            })).EntityMetadata;
+                var metadata = ((RetrieveEntityResponse)this.GetService(context).Execute(new RetrieveEntityRequest
+                {
+                    LogicalName = this.entityName,
+                    EntityFilters = EntityFilters.Attributes
+                })).EntityMetadata;
 
-            return Task.FromResult(
-                Descriptor.ForDataSource(
-                sourceAlias,
-                metadata.Attributes.Select(a => Descriptor.ForColumn(a.LogicalName, ToType(a.AttributeType), a.DisplayName?.UserLocalizedLabel?.Label)).Where(a => a.Type != null),
-                false));
+                return Descriptor.ForDataSource(
+                    sourceAlias,
+                    metadata.Attributes.Select(a => Descriptor.ForColumn(a.LogicalName, ToType(a.AttributeType), a.DisplayName?.UserLocalizedLabel?.Label)).Where(a => a.Type != null),
+                    false);
+            });
         }
 
         /// <summary>

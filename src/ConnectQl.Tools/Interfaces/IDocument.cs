@@ -141,5 +141,12 @@ namespace ConnectQl.Tools.Interfaces
         /// The list of plugin names.
         /// </returns>
         IEnumerable<string> GetAvailablePlugins();
+
+        /// <summary>
+        /// Gets the automatic completions.
+        /// </summary>
+        /// <param name="current">The current token.</param>
+        /// <returns></returns>
+        IAutoCompletions GetAutoCompletions(IClassifiedToken current);
     }
 }

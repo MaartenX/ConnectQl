@@ -204,7 +204,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                     this.errorList.Tasks.Remove(task);
                 }
 
-                foreach (var task in document.GetMessages().Select(message => ToTask(document, message)))
+                foreach (var task in document.GetMessages().Select(message => this.ToTask(document, message)))
                 {
                     task.Navigate += (o, e) => this.errorList.NavigateToTask(task, new Guid(EnvDTE.Constants.vsViewKindCode));
 

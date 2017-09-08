@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -22,47 +22,23 @@
 
 namespace ConnectQl.Interfaces
 {
+    using System.Collections.Generic;
+    using ConnectQl.Intellisense;
+
     /// <summary>
-    /// The classification scope.
+    /// Contains possible completions for a token.
     /// </summary>
-    public enum ClassificationScope
+    public interface IAutoCompletions
     {
         /// <summary>
-        /// The root.
+        /// Gets the type of auto completiosn that are possible.
         /// </summary>
-        Root,
+        AutoCompleteType Type { get; }
 
         /// <summary>
-        /// Inside an IMPORT PLUGIN statement.
+        /// Gets the literal options that are available. This field is <c>null</c> if <see cref="Type"/> does not have
+        /// the <see cref="AutoCompleteType.Literal"/> flag.
         /// </summary>
-        Import,
-
-        /// <summary>
-        /// Inside a select expression
-        /// </summary>
-        Select,
-
-        /// <summary>
-        /// Inside an expression.
-        /// </summary>
-        Expression,
-
-        /// <summary>
-        /// The function name.
-        /// </summary>
-        FunctionName,
-
-        /// <summary>
-        /// The function.
-        /// </summary>
-        Function,
-
-        /// <summary>
-        /// The source.
-        /// </summary>
-        Source,
-        Use,
-        Insert,
-        Union,
+        IReadOnlyList<string> Literals { get; }
     }
 }

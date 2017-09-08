@@ -26,20 +26,16 @@ namespace ConnectQl.Tools
 {
     using System;
     using System.ComponentModel.Composition;
-    using System.ComponentModel.Design;
     using System.Runtime.InteropServices;
     using System.Threading;
     using System.Windows.Media;
-    using ConnectQl.Tools.Mef.Errors;
-    using ConnectQl.Tools.Interfaces;
     using ConnectQl.Tools.Mef.Classification;
+    using ConnectQl.Tools.Resources;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text.Classification;
     using Microsoft.VisualStudio.Utilities;
     using static Microsoft.VisualStudio.VSConstants;
     using Task = System.Threading.Tasks.Task;
-    using ConnectQl.Tools.Resources;
-    using Microsoft.VisualStudio.ComponentModelHost;
 
     /// <summary>
     /// The Visual Studio Package.

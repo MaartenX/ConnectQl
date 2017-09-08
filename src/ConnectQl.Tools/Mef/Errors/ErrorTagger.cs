@@ -25,13 +25,12 @@ namespace ConnectQl.Tools.Mef.Errors
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using ConnectQl.Results;
     using ConnectQl.Tools.Interfaces;
-    using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Text.Adornments;
-    using ConnectQl.Results;
 
     /// <summary>
     /// The error tagger.

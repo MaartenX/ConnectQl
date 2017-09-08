@@ -34,9 +34,6 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <summary>
         /// Gets or sets the filename.
         /// </summary>
-        /// <value>
-        /// The filename.
-        /// </value>
         public string Filename { get; set; }
 
         /// <summary>
