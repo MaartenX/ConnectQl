@@ -43,14 +43,15 @@ namespace ConnectQl.Internal.Intellisense
 
         private static readonly Dictionary<Tuple<TokenScope, int>, TokenScope> Transitions = new Dictionary<Tuple<TokenScope, int>, TokenScope>
         {
-            { Tuple.Create(TokenScope.Root, Parser.SelectLiteral), TokenScope.Select },
-            { Tuple.Create(TokenScope.Root, Parser.InsertLiteral), TokenScope.Insert },
-            { Tuple.Create(TokenScope.Root, Parser.UseLiteral), TokenScope.Use },
-            { Tuple.Create(TokenScope.Root, Parser.ImportLiteral), TokenScope.Import },
-            { Tuple.Create(TokenScope.Root, Parser.DeclareLiteral), TokenScope.Declare },
+            { Tuple.Create(TokenScope.Any, Parser.SelectLiteral), TokenScope.Select },
+            { Tuple.Create(TokenScope.Any, Parser.InsertLiteral), TokenScope.Insert },
+            { Tuple.Create(TokenScope.Any, Parser.UseLiteral), TokenScope.Use },
+            { Tuple.Create(TokenScope.Any, Parser.ImportLiteral), TokenScope.Import },
+            { Tuple.Create(TokenScope.Any, Parser.DeclareLiteral), TokenScope.Declare },
             { Tuple.Create(TokenScope.Insert, Parser.SelectLiteral), TokenScope.Select },
             { Tuple.Create(TokenScope.Select, Parser.FromLiteral), TokenScope.From },
             { Tuple.Create(TokenScope.From, Parser.WhereLiteral), TokenScope.Where },
+            { Tuple.Create(TokenScope.Import, Parser.StringSymbol), TokenScope.Root },
         };
 
         private enum OpenParens
@@ -67,7 +68,7 @@ namespace ConnectQl.Internal.Intellisense
 
             var i = 0;
 
-            for (i = 0; i < tokens.Count && (tokens[i].Start != current.Start || tokens[i].End != current.End) ; i++)
+            for (i = 0; i < tokens.Count && (tokens[i].Start != current.Start || tokens[i].End != current.End); i++)
             {
                 if (tokens[i].Kind == Parser.LeftParenLiteral)
                 {
@@ -79,7 +80,7 @@ namespace ConnectQl.Internal.Intellisense
                     openParens.Pop();
                 }
 
-                if (Transitions.TryGetValue(Tuple.Create(scope, tokens[i].Kind), out var newScope))
+                if (Transitions.TryGetValue(Tuple.Create(scope, tokens[i].Kind), out var newScope) || Transitions.TryGetValue(Tuple.Create(TokenScope.Any, tokens[i].Kind), out newScope))
                 {
                     scope = newScope;
                     openParens.Clear();
@@ -91,8 +92,10 @@ namespace ConnectQl.Internal.Intellisense
                 return RootCompletions;
             }
 
-            var classification = tokens[i - 1].Classification;
-            var kind = tokens[i - 1].Kind;
+            var classifcation = tokens[i].Classification;
+            var kind = tokens[i].Kind;
+            var prevClass = tokens[i - 1].Classification;
+            var prevKind = tokens[i - 1].Kind;
 
             switch (scope)
             {
@@ -102,17 +105,21 @@ namespace ConnectQl.Internal.Intellisense
 
                 case TokenScope.Select:
 
-                    if (classification == Classification.Operator ||
-                        classification == Classification.Keyword)
+                    if (prevClass == Classification.Operator ||
+                        prevClass == Classification.Keyword)
                     {
                         return new AutoCompletions(AutoCompleteType.Expression | AutoCompleteType.SourceAlias);
                     }
 
+                    if (prevKind == Parser.DotLiteral)
+                    {
+                        return new AutoCompletions(AutoCompleteType.Field);
+                    }
                     break;
 
                 case TokenScope.From:
 
-                    if (classification == Classification.Keyword)
+                    if (prevClass == Classification.Keyword)
                     {
                         return new AutoCompletions(AutoCompleteType.Source);
                     }
@@ -121,12 +128,12 @@ namespace ConnectQl.Internal.Intellisense
 
                 case TokenScope.Import:
 
-                    if (kind == Parser.ImportLiteral)
+                    if (prevKind == Parser.ImportLiteral)
                     {
                         return new AutoCompletions(AutoCompleteType.Literal, "PLUGIN");
                     }
 
-                    if (classification == Classification.Keyword)
+                    if (prevClass == Classification.Keyword)
                     {
                         return new AutoCompletions(AutoCompleteType.Plugin);
                     }
@@ -135,7 +142,7 @@ namespace ConnectQl.Internal.Intellisense
 
                 case TokenScope.Use:
 
-                    if (kind == Parser.UseLiteral)
+                    if (prevKind == Parser.UseLiteral)
                     {
                         return new AutoCompletions(AutoCompleteType.Literal, "DEFAULT");
                     }
@@ -144,12 +151,12 @@ namespace ConnectQl.Internal.Intellisense
 
                 case TokenScope.Insert:
 
-                    if (kind == Parser.InsertLiteral)
+                    if (prevKind == Parser.InsertLiteral)
                     {
                         return new AutoCompletions(AutoCompleteType.Literal, "INTO");
                     }
 
-                    if (classification == Classification.Keyword)
+                    if (prevClass == Classification.Keyword)
                     {
                         return new AutoCompletions(AutoCompleteType.Target);
                     }
@@ -157,14 +164,14 @@ namespace ConnectQl.Internal.Intellisense
                     break;
             }
 
-            if (classification == Classification.Number ||
-                classification == Classification.String ||
-                classification == Classification.Constant ||
-                classification == Classification.Variable)
+            if (prevClass == Classification.Number ||
+                prevClass == Classification.String ||
+                prevClass == Classification.Constant ||
+                prevClass == Classification.Variable)
             {
                 return new AutoCompletions(
                     AutoCompleteType.Operator | AutoCompleteType.Literal,
-                    classification == Classification.Number ? TimeLiterals : null,
+                    prevClass == Classification.Number ? TimeLiterals : null,
                     openParens.Any() ? new[] { ")" } : null,
                     openParens.LastOrDefault() == OpenParens.Function ? new[] { "," } : null);
             }
@@ -182,7 +189,7 @@ namespace ConnectQl.Internal.Intellisense
             Use,
             Declare,
             Import,
+            Any,
         }
-
     }
 }

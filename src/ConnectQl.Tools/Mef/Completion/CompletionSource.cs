@@ -33,6 +33,7 @@ namespace ConnectQl.Tools.Mef.Completion
     using Microsoft.VisualStudio.Imaging;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
+    using ConnectQl.Intellisense;
 
     /// <summary>
     /// The ConnectQl completion source.
@@ -160,11 +161,10 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <returns>
         /// The span to replace and the completions.
         /// </returns>
-        private static Tuple<SnapshotSpan, IEnumerable<Completion>> GetFunctionCompletions(SnapshotSpan spanToReplace, IDocument document)
+        private static IEnumerable<Completion> GetFunctionCompletions(IDocument document)
         {
-            return Tuple.Create(
-                spanToReplace,
-                document.GetAvailableFunctions().Select(f => new Completion($"{f.Name.ToUpperInvariant()} ( {string.Join(", ", f.Arguments.Select(a => a.Name))} )", f.Name.ToUpperInvariant(), f.Description, f.IsAggregateFunction ? Aggregate : Function, "function")));
+            return
+                document.GetAvailableFunctions().Select(f => new Completion($"{f.Name.ToUpperInvariant()} ( {string.Join(", ", f.Arguments.Select(a => a.Name))} )", f.Name.ToUpperInvariant(), f.Description, f.IsAggregateFunction ? Aggregate : Function, "function"));
         }
 
         /// <summary>
@@ -198,11 +198,9 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <returns>
         /// The <see cref="Tuple"/>.
         /// </returns>
-        private static Tuple<SnapshotSpan, IEnumerable<Completion>> GetPluginCompletions(SnapshotSpan spanToReplace, IDocument document)
+        private static IEnumerable<Completion> GetPluginCompletions(IDocument document)
         {
-            return Tuple.Create(
-                spanToReplace,
-                document.GetAvailablePlugins().Select(p => new Completion($"'{p}'", $"'{p}'", null, Plugin, "plugin")));
+            return document.GetAvailablePlugins().Select(p => new Completion($"'{p}'", $"'{p}'", null, Plugin, "plugin"));
         }
 
         /// <summary>
@@ -217,18 +215,14 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <returns>
         /// The <see cref="Tuple"/>.
         /// </returns>
-        private static Tuple<SnapshotSpan, IEnumerable<Completion>> GetVariableCompletions(SnapshotSpan spanToReplace, IDocument document)
+        private static IEnumerable<Completion> GetVariableCompletions(SnapshotSpan spanToReplace, IDocument document)
         {
-            return Tuple.Create(
-                spanToReplace,
-                document.GetAvailableVariables(spanToReplace.End).Select(p => new Completion(p.Name, p.Name, p.Value, Variable, "variable")));
+            return document.GetAvailableVariables(spanToReplace.End).Select(p => new Completion(p.Name, p.Name, p.Value, Variable, "variable"));
         }
 
-        private static Tuple<SnapshotSpan, IEnumerable<Completion>> GetSourceCompletions(SnapshotSpan spanToReplace, IDocument document)
+        private static IEnumerable<Completion> GetSourceCompletions(SnapshotSpan spanToReplace, IDocument document)
         {
-            return Tuple.Create(
-                spanToReplace,
-                document.GetAvailableSources(spanToReplace.End).Select(p => new Completion(p.Alias, p.Alias, null, Source, "source")));
+            return document.GetAvailableSources(spanToReplace.End).Select(p => new Completion(p.Alias, p.Alias, null, Source, "source"));
         }
 
         /// <summary>
@@ -237,16 +231,14 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <param name="spanToReplace">The span to replace.</param>
         /// <param name="source">The source.</param>
         /// <returns>The span and the completions.</returns>
-        private static Tuple<SnapshotSpan, IEnumerable<Completion>> GetColumnCompletions(SnapshotSpan spanToReplace, IDataSourceDescriptor source)
+        private static IEnumerable<Completion> GetColumnCompletions(IDataSourceDescriptor source)
         {
-            return Tuple.Create(
-                spanToReplace,
+            return
                 source.Columns.SelectMany(c =>
                     new[]
                         {
-                            new Completion($"[{c.Name}]", $"[{c.Name}]", c.Description, Column, "column"),
                             new Completion($"{c.Name}", $"[{c.Name}]", c.Description, Column, "column")
-                        }));
+                        });
         }
 
         /// <summary>
@@ -266,92 +258,47 @@ namespace ConnectQl.Tools.Mef.Completion
             var current = document.GetTokenAt(subjectTriggerPoint);
             var previous = document.GetTokenBefore(current) ?? current;
 
+            if (subjectTriggerPoint.Position < subjectTriggerPoint.Snapshot.Length)
+            {
+                switch (subjectTriggerPoint.Snapshot.GetText(new Span(subjectTriggerPoint.Position, 1)))
+                {
+                    case " ":
+                    case ".":
+                        current = document.GetTokenAt(subjectTriggerPoint + 2);
+                        break;
+                }
+            }
+
             var spanToReplace = extend.Span;
 
             var completions = document.GetAutoCompletions(current);
 
-            //if (current != null)
-            //{
-            //    switch (current.Scope)
-            //    {
-            //        case ClassificationScope.Select:
+            var result = new List<Completion>();
 
-            //            if (extend.Span.GetText() == ".")
-            //            {
-            //                var sourceName = navigator.GetExtentOfWord(extend.Span.Start - 1).Span.GetText();
-            //                var source = document.GetAvailableSources(extend.Span.Start - 1).FirstOrDefault(s => s.Alias.Equals(sourceName, StringComparison.OrdinalIgnoreCase));
+            if (completions.Type.HasFlag(AutoCompleteType.Expression))
+            {
+                result.AddRange(GetFunctionCompletions(document));
+                result.AddRange(GetSourceCompletions(spanToReplace, document));
+                result.AddRange(GetVariableCompletions(spanToReplace, document));
+            }
 
-            //                if (source != null)
-            //                {
-            //                    return GetColumnCompletions(new SnapshotSpan(extend.Span.Start + 1, 0), source);
-            //                }
-            //            }
+            if (completions.Type.HasFlag(AutoCompleteType.Literal))
+            {
+                result.AddRange(completions.Literals.Select(l => new Completion(l, l + " ", null, Keyword, "keyword")));
+            }
 
-            //            return GetFunctionCompletions(spanToReplace, document)
-            //                .Concat(GetVariableCompletions(spanToReplace, document))
-            //                .Concat(GetSourceCompletions(spanToReplace, document));
+            if (completions.Type.HasFlag(AutoCompleteType.Field))
+            {
+                var sourceName = document.GetTokenAt(subjectTriggerPoint).Value;
+                var source = document.GetAvailableSources(extend.Span.Start - 1).FirstOrDefault(s => s.Alias.Equals(sourceName, StringComparison.OrdinalIgnoreCase));
 
-            //        case ClassificationScope.Expression:
+                if (source != null)
+                {
+                    result.AddRange(GetColumnCompletions(source));
+                }
+            }
 
-            //            return GetFunctionCompletions(spanToReplace, document)
-            //                .Concat(GetVariableCompletions(spanToReplace, document));
-
-            //        case ClassificationScope.Function:
-
-            //            return GetFunctionCompletions(spanToReplace, document);
-
-            //        case ClassificationScope.Import:
-
-            //            if (previous.Is("IMPORT"))
-            //            {
-            //                return GetKeywordCompletions(spanToReplace, "PLUGIN");
-            //            }
-
-            //            return GetPluginCompletions(extend.IncludeLeft("'").Span, document);
-
-            //        case ClassificationScope.Root:
-
-            //            switch (previous.Scope)
-            //            {
-            //                case ClassificationScope.Import:
-
-            //                    if (previous.Is("PLUGIN"))
-            //                    {
-            //                        return GetPluginCompletions(extend.IncludeLeft("'").Span, document);
-            //                    }
-
-            //                    break;
-
-            //                case ClassificationScope.Root:
-
-            //                    if (previous.Is("DEFAULT"))
-            //                    {
-            //                        return GetFunctionCompletions(spanToReplace, document);
-            //                    }
-
-            //                    break;
-            //            }
-
-            //            if (current.Is("USE") || previous.Is("USE") && !current.Is("DEFAULT"))
-            //            {
-            //                return GetKeywordCompletions(spanToReplace, "DEFAULT");
-            //            }
-
-            //            if (current.In("INSERT", "UPSERT") || (previous.In("INSERT", "UPSERT") && !current.Is("INTO")))
-            //            {
-            //                return GetKeywordCompletions(spanToReplace, "INTO");
-            //            }
-
-            //            return GetKeywordCompletions(spanToReplace, RootCompletions);
-            //    }
-
-            //    if (current.Start > subjectTriggerPoint)
-            //    {
-            //        return GetKeywordCompletions(new SnapshotSpan(subjectTriggerPoint, 1), RootCompletions);
-            //    }
-            //}
-
-            return GetKeywordCompletions(spanToReplace);
+            return Tuple.Create(spanToReplace, result.AsEnumerable());
         }
     }
 }
