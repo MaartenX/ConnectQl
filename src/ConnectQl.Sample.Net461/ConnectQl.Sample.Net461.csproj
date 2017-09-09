@@ -9,6 +9,10 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
 
   <ItemGroup>
+    <None Remove="Script3.cql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ConnectQl.Excel\ConnectQl.Excel.csproj" />
     <ProjectReference Include="..\ConnectQl.Platform\ConnectQl.Platform.csproj" />
     <ProjectReference Include="..\ConnectQl.Crm\ConnectQl.Crm.csproj" />
@@ -17,6 +21,9 @@
   <ItemGroup>
     <Content Include="Example.json" CopyToOutputDirectory="Always" />
     <Content Include="Example.cql" CopyToOutputDirectory="Always" />
+    <Content Include="Script3.cql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -289,3 +289,4 @@ __pycache__/
 /.vscode
 /.vscode
 *.binlog
+/src/ConnectQl.Sample.Net461/Script3.cql

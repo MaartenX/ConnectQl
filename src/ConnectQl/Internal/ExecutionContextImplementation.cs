@@ -42,7 +42,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// The defaults.
         /// </summary>
-        private readonly Dictionary<string, object> defaults = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> defaults = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// The file formats.

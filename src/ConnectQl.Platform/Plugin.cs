@@ -51,6 +51,8 @@ namespace ConnectQl.Platform
             context.Functions
                 .AddWithoutSideEffects("connectionstring", (string name) => ConnectionString(name))
                 .SetDescription("Gets a connection string from the application config file.", "The name of the connection string.")
+                .AddWithoutSideEffects("connectionstring", (string name, string configFile) => ConnectionString(name, configFile))
+                .SetDescription("Gets a connection string from a config file.", "The name of the connection string.", "The location of the config file.")
                 .AddWithoutSideEffects("appsetting", (string name) => AppSetting(name))
                 .SetDescription("Gets an application setting from the application config file.", "The name of the application setting.")
                 .AddWithoutSideEffects("separator", (string separator) => separator)
@@ -76,6 +78,34 @@ namespace ConnectQl.Platform
             return string.Empty;
 #elif NET45
             return ConfigurationManager.ConnectionStrings[name]?.ConnectionString;
+#endif
+        }
+
+        /// <summary>
+        /// Gets a connection string from the specified configuration file.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the connection string.
+        /// </param>
+        /// <param name="configFile">
+        /// The location of the config file.
+        /// </param>
+        /// <returns>
+        /// The connection string or <c>null</c> if it was not found.
+        /// </returns>
+        private static string ConnectionString(string name, string configFile)
+        {
+#if NETSTANDARD1_5
+            return string.Empty;
+#elif NET45
+            var config = ConfigurationManager.OpenMappedExeConfiguration(
+                new ExeConfigurationFileMap
+                {
+                    ExeConfigFilename = configFile
+                },
+                ConfigurationUserLevel.None);
+
+            return config.ConnectionStrings.ConnectionStrings[name]?.ConnectionString;
 #endif
         }
 

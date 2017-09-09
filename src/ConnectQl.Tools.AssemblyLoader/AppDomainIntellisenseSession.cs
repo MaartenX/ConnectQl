@@ -220,7 +220,7 @@ namespace ConnectQl.Tools.AssemblyLoader
                     document, contents
                 };
 
-            this.updateDocument.Invoke(this.session, arguments);
+           this.updateDocument.Invoke(this.session, arguments);
         }
 
         /// <summary>

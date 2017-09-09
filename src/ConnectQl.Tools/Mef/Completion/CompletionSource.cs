@@ -286,7 +286,7 @@ namespace ConnectQl.Tools.Mef.Completion
             {
                 result.AddRange(completions.Literals.Select(l => new Completion(l, l + " ", null, Keyword, "keyword")));
             }
-
+            
             if (completions.Type.HasFlag(AutoCompleteType.Field))
             {
                 var sourceName = document.GetTokenAt(subjectTriggerPoint).Value;
