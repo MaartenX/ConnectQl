@@ -208,17 +208,20 @@ namespace ConnectQl.Tools.AssemblyLoader
         /// Updates the document.
         /// </summary>
         /// <param name="document">
-        /// The document.
+        ///     The document.
         /// </param>
         /// <param name="contents">
-        /// The contents.
+        ///     The contents.
         /// </param>
-        public void UpdateDocument(string document, string contents)
+        /// <param name="documentVersion">
+        /// The new version number of the document.
+        /// </param>
+        public void UpdateDocument(string document, string contents, int documentVersion)
         {
             object[] arguments =
-                {
-                    document, contents
-                };
+            {
+                document, contents, documentVersion
+            };
 
            this.updateDocument.Invoke(this.session, arguments);
         }
@@ -238,11 +241,14 @@ namespace ConnectQl.Tools.AssemblyLoader
         /// <param name="span">
         /// The span.
         /// </param>
-        public void UpdateDocumentSpan(string document, int startIndex, int endIndex, string span)
+        /// <param name="documentVersion">
+        /// The new version number of the document.
+        /// </param>
+        public void UpdateDocumentSpan(string document, int startIndex, int endIndex, string span, int documentVersion)
         {
             object[] arguments =
                 {
-                    document, startIndex, endIndex, span
+                    document, startIndex, endIndex, span, documentVersion
                 };
 
             this.updateDocumentSpan.Invoke(this.session, arguments);

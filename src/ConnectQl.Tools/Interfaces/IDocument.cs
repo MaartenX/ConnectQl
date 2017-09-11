@@ -44,6 +44,11 @@ namespace ConnectQl.Tools.Interfaces
         string Filename { get; }
 
         /// <summary>
+        /// Gets the version of the document.
+        /// </summary>
+        int Version { get; }
+
+        /// <summary>
         /// Gets the classified tokens for the specified span.
         /// </summary>
         /// <param name="span">
@@ -146,7 +151,7 @@ namespace ConnectQl.Tools.Interfaces
         /// Gets the automatic completions.
         /// </summary>
         /// <param name="current">The current token.</param>
-        /// <returns></returns>
+        /// <returns>The completions.</returns>
         IAutoCompletions GetAutoCompletions(IClassifiedToken current);
     }
 }

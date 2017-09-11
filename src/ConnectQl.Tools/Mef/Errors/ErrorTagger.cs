@@ -26,7 +26,7 @@ namespace ConnectQl.Tools.Mef.Errors
     using System.Collections.Generic;
     using System.Linq;
     using ConnectQl.Results;
-    using ConnectQl.Tools.Interfaces;
+    using Interfaces;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;

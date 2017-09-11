@@ -26,14 +26,13 @@ namespace ConnectQl.Tools.Mef.Completion
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Media;
+    using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
-    using ConnectQl.Tools.Extensions;
-    using ConnectQl.Tools.Interfaces;
-    using ConnectQl.Tools.Mef.Helpers;
+    using Helpers;
+    using Interfaces;
     using Microsoft.VisualStudio.Imaging;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
-    using ConnectQl.Intellisense;
 
     /// <summary>
     /// The ConnectQl completion source.
@@ -152,9 +151,6 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <summary>
         /// Gets the function completions.
         /// </summary>
-        /// <param name="spanToReplace">
-        /// The span to replace.
-        /// </param>
         /// <param name="document">
         /// The document.
         /// </param>
@@ -164,7 +160,7 @@ namespace ConnectQl.Tools.Mef.Completion
         private static IEnumerable<Completion> GetFunctionCompletions(IDocument document)
         {
             return
-                document.GetAvailableFunctions().Select(f => new Completion($"{f.Name.ToUpperInvariant()} ( {string.Join(", ", f.Arguments.Select(a => a.Name))} )", f.Name.ToUpperInvariant(), f.Description, f.IsAggregateFunction ? Aggregate : Function, "function"));
+                document.GetAvailableFunctions().Select(f => new Completion($"{f.Name.ToUpperInvariant()} ( {string.Join(", ", f.Arguments.Select(a => a.Name))} )", f.Name.ToUpperInvariant(), f.Description, f.IsAggregateFunction ? CompletionSource.Aggregate : CompletionSource.Function, "function"));
         }
 
         /// <summary>
@@ -183,15 +179,12 @@ namespace ConnectQl.Tools.Mef.Completion
         {
             return Tuple.Create(
                 spanToReplace,
-                keywords.Select(k => new Completion(k, k + " ", null, Keyword, "keyword")));
+                keywords.Select(k => new Completion(k, k + " ", null, CompletionSource.Keyword, "keyword")));
         }
 
         /// <summary>
         /// The get plugin completions.
         /// </summary>
-        /// <param name="spanToReplace">
-        /// The span to replace.
-        /// </param>
         /// <param name="document">
         /// The document.
         /// </param>
@@ -200,7 +193,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// </returns>
         private static IEnumerable<Completion> GetPluginCompletions(IDocument document)
         {
-            return document.GetAvailablePlugins().Select(p => new Completion($"'{p}'", $"'{p}'", null, Plugin, "plugin"));
+            return document.GetAvailablePlugins().Select(p => new Completion($"'{p}'", $"'{p}'", null, CompletionSource.Plugin, "plugin"));
         }
 
         /// <summary>
@@ -217,18 +210,17 @@ namespace ConnectQl.Tools.Mef.Completion
         /// </returns>
         private static IEnumerable<Completion> GetVariableCompletions(SnapshotSpan spanToReplace, IDocument document)
         {
-            return document.GetAvailableVariables(spanToReplace.End).Select(p => new Completion(p.Name, p.Name, p.Value, Variable, "variable"));
+            return document.GetAvailableVariables(spanToReplace.End).Select(p => new Completion(p.Name, p.Name, p.Value, CompletionSource.Variable, "variable"));
         }
 
         private static IEnumerable<Completion> GetSourceCompletions(SnapshotSpan spanToReplace, IDocument document)
         {
-            return document.GetAvailableSources(spanToReplace.End).Select(p => new Completion(p.Alias, p.Alias, null, Source, "source"));
+            return document.GetAvailableSources(spanToReplace.End).Select(p => new Completion(p.Alias, p.Alias, null, CompletionSource.Source, "source"));
         }
 
         /// <summary>
         /// Gets the column completions.
         /// </summary>
-        /// <param name="spanToReplace">The span to replace.</param>
         /// <param name="source">The source.</param>
         /// <returns>The span and the completions.</returns>
         private static IEnumerable<Completion> GetColumnCompletions(IDataSourceDescriptor source)
@@ -237,7 +229,7 @@ namespace ConnectQl.Tools.Mef.Completion
                 source.Columns.SelectMany(c =>
                     new[]
                         {
-                            new Completion($"{c.Name}", $"[{c.Name}]", c.Description, Column, "column")
+                            new Completion($"{c.Name}", $"[{c.Name}]", c.Description, CompletionSource.Column, "column")
                         });
         }
 
@@ -277,24 +269,31 @@ namespace ConnectQl.Tools.Mef.Completion
 
             if (completions.Type.HasFlag(AutoCompleteType.Expression))
             {
-                result.AddRange(GetFunctionCompletions(document));
-                result.AddRange(GetSourceCompletions(spanToReplace, document));
-                result.AddRange(GetVariableCompletions(spanToReplace, document));
+                result.AddRange(CompletionSource.GetFunctionCompletions(document));
+                result.AddRange(CompletionSource.GetSourceCompletions(spanToReplace, document));
+                result.AddRange(CompletionSource.GetVariableCompletions(spanToReplace, document));
+            }
+
+            if (completions.Type.HasFlag(AutoCompleteType.Plugin))
+            {
+                result.AddRange(CompletionSource.GetPluginCompletions(document));
             }
 
             if (completions.Type.HasFlag(AutoCompleteType.Literal))
             {
-                result.AddRange(completions.Literals.Select(l => new Completion(l, l + " ", null, Keyword, "keyword")));
+                result.AddRange(completions.Literals.Select(l => new Completion(l, l + " ", null, CompletionSource.Keyword, "keyword")));
             }
-            
+
             if (completions.Type.HasFlag(AutoCompleteType.Field))
             {
                 var sourceName = document.GetTokenAt(subjectTriggerPoint).Value;
                 var source = document.GetAvailableSources(extend.Span.Start - 1).FirstOrDefault(s => s.Alias.Equals(sourceName, StringComparison.OrdinalIgnoreCase));
 
+                result.Add(new Completion("*", "*", "All fields", CompletionSource.Keyword, "wildcard"));
+
                 if (source != null)
                 {
-                    result.AddRange(GetColumnCompletions(source));
+                    result.AddRange(CompletionSource.GetColumnCompletions(source));
                 }
             }
 

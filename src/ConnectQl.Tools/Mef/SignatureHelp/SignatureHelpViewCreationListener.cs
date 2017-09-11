@@ -23,7 +23,7 @@
 namespace ConnectQl.Tools.Mef.SignatureHelp
 {
     using System.ComponentModel.Composition;
-    using ConnectQl.Tools.Interfaces;
+    using Interfaces;
     using Microsoft.VisualStudio.Editor;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text.Editor;

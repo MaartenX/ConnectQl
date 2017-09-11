@@ -61,8 +61,20 @@ namespace ConnectQl.Interfaces
         /// The source.
         /// </summary>
         Source,
+
+        /// <summary>
+        /// Inside a USE-statement.
+        /// </summary>
         Use,
+
+        /// <summary>
+        /// Inside an INSERT-statement.
+        /// </summary>
         Insert,
+
+        /// <summary>
+        /// Inside an UNION-block.
+        /// </summary>
         Union,
     }
 }

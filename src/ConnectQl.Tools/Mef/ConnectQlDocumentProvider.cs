@@ -26,8 +26,8 @@ namespace ConnectQl.Tools.Mef
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
     using System.IO;
-    using ConnectQl.Tools.Interfaces;
-    using ConnectQl.Tools.Mef.Intellisense;
+    using Interfaces;
+    using Intellisense;
     using EnvDTE;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;

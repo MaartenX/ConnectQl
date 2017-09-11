@@ -42,14 +42,16 @@ namespace ConnectQl.Intellisense
         /// <param name="startIndex">The start index.</param>
         /// <param name="endIndex">The end index.</param>
         /// <param name="span">The new text for the span.</param>
-        void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string span);
+        /// <param name="documentVersion">The new document version number.</param>
+        void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string span, int documentVersion);
 
         /// <summary>
         /// Updates the document or creates a new one if it didn't exist yet.
         /// </summary>
         /// <param name="filename">The name of the document.</param>
         /// <param name="newContents">The updated contents of the document.</param>
-        void UpdateDocument(string filename, string newContents);
+        /// <param name="documentVersion">The new document version number.</param>
+        void UpdateDocument(string filename, string newContents, int documentVersion);
 
         /// <summary>
         /// Removes the document.

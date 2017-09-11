@@ -24,7 +24,7 @@ namespace ConnectQl.Tools.Mef.Errors
 {
     using System;
     using System.ComponentModel.Composition;
-    using ConnectQl.Tools.Interfaces;
+    using Interfaces;
     using Microsoft.VisualStudio.Shell;
 
     /// <summary>

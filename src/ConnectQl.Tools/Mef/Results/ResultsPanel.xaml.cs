@@ -24,10 +24,8 @@ namespace ConnectQl.Tools.Mef.Results
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Media;
     using ConnectQl.Results;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
@@ -38,6 +36,11 @@ namespace ConnectQl.Tools.Mef.Results
     internal partial class ResultsPanel : UserControl, IWpfTextViewMargin
     {
         /// <summary>
+        /// The <see cref="Expanded"/> property.
+        /// </summary>
+        public static readonly DependencyProperty ExpandedProperty = DependencyProperty.Register("Expanded", typeof(bool), typeof(ResultsPanel), new PropertyMetadata(default(bool)));
+
+        /// <summary>
         /// The text view.
         /// </summary>
         private IWpfTextView textView;
@@ -46,6 +49,11 @@ namespace ConnectQl.Tools.Mef.Results
         /// The document.
         /// </summary>
         private ITextDocument document;
+
+        /// <summary>
+        /// Stores the results.
+        /// </summary>
+        private IExecuteResult result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResultsPanel"/> class.
@@ -65,8 +73,6 @@ namespace ConnectQl.Tools.Mef.Results
 
             this.textView = textView;
             this.document = document;
-
-            this.BindPanelAsync();
         }
 
         /// <summary>
@@ -86,6 +92,34 @@ namespace ConnectQl.Tools.Mef.Results
         public ObservableCollection<object> Items { get; } = new ObservableCollection<object>();
 
         /// <summary>
+        /// Gets or sets a value indicating whether this panel is enabled.
+        /// </summary>
+        public bool Expanded
+        {
+            get => (bool)(this.GetValue(ResultsPanel.ExpandedProperty) ?? false);
+            set => this.SetValue(ResultsPanel.ExpandedProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current execute result.
+        /// </summary>
+        public IExecuteResult Result
+        {
+            get => this.result;
+            set
+            {
+                this.result = value;
+
+                this.BindResultAsync();
+
+                if (this.result != null)
+                {
+                    this.Expanded = true;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the <see cref="T:System.Windows.FrameworkElement" /> that renders the margin.
         /// </summary>
         FrameworkElement IWpfTextViewMargin.VisualElement => this;
@@ -103,19 +137,18 @@ namespace ConnectQl.Tools.Mef.Results
         /// <summary>
         /// Binds the result to this viewer.
         /// </summary>
-        /// <param name="result">
-        /// The result.
-        /// </param>
-        /// <returns>
-        /// The task.
-        /// </returns>
-        public async Task BindResultAsync(IExecuteResult result)
+        public async void BindResultAsync()
         {
             await this.Dispatcher.InvokeAsync(() =>
             {
                 this.Items.Clear();
 
-                foreach (var qr in result.QueryResults)
+                if (this.result == null)
+                {
+                    return;
+                }
+
+                foreach (var qr in this.result.QueryResults)
                 {
                     if (qr.Rows == null)
                     {
@@ -146,14 +179,6 @@ namespace ConnectQl.Tools.Mef.Results
         ITextViewMargin ITextViewMargin.GetTextViewMargin(string marginName)
         {
             return this;
-        }
-
-        /// <summary>
-        /// Binds the panel asynchronously.
-        /// </summary>
-        private async void BindPanelAsync()
-        {
-            await this.BindResultAsync(await new ConnectQlContext().ExecuteAsync("SELECT INT(a.Item) as Blieb FROM SPLIT( '1,2,3', ',') a SELECT a.Item as a, a.item as b, a.item + ' Item' as c, 2 * a.item as double FROM SPLIT( '1,2,3,5,6,7,8,9,10', ',') a"));
         }
     }
 }

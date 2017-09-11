@@ -27,8 +27,8 @@ namespace ConnectQl.Tools.Mef.Results
     using System.ComponentModel;
     using System.Data;
     using System.Linq;
-    using ConnectQl.AsyncEnumerablePolicies;
-    using ConnectQl.AsyncEnumerables;
+    using AsyncEnumerablePolicies;
+    using AsyncEnumerables;
     using ConnectQl.Results;
 
     /// <summary>

@@ -52,7 +52,7 @@ namespace ConnectQl.Tools.Resources
         /// <returns>The resource string.</returns>
         public static string Get(string resource)
         {
-            return ResourceManager.Value.GetString(resource, Culture);
+            return Resource.ResourceManager.Value.GetString(resource, Resource.Culture);
         }
     }
 }

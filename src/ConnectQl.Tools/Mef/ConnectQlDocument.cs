@@ -26,21 +26,15 @@ namespace ConnectQl.Tools.Mef
     using System.Collections.Generic;
     using System.Linq;
     using ConnectQl.Interfaces;
-    using ConnectQl.Tools.Interfaces;
-    using ConnectQl.Tools.Mef.Intellisense;
+    using Interfaces;
+    using Internal.Intellisense;
     using Microsoft.VisualStudio.Text;
-    using ConnectQl.Internal.Intellisense;
 
     /// <summary>
     /// The ConnectQl document.
     /// </summary>
     internal class ConnectQlDocument : IDocument
     {
-        /// <summary>
-        /// The filename.
-        /// </summary>
-        private readonly string filename;
-
         /// <summary>
         /// The functions.
         /// </summary>
@@ -79,7 +73,7 @@ namespace ConnectQl.Tools.Mef
         /// </param>
         public ConnectQlDocument(string filename)
         {
-            this.filename = filename;
+            this.Filename = filename;
         }
 
         /// <summary>
@@ -95,7 +89,12 @@ namespace ConnectQl.Tools.Mef
         /// <summary>
         /// Gets the filename.
         /// </summary>
-        public string Filename => this.filename;
+        public string Filename { get; }
+
+        /// <summary>
+        /// Gets or sets the version of the document.
+        /// </summary>
+        public int Version { get; set; }
 
         /// <summary>
         /// Gets the classified tokens for the specified span.
@@ -285,6 +284,11 @@ namespace ConnectQl.Tools.Mef
             return this.plugins;
         }
 
+        /// <summary>
+        /// Gets the automatic completions.
+        /// </summary>
+        /// <param name="current">The current token.</param>
+        /// <returns>The completions.</returns>
         public IAutoCompletions GetAutoCompletions(IClassifiedToken current)
         {
             return AutoComplete.GetCompletions(this.tokens, current);

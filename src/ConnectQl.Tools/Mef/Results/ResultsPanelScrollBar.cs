@@ -92,7 +92,7 @@ namespace ConnectQl.Tools.Mef.Results
         {
             set
             {
-                this.scrollbar.SetBinding(FrameworkElement.HeightProperty, new Binding(nameof(Control.ActualHeight)) { Source = value, Mode = BindingMode.OneWay });
+                this.scrollbar.SetBinding(FrameworkElement.HeightProperty, new Binding(nameof(FrameworkElement.ActualHeight)) { Source = value, Mode = BindingMode.OneWay });
                 this.scrollbar.SetBinding(RangeBase.MaximumProperty, new Binding(nameof(ScrollViewer.ScrollableHeight)) { Source = value.ScrollViewer, Mode = BindingMode.OneWay });
                 this.scrollbar.SetBinding(ScrollBar.ViewportSizeProperty, new Binding(nameof(ScrollViewer.ViewportHeight)) { Source = value.ScrollViewer, Mode = BindingMode.OneWay });
 

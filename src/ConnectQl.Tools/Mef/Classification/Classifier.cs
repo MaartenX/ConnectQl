@@ -26,7 +26,7 @@ namespace ConnectQl.Tools.Mef.Classification
     using System.Collections.Generic;
     using System.Linq;
     using ConnectQl.Intellisense;
-    using ConnectQl.Tools.Interfaces;
+    using Interfaces;
     using Microsoft.VisualStudio.Language.StandardClassification;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Classification;
@@ -117,7 +117,7 @@ namespace ConnectQl.Tools.Mef.Classification
                     }
                 };
 
-            this.classificationTypes = Mapping.ToDictionary(kv => kv.Key, kv => registry.GetClassificationType(kv.Value));
+            this.classificationTypes = Classifier.Mapping.ToDictionary(kv => kv.Key, kv => registry.GetClassificationType(kv.Value));
         }
 
 #pragma warning disable 67

@@ -22,7 +22,7 @@
 
 namespace ConnectQl.Tools.Interfaces
 {
-    using ConnectQl.Tools.Mef.Errors;
+    using Mef.Errors;
 
     /// <summary>
     /// Provides an error list.

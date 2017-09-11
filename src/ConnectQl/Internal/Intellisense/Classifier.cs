@@ -22,87 +22,10 @@
 
 namespace ConnectQl.Internal.Intellisense
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using ConnectQl.Intellisense;
-    using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Ast.Statements;
-    using ConnectQl.Internal.Interfaces;
-
-    public class AutoCompletions : IAutoCompletions
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
-        /// </summary>
-        /// <param name="literals">The literals.</param>
-        public AutoCompletions(IReadOnlyList<string> literals)
-            : this(AutoCompleteType.Literal, literals)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        public AutoCompletions(AutoCompleteType type)
-            : this(type, (IReadOnlyList<string>)null)
-        {
-            if (type.HasFlag(AutoCompleteType.Literal))
-            {
-                throw new ArgumentException("When AutoCompleteOptions.Literal is set, parameter literals must be supplied.", nameof(type));
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="literals">The literals.</param>
-        public AutoCompletions(AutoCompleteType type, params IEnumerable<string>[] literals)
-            : this(type, literals.Where(l => l != null).SelectMany(l => l).Distinct().ToArray())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="keyword">The keyword.</param>
-        public AutoCompletions(AutoCompleteType type, string keyword)
-            : this(type, new[] { keyword })
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoCompletions"/> class.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="literals">The literals.</param>
-        public AutoCompletions(AutoCompleteType type, IReadOnlyList<string> literals)
-        {
-            this.Type = type;
-            this.Literals = literals;
-        }
-
-        /// <summary>
-        /// Gets the auto complete type that is valid at this point.
-        /// </summary>
-        /// <value>
-        /// The type.
-        /// </value>
-        public AutoCompleteType Type { get; }
-
-        /// <summary>
-        /// Gets the literals that are valid at this point. This property is <c>null</c> when <see cref="Type"/> does not have the
-        /// flag <see cref="AutoCompleteType.Literal"/> set.
-        /// </summary>
-        /// <value>
-        /// The literals.
-        /// </value>
-        public IReadOnlyList<string> Literals { get; }
-    }
 
     /// <summary>
     /// Changes classifications for the tokens.
@@ -140,13 +63,13 @@ namespace ConnectQl.Internal.Intellisense
 
         private class TokenInfo
         {
-            public TokenInfo(Token token, Classification classification)
-                : this(token, classification, null)
-            {
-
-            }
-
-            public TokenInfo(Token token, Classification classification, AutoCompletions completions)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TokenInfo"/> class.
+            /// </summary>
+            /// <param name="token">The token.</param>
+            /// <param name="classification">The classification.</param>
+            /// <param name="completions">The completions.</param>
+            public TokenInfo(Token token, Classification classification, AutoCompletions completions = null)
             {
                 this.Token = token;
                 this.Classification = classification;
@@ -160,7 +83,11 @@ namespace ConnectQl.Internal.Intellisense
             public AutoCompletions AutoCompletions { get; }
         }
 
-
+        /// <summary>
+        /// Gets the classifications from an enumerable of tokens.
+        /// </summary>
+        /// <param name="tokens">The tokens.</param>
+        /// <returns>The classified tokens.</returns>
         private static IEnumerable<TokenInfo> GetClassificiations(IEnumerable<Token> tokens)
         {
             Token current = null, last = null;
@@ -180,7 +107,6 @@ namespace ConnectQl.Internal.Intellisense
                 current = next;
             }
         }
-
 
         /// <summary>
         /// The classify token.
@@ -219,7 +145,14 @@ namespace ConnectQl.Internal.Intellisense
                         case Parser.LeftParenLiteral:
                             return Classification.Function;
                         default:
-                            return Classification.Identifier;
+                            if (previous?.Kind == Parser.NumberSymbol)
+                            {
+                                return Classification.Keyword;
+                            }
+                            else
+                            {
+                                return Classification.Identifier;
+                            }
                     }
 
                 case Parser.BracketedidentifierSymbol:

@@ -52,11 +52,6 @@ namespace ConnectQl.Internal.Intellisense
         private readonly object updateLock = new object();
 
         /// <summary>
-        /// The contents.
-        /// </summary>
-        private string contents;
-
-        /// <summary>
         /// True if the document is currently updating.
         /// </summary>
         private bool updating;
@@ -82,36 +77,14 @@ namespace ConnectQl.Internal.Intellisense
         }
 
         /// <summary>
-        /// Gets or sets the contents.
+        /// Gets the contents.
         /// </summary>
-        public string Contents
-        {
-            get
-            {
-                return this.contents;
-            }
+        public string Contents { get; private set; }
 
-            set
-            {
-                this.contents = value;
-
-                var shouldUpdate = false;
-
-                lock (this.updateLock)
-                {
-                    if (!this.updating)
-                    {
-                        this.updating = true;
-                        shouldUpdate = true;
-                    }
-                }
-
-                if (shouldUpdate)
-                {
-                    this.Update(this.contents);
-                }
-            }
-        }
+        /// <summary>
+        /// Gets the version of the document.
+        /// </summary>
+        public int Version { get; private set; }
 
         /// <summary>
         /// Gets the filename.
@@ -157,12 +130,38 @@ namespace ConnectQl.Internal.Intellisense
         internal SerializableDocumentDescriptor Descriptor { get; }
 
         /// <summary>
+        /// Updates the document.
+        /// </summary>
+        /// <param name="contents">The new contents of the document.</param>
+        /// <param name="documentVersion">The new version of the document.</param>
+        public void Update(string contents, int documentVersion)
+        {
+            this.Contents = contents;
+            this.Version = documentVersion;
+            var shouldUpdate = false;
+
+            lock (this.updateLock)
+            {
+                if (!this.updating)
+                {
+                    this.updating = true;
+                    shouldUpdate = true;
+                }
+            }
+
+            if (shouldUpdate)
+            {
+                this.Update(this.Contents);
+            }
+        }
+
+        /// <summary>
         /// Parses this document.
         /// </summary>
         /// <param name="documentText">
         /// The document Text.
         /// </param>
-        public void Update(string documentText)
+        private void Update(string documentText)
         {
             Action updateIntellisenseData = null;
 
@@ -179,7 +178,7 @@ namespace ConnectQl.Internal.Intellisense
                             this.session.OnDocumentChanged(delta);
                         }
 
-                        if (this.contents == documentText)
+                        if (this.Contents == documentText)
                         {
                             this.ValidateDocument(parsedDocument, descriptor);
 
@@ -191,7 +190,7 @@ namespace ConnectQl.Internal.Intellisense
                             }
                         }
 
-                        if (this.contents == documentText)
+                        if (this.Contents == documentText)
                         {
                             var data = Evaluator.GetIntellisenseData(parsedDocument, descriptor.Tokens);
 
@@ -211,7 +210,7 @@ namespace ConnectQl.Internal.Intellisense
 
                         lock (this.updateLock)
                         {
-                            if (this.contents == documentText)
+                            if (this.Contents == documentText)
                             {
                                 this.updating = false;
                             }
@@ -223,7 +222,7 @@ namespace ConnectQl.Internal.Intellisense
 
                         if (shouldUpdate)
                         {
-                            documentText = this.contents;
+                            documentText = this.Contents;
 
                             Task.Run(updateIntellisenseData);
                         }

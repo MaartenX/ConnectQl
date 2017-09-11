@@ -31,7 +31,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
     using System.Reflection;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
-    using ConnectQl.Tools.AssemblyLoader;
+    using AssemblyLoader;
     using EnvDTE;
     using EnvDTE80;
     using Microsoft.VisualStudio.Shell;
@@ -181,7 +181,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                 {
                     try
                     {
-                        var visualStudioProject = GetVisualStudioProjectByUniqueName(projectId);
+                        var visualStudioProject = IntellisenseProxy.GetVisualStudioProjectByUniqueName(projectId);
                         var projectName = "Unknown project";
                         var configFile = (string)null;
                         var assemblies = new string[0];
@@ -237,7 +237,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                         setupInfomation.ApplicationBase = string.Empty;
                         setupInfomation.ConfigurationFile = configFile;
 
-                        AppDomain.CurrentDomain.AssemblyResolve += AppDomainFix;
+                        AppDomain.CurrentDomain.AssemblyResolve += IntellisenseProxy.AppDomainFix;
 
                         this.appDomain = AppDomain.CreateDomain($"Intellisense project {projectName} domain", null, setupInfomation);
 
@@ -271,7 +271,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
 
                         foreach (var keyValuePair in documents)
                         {
-                            this.intellisenseSession.UpdateDocument(keyValuePair.Key, keyValuePair.Value.Content);
+                            this.intellisenseSession.UpdateDocument(keyValuePair.Key, keyValuePair.Value.Content, keyValuePair.Value.Version);
                         }
 
                         this.Initialized?.Invoke(this, EventArgs.Empty);
@@ -293,7 +293,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                     }
                     finally
                     {
-                        AppDomain.CurrentDomain.AssemblyResolve -= AppDomainFix;
+                        AppDomain.CurrentDomain.AssemblyResolve -= IntellisenseProxy.AppDomainFix;
                     }
                 });
         }
@@ -302,14 +302,17 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// Updates the document.
         /// </summary>
         /// <param name="filename">
-        /// The filename.
+        ///     The filename.
         /// </param>
         /// <param name="contents">
-        /// The contents.
+        ///     The contents.
         /// </param>
-        public void UpdateDocument(string filename, string contents)
+        /// <param name="documentVersion">
+        /// The version of the document.
+        /// </param>
+        public void UpdateDocument(string filename, string contents, int documentVersion)
         {
-            this.intellisenseSession.UpdateDocument(filename, contents);
+            this.intellisenseSession.UpdateDocument(filename, contents, documentVersion);
         }
 
         /// <summary>
@@ -319,9 +322,10 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// <param name="startIndex">The start index.</param>
         /// <param name="endIndex">The end index.</param>
         /// <param name="newSpan">The new span text.</param>
-        public void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string newSpan)
+        /// <param name="documentVersion">The new document version number.</param>
+        public void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string newSpan, int documentVersion)
         {
-            this.intellisenseSession.UpdateDocumentSpan(filename, startIndex, endIndex, newSpan);
+            this.intellisenseSession.UpdateDocumentSpan(filename, startIndex, endIndex, newSpan, documentVersion);
         }
 
         /// <summary>
@@ -381,7 +385,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                     .Cast<ProjectItem>()
                     .Select(p => p.SubProject)
                     .Where(p => p != null)
-                    .SelectMany(GetProjectsRecursive);
+                    .SelectMany(IntellisenseProxy.GetProjectsRecursive);
 
                 foreach (var subProject in subProjects)
                 {
@@ -407,7 +411,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         {
             return ((DTE)Package.GetGlobalService(typeof(SDTE))).Solution.Projects
                    .Cast<Project>()
-                   .SelectMany(GetProjectsRecursive)
+                   .SelectMany(IntellisenseProxy.GetProjectsRecursive)
                    .FirstOrDefault(p => p.UniqueName == uniqueName)?.Object as VSProject;
         }
 

@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
 namespace ConnectQl.Intellisense
 {
+    using System;
+
     /// <summary>
     /// Specifies what type of auto completions are available.
     /// </summary>
@@ -59,8 +59,20 @@ namespace ConnectQl.Intellisense
         /// Can be completed by a plugin name.
         /// </summary>
         Plugin = 16,
+
+        /// <summary>
+        /// Can be completed by an operator.
+        /// </summary>
         Operator = 32,
+
+        /// <summary>
+        /// Can be completed by a source.
+        /// </summary>
         Source = 64,
+
+        /// <summary>
+        /// Can be completed by a target.
+        /// </summary>
         Target = 128,
     }
 }

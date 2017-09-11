@@ -23,7 +23,7 @@
 namespace ConnectQl.Tools.Mef.Classification
 {
     using System.ComponentModel.Composition;
-    using ConnectQl.Tools.Interfaces;
+    using Interfaces;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Classification;
     using Microsoft.VisualStudio.Utilities;

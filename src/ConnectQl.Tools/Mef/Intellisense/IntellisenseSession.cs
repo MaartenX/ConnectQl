@@ -28,8 +28,8 @@ namespace ConnectQl.Tools.Mef.Intellisense
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
-    using ConnectQl.Tools.Interfaces;
-    using ConnectQl.Tools.Mef.Errors;
+    using Interfaces;
+    using Errors;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Text;
@@ -117,12 +117,13 @@ namespace ConnectQl.Tools.Mef.Intellisense
             result = this.documents[document.FilePath] =
                          new ConnectQlDocument(document.FilePath)
                              {
+                                Version = textBuffer.CurrentSnapshot.Version.VersionNumber,
                                  Content = textBuffer.CurrentSnapshot.GetText()
                              };
 
-            this.proxy?.UpdateDocument(document.FilePath, result.Content);
+            this.proxy?.UpdateDocument(document.FilePath, result.Content, result.Version);
 
-            textBuffer.Changed += (o, e) => this.proxy?.UpdateDocument(document.FilePath, result.Content = textBuffer.CurrentSnapshot.GetText());
+            textBuffer.Changed += (o, e) => this.proxy?.UpdateDocument(document.FilePath, result.Content = textBuffer.CurrentSnapshot.GetText(), result.Version = textBuffer.CurrentSnapshot.Version.VersionNumber);
 
             return result;
         }

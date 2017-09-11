@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,53 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Interfaces
+namespace ConnectQl.Tools.Mef.Results
 {
-    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using ConnectQl.Results;
 
     /// <summary>
-    /// The DocumentDescriptor interface.
+    /// Shows results of the query to the user.
     /// </summary>
-    public interface IDocumentDescriptor
+    internal interface IResultsViewer
     {
         /// <summary>
-        /// Gets the filename.
+        /// Gets or sets a value indicating whether the results viewer is expanded.
         /// </summary>
-        string Filename { get; }
+        bool Expanded { get; set; }
 
         /// <summary>
-        /// Gets the document version number.
+        /// Binds a result to the viewer.
         /// </summary>
-        int Version { get; }
-
-        /// <summary>
-        /// Gets the functions.
-        /// </summary>
-        IReadOnlyList<IFunctionDescriptor> Functions { get; }
-
-        /// <summary>
-        /// Gets the tokens.
-        /// </summary>
-        IReadOnlyList<IClassifiedToken> Tokens { get; }
-
-        /// <summary>
-        /// Gets the messages.
-        /// </summary>
-        IReadOnlyList<IMessage> Messages { get; }
-
-        /// <summary>
-        /// Gets the variables.
-        /// </summary>
-        IReadOnlyList<IVariableDescriptorRange> Variables { get; }
-
-        /// <summary>
-        /// Gets the sources.
-        /// </summary>
-        IReadOnlyList<IDataSourceDescriptorRange> Sources { get; }
-
-        /// <summary>
-        /// Gets the plugins.
-        /// </summary>
-        IReadOnlyList<string> Plugins { get; }
+        /// <param name="result">The result, or <c>null</c> to remove all results.</param>
+        /// <returns>A task.</returns>
+        Task BindResultAsync(IExecuteResult result);
     }
 }

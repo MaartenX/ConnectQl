@@ -32,6 +32,7 @@ namespace ConnectQl.Tools.Mef.Completion
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.TextManager.Interop;
+    using IServiceProvider = System.IServiceProvider;
 
     /// <summary>
     /// The completion source command target.
@@ -110,10 +111,10 @@ namespace ConnectQl.Tools.Mef.Completion
         /// </param>
         public int Exec(ref Guid commandGroup, uint commandId, uint commandExecutionOptions, IntPtr inputArguments, IntPtr outputArguments)
         {
-            /*if (VsShellUtilities.IsInAutomationFunction(this.listener.ServiceProvider))
+            if (VsShellUtilities.IsInAutomationFunction((IServiceProvider)Package.GetGlobalService(typeof(IServiceProvider))))
             {
                 return this.next.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments);
-            }*/
+            }
 
             var typedChar = char.MinValue;
 
@@ -140,12 +141,9 @@ namespace ConnectQl.Tools.Mef.Completion
                     {
                         this.session.Commit();
 
-                        if (char.IsPunctuation(typedChar))
-                        {
-                            return this.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments);
-                        }
-
-                        return VSConstants.S_OK;
+                        return char.IsPunctuation(typedChar)
+                            ? this.next.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments)
+                            : VSConstants.S_OK;
                     }
 
                     this.session.Dismiss();
@@ -246,7 +244,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// </returns>
         private bool TriggerCompletion()
         {
-            var caretPoint = this.textView.Caret.Position.Point.GetPoint(textBuffer => (!textBuffer.ContentType.IsOfType("projection")), PositionAffinity.Predecessor);
+            var caretPoint = this.textView.Caret.Position.Point.GetPoint(textBuffer => !textBuffer.ContentType.IsOfType("projection"), PositionAffinity.Predecessor);
 
             if (!caretPoint.HasValue)
             {

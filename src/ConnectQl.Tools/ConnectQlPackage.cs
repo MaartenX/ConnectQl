@@ -29,18 +29,18 @@ namespace ConnectQl.Tools
     using System.Runtime.InteropServices;
     using System.Threading;
     using System.Windows.Media;
-    using ConnectQl.Tools.Mef.Classification;
-    using ConnectQl.Tools.Resources;
+    using Mef.Classification;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text.Classification;
     using Microsoft.VisualStudio.Utilities;
+    using Resources;
     using static Microsoft.VisualStudio.VSConstants;
     using Task = System.Threading.Tasks.Task;
 
     /// <summary>
     /// The Visual Studio Package.
     /// </summary>
-    [Guid(PackageId)]
+    [Guid(ConnectQlPackage.PackageId)]
     [ComVisible(true)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [PackageRegistration(UseManagedResourcesOnly = false)]

@@ -23,7 +23,7 @@
 namespace ConnectQl.Tools.Mef.Errors
 {
     using System.ComponentModel.Composition;
-    using ConnectQl.Tools.Interfaces;
+    using Interfaces;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Tagging;

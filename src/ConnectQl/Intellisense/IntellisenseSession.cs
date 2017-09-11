@@ -134,11 +134,14 @@ namespace ConnectQl.Intellisense
         /// <param name="contents">
         /// The contents.
         /// </param>
-        public void UpdateDocument(string filename, string contents)
+        /// <param name="documentVersion">
+        /// The document version.
+        /// </param>
+        public void UpdateDocument(string filename, string contents, int documentVersion)
         {
-            if (this.documents.TryGetValue(filename, out Document doc))
+            if (this.documents.TryGetValue(filename, out var doc))
             {
-                doc.Contents = contents;
+                doc.Update(contents, documentVersion);
             }
             else
             {
@@ -161,16 +164,17 @@ namespace ConnectQl.Intellisense
         /// <param name="span">
         /// The span.
         /// </param>
-        public void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string span)
+        /// <param name="documentVersion">
+        /// The new version of the document.
+        /// </param>
+        public void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string span, int documentVersion)
         {
             if (!this.documents.TryGetValue(filename, out Document doc))
             {
                 return;
             }
 
-            var contents = doc.Contents;
-
-            doc.Contents = contents.Substring(0, startIndex) + span + contents.Substring(endIndex);
+            doc.Update(doc.Contents.Substring(0, startIndex) + span + doc.Contents.Substring(endIndex), documentVersion);
         }
 
         /// <summary>

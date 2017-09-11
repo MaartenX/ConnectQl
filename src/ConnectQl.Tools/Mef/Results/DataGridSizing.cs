@@ -38,7 +38,7 @@ namespace ConnectQl.Tools.Mef.Results
             "InitialWidth",
             typeof(double),
             typeof(DataGridSizing),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsMeasure, InitialWidthChanged));
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsMeasure, DataGridSizing.InitialWidthChanged));
 
         /// <summary>
         /// The initial width changed callback.
@@ -62,7 +62,7 @@ namespace ConnectQl.Tools.Mef.Results
         /// <param name="value">The value.</param>
         public static void SetInitialWidth(DataGrid dataGrid, double value)
         {
-            dataGrid.SetValue(InitialWidthProperty, value);
+            dataGrid.SetValue(DataGridSizing.InitialWidthProperty, value);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace ConnectQl.Tools.Mef.Results
         /// <returns>The value.</returns>
         public static double GetInitialWidth(DataGrid dataGrid)
         {
-            return (double)dataGrid.GetValue(InitialWidthProperty);
+            return (double)dataGrid.GetValue(DataGridSizing.InitialWidthProperty);
         }
     }
 }
