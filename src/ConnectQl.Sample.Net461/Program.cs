@@ -47,7 +47,7 @@ namespace ConnectQl.Sample.Net461
                 {
                     c.DocumentUpdated += (o, e) => { };
 
-                    c.UpdateDocument("Script3.cql", File.ReadAllText("Script3.cql"), 1);
+                    //c.UpdateDocument("Script3.cql", File.ReadAllText("Script3.cql"), 1);
 
                     await Task.Delay(1000000);
                 }
