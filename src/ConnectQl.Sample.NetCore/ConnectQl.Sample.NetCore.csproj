@@ -19,6 +19,9 @@
   <ItemGroup>
     <Content Include="Example.json" CopyToOutputDirectory="Always" />
     <Content Include="Example.cql" CopyToOutputDirectory="Always" />
+    <Content Include="Script3.cql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

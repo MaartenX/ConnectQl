@@ -30,7 +30,7 @@ namespace ConnectQl.Interfaces
         /// <summary>
         /// Gets the logger.
         /// </summary>
-        ILog Log { get; }
+        ILogger Logger { get; }
 
         /// <summary>
         /// Adds a key/value pair of key'1 =&gt; function to the dictionary.

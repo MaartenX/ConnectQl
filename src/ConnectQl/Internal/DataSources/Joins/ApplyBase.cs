@@ -133,7 +133,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                             var rightQuery = new MultiPartQuery
                                                  {
                                                      Fields = multiPartQuery.Fields.Where(f => this.right.Aliases.Contains(f.SourceAlias)),
-                                                     FilterExpression = RangesToJoinFilter(await this.FindRangesAsync(context, multiPartQuery.FilterExpression, leftData)),
+                                                     FilterExpression = ApplyBase.RangesToJoinFilter(await this.FindRangesAsync(context, multiPartQuery.FilterExpression, leftData)),
                                                      WildcardAliases = multiPartQuery.WildcardAliases.Intersect(this.right.Aliases),
                                                  };
 
@@ -152,7 +152,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                         })
                 .Where(multiPartQuery.FilterExpression.GetRowFilter())
                 .OrderBy(multiPartQuery.OrderByExpressions)
-                .AfterLastElement(count => context.Log.Verbose($"{this.GetType().Name} returned {count} records."));
+                .AfterLastElement(count => context.Logger.Verbose($"{this.GetType().Name} returned {count} records."));
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace ConnectQl.Internal.DataSources.Joins
 
             return ranges
                 .Select(r => r.SimplifyExpression(context))
-                .Where(r => !Equals((r as ConstantExpression)?.Value, false))
+                .Where(r => !object.Equals((r as ConstantExpression)?.Value, false))
                 .DefaultIfEmpty().Aggregate(Expression.OrElse).SimplifyRanges();
         }
     }

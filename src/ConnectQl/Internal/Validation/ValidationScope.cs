@@ -83,6 +83,7 @@ namespace ConnectQl.Internal.Validation
             this.context = context;
             this.Functions = new ConnectQlFunctions(this.functions, null);
             this.FileFormats = context.FileFormats;
+            this.Loggers = context.Loggers;
         }
 
         /// <summary>
@@ -101,6 +102,8 @@ namespace ConnectQl.Internal.Validation
         /// Gets the file formats.
         /// </summary>
         public IFileFormats FileFormats { get; }
+
+        public ICollection<ILogger> Loggers { get; }
 
         /// <summary>
         /// Gets the functions.

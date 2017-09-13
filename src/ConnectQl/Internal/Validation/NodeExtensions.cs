@@ -24,7 +24,7 @@ namespace ConnectQl.Internal.Validation
 {
     using System;
     using System.Text;
-
+    using ConnectQl.Interfaces;
     using ConnectQl.Internal.Ast;
     using ConnectQl.Internal.Ast.Expressions;
     using ConnectQl.Internal.Ast.Sources;

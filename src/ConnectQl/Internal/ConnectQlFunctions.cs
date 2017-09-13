@@ -44,7 +44,7 @@ namespace ConnectQl.Internal
         /// Gets the logger.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Func<ILog> logger;
+        private readonly Func<ILogger> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectQlFunctions"/> class.
@@ -55,7 +55,7 @@ namespace ConnectQl.Internal
         /// <param name="logger">
         /// The logger.
         /// </param>
-        internal ConnectQlFunctions(Dictionary<string, IFunctionDescriptor> dictionary, Func<ILog> logger)
+        internal ConnectQlFunctions(Dictionary<string, IFunctionDescriptor> dictionary, Func<ILogger> logger)
         {
             this.dictionary = dictionary;
             this.logger = logger;
@@ -64,7 +64,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// Gets the logger.
         /// </summary>
-        public ILog Log => this.logger();
+        public ILogger Logger => this.logger();
 
         /// <summary>
         /// Gets the dictionary.

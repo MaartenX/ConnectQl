@@ -29,7 +29,7 @@ namespace ConnectQl.Interfaces
         /// <summary>
         ///     Gets the logger.
         /// </summary>
-        ILog Log { get; }
+        ILogger Logger { get; }
 
         /// <summary>
         ///     Gets the maximum rows to scan when determining the columns in a source.

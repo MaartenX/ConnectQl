@@ -169,7 +169,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
 
             while (true)
             {
-                await result.AddAsync(TakeItems(enumerators, comparison)).ConfigureAwait(false);
+                await result.AddAsync(TemporaryFilePolicy.TakeItems(enumerators, comparison)).ConfigureAwait(false);
 
                 if (!(await enumerators[0].NextBatchAsync().ConfigureAwait(false) && enumerators[0].MoveNext()))
                 {
@@ -183,7 +183,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
                 }
                 else
                 {
-                    SortEnumerators(enumerators, comparison);
+                    TemporaryFilePolicy.SortEnumerators(enumerators, comparison);
                 }
             }
 
@@ -221,7 +221,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
                     yield break;
                 }
 
-                SortEnumerators(enumerators, comparison);
+                TemporaryFilePolicy.SortEnumerators(enumerators, comparison);
             }
         }
 
@@ -263,7 +263,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <summary>
             ///     The <see cref="ReadAndTransformItemsAsync{TItem}" /> method.
             /// </summary>
-            private static readonly MethodInfo ReadAndTransformItemsAsyncMethod = typeof(Collection<T>).GetRuntimeMethods().FirstOrDefault(m => m.Name == nameof(ReadAndTransformItemsAsync));
+            private static readonly MethodInfo ReadAndTransformItemsAsyncMethod = typeof(Collection<T>).GetRuntimeMethods().FirstOrDefault(m => m.Name == nameof(Collection<T>.ReadAndTransformItemsAsync));
 
             /// <summary>
             /// The transform context.
@@ -393,7 +393,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
                     this.generateItems = Expression.Lambda<Func<Stream, Task<IEnumerable<T>>>>(
                         Expression.Call(
                             Expression.Constant(this),
-                            ReadAndTransformItemsAsyncMethod.MakeGenericMethod(this.transform.TargetType),
+                            Collection<T>.ReadAndTransformItemsAsyncMethod.MakeGenericMethod(this.transform.TargetType),
                             arg),
                         arg).Compile();
                 }
@@ -432,7 +432,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <summary>
             ///     The <see cref="WriteItemsAsync{TItem}" /> method.
             /// </summary>
-            private static readonly MethodInfo WriteItemsAsyncMethod = typeof(Builder<T>).GetRuntimeMethods().FirstOrDefault(m => m.Name == nameof(WriteItemsAsync));
+            private static readonly MethodInfo WriteItemsAsyncMethod = typeof(Builder<T>).GetRuntimeMethods().FirstOrDefault(m => m.Name == nameof(Builder<T>.WriteItemsAsync));
 
             /// <summary>
             ///     The policy.
@@ -596,7 +596,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
                 {
                     var arg = Expression.Parameter(typeof(IEnumerable<T>));
 
-                    this.writeItemsAsync = Expression.Lambda<Func<IEnumerable<T>, Task<long>>>(Expression.Call(Expression.Constant(this), WriteItemsAsyncMethod.MakeGenericMethod(this.transform.TargetType), arg), arg).Compile();
+                    this.writeItemsAsync = Expression.Lambda<Func<IEnumerable<T>, Task<long>>>(Expression.Call(Expression.Constant(this), Builder<T>.WriteItemsAsyncMethod.MakeGenericMethod(this.transform.TargetType), arg), arg).Compile();
                 }
                 else
                 {

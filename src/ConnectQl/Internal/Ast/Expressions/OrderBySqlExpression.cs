@@ -80,7 +80,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             var other = obj as OrderBySqlExpression;
 
-            return other != null && other.Ascending == this.Ascending && Equals(other.Expression, this.Expression);
+            return other != null && other.Ascending == this.Ascending && object.Equals(other.Expression, this.Expression);
         }
 
         /// <summary>

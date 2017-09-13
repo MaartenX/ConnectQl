@@ -91,7 +91,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             var other = obj as BinarySqlExpression;
 
-            return other != null && Equals(this.First, other.First) && string.Equals(this.Op, other.Op, StringComparison.OrdinalIgnoreCase) && Equals(this.Second, other.Second);
+            return other != null && object.Equals(this.First, other.First) && string.Equals(this.Op, other.Op, StringComparison.OrdinalIgnoreCase) && object.Equals(this.Second, other.Second);
         }
 
         /// <summary>

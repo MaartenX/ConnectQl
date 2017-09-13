@@ -253,7 +253,7 @@ namespace ConnectQl.Excel.FileFormats
 
                     if (package.ExcelPackage.Workbook.Worksheets.Count == 1)
                     {
-                        context.Log.Warning("More than 1048575 records found, exporting to multiple sheets.");
+                        context.Logger.Warning("More than 1048575 records found, exporting to multiple sheets.");
                     }
 
                     package.Sheet = $"Data ({package.ExcelPackage.Workbook.Worksheets.Count + 1})";

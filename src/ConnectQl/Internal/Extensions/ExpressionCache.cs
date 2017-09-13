@@ -49,7 +49,7 @@ namespace ConnectQl.Internal.Extensions
         /// </returns>
         public static LambdaExpression Get(Delegate func)
         {
-            return Expressions.TryGetValue(func, out LambdaExpression result) ? result : null;
+            return ExpressionCache.Expressions.TryGetValue(func, out LambdaExpression result) ? result : null;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ConnectQl.Internal.Extensions
         /// </returns>
         public static T Set<T>(LambdaExpression expression, T func)
         {
-            Expressions[(Delegate)(object)func] = expression;
+            ExpressionCache.Expressions[(Delegate)(object)func] = expression;
 
             return func;
         }

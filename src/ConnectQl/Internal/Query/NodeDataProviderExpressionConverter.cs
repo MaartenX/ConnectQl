@@ -69,7 +69,7 @@ namespace ConnectQl.Internal.Query
 
             new Evaluator(dataProvider).Visit(expression);
 
-            return CleanExpression(dataProvider.GetExpression(expression));
+            return NodeDataProviderExpressionConverter.CleanExpression(dataProvider.GetExpression(expression));
         }
 
         /// <summary>
@@ -139,18 +139,18 @@ namespace ConnectQl.Internal.Query
                                    var left = v.Visit(e.Left);
                                    var right = v.Visit(e.Right);
 
-                                   if (!ReferenceEquals(left, e.Left) || !ReferenceEquals(right, e.Right))
+                                   if (!object.ReferenceEquals(left, e.Left) || !object.ReferenceEquals(right, e.Right))
                                    {
                                        e = Expression.MakeBinary(e.NodeType, left, right);
                                    }
 
-                                   return ReplaceBinaryCompares(e);
+                                   return NodeDataProviderExpressionConverter.ReplaceBinaryCompares(e);
                                },
                            (GenericVisitor v, UnaryExpression e) =>
                                {
                                    var operand = v.Visit(e.Operand);
 
-                                   if (!ReferenceEquals(operand, e.Operand))
+                                   if (!object.ReferenceEquals(operand, e.Operand))
                                    {
                                        e = Expression.MakeUnary(e.NodeType, e.Operand, e.Type);
                                    }
@@ -199,7 +199,7 @@ namespace ConnectQl.Internal.Query
             /// <summary>
             /// The function that marks function results.
             /// </summary>
-            private static readonly MethodInfo MarkFunctionResultWithNameMethod = typeof(Evaluator).GetGenericMethod(nameof(MarkFunctionResultWithName), typeof(IExecutionContext), typeof(string), typeof(string), null);
+            private static readonly MethodInfo MarkFunctionResultWithNameMethod = typeof(Evaluator).GetGenericMethod(nameof(Evaluator.MarkFunctionResultWithName), typeof(IExecutionContext), typeof(string), typeof(string), null);
 
             /// <summary>
             /// The variable counter.
@@ -302,7 +302,7 @@ namespace ConnectQl.Internal.Query
                         expr = this.data.ConvertToRows(expr);
                     }
 
-                    variables[i] = Expression.Parameter(function.Parameters[i].Type, $"var{++varCounter}");
+                    variables[i] = Expression.Parameter(function.Parameters[i].Type, $"var{++Evaluator.varCounter}");
                     statements.Add(Expression.Assign(variables[i], Converter.Convert(expr, function.Parameters[i].Type)));
                     expression = expression.ReplaceParameter(function.Parameters[i], variables[i]);
                 }
@@ -314,7 +314,7 @@ namespace ConnectQl.Internal.Query
 
                     var displayName = getDisplayName.Body.ReplaceParameter(getDisplayName.Parameters[0], Expression.Constant(node.Name)).ReplaceParameter(getDisplayName.Parameters[1], Expression.NewArrayInit(typeof(object), variables.Select(v => Expression.Convert(v, typeof(object))).ToArray<Expression>()));
 
-                    expression = Expression.Call(MarkFunctionResultWithNameMethod.MakeGenericMethod(expression.Type), CustomExpression.ExecutionContext(), Expression.Constant(node.Name), displayName, expression);
+                    expression = Expression.Call(Evaluator.MarkFunctionResultWithNameMethod.MakeGenericMethod(expression.Type), CustomExpression.ExecutionContext(), Expression.Constant(node.Name), displayName, expression);
                 }
 
                 statements.Add(expression);

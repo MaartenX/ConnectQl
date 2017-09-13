@@ -300,7 +300,7 @@ namespace ConnectQl.Internal.Query
                 this.visitingGroupings--;
             }
 
-            if (!object.ReferenceEquals(node, nodeResult))
+            if (!ReferenceEquals(node, nodeResult))
             {
                 this.data.CopyValues(node, nodeResult);
             }

@@ -22,6 +22,8 @@
 
 namespace ConnectQl.Interfaces
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// The PluginContext interface.
     /// </summary>
@@ -36,5 +38,10 @@ namespace ConnectQl.Interfaces
         /// Gets the file formats.
         /// </summary>
         IFileFormats FileFormats { get; }
+
+        /// <summary>
+        /// Gets the loggers.
+        /// </summary>
+        ICollection<ILogger> Loggers { get; }
     }
 }

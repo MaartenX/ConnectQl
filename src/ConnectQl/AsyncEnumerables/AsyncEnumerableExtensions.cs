@@ -43,7 +43,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <summary>
         /// The <see cref="ConvertInternal{TSource,TTarget}"/> method.
         /// </summary>s
-        private static readonly MethodInfo ConvertInternalMethod = typeof(AsyncEnumerableExtensions).GetGenericMethod(nameof(ConvertInternal), typeof(IAsyncEnumerable<>));
+        private static readonly MethodInfo ConvertInternalMethod = typeof(AsyncEnumerableExtensions).GetGenericMethod(nameof(AsyncEnumerableExtensions.ConvertInternal), typeof(IAsyncEnumerable<>));
 
         /// <summary>
         /// Performs an action before the <see cref="IAsyncEnumerable{T}"/> is enumerated.
@@ -108,7 +108,7 @@ namespace ConnectQl.AsyncEnumerables
                 return (IAsyncEnumerable<T>)source;
             }
 
-            return (IAsyncEnumerable<T>)ConvertInternalMethod.MakeGenericMethod(elementType, typeof(T))
+            return (IAsyncEnumerable<T>)AsyncEnumerableExtensions.ConvertInternalMethod.MakeGenericMethod(elementType, typeof(T))
                 .Invoke(null, parameter);
         }
 
@@ -651,7 +651,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         public static Task<TItem> FirstAsync<TItem>(this IAsyncEnumerable<TItem> source)
-            => FirstInternalAsync(
+            => AsyncEnumerableExtensions.FirstInternalAsync(
                 source,
                 null,
                 () => { throw new InvalidOperationException("Sequence contains no matching elements."); });
@@ -672,7 +672,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         public static Task<TItem> FirstAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
-            => FirstInternalAsync(
+            => AsyncEnumerableExtensions.FirstInternalAsync(
                 source,
                 condition,
                 () => { throw new InvalidOperationException("Sequence contains no matching elements."); });
@@ -690,7 +690,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         public static Task<TItem> FirstOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source)
-            => FirstInternalAsync(source, null, () => default(TItem));
+            => AsyncEnumerableExtensions.FirstInternalAsync(source, null, () => default(TItem));
 
         /// <summary>
         /// Returns the first item for which the <paramref name="condition"/> is <c>true</c>.
@@ -707,7 +707,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<TItem> FirstOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition) => FirstInternalAsync(source, condition, () => default(TItem));
+        public static Task<TItem> FirstOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition) => AsyncEnumerableExtensions.FirstInternalAsync(source, condition, () => default(TItem));
 
         /// <summary>
         /// Executes an action for all items in the <see cref="IAsyncEnumerable{T}"/>.
@@ -959,7 +959,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         public static Task<TItem> LastAsync<TItem>(this IAsyncEnumerable<TItem> source)
-            => LastInternalAsync(
+            => AsyncEnumerableExtensions.LastInternalAsync(
                 source,
                 null,
                 () =>
@@ -983,7 +983,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         public static Task<TItem> LastAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
-            => LastInternalAsync(
+            => AsyncEnumerableExtensions.LastInternalAsync(
                 source,
                 condition,
                 () => { throw new InvalidOperationException("Sequence contains no matching elements."); });
@@ -1001,7 +1001,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         public static Task<TItem> LastOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source)
-            => LastInternalAsync(source, null, () => default(TItem));
+            => AsyncEnumerableExtensions.LastInternalAsync(source, null, () => default(TItem));
 
         /// <summary>
         /// The last or default async.
@@ -1019,7 +1019,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         public static Task<TItem> LastOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
-            => LastInternalAsync(source, condition, () => default(TItem));
+            => AsyncEnumerableExtensions.LastInternalAsync(source, condition, () => default(TItem));
 
         /// <summary>
         /// Joins the two <see cref="IAsyncEnumerable{T}"/>s on a key. When no item is found that matches an item in

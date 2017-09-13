@@ -159,7 +159,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                                    return Expression.MakeBinary(ExpressionType.AndAlso, leftSide, rightSide);
                                },
                            (RangeExpression node) =>
-                               node.Type == typeof(bool) && Equals(node.Min, false) && Equals(node.Max, true)
+                               node.Type == typeof(bool) && object.Equals(node.Min, false) && object.Equals(node.Max, true)
                                    ? (Expression)Expression.Constant(true)
                                    : node,
                            (CompareExpression node) =>

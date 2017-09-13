@@ -80,7 +80,7 @@ namespace ConnectQl.Internal.Intellisense
                     openParens.Pop();
                 }
 
-                if (Transitions.TryGetValue(Tuple.Create(scope, tokens[i].Kind), out var newScope) || Transitions.TryGetValue(Tuple.Create(TokenScope.Any, tokens[i].Kind), out newScope))
+                if (AutoComplete.Transitions.TryGetValue(Tuple.Create(scope, tokens[i].Kind), out var newScope) || AutoComplete.Transitions.TryGetValue(Tuple.Create(TokenScope.Any, tokens[i].Kind), out newScope))
                 {
                     scope = newScope;
                     openParens.Clear();
@@ -89,7 +89,7 @@ namespace ConnectQl.Internal.Intellisense
 
             if (i == tokens.Count)
             {
-                return RootCompletions;
+                return AutoComplete.RootCompletions;
             }
 
             var classifcation = tokens[i].Classification;
@@ -101,7 +101,7 @@ namespace ConnectQl.Internal.Intellisense
             {
                 case TokenScope.Root:
 
-                    return RootCompletions;
+                    return AutoComplete.RootCompletions;
 
                 case TokenScope.Select:
 
@@ -171,7 +171,7 @@ namespace ConnectQl.Internal.Intellisense
             {
                 return new AutoCompletions(
                     AutoCompleteType.Operator | AutoCompleteType.Literal,
-                    prevClass == Classification.Number ? TimeLiterals : null,
+                    prevClass == Classification.Number ? AutoComplete.TimeLiterals : null,
                     openParens.Any() ? new[] { ")" } : null,
                     openParens.LastOrDefault() == OpenParens.Function ? new[] { "," } : null);
             }

@@ -51,7 +51,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         public static Expression ToObject(Expression expression)
         {
-            return ToType(expression, typeof(object));
+            return Operator.ToType(expression, typeof(object));
         }
 
         /// <summary>

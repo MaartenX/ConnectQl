@@ -87,7 +87,7 @@ namespace ConnectQl.Internal.DataSources
             if (expressions.Length > 1)
             {
                 orderBy = Enumerable.Empty<OrderByExpression>();
-                context.Log.Verbose($"Expression contains or, splitting in {expressions.Length} parts.");
+                context.Logger.Verbose($"Expression contains or, splitting in {expressions.Length} parts.");
             }
 
             var result = expressions.Select(subFilter => retrieveSubQuery(subFilter, orderBy))

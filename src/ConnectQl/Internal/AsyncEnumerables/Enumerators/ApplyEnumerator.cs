@@ -168,7 +168,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
                         if (this.isOuterApply && this.itemsReturned == 0)
                         {
-                            return EnumerateItem(this.resultSelector(this.leftEnumerator.Current, default(TRight)));
+                            return ApplyEnumerator<TLeft, TRight, TResult>.EnumerateItem(this.resultSelector(this.leftEnumerator.Current, default(TRight)));
                         }
                     }
 

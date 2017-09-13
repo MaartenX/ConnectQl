@@ -78,7 +78,7 @@ namespace System.Linq.Expressions
         {
             var e = Expression.Parameter(typeof(Exception), "e");
 
-            return Expression.TryCatch(expression, Expression.Catch(e, Expression.Convert(Expression.New(ErrorConstructor, e), typeof(object))));
+            return Expression.TryCatch(expression, Expression.Catch(e, Expression.Convert(Expression.New(ExpressionExtensions.ErrorConstructor, e), typeof(object))));
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace System.Linq.Expressions
             return expression.SplitByAndExpressions()
                 .Aggregate(
                     Enumerable.Empty<Expression>(),
-                    (current, expressionToRemove) => current.Except(expressionToRemove.SplitByAndExpressions(), ExpressionComparer))
+                    (current, expressionToRemove) => current.Except(expressionToRemove.SplitByAndExpressions(), ExpressionExtensions.ExpressionComparer))
                 .DefaultIfEmpty()
                 .Aggregate(Expression.AndAlso);
         }
@@ -195,7 +195,7 @@ namespace System.Linq.Expressions
                 .DefaultIfEmpty()
                 .ToArray();
 
-            return orParts.Any(o => Equals((o as ConstantExpression)?.Value, true))
+            return orParts.Any(o => object.Equals((o as ConstantExpression)?.Value, true))
                        ? null //// Since one of the OR-parts equals TRUE, we have te return everything, so we don't filter.
                        : orParts.Aggregate(Expression.OrElse);
         }
@@ -277,7 +277,7 @@ namespace System.Linq.Expressions
                                                    var left = visitor.Visit(node.Left);
                                                    var right = visitor.Visit(node.Right);
 
-                                                   if (!ReferenceEquals(node.Left, left) || !ReferenceEquals(node.Right, right))
+                                                   if (!object.ReferenceEquals(node.Left, left) || !object.ReferenceEquals(node.Right, right))
                                                    {
                                                        node = CustomExpression.MakeCompare(node.CompareType, left, right);
                                                    }
@@ -304,7 +304,7 @@ namespace System.Linq.Expressions
                 {
                     var continueWith = typeof(Task<>).MakeGenericType(t.Item1.Type.GenericTypeArguments[0]).GetGenericMethod("ContinueWith", typeof(Func<,>));
                     var combined = Expression.Call(t.Item1, continueWith.MakeGenericMethod(e.Type), Expression.Lambda(e, t.Item2));
-                    return e.Type.IsConstructedGenericType && e.Type.GetGenericTypeDefinition() == typeof(Task<>) ? Expression.Call(null, TaskUnwrapMethod.MakeGenericMethod(e.Type.GenericTypeArguments[0]), combined) : combined;
+                    return e.Type.IsConstructedGenericType && e.Type.GetGenericTypeDefinition() == typeof(Task<>) ? Expression.Call(null, ExpressionExtensions.TaskUnwrapMethod.MakeGenericMethod(e.Type.GenericTypeArguments[0]), combined) : combined;
                 };
 
             //// Combine tasks into a chain of ContinueWith's.
@@ -344,7 +344,7 @@ namespace System.Linq.Expressions
                                                {
                                                    var operand = visitor.Visit(node.Operand);
 
-                                                   if (!ReferenceEquals(operand, node.Operand))
+                                                   if (!object.ReferenceEquals(operand, node.Operand))
                                                    {
                                                        node = Expression.MakeUnary(node.NodeType, operand, node.Type);
                                                    }
@@ -359,7 +359,7 @@ namespace System.Linq.Expressions
                                                {
                                                    if (node.NodeType == ExpressionType.Equal && node.Left.Type == typeof(object) && node.Right.Type == typeof(object))
                                                    {
-                                                       return Expression.Call(null, EqualsMethod, visitor.Visit(node.Left), visitor.Visit(node.Right));
+                                                       return Expression.Call(null, ExpressionExtensions.EqualsMethod, visitor.Visit(node.Left), visitor.Visit(node.Right));
                                                    }
 
                                                    return null;
@@ -453,7 +453,7 @@ namespace System.Linq.Expressions
         {
             if (expression is LambdaExpression lambdaExpression)
             {
-                return RewriteTasksToAsyncExpression(lambdaExpression);
+                return ExpressionExtensions.RewriteTasksToAsyncExpression(lambdaExpression);
             }
 
             var tasks = new List<Tuple<Expression, ParameterExpression>>();
@@ -465,7 +465,7 @@ namespace System.Linq.Expressions
                                        ? Expression.Call(t.Item1, continueWith.MakeGenericMethod(e.Type), Expression.Lambda(e, t.Item2), Expression.Constant(TaskScheduler.Default))
                                        : Expression.Call(t.Item1, continueWith.MakeGenericMethod(typeof(bool)), Expression.Lambda(Expression.Block(e, Expression.Constant(true)), t.Item2), Expression.Constant(TaskScheduler.Default));
 
-                    return e.Type.IsConstructedGenericType && e.Type.GetGenericTypeDefinition() == typeof(Task<>) ? Expression.Call(null, TaskUnwrapMethod.MakeGenericMethod(e.Type.GenericTypeArguments[0]), combined) : combined;
+                    return e.Type.IsConstructedGenericType && e.Type.GetGenericTypeDefinition() == typeof(Task<>) ? Expression.Call(null, ExpressionExtensions.TaskUnwrapMethod.MakeGenericMethod(e.Type.GenericTypeArguments[0]), combined) : combined;
                 };
 
             var idx = 0;
@@ -521,7 +521,7 @@ namespace System.Linq.Expressions
                                    var left = v.Visit(e.Left);
                                    var right = v.Visit(e.Right);
 
-                                   if (!ReferenceEquals(left, e.Left) || !ReferenceEquals(right, e.Right))
+                                   if (!object.ReferenceEquals(left, e.Left) || !object.ReferenceEquals(right, e.Right))
                                    {
                                        e = CustomExpression.MakeCompare(e.CompareType, left, right);
                                    }
@@ -537,7 +537,7 @@ namespace System.Linq.Expressions
                                {
                                    var operand = e.Operand;
 
-                                   if (!ReferenceEquals(operand, e.Operand))
+                                   if (!object.ReferenceEquals(operand, e.Operand))
                                    {
                                        e = Expression.MakeUnary(e.NodeType, e.Operand, e.Type);
                                    }
@@ -554,7 +554,7 @@ namespace System.Linq.Expressions
                                    var left = v.Visit(e.Left);
                                    var right = v.Visit(e.Right);
 
-                                   if (!ReferenceEquals(left, e.Left) || !ReferenceEquals(right, e.Right))
+                                   if (!object.ReferenceEquals(left, e.Left) || !object.ReferenceEquals(right, e.Right))
                                    {
                                        e = Expression.MakeBinary(e.NodeType, left, right);
                                    }
@@ -568,12 +568,12 @@ namespace System.Linq.Expressions
                                    {
                                        if (e.Left is ConstantExpression l)
                                        {
-                                           return Equals(l.Value, true) ? e.Right : Expression.Constant(false);
+                                           return object.Equals(l.Value, true) ? e.Right : Expression.Constant(false);
                                        }
 
                                        if (e.Right is ConstantExpression r)
                                        {
-                                           return Equals(r.Value, true) ? e.Left : Expression.Constant(false);
+                                           return object.Equals(r.Value, true) ? e.Left : Expression.Constant(false);
                                        }
                                    }
 
@@ -581,12 +581,12 @@ namespace System.Linq.Expressions
                                    {
                                        if (e.Left is ConstantExpression l)
                                        {
-                                           return Equals(l.Value, false) ? e.Right : Expression.Constant(true);
+                                           return object.Equals(l.Value, false) ? e.Right : Expression.Constant(true);
                                        }
 
                                        if (e.Right is ConstantExpression r)
                                        {
-                                           return Equals(r.Value, false) ? e.Left : Expression.Constant(true);
+                                           return object.Equals(r.Value, false) ? e.Left : Expression.Constant(true);
                                        }
                                    }
 
@@ -597,7 +597,7 @@ namespace System.Linq.Expressions
                                    var obj = v.Visit(e.Object);
                                    var arguments = v.Visit(e.Arguments);
 
-                                   if (!ReferenceEquals(obj, e.Object) || !ReferenceEquals(arguments, e.Arguments))
+                                   if (!object.ReferenceEquals(obj, e.Object) || !object.ReferenceEquals(arguments, e.Arguments))
                                    {
                                        e = Expression.Call(obj, e.Method, arguments.ToArray());
                                    }
@@ -627,12 +627,12 @@ namespace System.Linq.Expressions
         {
             return new GenericVisitor
                        {
-                           (RangeExpression r) => Equals(r.Min, false) && Equals(r.Max, true) ? Expression.Constant(true) : null,
+                           (RangeExpression r) => object.Equals(r.Min, false) && object.Equals(r.Max, true) ? Expression.Constant(true) : null,
                            (GenericVisitor v, BinaryExpression b) =>
                                {
                                    var left = v.Visit(b.Left);
                                    var right = v.Visit(b.Right);
-                                   var result = ReferenceEquals(b.Left, left) && ReferenceEquals(b.Right, right)
+                                   var result = object.ReferenceEquals(b.Left, left) && object.ReferenceEquals(b.Right, right)
                                                     ? b
                                                     : Expression.MakeBinary(b.NodeType, left, right);
 
@@ -643,12 +643,12 @@ namespace System.Linq.Expressions
                                        {
                                            if (binaryResult.Left is ConstantExpression l)
                                            {
-                                               if (Equals(l.Value, false))
+                                               if (object.Equals(l.Value, false))
                                                {
                                                    return binaryResult.Right;
                                                }
 
-                                               if (Equals(l.Value, true))
+                                               if (object.Equals(l.Value, true))
                                                {
                                                    return Expression.Constant(true);
                                                }
@@ -656,12 +656,12 @@ namespace System.Linq.Expressions
 
                                            if (binaryResult.Right is ConstantExpression r)
                                            {
-                                               if (Equals(r.Value, false))
+                                               if (object.Equals(r.Value, false))
                                                {
                                                    return binaryResult.Left;
                                                }
 
-                                               if (Equals(r.Value, true))
+                                               if (object.Equals(r.Value, true))
                                                {
                                                    return Expression.Constant(true);
                                                }
@@ -672,12 +672,12 @@ namespace System.Linq.Expressions
                                        {
                                            if (binaryResult.Left is ConstantExpression l)
                                            {
-                                               if (Equals(l.Value, true))
+                                               if (object.Equals(l.Value, true))
                                                {
                                                    return binaryResult.Right;
                                                }
 
-                                               if (Equals(l.Value, false))
+                                               if (object.Equals(l.Value, false))
                                                {
                                                    return Expression.Constant(false);
                                                }
@@ -685,12 +685,12 @@ namespace System.Linq.Expressions
 
                                            if (binaryResult.Right is ConstantExpression r)
                                            {
-                                               if (Equals(r.Value, true))
+                                               if (object.Equals(r.Value, true))
                                                {
                                                    return binaryResult.Left;
                                                }
 
-                                               if (Equals(r.Value, false))
+                                               if (object.Equals(r.Value, false))
                                                {
                                                    return Expression.Constant(false);
                                                }
@@ -946,11 +946,11 @@ namespace System.Linq.Expressions
                                                    var min = fieldMinimums[index];
                                                    var max = fieldMaximums[index];
 
-                                                   return Equals(min, max) ? (Expression)Expression.Constant(min, node.Type) : CustomExpression.MakeRange(min, max, node.Type);
+                                                   return object.Equals(min, max) ? (Expression)Expression.Constant(min, node.Type) : CustomExpression.MakeRange(min, max, node.Type);
                                                },
                                        }.Visit(expression);
 
-                    return MoveFieldsToTheLeft(MoveRangesUp(replaced));
+                    return ExpressionExtensions.MoveFieldsToTheLeft(ExpressionExtensions.MoveRangesUp(replaced));
                 }).ToArray();
         }
 
@@ -1082,7 +1082,7 @@ namespace System.Linq.Expressions
                 values = subExpressionPermutations.Select(s => Expression.Condition(s[0], s[1], s[2]).Eval()).ToArray();
             }
 
-            if (values?.Length == 2 && Equals(values[0], values[1]))
+            if (values?.Length == 2 && object.Equals(values[0], values[1]))
             {
                 return Expression.Constant(values[0]);
             }
@@ -1134,7 +1134,7 @@ namespace System.Linq.Expressions
                                        return null;
                                    }
 
-                                   var opposite = InvertComparison(node.CompareType);
+                                   var opposite = ExpressionExtensions.InvertComparison(node.CompareType);
 
                                    return opposite != null ? CustomExpression.MakeCompare(opposite.Value, node.Right, node.Left) : null;
                                },
@@ -1160,11 +1160,11 @@ namespace System.Linq.Expressions
 
                 updated = new GenericVisitor
                               {
-                                  (ConditionalExpression node) => MoveUpRange(node, node.Test, node.IfTrue, node.IfFalse),
-                                  (BinaryExpression node) => MoveUpRange(node, node.Left, node.Right),
-                                  (CompareExpression node) => MoveUpRange(node, node.Left, node.Right),
-                                  (UnaryExpression node) => MoveUpRange(node, node.Operand),
-                                  (MemberExpression node) => node.Expression == null ? null : MoveUpRange(node, node.Expression),
+                                  (ConditionalExpression node) => ExpressionExtensions.MoveUpRange(node, node.Test, node.IfTrue, node.IfFalse),
+                                  (BinaryExpression node) => ExpressionExtensions.MoveUpRange(node, node.Left, node.Right),
+                                  (CompareExpression node) => ExpressionExtensions.MoveUpRange(node, node.Left, node.Right),
+                                  (UnaryExpression node) => ExpressionExtensions.MoveUpRange(node, node.Operand),
+                                  (MemberExpression node) => node.Expression == null ? null : ExpressionExtensions.MoveUpRange(node, node.Expression),
                                   (MethodCallExpression node) =>
                                       {
                                           var subExpressions = node.Object == null
@@ -1174,7 +1174,7 @@ namespace System.Linq.Expressions
                                                                              node.Object,
                                                                          }.Concat(node.Arguments).ToArray();
 
-                                          return MoveUpRange(node, subExpressions);
+                                          return ExpressionExtensions.MoveUpRange(node, subExpressions);
                                       },
                               }.Visit(expression);
             }
@@ -1199,7 +1199,7 @@ namespace System.Linq.Expressions
         /// </returns>
         private static Expression MoveUpRange(Expression expression, params Expression[] subExpressions)
         {
-            if (ContainsField(expression) || expression is RangeExpression)
+            if (ExpressionExtensions.ContainsField(expression) || expression is RangeExpression)
             {
                 return null;
             }
@@ -1211,7 +1211,7 @@ namespace System.Linq.Expressions
 
             foreach (var subExpression in subExpressions)
             {
-                if (ContainsRangeButIsNoRange(subExpression))
+                if (ExpressionExtensions.ContainsRangeButIsNoRange(subExpression))
                 {
                     return null;
                 }
@@ -1243,7 +1243,7 @@ namespace System.Linq.Expressions
 
             return subExpressionPermutations.Count == 1
                        ? null
-                       : BuildRangeExpression(expression, subExpressionPermutations);
+                       : ExpressionExtensions.BuildRangeExpression(expression, subExpressionPermutations);
         }
     }
 }

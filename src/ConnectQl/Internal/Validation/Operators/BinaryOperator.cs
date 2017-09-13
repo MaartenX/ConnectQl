@@ -43,46 +43,46 @@ namespace ConnectQl.Internal.Validation.Operators
                   StringComparer.OrdinalIgnoreCase)
                   {
                       {
-                          "+", GenerateAdd
+                          "+", BinaryOperator.GenerateAdd
                       },
                       {
-                          "-", GenerateSubtract
+                          "-", BinaryOperator.GenerateSubtract
                       },
                       {
-                          "/", GenerateDivide
+                          "/", BinaryOperator.GenerateDivide
                       },
                       {
-                          "*", GenerateMultiply
+                          "*", BinaryOperator.GenerateMultiply
                       },
                       {
-                          "%", GenerateModulo
+                          "%", BinaryOperator.GenerateModulo
                       },
                       {
-                          "^", GeneratePower
+                          "^", BinaryOperator.GeneratePower
                       },
                       {
-                          ">", GenerateGreaterThan
+                          ">", BinaryOperator.GenerateGreaterThan
                       },
                       {
-                          ">=", GenerateGreaterThanOrEqual
+                          ">=", BinaryOperator.GenerateGreaterThanOrEqual
                       },
                       {
-                          "=", GenerateEqual
+                          "=", BinaryOperator.GenerateEqual
                       },
                       {
-                          "<>", GenerateNotEqual
+                          "<>", BinaryOperator.GenerateNotEqual
                       },
                       {
-                          "<=", GenerateLessThanOrEqual
+                          "<=", BinaryOperator.GenerateLessThanOrEqual
                       },
                       {
-                          "<", GenerateLessThan
+                          "<", BinaryOperator.GenerateLessThan
                       },
                       {
-                          "AND", GenerateAnd
+                          "AND", BinaryOperator.GenerateAnd
                       },
                       {
-                          "OR", GenerateOr
+                          "OR", BinaryOperator.GenerateOr
                       },
                   };
 
@@ -106,7 +106,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         public static Expression GenerateExpression(Expression first, string op, Expression second, Action<string> onError = null)
         {
-            if (!Operators.TryGetValue(op, out Func<Expression, Expression, Expression> generator))
+            if (!BinaryOperator.Operators.TryGetValue(op, out Func<Expression, Expression, Expression> generator))
             {
                 var message = $"Unknown operator '{op}' with types '{first.Type}' and '{second.Type}'.";
 
@@ -149,7 +149,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         public static Type InferType(Type first, string op, Type second, Action<string> errorCallback)
         {
-            return GenerateExpression(Expression.Parameter(first), op, Expression.Parameter(second), errorCallback).Type;
+            return BinaryOperator.GenerateExpression(Expression.Parameter(first), op, Expression.Parameter(second), errorCallback).Type;
         }
 
         /// <summary>
@@ -172,12 +172,12 @@ namespace ConnectQl.Internal.Validation.Operators
             if (first.Type != second.Type)
             {
                 // Try to cast the arguments to a common type, starting with the highest precision.
-                foreach (var type in CommonTypeOrder)
+                foreach (var type in Operator.CommonTypeOrder)
                 {
                     if (first.Type == type || second.Type == type)
                     {
-                        first = ToType(first, type);
-                        second = ToType(second, type);
+                        first = Operator.ToType(first, type);
+                        second = Operator.ToType(second, type);
                         break;
                     }
                 }
@@ -201,8 +201,8 @@ namespace ConnectQl.Internal.Validation.Operators
         private static Expression GenerateAdd(Expression first, Expression second)
         {
             return first.Type == typeof(string) || second.Type == typeof(string)
-                       ? Expression.Call(typeof(string).GetRuntimeMethod("Concat", new[] { typeof(string), typeof(string) }), ToString(first), ToString(second))
-                       : DoConversion(first, second, Expression.Add);
+                       ? Expression.Call(typeof(string).GetRuntimeMethod("Concat", new[] { typeof(string), typeof(string) }), Operator.ToString(first), Operator.ToString(second))
+                       : BinaryOperator.DoConversion(first, second, Expression.Add);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         private static Expression GenerateAnd(Expression first, Expression second)
         {
-            return DoConversion(first, second, Expression.And);
+            return BinaryOperator.DoConversion(first, second, Expression.And);
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         private static Expression GenerateDivide(Expression first, Expression second)
         {
-            return DoConversion(first, second, Expression.Divide);
+            return BinaryOperator.DoConversion(first, second, Expression.Divide);
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         private static Expression GenerateModulo(Expression first, Expression second)
         {
-            return DoConversion(first, second, Expression.Modulo);
+            return BinaryOperator.DoConversion(first, second, Expression.Modulo);
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         private static Expression GenerateMultiply(Expression first, Expression second)
         {
-            return DoConversion(first, second, Expression.Multiply);
+            return BinaryOperator.DoConversion(first, second, Expression.Multiply);
         }
 
         /// <summary>
@@ -389,7 +389,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         private static Expression GenerateOr(Expression first, Expression second)
         {
-            return DoConversion(first, second, Expression.Or);
+            return BinaryOperator.DoConversion(first, second, Expression.Or);
         }
 
         /// <summary>
@@ -406,7 +406,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         private static Expression GeneratePower(Expression first, Expression second)
         {
-            return DoConversion(first, second, Expression.Power);
+            return BinaryOperator.DoConversion(first, second, Expression.Power);
         }
 
         /// <summary>
@@ -423,7 +423,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         private static Expression GenerateSubtract(Expression first, Expression second)
         {
-            return DoConversion(first, second, Expression.Subtract);
+            return BinaryOperator.DoConversion(first, second, Expression.Subtract);
         }
     }
 }

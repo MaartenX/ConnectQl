@@ -82,7 +82,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                             var extraFilter = (await new[]
                                                          {
                                                              query.JoinExpression,
-                                                         }.ToRangedExpressionAsync(leftData, this.Right.Aliases).ConfigureAwait(false)).Select(RangesToJoinFilter).First();
+                                                         }.ToRangedExpressionAsync(leftData, this.Right.Aliases).ConfigureAwait(false)).Select(JoinSource.RangesToJoinFilter).First();
                             var rightData = await this.Right.GetRows(context, query.RightQuery.ReplaceFilter(extraFilter)).MaterializeAsync().ConfigureAwait(false);
 
                             return this.IsInnerJoin

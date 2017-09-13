@@ -1,6 +1,9 @@
 ﻿-- Script3
 
 IMPORT PLUGIN 'Platform'
+IMPORT PLUGIN 'Console Logger'
+IMPORT PLUGIN 'Platform'
+IMPORT PLUGIN 'Excel'
 
 IMPORT PLUGIN 'Crm'
 
@@ -8,7 +11,7 @@ USE DEFAULT CONNECTIONSTRING('Crm', 'C:\Users\Maarten\Documents\Visual Studio 20
 
 DECLARE @a = 1
 
-SELECT * FROM ENTITY('msdyn_customerasset') e
+INSERT INTO FILE('test.xlsx') SELECT * FROM ENTITY('msdyn_customerasset') e
 
 SELECT s.[Item] +'a' FROM SPLIT('1,2,3,4', ',') s
   
@@ -17,6 +20,3 @@ DECLARE @d = SPLIT('1,2,3,4', ',')
 DECLARE @b = '' + 1
 
 DECLARE @c = @b, @a = 2 weeks + 1 second + 3 milliseconds
-
-asdafaa
-

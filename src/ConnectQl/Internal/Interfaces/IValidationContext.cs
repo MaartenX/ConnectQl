@@ -47,6 +47,11 @@ namespace ConnectQl.Internal.Interfaces
         IFileFormats FileFormats { get; }
 
         /// <summary>
+        /// Gets the loggers.
+        /// </summary>
+        ICollection<ILogger> Loggers { get; }
+
+        /// <summary>
         /// Gets the plugin with the specified name.
         /// </summary>
         /// <returns>

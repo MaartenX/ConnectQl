@@ -71,7 +71,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             var other = obj as ConstSqlExpression;
 
-            return other != null && Equals(other.Value, this.Value);
+            return other != null && object.Equals(other.Value, this.Value);
         }
 
         /// <summary>

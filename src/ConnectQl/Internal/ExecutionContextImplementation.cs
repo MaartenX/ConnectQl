@@ -65,10 +65,15 @@ namespace ConnectQl.Internal
         private readonly Dictionary<string, object> values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
+        /// The loggers.
+        /// </summary>
+        private readonly LoggerCollection loggers;
+
+        /// <summary>
         /// The plugins.
         /// </summary>
         private IConnectQlPlugin[] plugins;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionContextImplementation"/> class.
         /// </summary>
@@ -84,6 +89,7 @@ namespace ConnectQl.Internal
             this.ParentContext = parentContext;
             this.Messages = new MessageWriter(filename);
             this.fileFormats = new FileFormatsImplementation();
+            this.loggers = new LoggerCollection(parentContext.Loggers);
         }
 
         /// <summary>
@@ -102,9 +108,9 @@ namespace ConnectQl.Internal
         public long WriteProgressInterval => this.ParentContext.WriteProgressInterval;
 
         /// <summary>
-        /// Gets the log.
+        /// Gets the logger.
         /// </summary>
-        public ILog Log => this.ParentContext.Log;
+        public ILogger Logger => this.loggers;
 
         /// <summary>
         /// Gets the message writer.
@@ -125,6 +131,11 @@ namespace ConnectQl.Internal
         /// Gets the file formats.
         /// </summary>
         IFileFormats IValidationContext.FileFormats => this.fileFormats;
+
+        /// <summary>
+        /// Gets the loggers.
+        /// </summary>
+        public ICollection<ILogger> Loggers => this.loggers;
 
         /// <summary>
         /// Gets the file formats.
@@ -238,7 +249,7 @@ namespace ConnectQl.Internal
                 throw new InvalidOperationException($"No URI resolver registered, cannot open '{uri}'.");
             }
 
-            return this.ParentContext.UriResolver(Path.IsPathRooted(uri) ? uri : Path.Combine(Path.GetDirectoryName(this.Filename), uri), mode);
+            return this.ParentContext.UriResolver.ResolveToStream(Path.IsPathRooted(uri) ? uri : Path.Combine(Path.GetDirectoryName(this.Filename), uri), mode);
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl", "ConnectQl\ConnectQl.csproj", "{7A245E0E-267D-4115-9A4B-A08C651AFEA5}"
 EndProject
@@ -48,7 +48,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Sample.NetCore", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Sample.Net461", "ConnectQl.Sample.Net461\ConnectQl.Sample.Net461.csproj", "{F7AA26AE-B2BC-4D21-B3F0-A64FCFC1A75C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectQl.Crm", "ConnectQl.Crm\ConnectQl.Crm.csproj", "{272200B7-E76E-4D82-9C21-EF174C9F4A88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Crm", "ConnectQl.Crm\ConnectQl.Crm.csproj", "{272200B7-E76E-4D82-9C21-EF174C9F4A88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectQl.Logger.Console", "ConnectQl.Logger.Console\ConnectQl.Logger.Console.csproj", "{5C12E592-A82F-4B63-9793-B38886241231}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -108,6 +110,10 @@ Global
 		{272200B7-E76E-4D82-9C21-EF174C9F4A88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{272200B7-E76E-4D82-9C21-EF174C9F4A88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{272200B7-E76E-4D82-9C21-EF174C9F4A88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C12E592-A82F-4B63-9793-B38886241231}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C12E592-A82F-4B63-9793-B38886241231}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C12E592-A82F-4B63-9793-B38886241231}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C12E592-A82F-4B63-9793-B38886241231}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,6 +132,7 @@ Global
 		{4A05E1D8-B98E-4888-A248-785245B5E2C6} = {61674303-473A-4C5A-83D2-6F0C9157B8CB}
 		{F7AA26AE-B2BC-4D21-B3F0-A64FCFC1A75C} = {61674303-473A-4C5A-83D2-6F0C9157B8CB}
 		{272200B7-E76E-4D82-9C21-EF174C9F4A88} = {99F0D03C-293D-466B-A4AA-A6586ED7CE49}
+		{5C12E592-A82F-4B63-9793-B38886241231} = {99F0D03C-293D-466B-A4AA-A6586ED7CE49}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {96CB5CB7-2BD6-4A82-80BE-43958461705E}

@@ -39,16 +39,16 @@ namespace ConnectQl.Internal.Validation.Operators
                   StringComparer.OrdinalIgnoreCase)
                   {
                       {
-                          "+", GeneratePlus
+                          "+", UnaryOperator.GeneratePlus
                       },
                       {
-                          "-", GenerateMinus
+                          "-", UnaryOperator.GenerateMinus
                       },
                       {
-                          "!", GenerateNot
+                          "!", UnaryOperator.GenerateNot
                       },
                       {
-                          "NOT", GenerateNot
+                          "NOT", UnaryOperator.GenerateNot
                       },
                   };
 
@@ -66,7 +66,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         public static Expression GenerateExpression(string op, Expression operand)
         {
-            if (!Operators.TryGetValue(op, out Func<Expression, Expression> generator))
+            if (!UnaryOperator.Operators.TryGetValue(op, out Func<Expression, Expression> generator))
             {
                 throw new InvalidOperationException($"Unknown operator '{op}' with type '{operand}'.");
             }
@@ -96,7 +96,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         public static Type InferType(string op, Type operand)
         {
-            return GenerateExpression(op, Expression.Parameter(operand)).Type;
+            return UnaryOperator.GenerateExpression(op, Expression.Parameter(operand)).Type;
         }
 
         /// <summary>

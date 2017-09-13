@@ -82,10 +82,10 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         {
             var other = obj as SerializableArgumentDescriptor;
 
-            return !ReferenceEquals(null, other) &&
+            return !object.ReferenceEquals(null, other) &&
                    string.Equals(this.Name, other.Name) &&
                    string.Equals(this.Description, other.Description) &&
-                   Equals(this.Type, other.Type);
+                   object.Equals(this.Type, other.Type);
         }
 
         /// <summary>

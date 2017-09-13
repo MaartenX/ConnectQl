@@ -59,7 +59,7 @@ namespace ConnectQl.Internal.Expressions
         /// <summary>
         /// Gets the maximum value as constant expression.
         /// </summary>
-        public ConstantExpression MaxExpression => Constant(this.Max, this.Type);
+        public ConstantExpression MaxExpression => Expression.Constant(this.Max, this.Type);
 
         /// <summary>
         /// Gets the min.
@@ -69,7 +69,7 @@ namespace ConnectQl.Internal.Expressions
         /// <summary>
         /// Gets the minimum value as constant expression.
         /// </summary>
-        public ConstantExpression MinExpression => Constant(this.Min, this.Type);
+        public ConstantExpression MinExpression => Expression.Constant(this.Min, this.Type);
 
         /// <summary>
         /// Returns a textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.
@@ -79,7 +79,7 @@ namespace ConnectQl.Internal.Expressions
         /// </returns>
         public override string ToString()
         {
-            return $"RANGE({Quote(this.Min)}, {Quote(this.Max)})";
+            return $"RANGE({RangeExpression.Quote(this.Min)}, {RangeExpression.Quote(this.Max)})";
         }
 
         /// <summary>

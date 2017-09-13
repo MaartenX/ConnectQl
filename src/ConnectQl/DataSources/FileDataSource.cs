@@ -203,7 +203,7 @@ namespace ConnectQl.DataSources
 
                             while (!done)
                             {
-                                result += fileWriter.WriteRows(fileFormatContext, writer, CurrentAndRest(enumerator), upsert);
+                                result += fileWriter.WriteRows(fileFormatContext, writer, FileDataSource.CurrentAndRest(enumerator), upsert);
                                 done = true;
 
                                 if (enumerator.IsSynchronous)
@@ -339,7 +339,7 @@ namespace ConnectQl.DataSources
             /// <summary>
             ///     Gets the logger.
             /// </summary>
-            public ILog Log => this.context.Log;
+            public ILogger Logger => this.context.Logger;
 
             /// <summary>
             /// Gets the maximum rows to scan when determining the columns in a source.

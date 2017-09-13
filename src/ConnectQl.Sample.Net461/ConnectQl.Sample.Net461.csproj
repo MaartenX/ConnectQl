@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConnectQl.Logger.Console\ConnectQl.Logger.Console.csproj" />
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Condition="$(DevelopingLocally)" />
     <PackageReference Include="ConnectQl" Version="$(ConnectQlPluginReferenceVersion)" Condition="!$(DevelopingLocally)" />
     <ProjectReference Include="..\ConnectQl.Excel\ConnectQl.Excel.csproj" />

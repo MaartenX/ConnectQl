@@ -47,7 +47,7 @@ namespace ConnectQl.Internal.Intellisense
 
             if (tokens.Count > 0)
             {
-                foreach (var classifiedToken in GetClassificiations(tokens))
+                foreach (var classifiedToken in Classifier.GetClassificiations(tokens))
                 {
                     result.Add(new ConnectQlContext.ClassifiedToken(
                         classifiedToken.Token.CharPos,
@@ -101,7 +101,7 @@ namespace ConnectQl.Internal.Intellisense
                     continue;
                 }
 
-                yield return new TokenInfo(current, ClassifyToken(last, current, next));
+                yield return new TokenInfo(current, Classifier.ClassifyToken(last, current, next));
 
                 last = current;
                 current = next;

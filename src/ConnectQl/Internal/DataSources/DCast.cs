@@ -264,8 +264,8 @@ namespace ConnectQl.Internal.DataSources
 
                                                 if (values.TryGetValue(name, out existingValue))
                                                 {
-                                                    var valueDouble = ToDouble(value);
-                                                    var existingDouble = ToDouble(existingValue);
+                                                    var valueDouble = DCast.ToDouble(value);
+                                                    var existingDouble = DCast.ToDouble(existingValue);
 
                                                     if (valueDouble != null && existingDouble != null)
                                                     {
@@ -274,7 +274,7 @@ namespace ConnectQl.Internal.DataSources
                                                 }
                                                 else
                                                 {
-                                                    values[name] = ToDouble(value) ?? value;
+                                                    values[name] = DCast.ToDouble(value) ?? value;
                                                 }
 
                                                 break;

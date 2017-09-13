@@ -234,13 +234,13 @@ namespace ConnectQl.Azure.Sources
 
             result.BeforeFirstElement(
                 () =>
-                    context.Log.Verbose(
+                    context.Logger.Verbose(
                         tableQuery.FilterString == null
                             ? $"Retrieving all records from table '{table.Name}'."
                             : $"Retrieving records from table '{table.Name}', query : {tableQuery.FilterString}."));
 
             result.AfterLastElement(
-                count => context.Log.Verbose($"Retrieved {count} records from table '{table.Name}'."));
+                count => context.Logger.Verbose($"Retrieved {count} records from table '{table.Name}'."));
 
             return result;
         }
@@ -388,7 +388,7 @@ namespace ConnectQl.Azure.Sources
 
             if (duplicates > 0)
             {
-                context.Log.Warning(
+                context.Logger.Warning(
                     "Found records with identical PartitionKey/RowKey combinations. This can impact performance.");
             }
 

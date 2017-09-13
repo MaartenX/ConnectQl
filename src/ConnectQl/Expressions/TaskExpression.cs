@@ -42,7 +42,7 @@ namespace ConnectQl.Expressions
         /// Thrown when the expression is not a <see cref="Task{TResult}"/>.
         /// </exception>
         protected TaskExpression(Expression expression)
-            : base(ConvertType(expression.Type))
+            : base(TaskExpression.ConvertType(expression.Type))
         {
             this.Expression = expression;
         }
@@ -106,7 +106,7 @@ namespace ConnectQl.Expressions
         {
             var result = visitor.Visit(this.Expression);
 
-            return ReferenceEquals(result, this.Expression) ? this : new TaskExpression(result);
+            return object.ReferenceEquals(result, this.Expression) ? this : new TaskExpression(result);
         }
 
         /// <summary>

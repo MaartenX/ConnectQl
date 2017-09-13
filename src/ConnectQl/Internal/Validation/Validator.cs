@@ -67,7 +67,7 @@ namespace ConnectQl.Internal.Validation
         {
             this.context = context;
             this.Scope = new ValidationScope(context);
-            this.Scope.EnablePlugin(DefaultFunctions);
+            this.Scope.EnablePlugin(Validator.DefaultFunctions);
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace ConnectQl.Internal.Validation
         {
             var result = base.Visit(node);
 
-            if (!object.ReferenceEquals(result, node))
+            if (!ReferenceEquals(result, node))
             {
                 this.Data.CopyValues(node, result);
             }

@@ -55,7 +55,7 @@ namespace ConnectQl.Internal.Comparers
         /// </returns>
         public int Compare(object[] x, object[] y)
         {
-            return x == null ? (y == null ? 0 : -1) : (y == null ? 1 : x.Select((t, i) => i >= y.Length ? 1 : Comparer(t, y[i])).FirstOrDefault(result => result != 0));
+            return x == null ? (y == null ? 0 : -1) : (y == null ? 1 : x.Select((t, i) => i >= y.Length ? 1 : ArrayOfObjectComparer.Comparer(t, y[i])).FirstOrDefault(result => result != 0));
         }
     }
 }

@@ -138,5 +138,9 @@ namespace ConnectQl.Internal
         {
             return this.GetEnumerator();
         }
+
+        /// <summary>Gets the number of elements in the collection.</summary>
+        /// <returns>The number of elements in the collection. </returns>
+        public int Count => this.messages.Count;
     }
 }

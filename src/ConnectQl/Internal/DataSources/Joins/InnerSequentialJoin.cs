@@ -96,7 +96,7 @@ namespace ConnectQl.Internal.DataSources.Joins
             return this.left.GetRows(context, leftQuery).Zip(this.right.GetRows(context, rightQuery), rowBuilder.CombineRows)
                 .Where(multiPartQuery.FilterExpression.GetRowFilter())
                 .OrderBy(multiPartQuery.OrderByExpressions)
-                .AfterLastElement(count => context.Log.Verbose($"{this.GetType().Name} returned {count} records."));
+                .AfterLastElement(count => context.Logger.Verbose($"{this.GetType().Name} returned {count} records."));
         }
 
         /// <summary>

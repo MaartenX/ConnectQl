@@ -67,7 +67,7 @@ namespace ConnectQl.Internal.Validation
         /// </returns>
         public static Type GetResultType(Type first, Type second)
         {
-            return first == second ? first : Mappings.TryGetValue(Tuple.Create(first, second), out Type result) ? result : null;
+            return first == second ? first : BinaryTypeConverter.Mappings.TryGetValue(Tuple.Create(first, second), out Type result) ? result : null;
         }
 
         /// <summary>

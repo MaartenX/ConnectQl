@@ -117,7 +117,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <summary>
         ///     Gets the logger.
         /// </summary>
-        ILog IExecutionContext.Log => this.context.Log;
+        ILogger IExecutionContext.Logger => this.context.Logger;
 
         /// <summary>
         ///     Gets the display name for the specified access.

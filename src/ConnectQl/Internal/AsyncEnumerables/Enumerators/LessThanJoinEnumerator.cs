@@ -245,7 +245,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
                     {
                         if (this.isLeftJoin && this.itemsReturned != 0)
                         {
-                            return EnumerateItem(this.resultSelector(this.leftEnumerator.Current, default(TRight)));
+                            return LessThanJoinEnumerator<TLeft, TRight, TKey, TResult>.EnumerateItem(this.resultSelector(this.leftEnumerator.Current, default(TRight)));
                         }
 
                         this.ResetRight();
