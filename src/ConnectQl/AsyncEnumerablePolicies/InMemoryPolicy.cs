@@ -111,7 +111,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <summary>
             ///     The array.
             /// </summary>
-            private T[] array = new T[MinimumBufferSize];
+            private T[] array = new T[InMemoryAsyncEnumerableBuilder<T>.MinimumBufferSize];
 
             /// <summary>
             ///     The number of items in the builder.
@@ -192,7 +192,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
 
                 var result = Task.FromResult<IAsyncReadOnlyCollection<T>>(new InMemoryAsyncReadOnlyCollection<T>(this.policy, this.array ?? new T[0]));
 
-                this.array = new T[MinimumBufferSize];
+                this.array = new T[InMemoryAsyncEnumerableBuilder<T>.MinimumBufferSize];
                 this.numItems = -1;
 
                 return result;

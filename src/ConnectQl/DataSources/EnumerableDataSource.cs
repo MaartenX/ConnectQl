@@ -54,7 +54,7 @@ namespace ConnectQl.DataSources
         /// </returns>
         public static IDataSource Create<T>(IEnumerable<T> enumerable)
         {
-            return new EnumerableDataSourceImplementation<T>(enumerable, Item);
+            return new EnumerableDataSourceImplementation<T>(enumerable, EnumerableDataSource.Item);
         }
 
         /// <summary>

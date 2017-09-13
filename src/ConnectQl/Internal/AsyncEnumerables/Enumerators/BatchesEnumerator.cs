@@ -149,7 +149,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
                     if (!await this.enumerator.NextBatchAsync().ConfigureAwait(false))
                     {
                         this.state = 2;
-                        return this.startOffset == this.currentOffset ? null : EnumerateItem(new Batch<TSource>(this.materialized, this.startOffset, this.currentOffset - this.startOffset));
+                        return this.startOffset == this.currentOffset ? null : BatchesEnumerator<TSource>.EnumerateItem(new Batch<TSource>(this.materialized, this.startOffset, this.currentOffset - this.startOffset));
                     }
 
                     return this.EnumerateBatches();

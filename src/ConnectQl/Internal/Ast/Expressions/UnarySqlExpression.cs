@@ -81,7 +81,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             var other = obj as UnarySqlExpression;
 
-            return other != null && string.Equals(this.Op, other.Op, StringComparison.OrdinalIgnoreCase) && Equals(this.Expression, other.Expression);
+            return other != null && string.Equals(this.Op, other.Op, StringComparison.OrdinalIgnoreCase) && object.Equals(this.Expression, other.Expression);
         }
 
         /// <summary>

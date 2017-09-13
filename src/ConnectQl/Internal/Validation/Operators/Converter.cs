@@ -64,7 +64,7 @@ namespace ConnectQl.Internal.Validation.Operators
             if (typeof(IAsyncEnumerable).GetTypeInfo().IsAssignableFrom(to.GetTypeInfo()))
             {
                 return Expression.Call(
-                    AsyncEnumerableExtensionsConvertMethod.MakeGenericMethod(to.GenericTypeArguments[0]),
+                    Converter.AsyncEnumerableExtensionsConvertMethod.MakeGenericMethod(to.GenericTypeArguments[0]),
                     Expression.Convert(from, typeof(IAsyncEnumerable)));
             }
 
@@ -107,7 +107,7 @@ namespace ConnectQl.Internal.Validation.Operators
                     return;
                 }
 
-                Convert(Expression.Parameter(from), to);
+                Converter.Convert(Expression.Parameter(from), to);
             }
             catch (Exception e)
             {

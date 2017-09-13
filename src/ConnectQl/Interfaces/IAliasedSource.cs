@@ -20,46 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Internal.Ast.Sources
+namespace ConnectQl.Interfaces
 {
     /// <summary>
-    /// The join type.
+    /// A combination of a source and an alias.
     /// </summary>
-    internal enum JoinType
+    public interface IAliasedSource
     {
         /// <summary>
-        /// The inner.
+        /// Gets the source.
         /// </summary>
-        Inner,
+        IDataSource Source { get; }
 
         /// <summary>
-        /// The left.
+        /// Gets the alias for the source.
         /// </summary>
-        Left,
-
-        /// <summary>
-        /// The sequential inner join.
-        /// </summary>
-        SequentialInner,
-
-        /// <summary>
-        /// The sequential left join.
-        /// </summary>
-        SequentialLeft,
-
-        /// <summary>
-        /// The nearest inner join.
-        /// </summary>
-        NearestInner,
-
-        /// <summary>
-        /// The nearest left join.
-        /// </summary>
-        NearestLeft,
-
-        /// <summary>
-        /// The cross.
-        /// </summary>
-        Cross,
+        string Alias { get; }
     }
 }

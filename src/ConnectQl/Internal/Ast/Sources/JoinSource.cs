@@ -23,7 +23,7 @@
 namespace ConnectQl.Internal.Ast.Sources
 {
     using System.Collections.Generic;
-
+    using ConnectQl.Interfaces;
     using ConnectQl.Internal.Ast.Expressions;
     using ConnectQl.Internal.Ast.Visitors;
 

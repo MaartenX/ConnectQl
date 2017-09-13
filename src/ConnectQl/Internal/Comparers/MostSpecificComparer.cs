@@ -51,7 +51,7 @@ namespace ConnectQl.Internal.Comparers
         /// </returns>
         public int Compare(CompareExpression x, CompareExpression y)
         {
-            return SortOrder(x) - SortOrder(y);
+            return MostSpecificComparer.SortOrder(x) - MostSpecificComparer.SortOrder(y);
         }
 
         /// <summary>

@@ -38,12 +38,12 @@ namespace ConnectQl.Internal
         /// <summary>
         /// The URI resolver.
         /// </summary>
-        public static readonly Lazy<Func<string, UriResolveMode, Task<Stream>>> UriResolver = new Lazy<Func<string, UriResolveMode, Task<Stream>>>(TryCreateUriResolver);
+        public static readonly Lazy<IUriResolver> UriResolver = new Lazy<IUriResolver>(ReflectionLoader.TryCreateUriResolver);
 
         /// <summary>
         /// The plugin resolver.
         /// </summary>
-        public static readonly Lazy<IPluginResolver> PluginResolver = new Lazy<IPluginResolver>(TryLoadPluginProvider);
+        public static readonly Lazy<IPluginResolver> PluginResolver = new Lazy<IPluginResolver>(ReflectionLoader.TryLoadPluginProvider);
 
         /// <summary>
         ///     Tries to load the plugin resolver using reflection by checking if the ConnectQl.Platform assembly is loaded.
@@ -84,10 +84,9 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The UriResolveMode
         /// </returns>
-        private static Func<string, UriResolveMode, Task<Stream>> TryCreateUriResolver()
+        private static IUriResolver TryCreateUriResolver()
         {
-            Type fileType;
-            Type fileModeType;
+            Type fileType, fileModeType;
 
             try
             {
@@ -110,6 +109,11 @@ namespace ConnectQl.Internal
                 var uriParameter = Expression.Parameter(typeof(string), "uri");
                 var fileModeParameter = Expression.Parameter(typeof(UriResolveMode), "fileMode");
 
+                var fullPathParameters = new[]
+                {
+                    typeof(string)
+                };
+
                 var readParameters = new[]
                                          {
                                          typeof(string),
@@ -121,6 +125,7 @@ namespace ConnectQl.Internal
                                           fileModeType,
                                       };
 
+                var getFullPathMethod = typeof(Path).GetRuntimeMethod("GetFullPath", fullPathParameters);
                 var openReadMethod = fileType.GetRuntimeMethod("OpenRead", readParameters);
                 var openMethod = fileType.GetRuntimeMethod("Open", writeParameters);
                 var createField = fileModeType.GetRuntimeField("Create")?.GetValue(null);
@@ -136,7 +141,9 @@ namespace ConnectQl.Internal
                             fileModeParameter)
                         .Compile();
 
-                    return (uri, fileMode) => Task.FromResult(lambda(uri, fileMode));
+                    var getFullPath = Expression.Lambda<Func<string, string>>(Expression.Call(getFullPathMethod, uriParameter), uriParameter).Compile();
+
+                    return new UriResolverImplementation(getFullPath, (uri, fileMode) => Task.FromResult(lambda(uri, fileMode)));
                 }
             }
             catch
@@ -144,6 +151,43 @@ namespace ConnectQl.Internal
             }
 
             return null;
+        }
+
+        private class UriResolverImplementation : IUriResolver
+        {
+            /// <summary>A lambda that returns the full path for a file.</summary>
+            private readonly Func<string, string> getFullPath;
+
+            /// <summary>A lambda that resolves the uri to a stream.</summary>
+            private readonly Func<string, UriResolveMode, Task<Stream>> resolveToStream;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="UriResolverImplementation"/> class.
+            /// </summary>
+            /// <param name="getFullPath">A lambda that returns the full path for a file.</param>
+            /// <param name="resolveToStream">A lambda that resolves the uri to a stream.</param>
+            public UriResolverImplementation(Func<string, string> getFullPath, Func<string, UriResolveMode, Task<Stream>> resolveToStream)
+            {
+                this.getFullPath = getFullPath;
+                this.resolveToStream = resolveToStream;
+            }
+
+            /// <summary>
+            /// Gets the full path of the uri.
+            /// </summary>
+            /// <param name="uri">The uri to get the full path for.</param>
+            /// <returns>
+            /// The full path of the uri.
+            /// </returns>
+            public string GetFullPath(string uri) => this.getFullPath(uri);
+
+            /// <summary>
+            /// Resolves an uri to a stream.
+            /// </summary>
+            /// <param name="uri">The uri to resolve.</param>
+            /// <param name="mode">The mode to use when resolving the uri.</param>
+            /// <returns>A Task returning a stream.</returns>
+            public Task<Stream> ResolveToStream(string uri, UriResolveMode mode) => this.resolveToStream(uri, mode);
         }
     }
 }

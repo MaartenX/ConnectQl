@@ -166,7 +166,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
                         return this.offset == this.lastOffset
                                    ? null
-                                   : EnumerateItem(new AsyncGrouping<TSource, TKey>(this.lastKey, this.sorted, this.lastOffset, this.offset - this.lastOffset));
+                                   : GroupByEnumerator<TSource, TKey>.EnumerateItem(new AsyncGrouping<TSource, TKey>(this.lastKey, this.sorted, this.lastOffset, this.offset - this.lastOffset));
                     }
 
                     return this.EnumerateGroupings();

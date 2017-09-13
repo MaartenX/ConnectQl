@@ -104,7 +104,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// </returns>
         public static bool Equals(IEnumerable<T> x, IEnumerable<T> y)
         {
-            return Default.Equals(x, y);
+            return EnumerableComparer<T>.Default.Equals(x, y);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// </returns>
         public static int GetHashCode(IEnumerable<T> obj)
         {
-            return Default.GetHashCode(obj);
+            return EnumerableComparer<T>.Default.GetHashCode(obj);
         }
 
         /// <summary>

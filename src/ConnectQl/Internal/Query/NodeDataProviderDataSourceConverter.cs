@@ -185,9 +185,9 @@ namespace ConnectQl.Internal.Query
                                       alias,
                                   };
 
-                var result = CreateDataSourceDefinition.Body
-                    .ReplaceParameter(CreateDataSourceDefinition.Parameters[0], expression)
-                    .ReplaceParameter(CreateDataSourceDefinition.Parameters[1], Expression.Constant(aliases));
+                var result = Evaluator.CreateDataSourceDefinition.Body
+                    .ReplaceParameter(Evaluator.CreateDataSourceDefinition.Parameters[0], expression)
+                    .ReplaceParameter(Evaluator.CreateDataSourceDefinition.Parameters[1], Expression.Constant(aliases));
 
                 return result;
             }
@@ -211,13 +211,13 @@ namespace ConnectQl.Internal.Query
                 var right = this.data.GetFactoryExpression(node.Right);
                 var row = Expression.Parameter(typeof(Row), "row");
                 var replaced = GenericVisitor.Visit(
-                    (SourceFieldExpression e) => Expression.Call(row, GetMethod.MakeGenericMethod(e.Type), Expression.Constant($"{e.SourceName}.{e.FieldName}")),
+                    (SourceFieldExpression e) => Expression.Call(row, NodeDataProviderDataSourceConverter.GetMethod.MakeGenericMethod(e.Type), Expression.Constant($"{e.SourceName}.{e.FieldName}")),
                     (UnaryExpression e) => e.NodeType == ExpressionType.Convert && e.Operand is SourceFieldExpression
-                                               ? Expression.Call(row, GetMethod.MakeGenericMethod(e.Type), Expression.Constant($"{((SourceFieldExpression)e.Operand).SourceName}.{((SourceFieldExpression)e.Operand).FieldName}"))
+                                               ? Expression.Call(row, NodeDataProviderDataSourceConverter.GetMethod.MakeGenericMethod(e.Type), Expression.Constant($"{((SourceFieldExpression)e.Operand).SourceName}.{((SourceFieldExpression)e.Operand).FieldName}"))
                                                : null,
                     right);
 
-                if (!object.ReferenceEquals(replaced, right))
+                if (!ReferenceEquals(replaced, right))
                 {
                     factory = Expression.Constant(right);
                     right = GenericVisitor.Visit(
@@ -230,12 +230,12 @@ namespace ConnectQl.Internal.Query
 
                 var apply =
                     node.IsOuterApply
-                        ? CreateJoin(
+                        ? Evaluator.CreateJoin(
                             typeof(OuterApply).GetTypeInfo().DeclaredConstructors.First(),
                             left,
                             right,
                             factory)
-                        : CreateJoin(
+                        : Evaluator.CreateJoin(
                             typeof(CrossApply).GetTypeInfo().DeclaredConstructors.First(),
                             left,
                             right,
@@ -261,7 +261,7 @@ namespace ConnectQl.Internal.Query
 
                 var function = this.data.ConvertToLinqExpression(node.Function);
 
-                this.data.SetFactoryExpression(node, CreateDataSource(function, node.Alias));
+                this.data.SetFactoryExpression(node, Evaluator.CreateDataSource(function, node.Alias));
 
                 return node;
             }
@@ -279,7 +279,7 @@ namespace ConnectQl.Internal.Query
             {
                 node = (FunctionTarget)base.VisitFunctionTarget(node);
 
-                this.data.SetFactoryExpression(node, CreateDataTarget(this.data.ConvertToLinqExpression(node.Function)));
+                this.data.SetFactoryExpression(node, Evaluator.CreateDataTarget(this.data.ConvertToLinqExpression(node.Function)));
 
                 return node;
             }
@@ -302,27 +302,27 @@ namespace ConnectQl.Internal.Query
                 switch (node.JoinType)
                 {
                     case JoinType.Cross:
-                        factory = CreateJoin(
+                        factory = Evaluator.CreateJoin(
                             typeof(CrossJoin).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second));
                         break;
                     case JoinType.Inner:
-                        factory = CreateJoin(
+                        factory = Evaluator.CreateJoin(
                             typeof(InnerJoin).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second),
                             Expression.Constant(this.data.ConvertToLinqExpression(node.Expression)));
                         break;
                     case JoinType.Left:
-                        factory = CreateJoin(
+                        factory = Evaluator.CreateJoin(
                             typeof(LeftJoin).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second),
                             Expression.Constant(this.data.ConvertToLinqExpression(node.Expression)));
                         break;
                     case JoinType.NearestInner:
-                        factory = CreateJoin(
+                        factory = Evaluator.CreateJoin(
                             typeof(NearestJoinSource).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second),
@@ -330,7 +330,7 @@ namespace ConnectQl.Internal.Query
                             Expression.Constant(true));
                         break;
                     case JoinType.NearestLeft:
-                        factory = CreateJoin(
+                        factory = Evaluator.CreateJoin(
                             typeof(NearestJoinSource).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second),
@@ -338,13 +338,13 @@ namespace ConnectQl.Internal.Query
                             Expression.Constant(false));
                         break;
                     case JoinType.SequentialInner:
-                        factory = CreateJoin(
+                        factory = Evaluator.CreateJoin(
                             typeof(InnerSequentialJoin).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second));
                         break;
                     case JoinType.SequentialLeft:
-                        factory = CreateJoin(
+                        factory = Evaluator.CreateJoin(
                             typeof(LeftSequentialJoin).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second));
@@ -402,7 +402,7 @@ namespace ConnectQl.Internal.Query
             {
                 node = (VariableSource)base.VisitVariableSource(node);
 
-                this.data.SetFactoryExpression(node, CreateDataSource(Expression.Convert(this.data.ConvertToLinqExpression(new VariableSqlExpression(node.Variable)), typeof(IDataSource)), node.Alias));
+                this.data.SetFactoryExpression(node, Evaluator.CreateDataSource(Expression.Convert(this.data.ConvertToLinqExpression(new VariableSqlExpression(node.Variable)), typeof(IDataSource)), node.Alias));
 
                 return node;
             }
@@ -420,7 +420,7 @@ namespace ConnectQl.Internal.Query
             {
                 node = (VariableTarget)base.VisitVariableTarget(node);
 
-                this.data.SetFactoryExpression(node, CreateDataTarget(Expression.Convert(this.data.ConvertToLinqExpression(new VariableSqlExpression(node.Variable)), typeof(IDataTarget))));
+                this.data.SetFactoryExpression(node, Evaluator.CreateDataTarget(Expression.Convert(this.data.ConvertToLinqExpression(new VariableSqlExpression(node.Variable)), typeof(IDataTarget))));
 
                 return node;
             }
@@ -436,8 +436,8 @@ namespace ConnectQl.Internal.Query
             /// </returns>
             private static Expression CreateDataTarget(Expression expression)
             {
-                return CreateDataTargetDefinition.Body
-                    .ReplaceParameter(CreateDataTargetDefinition.Parameters[0], expression);
+                return Evaluator.CreateDataTargetDefinition.Body
+                    .ReplaceParameter(Evaluator.CreateDataTargetDefinition.Parameters[0], expression);
             }
 
             /// <summary>

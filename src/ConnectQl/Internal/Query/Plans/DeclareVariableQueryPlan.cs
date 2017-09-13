@@ -63,7 +63,7 @@ namespace ConnectQl.Internal.Query.Plans
 
             expression = GenericVisitor.Visit(
                 (ExecutionContextExpression e) => context,
-                Expression.Call(context, SetVariable.MakeGenericMethod(expression.Type), Expression.Constant(name), expression).RewriteTasksToAsyncExpression());
+                Expression.Call(context, DeclareVariableQueryPlan.SetVariable.MakeGenericMethod(expression.Type), Expression.Constant(name), expression).RewriteTasksToAsyncExpression());
 
             if (!expression.Type.IsConstructedGenericType || expression.Type.GetGenericTypeDefinition() != typeof(Task<>))
             {

@@ -88,7 +88,7 @@ namespace ConnectQl.Internal.Ast.Targets
         {
             var function = visitor.Visit(this.Function);
 
-            return ReferenceEquals(function, this.Function) ? this : new FunctionTarget(function);
+            return object.ReferenceEquals(function, this.Function) ? this : new FunctionTarget(function);
         }
     }
 }

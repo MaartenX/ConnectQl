@@ -103,8 +103,8 @@ namespace ConnectQl.Internal.DataSources.Joins
             var leftFilter = filter.RemoveAllPartsThatAreNotInSource(this.Left);
             var rightFilter = filter.RemoveAllPartsThatAreNotInSource(this.Right);
             var resultFilter = filter.SplitByAndExpressions()
-                .Except(leftFilter.SplitByAndExpressions(), ExpressionComparer)
-                .Except(rightFilter.SplitByAndExpressions(), ExpressionComparer)
+                .Except(leftFilter.SplitByAndExpressions(), JoinSourceBase.ExpressionComparer)
+                .Except(rightFilter.SplitByAndExpressions(), JoinSourceBase.ExpressionComparer)
                 .DefaultIfEmpty()
                 .Aggregate(Expression.AndAlso);
 

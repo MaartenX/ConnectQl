@@ -81,7 +81,7 @@ namespace ConnectQl.Expressions
         /// The <see cref="MethodCallExpression"/>.
         /// </returns>
         public MethodCallExpression CreateGetter(ParameterExpression row, Type type = null)
-            => Call(row, RowGetMethod.MakeGenericMethod(type ?? this.Type), Constant($"{this.source}.{this.FieldName}"));
+            => Expression.Call(row, FieldExpression.RowGetMethod.MakeGenericMethod(type ?? this.Type), Expression.Constant($"{this.source}.{this.FieldName}"));
 
         /// <summary>
         /// Returns a textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.

@@ -32,7 +32,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     /// <summary>
     /// The serializable function descriptor.
     /// </summary>
-    [DebuggerDisplay("{" + nameof(DisplayName) + ",nq}")]
+    [DebuggerDisplay("{" + nameof(SerializableFunctionDescriptor.DisplayName) + ",nq}")]
     internal class SerializableFunctionDescriptor : IFunctionDescriptor
     {
         /// <summary>
@@ -123,7 +123,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
                    this.IsAggregateFunction == other.IsAggregateFunction &&
                    string.Equals(this.Name, other.Name) &&
                    string.Equals(this.Description, other.Description) &&
-                   Equals(this.ReturnType, other.ReturnType) &&
+                   object.Equals(this.ReturnType, other.ReturnType) &&
                    EnumerableComparer.Equals(this.Arguments, other.Arguments);
         }
 
@@ -165,7 +165,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// </returns>
         protected bool Equals(SerializableFunctionDescriptor other)
         {
-            return Equals(this.Arguments, other.Arguments) && string.Equals(this.Description, other.Description) && this.IsAggregateFunction == other.IsAggregateFunction && string.Equals(this.Name, other.Name) && Equals(this.ReturnType, other.ReturnType);
+            return object.Equals(this.Arguments, other.Arguments) && string.Equals(this.Description, other.Description) && this.IsAggregateFunction == other.IsAggregateFunction && string.Equals(this.Name, other.Name) && object.Equals(this.ReturnType, other.ReturnType);
         }
     }
 }

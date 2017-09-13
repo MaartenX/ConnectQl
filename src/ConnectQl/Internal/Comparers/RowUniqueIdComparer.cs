@@ -67,7 +67,7 @@ namespace ConnectQl.Internal.Comparers
         /// </returns>
         public bool Equals(Row x, Row y)
         {
-            return Equals(x?.UniqueId, y?.UniqueId);
+            return object.Equals(x?.UniqueId, y?.UniqueId);
         }
 
         /// <summary>

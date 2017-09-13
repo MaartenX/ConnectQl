@@ -22,9 +22,8 @@
 
 namespace ConnectQl.Sample.Net461
 {
-    using System.IO;
     using System.Threading.Tasks;
-    using ConnectQl.Intellisense;
+    using ConnectQl.Logger.Console;
     using ConnectQl.Platform;
 
     /// <summary>
@@ -41,16 +40,15 @@ namespace ConnectQl.Sample.Net461
         /// </returns>
         public static async Task MainAsync(string[] args)
         {
-            using (var context = new ConnectQlContext(new PluginResolver()))
+            try
             {
-                using (var c = context.CreateIntellisenseSession())
+                using (var context = new ConnectQlContext(new PluginResolver()))
                 {
-                    c.DocumentUpdated += (o, e) => { };
-
-                    c.UpdateDocument("Script3.cql", File.ReadAllText("Script3.cql"), 1);
-
-                    await Task.Delay(1000000);
+                    await context.ExecuteFileAsync("script3.cql");
                 }
+            }
+            catch
+            {
             }
 
             /*
@@ -64,4 +62,5 @@ namespace ConnectQl.Sample.Net461
         /// <param name="args">The command line arguments.</param>
         public static void Main(string[] args) => Program.MainAsync(args).GetAwaiter().GetResult();
     }
+
 }

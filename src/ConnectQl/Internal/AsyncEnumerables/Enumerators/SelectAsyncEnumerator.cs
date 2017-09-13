@@ -127,7 +127,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
                         return null;
                     }
 
-                    return EnumerateItem(await this.transform(this.asyncEnumerator.Current).ConfigureAwait(false));
+                    return SelectAsyncEnumerator<TSource, TResult>.EnumerateItem(await this.transform(this.asyncEnumerator.Current).ConfigureAwait(false));
                 case 1:
                     return null;
                 case 2:

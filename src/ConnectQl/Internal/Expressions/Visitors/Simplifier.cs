@@ -56,14 +56,14 @@ namespace ConnectQl.Internal.Expressions.Visitors
 
                 if (left != null)
                 {
-                    return Equals(left.Value, true) ? node.Right : Expression.Constant(false);
+                    return object.Equals(left.Value, true) ? node.Right : Expression.Constant(false);
                 }
 
                 var right = node.Right as ConstantExpression;
 
                 if (right != null)
                 {
-                    return Equals(right.Value, true) ? node.Left : Expression.Constant(false);
+                    return object.Equals(right.Value, true) ? node.Left : Expression.Constant(false);
                 }
             }
 
@@ -73,14 +73,14 @@ namespace ConnectQl.Internal.Expressions.Visitors
 
                 if (left != null)
                 {
-                    return Equals(left.Value, true) ? Expression.Constant(true) : node.Right;
+                    return object.Equals(left.Value, true) ? Expression.Constant(true) : node.Right;
                 }
 
                 var right = node.Right as ConstantExpression;
 
                 if (right != null)
                 {
-                    return Equals(right.Value, true) ? Expression.Constant(true) : node.Left;
+                    return object.Equals(right.Value, true) ? Expression.Constant(true) : node.Left;
                 }
             }
 
@@ -102,7 +102,7 @@ namespace ConnectQl.Internal.Expressions.Visitors
 
             node = result as ConditionalExpression;
 
-            return node?.Test is ConstantExpression && node.IfTrue is ConstantExpression && node.IfFalse is ConstantExpression ? Evaluate(node) : result;
+            return node?.Test is ConstantExpression && node.IfTrue is ConstantExpression && node.IfFalse is ConstantExpression ? Simplifier.Evaluate(node) : result;
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace ConnectQl.Internal.Expressions.Visitors
 
             node = result as IndexExpression;
 
-            return node != null && (node.Object == null || node.Object is ConstantExpression) && node.Arguments.All(arg => arg is ConstantExpression) ? Evaluate(node) : result;
+            return node != null && (node.Object == null || node.Object is ConstantExpression) && node.Arguments.All(arg => arg is ConstantExpression) ? Simplifier.Evaluate(node) : result;
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace ConnectQl.Internal.Expressions.Visitors
 
             node = result as MemberExpression;
 
-            return node != null && (node.Expression == null || node.Expression is ConstantExpression) ? Evaluate(node) : result;
+            return node != null && (node.Expression == null || node.Expression is ConstantExpression) ? Simplifier.Evaluate(node) : result;
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace ConnectQl.Internal.Expressions.Visitors
 
             node = result as UnaryExpression;
 
-            return node?.Operand is ConstantExpression ? Evaluate(node) : result;
+            return node?.Operand is ConstantExpression ? Simplifier.Evaluate(node) : result;
         }
 
         /// <summary>

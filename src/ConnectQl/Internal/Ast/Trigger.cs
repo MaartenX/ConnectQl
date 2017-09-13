@@ -120,7 +120,7 @@ namespace ConnectQl.Internal.Ast
         {
             var function = visitor.Visit(this.Function);
 
-            return !ReferenceEquals(this.Function, function)
+            return !object.ReferenceEquals(this.Function, function)
                        ? new Trigger(function)
                        : this;
         }

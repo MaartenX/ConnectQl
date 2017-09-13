@@ -109,7 +109,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                 return result;
             }
 
-            context.Log.Verbose($"Expression contains or, splitting in {expressions.Length} parts.");
+            context.Logger.Verbose($"Expression contains or, splitting in {expressions.Length} parts.");
 
             return result.OrderBy(multiPartQuery.OrderByExpressions);
         }

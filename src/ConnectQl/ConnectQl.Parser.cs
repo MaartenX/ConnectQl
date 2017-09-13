@@ -5,6 +5,7 @@ namespace ConnectQl.Internal
     using System.CodeDom.Compiler;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using ConnectQl.Interfaces;
     using ConnectQl.Internal.Ast;
     using ConnectQl.Internal.Ast.Expressions;
     using ConnectQl.Internal.Ast.Sources;
@@ -175,7 +176,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// The distance from the last error.
         /// </summary>
-        private int errDist = MinimumErrDistance;
+        private int errDist = Parser.MinimumErrDistance;
         /// <summary>
         /// Initializes a new instance of the <see cref="Parser"/> class.
         /// </summary>
@@ -241,7 +242,7 @@ namespace ConnectQl.Internal
         /// </param>
         public void SemErr(int lineFrom, int colFrom, int tokenIndexFrom, int lineTo, int colTo, int tokenIndexTo, string msg)
         {
-            if (this.errDist >= MinimumErrDistance)
+            if (this.errDist >= Parser.MinimumErrDistance)
             {
                 this.errors.SemErr(lineFrom, colFrom, tokenIndexFrom, lineTo, colTo, tokenIndexTo, msg);
             }
@@ -257,9 +258,9 @@ namespace ConnectQl.Internal
         /// </param>
         public void SemErr(string msg)
         {
-            if (this.errDist >= MinimumErrDistance)
+            if (this.errDist >= Parser.MinimumErrDistance)
             {
-                this.errors.SemErr(t.Line, t.Col, t.Index - 2, t.Line, t.Col + t.Val.Length, t.Index - 2, msg);
+                this.errors.SemErr(this.t.Line, this.t.Col, this.t.Index - 2, this.t.Line, this.t.Col + this.t.Val.Length, this.t.Index - 2, msg);
             }
 
             this.errDist = 0;
@@ -273,7 +274,7 @@ namespace ConnectQl.Internal
         /// </param>
         private void SynErr(int n)
         {
-            if (this.errDist >= MinimumErrDistance)
+            if (this.errDist >= Parser.MinimumErrDistance)
             {
                 this.errors.SynErr(this.LookAhead.Line, this.LookAhead.Col, this.LookAhead.Index - 1, n);
             }
@@ -288,21 +289,21 @@ namespace ConnectQl.Internal
         {
             for (; ; )
             {
-                t = this.LookAhead;
+                this.t = this.LookAhead;
                 this.TokenScanned?.Invoke(this, new TokenScannedEventArgs(this.LookAhead));
                 this.LookAhead = this.scanner.Scan();
 
-                Tokens.Add(this.LookAhead);
+                this.Tokens.Add(this.LookAhead);
 
                 if (this.LookAhead.IsComment)
                 {
-                    this.LookAhead = t;
+                    this.LookAhead = this.t;
                     continue;
                 }
 
-                if (this.LookAhead.Kind <= MaxToken) { ++this.errDist; break; }
+                if (this.LookAhead.Kind <= Parser.MaxToken) { ++this.errDist; break; }
 
-                this.LookAhead = t;
+                this.LookAhead = this.t;
             }
         }
 
@@ -316,11 +317,11 @@ namespace ConnectQl.Internal
         {
             if (this.LookAhead.Kind == n)
             {
-                Get();
+                this.Get();
             }
             else
             {
-                SynErr(n);
+                this.SynErr(n);
             }
         }
 
@@ -335,7 +336,7 @@ namespace ConnectQl.Internal
         /// </returns>
         private bool StartOf(int s)
         {
-            return Set[s, this.LookAhead.Kind];
+            return Parser.Set[s, this.LookAhead.Kind];
         }
 
         /// <summary>
@@ -349,11 +350,11 @@ namespace ConnectQl.Internal
         /// </param>
         private void ExpectWeak(int n, int follow)
         {
-            if (this.LookAhead.Kind == n) Get();
+            if (this.LookAhead.Kind == n) this.Get();
             else
             {
-                SynErr(n);
-                while (!StartOf(follow)) Get();
+                this.SynErr(n);
+                while (!this.StartOf(follow)) this.Get();
             }
         }
 
@@ -375,31 +376,36 @@ namespace ConnectQl.Internal
         private bool WeakSeparator(int n, int syFol, int repFol)
         {
             int kind = this.LookAhead.Kind;
-            if (kind == n) { Get(); return true; }
-            else if (StartOf(repFol)) { return false; }
+            if (kind == n) {
+                this.Get(); return true; }
+            else if (this.StartOf(repFol)) { return false; }
             else
             {
-                SynErr(n);
-                while (!(Set[syFol, kind] || Set[repFol, kind] || Set[0, kind]))
+                this.SynErr(n);
+                while (!(Parser.Set[syFol, kind] || Parser.Set[repFol, kind] || Parser.Set[0, kind]))
                 {
-                    Get();
+                    this.Get();
                     kind = this.LookAhead.Kind;
                 }
-                return StartOf(syFol);
+                return this.StartOf(syFol);
             }
         }
         void ConnectQl()
         {
             this.Statements = new List<StatementBase>();
-            while (!(StartOf(1))) { SynErr(68); Get(); }
-            while (StartOf(2))
+            while (!(this.StartOf(1))) {
+                this.SynErr(68);
+                this.Get(); }
+            while (this.StartOf(2))
             {
                 StatementBase statement;
-                Statement(out statement);
+                this.Statement(out statement);
                 this.Statements.Add(statement);
-                while (!(StartOf(1))) { SynErr(69); Get(); }
+                while (!(this.StartOf(1))) {
+                    this.SynErr(69);
+                    this.Get(); }
             }
-            Expect(0);
+            this.Expect(0);
         }
 
         void Statement(out StatementBase statement)
@@ -409,290 +415,291 @@ namespace ConnectQl.Internal
             {
                 case 13:
                     {
-                        DeclareStatement(out statement);
+                        this.DeclareStatement(out statement);
                         break;
                     }
                 case 24:
                     {
-                        ImportStatement(out statement);
+                        this.ImportStatement(out statement);
                         break;
                     }
                 case 26:
                 case 27:
                     {
-                        InsertStatement(out statement);
+                        this.InsertStatement(out statement);
                         break;
                     }
                 case 23:
                     {
-                        TriggerStatement(out statement);
+                        this.TriggerStatement(out statement);
                         break;
                     }
                 case 32:
                     {
-                        UnionOrSelectStatement(out select);
+                        this.UnionOrSelectStatement(out select);
                         statement = select;
                         break;
                     }
                 case 9:
                     {
-                        UseStatement(out statement);
+                        this.UseStatement(out statement);
                         break;
                     }
-                default: SynErr(70); break;
+                default:
+                    this.SynErr(70); break;
             }
         }
 
         void DeclareStatement(out StatementBase statement)
         {
-            statement = null; VariableDeclaration variable; FunctionCallSqlExpression function; string jobName = null; var vars = new List<VariableDeclaration>(); var ctx = Mark();
-            Expect(13);
+            statement = null; VariableDeclaration variable; FunctionCallSqlExpression function; string jobName = null; var vars = new List<VariableDeclaration>(); var ctx = this.Mark();
+            this.Expect(13);
             if (this.LookAhead.Kind == 5)
             {
-                VariableDeclaration(out variable);
+                this.VariableDeclaration(out variable);
                 vars.Add(variable);
                 while (this.LookAhead.Kind == 14)
                 {
-                    Get();
-                    VariableDeclaration(out variable);
+                    this.Get();
+                    this.VariableDeclaration(out variable);
                     vars.Add(variable);
                 }
                 statement = this.SetContext(new DeclareStatement(new ReadOnlyCollection<VariableDeclaration>(vars)), ctx);
             }
             else if (this.LookAhead.Kind == 15)
             {
-                Get();
+                this.Get();
                 var triggers = new List<Trigger>();
                 if (this.LookAhead.Kind == 3 || this.LookAhead.Kind == 4)
                 {
-                    Name(out jobName);
+                    this.Name(out jobName);
                 }
                 else if (this.LookAhead.Kind == 1)
                 {
-                    String(out jobName);
+                    this.String(out jobName);
                 }
-                else SynErr(71);
+                else this.SynErr(71);
                 if (this.LookAhead.Kind == 16)
                 {
                     TimeSpan interval; string after = null;
-                    Get();
-                    var triggerCtx = Mark();
+                    this.Get();
+                    var triggerCtx = this.Mark();
                     if (this.LookAhead.Kind == 17)
                     {
-                        Get();
-                        Interval(out interval);
+                        this.Get();
+                        this.Interval(out interval);
                         triggers.Add(this.SetContext(new Trigger(interval), triggerCtx));
                     }
                     else if (this.LookAhead.Kind == 18)
                     {
-                        Get();
+                        this.Get();
                         if (this.LookAhead.Kind == 3 || this.LookAhead.Kind == 4)
                         {
-                            Name(out after);
+                            this.Name(out after);
                         }
                         else if (this.LookAhead.Kind == 1)
                         {
-                            String(out after);
+                            this.String(out after);
                         }
-                        else SynErr(72);
+                        else this.SynErr(72);
                         triggers.Add(this.SetContext(new Trigger(after), triggerCtx));
                     }
                     else if (this.LookAhead.Kind == 19)
                     {
-                        Get();
-                        Function(out function);
+                        this.Get();
+                        this.Function(out function);
                         triggers.Add(this.SetContext(new Trigger(function), triggerCtx));
                     }
-                    else SynErr(73);
+                    else this.SynErr(73);
                     while (this.LookAhead.Kind == 14 || this.LookAhead.Kind == 20)
                     {
                         if (this.LookAhead.Kind == 20)
                         {
-                            Get();
+                            this.Get();
                         }
                         else
                         {
-                            Get();
+                            this.Get();
                         }
-                        triggerCtx = Mark();
+                        triggerCtx = this.Mark();
                         if (this.LookAhead.Kind == 17)
                         {
-                            Get();
-                            Interval(out interval);
+                            this.Get();
+                            this.Interval(out interval);
                             triggers.Add(this.SetContext(new Trigger(interval), triggerCtx));
                         }
                         else if (this.LookAhead.Kind == 18)
                         {
-                            Get();
+                            this.Get();
                             if (this.LookAhead.Kind == 3 || this.LookAhead.Kind == 4)
                             {
-                                Name(out after);
+                                this.Name(out after);
                             }
                             else if (this.LookAhead.Kind == 1)
                             {
-                                String(out after);
+                                this.String(out after);
                             }
-                            else SynErr(74);
+                            else this.SynErr(74);
                             triggers.Add(this.SetContext(new Trigger(after), triggerCtx));
                         }
                         else if (this.LookAhead.Kind == 19)
                         {
-                            Get();
-                            Function(out function);
+                            this.Get();
+                            this.Function(out function);
                             triggers.Add(this.SetContext(new Trigger(function), triggerCtx));
                         }
-                        else SynErr(75);
+                        else this.SynErr(75);
                     }
                 }
-                Expect(21);
+                this.Expect(21);
                 StatementBase blockStatement; var statements = new List<StatementBase>();
-                while (StartOf(2))
+                while (this.StartOf(2))
                 {
-                    Statement(out blockStatement);
+                    this.Statement(out blockStatement);
                     statements.Add(blockStatement);
                 }
-                Expect(22);
+                this.Expect(22);
                 statement = this.SetContext(new DeclareJobStatement(
                 jobName,
                 new ReadOnlyCollection<StatementBase>(statements),
                 new ReadOnlyCollection<Trigger>(triggers)),
                 ctx);
             }
-            else SynErr(76);
+            else this.SynErr(76);
         }
 
         void ImportStatement(out StatementBase statement)
         {
-            string uri; statement = null; var ctx = Mark();
-            Expect(24);
+            string uri; statement = null; var ctx = this.Mark();
+            this.Expect(24);
             if (this.LookAhead.Kind == 1)
             {
-                String(out uri);
+                this.String(out uri);
                 statement = this.SetContext(new ImportStatement(uri), ctx);
             }
             else if (this.LookAhead.Kind == 25)
             {
-                Get();
-                String(out uri);
+                this.Get();
+                this.String(out uri);
                 statement = this.SetContext(new ImportPluginStatement(uri), ctx);
             }
-            else SynErr(77);
+            else this.SynErr(77);
         }
 
         void InsertStatement(out StatementBase statement)
         {
-            TargetBase target; SelectStatement selectStatement; var ctx = Mark();
+            TargetBase target; SelectStatement selectStatement; var ctx = this.Mark();
             if (this.LookAhead.Kind == 26)
             {
-                Get();
+                this.Get();
             }
             else if (this.LookAhead.Kind == 27)
             {
-                Get();
+                this.Get();
             }
-            else SynErr(78);
-            var upsert = t.Val.Equals("UPSERT", StringComparison.OrdinalIgnoreCase);
-            Expect(28);
-            InsertTarget(out target);
-            UnionOrSelectStatement(out selectStatement);
+            else this.SynErr(78);
+            var upsert = this.t.Val.Equals("UPSERT", StringComparison.OrdinalIgnoreCase);
+            this.Expect(28);
+            this.InsertTarget(out target);
+            this.UnionOrSelectStatement(out selectStatement);
             statement = this.SetContext(new InsertStatement(target, upsert, selectStatement), ctx);
         }
 
         void TriggerStatement(out StatementBase statement)
         {
-            string jobName; statement = null; var ctx = Mark();
-            Expect(23);
-            Expect(15);
-            Name(out jobName);
+            string jobName; statement = null; var ctx = this.Mark();
+            this.Expect(23);
+            this.Expect(15);
+            this.Name(out jobName);
             statement = this.SetContext(new TriggerStatement(jobName), ctx);
         }
 
         void UnionOrSelectStatement(out SelectStatement statement)
         {
-            SelectStatement select; SelectStatement union; var ctx = Mark();
-            SelectStatement(out select);
+            SelectStatement select; SelectStatement union; var ctx = this.Mark();
+            this.SelectStatement(out select);
             statement = select;
             if (this.LookAhead.Kind == 29)
             {
-                Get();
+                this.Get();
                 if (this.LookAhead.Kind == 32)
                 {
-                    UnionOrSelectStatement(out union);
+                    this.UnionOrSelectStatement(out union);
                     statement = this.SetContext(new SelectUnionStatement(statement, union), ctx);
                 }
                 else if (this.LookAhead.Kind == 30)
                 {
-                    Get();
-                    UnionOrSelectStatement(out union);
-                    Expect(31);
+                    this.Get();
+                    this.UnionOrSelectStatement(out union);
+                    this.Expect(31);
                     statement = this.SetContext(new SelectUnionStatement(statement, union), ctx);
                 }
-                else SynErr(79);
+                else this.SynErr(79);
             }
         }
 
         void UseStatement(out StatementBase statement)
         {
-            FunctionCallSqlExpression function = null; string functionName = null; var ctx = Mark();
-            Expect(9);
-            Expect(10);
-            Function(out function);
-            Expect(11);
-            FunctionName(out functionName);
+            FunctionCallSqlExpression function = null; string functionName = null; var ctx = this.Mark();
+            this.Expect(9);
+            this.Expect(10);
+            this.Function(out function);
+            this.Expect(11);
+            this.FunctionName(out functionName);
             statement = this.SetContext(new UseStatement(function, functionName), ctx);
         }
 
         void Function(out FunctionCallSqlExpression function)
         {
-            string name; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = Mark();
-            Identifier(out name);
-            Expect(30);
-            if (StartOf(3))
+            string name; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = this.Mark();
+            this.Identifier(out name);
+            this.Expect(30);
+            if (this.StartOf(3))
             {
-                Expression(out expression);
+                this.Expression(out expression);
                 args.Add(expression);
                 while (this.LookAhead.Kind == 14)
                 {
-                    Get();
-                    Expression(out expression);
+                    this.Get();
+                    this.Expression(out expression);
                     args.Add(expression);
                 }
             }
-            Expect(31);
-            function = CatchAll(() => this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx));
+            this.Expect(31);
+            function = this.CatchAll(() => this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx));
         }
 
         void FunctionName(out string value)
         {
-            Expect(4);
-            value = t.Val;
+            this.Expect(4);
+            value = this.t.Val;
         }
 
         void VariableDeclaration(out VariableDeclaration declaration)
         {
-            string VariableSqlExpression; SqlExpressionBase expression; var ctx = Mark();
-            Variable(out VariableSqlExpression);
-            Expect(12);
-            Expression(out expression);
+            string VariableSqlExpression; SqlExpressionBase expression; var ctx = this.Mark();
+            this.Variable(out VariableSqlExpression);
+            this.Expect(12);
+            this.Expression(out expression);
             declaration = this.SetContext(new VariableDeclaration(VariableSqlExpression, expression), ctx);
         }
 
         void Variable(out string value)
         {
-            Expect(5);
-            value = t.Val;
+            this.Expect(5);
+            value = this.t.Val;
         }
 
         void Expression(out SqlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
-            AndExpression(out expr);
+            SqlExpressionBase expr; string op; var ctx = this.Mark();
+            this.AndExpression(out expr);
             expression = expr;
             while (this.LookAhead.Kind == 20)
             {
-                Get();
-                op = t.Val;
-                AndExpression(out expr);
+                this.Get();
+                op = this.t.Val;
+                this.AndExpression(out expr);
                 expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
             }
         }
@@ -702,80 +709,80 @@ namespace ConnectQl.Internal
             value = null;
             if (this.LookAhead.Kind == 3)
             {
-                Get();
-                value = t.Val.Substring(1, t.Val.Length - 2);
+                this.Get();
+                value = this.t.Val.Substring(1, this.t.Val.Length - 2);
             }
             else if (this.LookAhead.Kind == 4)
             {
-                Get();
-                value = t.Val;
+                this.Get();
+                value = this.t.Val;
             }
-            else SynErr(80);
+            else this.SynErr(80);
         }
 
         void String(out string value)
         {
-            Expect(1);
-            value = ParseString(t.Val);
+            this.Expect(1);
+            value = Parser.ParseString(this.t.Val);
         }
 
         void Interval(out TimeSpan interval)
         {
-            object numberValue; string duration; var ctx = Mark();
-            Number(out numberValue);
-            Identifier(out duration);
-            interval = ParseTimeSpan(duration, numberValue);
+            object numberValue; string duration; var ctx = this.Mark();
+            this.Number(out numberValue);
+            this.Identifier(out duration);
+            interval = this.ParseTimeSpan(duration, numberValue);
         }
 
         void Number(out object value)
         {
-            Expect(2);
-            value = ParseNumber(t.Val);
+            this.Expect(2);
+            value = this.ParseNumber(this.t.Val);
         }
 
         void Identifier(out string value)
         {
-            Expect(4);
-            value = t.Val;
+            this.Expect(4);
+            value = this.t.Val;
         }
 
         void InsertTarget(out TargetBase target)
         {
-            string name; target = null; var ctx = Mark(); string variable;
+            string name; target = null; var ctx = this.Mark(); string variable;
             if (this.LookAhead.Kind == 5)
             {
-                Variable(out variable);
-                target = CatchAll(() => this.SetContext(new VariableTarget(variable), ctx));
+                this.Variable(out variable);
+                target = this.CatchAll(() => this.SetContext(new VariableTarget(variable), ctx));
             }
             else if (this.LookAhead.Kind == 4)
             {
-                Identifier(out name);
+                this.Identifier(out name);
                 if (this.LookAhead.Kind == 30)
                 {
                     var args = new List<SqlExpressionBase>(); SqlExpressionBase e;
-                    Get();
-                    if (StartOf(3))
+                    this.Get();
+                    if (this.StartOf(3))
                     {
-                        Expression(out e);
+                        this.Expression(out e);
                         args.Add(e);
                         while (this.LookAhead.Kind == 14)
                         {
-                            Get();
-                            Expression(out e);
+                            this.Get();
+                            this.Expression(out e);
                             args.Add(e);
                         }
                     }
-                    Expect(31);
-                    target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)), ctx));
+                    this.Expect(31);
+                    target = this.CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)), ctx));
                 }
                 if (target == null)
                 {
                     var args = new[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-                    target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)), ctx));
+                    target = this.CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)), ctx));
                 }
 
             }
-            else SynErr(81);
+            else this.SynErr(81);
         }
 
         void SelectStatement(out SelectStatement query)
@@ -788,53 +795,53 @@ namespace ConnectQl.Internal
             var expressions = new List<AliasedSqlExpression>();
             var groups = new List<SqlExpressionBase>();
             var orders = new List<OrderBySqlExpression>();
-            var ctx = Mark();
-            Expect(32);
-            ExpressionAlias(out aliasedExpression);
+            var ctx = this.Mark();
+            this.Expect(32);
+            this.ExpressionAlias(out aliasedExpression);
             expressions.Add(aliasedExpression);
-            while (WeakSeparator(14, 3, 4))
+            while (this.WeakSeparator(14, 3, 4))
             {
-                ExpressionAlias(out aliasedExpression);
+                this.ExpressionAlias(out aliasedExpression);
                 expressions.Add(aliasedExpression);
             }
-            Expect(33);
-            Join(out source);
-            while (WeakSeparator(14, 5, 6))
+            this.Expect(33);
+            this.Join(out source);
+            while (this.WeakSeparator(14, 5, 6))
             {
-                Join(out join);
+                this.Join(out join);
                 source = new JoinSource(JoinType.Cross, source, join);
             }
             if (this.LookAhead.Kind == 34)
             {
-                Get();
-                Expression(out where);
+                this.Get();
+                this.Expression(out where);
             }
             if (this.LookAhead.Kind == 35)
             {
-                Get();
-                Expect(19);
-                Expression(out expression);
+                this.Get();
+                this.Expect(19);
+                this.Expression(out expression);
                 groups.Add(expression);
-                while (WeakSeparator(14, 3, 7))
+                while (this.WeakSeparator(14, 3, 7))
                 {
-                    Expression(out expression);
+                    this.Expression(out expression);
                     groups.Add(expression);
                 }
                 if (this.LookAhead.Kind == 36)
                 {
-                    Get();
-                    Expression(out having);
+                    this.Get();
+                    this.Expression(out having);
                 }
             }
             if (this.LookAhead.Kind == 37)
             {
-                Get();
-                Expect(19);
-                OrderBySqlExpression(out orderBy);
+                this.Get();
+                this.Expect(19);
+                this.OrderBySqlExpression(out orderBy);
                 orders.Add(orderBy);
-                while (WeakSeparator(14, 3, 8))
+                while (this.WeakSeparator(14, 3, 8))
                 {
-                    OrderBySqlExpression(out orderBy);
+                    this.OrderBySqlExpression(out orderBy);
                     orders.Add(orderBy);
                 }
             }
@@ -850,12 +857,12 @@ namespace ConnectQl.Internal
 
         void ExpressionAlias(out AliasedSqlExpression aliased)
         {
-            string alias = null; SqlExpressionBase expression; var ctx = Mark();
-            Expression(out expression);
+            string alias = null; SqlExpressionBase expression; var ctx = this.Mark();
+            this.Expression(out expression);
             if (this.LookAhead.Kind == 48)
             {
-                Get();
-                Name(out alias);
+                this.Get();
+                this.Name(out alias);
             }
             aliased = this.SetContext(new AliasedSqlExpression(expression, alias), ctx);
         }
@@ -864,77 +871,77 @@ namespace ConnectQl.Internal
         {
             SourceBase join = null;
             SqlExpressionBase expression;
-            var ctx = Mark();
+            var ctx = this.Mark();
             JoinType joinType;
-            SourceSelector(out source);
-            while (StartOf(9))
+            this.SourceSelector(out source);
+            while (this.StartOf(9))
             {
                 if (this.LookAhead.Kind == 40 || this.LookAhead.Kind == 41 || this.LookAhead.Kind == 42)
                 {
                     if (this.LookAhead.Kind == 40)
                     {
-                        Get();
+                        this.Get();
                         joinType = JoinType.Inner;
                     }
                     else if (this.LookAhead.Kind == 41)
                     {
-                        Get();
-                        Expect(40);
+                        this.Get();
+                        this.Expect(40);
                         joinType = JoinType.Inner;
                     }
                     else
                     {
-                        Get();
-                        Expect(40);
+                        this.Get();
+                        this.Expect(40);
                         joinType = JoinType.Left;
                     }
-                    SourceSelector(out join);
-                    Expect(43);
-                    Expression(out expression);
+                    this.SourceSelector(out join);
+                    this.Expect(43);
+                    this.Expression(out expression);
                     source = this.SetContext(new JoinSource(joinType, source, join, expression), ctx);
                 }
                 else if (this.LookAhead.Kind == 44)
                 {
-                    Get();
+                    this.Get();
                     if (this.LookAhead.Kind == 40)
                     {
-                        Get();
-                        SourceSelector(out join);
+                        this.Get();
+                        this.SourceSelector(out join);
                         source = this.SetContext(new JoinSource(JoinType.Cross, source, join), ctx);
                     }
                     else if (this.LookAhead.Kind == 45)
                     {
-                        Get();
-                        SourceSelector(out join);
+                        this.Get();
+                        this.SourceSelector(out join);
                         source = this.SetContext(new ApplySource(source, join, false), ctx);
                     }
-                    else SynErr(82);
+                    else this.SynErr(82);
                 }
                 else if (this.LookAhead.Kind == 46)
                 {
-                    Get();
-                    Expect(45);
-                    SourceSelector(out join);
+                    this.Get();
+                    this.Expect(45);
+                    this.SourceSelector(out join);
                     source = this.SetContext(new ApplySource(source, join, true), ctx);
                 }
                 else
                 {
-                    Get();
+                    this.Get();
                     joinType = JoinType.SequentialInner;
                     if (this.LookAhead.Kind == 41 || this.LookAhead.Kind == 42)
                     {
                         if (this.LookAhead.Kind == 41)
                         {
-                            Get();
+                            this.Get();
                         }
                         else
                         {
-                            Get();
+                            this.Get();
                             joinType = JoinType.SequentialLeft;
                         }
                     }
-                    Expect(40);
-                    SourceSelector(out join);
+                    this.Expect(40);
+                    this.SourceSelector(out join);
                     source = this.SetContext(new JoinSource(joinType, source, join), ctx);
                 }
             }
@@ -944,17 +951,17 @@ namespace ConnectQl.Internal
         {
             SqlExpressionBase expression;
             var ascending = true;
-            var ctx = Mark();
-            Expression(out expression);
+            var ctx = this.Mark();
+            this.Expression(out expression);
             if (this.LookAhead.Kind == 38 || this.LookAhead.Kind == 39)
             {
                 if (this.LookAhead.Kind == 38)
                 {
-                    Get();
+                    this.Get();
                 }
                 else
                 {
-                    Get();
+                    this.Get();
                     ascending = false;
                 }
             }
@@ -967,263 +974,263 @@ namespace ConnectQl.Internal
             source = null;
             SourceBase alias;
             SelectStatement select;
-            var ctx = Mark();
+            var ctx = this.Mark();
             if (this.LookAhead.Kind == 4 || this.LookAhead.Kind == 5)
             {
-                SourceBase(out alias);
+                this.SourceBase(out alias);
                 source = alias;
             }
             else if (this.LookAhead.Kind == 30)
             {
-                Get();
+                this.Get();
                 if (this.LookAhead.Kind == 4 || this.LookAhead.Kind == 5 || this.LookAhead.Kind == 30)
                 {
-                    Join(out source);
-                    Expect(31);
+                    this.Join(out source);
+                    this.Expect(31);
                 }
                 else if (this.LookAhead.Kind == 32)
                 {
-                    UnionOrSelectStatement(out select);
-                    Expect(31);
-                    Name(out name);
+                    this.UnionOrSelectStatement(out select);
+                    this.Expect(31);
+                    this.Name(out name);
                     source = this.SetContext(new SelectSource(select, name), ctx);
                 }
-                else SynErr(83);
+                else this.SynErr(83);
             }
-            else SynErr(84);
+            else this.SynErr(84);
         }
 
         void SourceBase(out SourceBase source)
         {
-            string name, alias = null; source = null; FunctionCallSqlExpression function = null; var ctx = Mark(); string variable;
+            string name, alias = null; source = null; FunctionCallSqlExpression function = null; var ctx = this.Mark(); string variable;
             if (this.LookAhead.Kind == 5)
             {
-                Variable(out variable);
+                this.Variable(out variable);
                 if (this.LookAhead.Kind == 48)
                 {
-                    Get();
+                    this.Get();
                 }
-                Name(out alias);
-                source = CatchAll(() => this.SetContext(new VariableSource(variable, alias), ctx));
+                this.Name(out alias);
+                source = this.CatchAll(() => this.SetContext(new VariableSource(variable, alias), ctx));
             }
             else if (this.LookAhead.Kind == 4)
             {
-                Identifier(out name);
+                this.Identifier(out name);
                 var args = new List<SqlExpressionBase>(); SqlExpressionBase e;
-                Expect(30);
-                if (StartOf(3))
+                this.Expect(30);
+                if (this.StartOf(3))
                 {
-                    Expression(out e);
+                    this.Expression(out e);
                     args.Add(e);
                     while (this.LookAhead.Kind == 14)
                     {
-                        Get();
-                        Expression(out e);
+                        this.Get();
+                        this.Expression(out e);
                         args.Add(e);
                     }
                 }
-                Expect(31);
+                this.Expect(31);
                 function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
                 if (this.LookAhead.Kind == 48)
                 {
-                    Get();
+                    this.Get();
                 }
-                Name(out alias);
-                source = CatchAll(() => this.SetContext(new FunctionSource(function, alias), ctx));
+                this.Name(out alias);
+                source = this.CatchAll(() => this.SetContext(new FunctionSource(function, alias), ctx));
             }
-            else SynErr(85);
+            else this.SynErr(85);
         }
 
         void AndExpression(out SqlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
-            NegateExpression(out expr);
+            SqlExpressionBase expr; string op; var ctx = this.Mark();
+            this.NegateExpression(out expr);
             expression = expr;
             while (this.LookAhead.Kind == 49)
             {
-                Get();
-                op = t.Val;
-                NegateExpression(out expr);
+                this.Get();
+                op = this.t.Val;
+                this.NegateExpression(out expr);
                 expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
             }
         }
 
         void NegateExpression(out SqlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op = null; var ctx = Mark();
+            SqlExpressionBase expr; string op = null; var ctx = this.Mark();
             if (this.LookAhead.Kind == 50)
             {
-                Get();
-                op = t.Val;
+                this.Get();
+                op = this.t.Val;
             }
-            CompareExpression(out expr);
+            this.CompareExpression(out expr);
             expression = op == null ? expr : this.SetContext(new UnarySqlExpression(op, expr), ctx);
         }
 
         void CompareExpression(out SqlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
-            AddExpression(out expr);
+            SqlExpressionBase expr; string op; var ctx = this.Mark();
+            this.AddExpression(out expr);
             expression = expr;
-            while (StartOf(10))
+            while (this.StartOf(10))
             {
                 switch (this.LookAhead.Kind)
                 {
                     case 51:
                         {
-                            Get();
+                            this.Get();
                             break;
                         }
                     case 52:
                         {
-                            Get();
+                            this.Get();
                             break;
                         }
                     case 12:
                         {
-                            Get();
+                            this.Get();
                             break;
                         }
                     case 53:
                         {
-                            Get();
+                            this.Get();
                             break;
                         }
                     case 54:
                         {
-                            Get();
+                            this.Get();
                             break;
                         }
                     case 55:
                         {
-                            Get();
+                            this.Get();
                             break;
                         }
                 }
-                op = t.Val;
-                AddExpression(out expr);
+                op = this.t.Val;
+                this.AddExpression(out expr);
                 expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
             }
         }
 
         void AddExpression(out SqlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
-            MulExpression(out expr);
+            SqlExpressionBase expr; string op; var ctx = this.Mark();
+            this.MulExpression(out expr);
             expression = expr;
             while (this.LookAhead.Kind == 56 || this.LookAhead.Kind == 57)
             {
                 if (this.LookAhead.Kind == 56)
                 {
-                    Get();
+                    this.Get();
                 }
                 else
                 {
-                    Get();
+                    this.Get();
                 }
-                op = t.Val;
-                MulExpression(out expr);
+                op = this.t.Val;
+                this.MulExpression(out expr);
                 expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
             }
         }
 
         void MulExpression(out SqlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
-            Unary(out expr);
+            SqlExpressionBase expr; string op; var ctx = this.Mark();
+            this.Unary(out expr);
             expression = expr;
-            while (StartOf(11))
+            while (this.StartOf(11))
             {
                 if (this.LookAhead.Kind == 58)
                 {
-                    Get();
+                    this.Get();
                 }
                 else if (this.LookAhead.Kind == 59)
                 {
-                    Get();
+                    this.Get();
                 }
                 else if (this.LookAhead.Kind == 60)
                 {
-                    Get();
+                    this.Get();
                 }
                 else
                 {
-                    Get();
+                    this.Get();
                 }
-                op = t.Val;
-                Unary(out expr);
+                op = this.t.Val;
+                this.Unary(out expr);
                 expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
             }
         }
 
         void Unary(out SqlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op = null; var ctx = Mark();
+            SqlExpressionBase expr; string op = null; var ctx = this.Mark();
             if (this.LookAhead.Kind == 56 || this.LookAhead.Kind == 57 || this.LookAhead.Kind == 62)
             {
                 if (this.LookAhead.Kind == 56)
                 {
-                    Get();
+                    this.Get();
                 }
                 else if (this.LookAhead.Kind == 57)
                 {
-                    Get();
+                    this.Get();
                 }
                 else
                 {
-                    Get();
+                    this.Get();
                 }
-                op = t.Val;
+                op = this.t.Val;
             }
-            ValueExpression(out expr);
+            this.ValueExpression(out expr);
             expression = op == null ? expr : this.SetContext(new UnarySqlExpression(op, expr), ctx);
         }
 
         void ValueExpression(out SqlExpressionBase expression)
         {
-            string stringValue; object numberValue; SqlExpressionBase function; expression = null; string VariableSqlExpression; var ctx = Mark();
+            string stringValue; object numberValue; SqlExpressionBase function; expression = null; string VariableSqlExpression; var ctx = this.Mark();
             switch (this.LookAhead.Kind)
             {
                 case 1:
                     {
-                        String(out stringValue);
+                        this.String(out stringValue);
                         expression = this.SetContext(new ConstSqlExpression(stringValue), ctx);
                         break;
                     }
                 case 2:
                     {
-                        Number(out numberValue);
+                        this.Number(out numberValue);
                         if (this.LookAhead.Kind == 4)
                         {
                             string duration;
-                            Identifier(out duration);
-                            expression = this.SetContext(new ConstSqlExpression(ParseTimeSpan(duration, numberValue)), ctx);
+                            this.Identifier(out duration);
+                            expression = this.SetContext(new ConstSqlExpression(this.ParseTimeSpan(duration, numberValue)), ctx);
                         }
                         expression = expression ?? this.SetContext(new ConstSqlExpression(numberValue), ctx);
                         break;
                     }
                 case 30:
                     {
-                        Get();
-                        Expression(out expression);
-                        Expect(31);
+                        this.Get();
+                        this.Expression(out expression);
+                        this.Expect(31);
                         break;
                     }
                 case 63:
                     {
-                        Get();
+                        this.Get();
                         expression = this.SetContext(new ConstSqlExpression(true), ctx);
                         break;
                     }
                 case 64:
                     {
-                        Get();
+                        this.Get();
                         expression = this.SetContext(new ConstSqlExpression(false), ctx);
                         break;
                     }
                 case 65:
                     {
-                        Get();
+                        this.Get();
                         expression = this.SetContext(new ConstSqlExpression(null), ctx);
                         break;
                     }
@@ -1231,44 +1238,45 @@ namespace ConnectQl.Internal
                 case 4:
                 case 58:
                     {
-                        FieldOrFunction(out function);
+                        this.FieldOrFunction(out function);
                         expression = function;
                         break;
                     }
                 case 5:
                     {
-                        Variable(out VariableSqlExpression);
+                        this.Variable(out VariableSqlExpression);
                         expression = this.SetContext(new VariableSqlExpression(VariableSqlExpression), ctx);
                         break;
                     }
-                default: SynErr(86); break;
+                default:
+                    this.SynErr(86); break;
             }
         }
 
         void FieldOrFunction(out SqlExpressionBase field)
         {
-            string first, second = null; field = null; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = Mark();
+            string first, second = null; field = null; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = this.Mark();
             if (this.LookAhead.Kind == 4)
             {
-                Identifier(out first);
-                if (StartOf(12))
+                this.Identifier(out first);
+                if (this.StartOf(12))
                 {
                     if (this.LookAhead.Kind == 66)
                     {
-                        Get();
+                        this.Get();
                         if (this.LookAhead.Kind == 4)
                         {
-                            Identifier(out second);
+                            this.Identifier(out second);
                         }
                         else if (this.LookAhead.Kind == 3)
                         {
-                            BracketedIdentifier(out second);
+                            this.BracketedIdentifier(out second);
                         }
                         else if (this.LookAhead.Kind == 58)
                         {
-                            WildCard(out second);
+                            this.WildCard(out second);
                         }
-                        else SynErr(87);
+                        else this.SynErr(87);
                     }
                     field = second == null
                     ? this.SetContext(new FieldReferenceSqlExpression(first), ctx)
@@ -1278,59 +1286,59 @@ namespace ConnectQl.Internal
                 }
                 else if (this.LookAhead.Kind == 30)
                 {
-                    Get();
-                    if (StartOf(3))
+                    this.Get();
+                    if (this.StartOf(3))
                     {
-                        Expression(out expression);
+                        this.Expression(out expression);
                         args.Add(expression);
                         while (this.LookAhead.Kind == 14)
                         {
-                            Get();
-                            Expression(out expression);
+                            this.Get();
+                            this.Expression(out expression);
                             args.Add(expression);
                         }
                     }
-                    Expect(31);
-                    field = CatchAll(() => this.SetContext(new FunctionCallSqlExpression(first, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx));
+                    this.Expect(31);
+                    field = this.CatchAll(() => this.SetContext(new FunctionCallSqlExpression(first, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx));
                 }
-                else SynErr(88);
+                else this.SynErr(88);
             }
             else if (this.LookAhead.Kind == 3)
             {
-                BracketedIdentifier(out first);
+                this.BracketedIdentifier(out first);
                 if (this.LookAhead.Kind == 66)
                 {
-                    Get();
+                    this.Get();
                     if (this.LookAhead.Kind == 4)
                     {
-                        Identifier(out second);
+                        this.Identifier(out second);
                     }
                     else if (this.LookAhead.Kind == 3)
                     {
-                        BracketedIdentifier(out second);
+                        this.BracketedIdentifier(out second);
                     }
-                    else SynErr(89);
+                    else this.SynErr(89);
                 }
                 field = this.SetContext(second == null ? new FieldReferenceSqlExpression(first) : new FieldReferenceSqlExpression(first, second), ctx);
             }
             else if (this.LookAhead.Kind == 58)
             {
-                WildCard(out first);
+                this.WildCard(out first);
                 field = this.SetContext(new WildcardSqlExpression(null), ctx);
             }
-            else SynErr(90);
+            else this.SynErr(90);
         }
 
         void WildCard(out string value)
         {
-            Expect(58);
-            value = t.Val;
+            this.Expect(58);
+            value = this.t.Val;
         }
 
         void BracketedIdentifier(out string value)
         {
-            Expect(3);
-            value = t.Val.Substring(1, t.Val.Length - 2);
+            this.Expect(3);
+            value = this.t.Val.Substring(1, this.t.Val.Length - 2);
         }
         /// <summary>
         /// Parses the text.
@@ -1339,9 +1347,9 @@ namespace ConnectQl.Internal
         {
             this.LookAhead = new Token();
             this.LookAhead.Val = "";
-            Get();
-            ConnectQl();
-            Expect(0);
+            this.Get();
+            this.ConnectQl();
+            this.Expect(0);
 
         }
 

@@ -65,7 +65,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             return other != null &&
                    this.Start == other.Start &&
                    this.End == other.End &&
-                   Equals(this.DataSource, other.DataSource);
+                   object.Equals(this.DataSource, other.DataSource);
         }
 
         /// <summary>

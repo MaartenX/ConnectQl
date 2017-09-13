@@ -78,6 +78,16 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// </summary>
         public ResultMessageType Type { get; set; }
 
+        /// <summary>Returns a string that represents the current object.</summary>
+        /// <returns>A string that represents the current object.</returns>
+        /// <filterpriority>2</filterpriority>
+        public override string ToString()
+        {
+            return this.Start.Column == this.End.Column && this.Start.Line == this.End.Line
+                ? $"{this.File}({this.Start.Line}, {this.Start.Column}): {this.Type}: {this.Text}"
+                : $"{this.File}({this.Start.Line}, {this.Start.Column}, {this.End.Line}, {this.End.Column}): {this.Type}: {this.Text}";
+        }
+
         /// <summary>
         /// The equals.
         /// </summary>

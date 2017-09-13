@@ -95,7 +95,7 @@ namespace ConnectQl.Internal.Ast.Sources
         {
             var function = visitor.Visit(this.Function);
 
-            return !ReferenceEquals(function, this.Function) ? new FunctionSource(function, this.Alias) : this;
+            return !object.ReferenceEquals(function, this.Function) ? new FunctionSource(function, this.Alias) : this;
         }
     }
 }

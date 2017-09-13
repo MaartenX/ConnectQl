@@ -141,17 +141,17 @@ namespace ConnectQl.Internal.Plugins
             context.FileFormats.Add(new CsvFileFormat());
 
             context.Functions
-                .AddWithoutSideEffects("datediff", (DateDiffType type, DateTime first, DateTime second) => DateDiff(type, first, second))
+                .AddWithoutSideEffects("datediff", (DateDiffType type, DateTime first, DateTime second) => DefaultFunctions.DateDiff(type, first, second))
                 .SetDescription("Calculates the difference between two date/times.", "The type of unit to use when calculating the difference.", "The first date/time.", "The second date/time.")
-                .AddWithoutSideEffects("dateadd", (DateDiffType type, DateTime datetime, double value) => DateAdd(type, datetime, value))
+                .AddWithoutSideEffects("dateadd", (DateDiffType type, DateTime datetime, double value) => DefaultFunctions.DateAdd(type, datetime, value))
                 .SetDescription("Adds an offset to the date/time.", "The type of unit to use when adding the offset.", "The date/time.", "The number of units to add.")
                 .AddWithoutSideEffects("utcnow", () => DateTime.UtcNow)
                 .SetDescription("Gets the current UTC time.")
                 .AddWithoutSideEffects("todate", (int year, int month, int day) => new DateTime(year, month, day))
                 .SetDescription("Converts a year, month and day to a date/time.", "The years.", "The months.", "The days.")
-                .AddWithoutSideEffects("date", (string value) => ParseDate(value))
+                .AddWithoutSideEffects("date", (string value) => DefaultFunctions.ParseDate(value))
                 .SetDescription("Parses the date.", "The string to parse into a date")
-                .AddWithoutSideEffects("date", (string value, string pattern) => ParseDate(value, pattern))
+                .AddWithoutSideEffects("date", (string value, string pattern) => DefaultFunctions.ParseDate(value, pattern))
                 .SetDescription("Parses the date.", "The string to parse into a date", "The format to use")
                 .AddWithoutSideEffects("now", () => DateTime.Now)
                 .SetDescription("Gets the current local time.")
@@ -161,15 +161,15 @@ namespace ConnectQl.Internal.Plugins
                 .SetDescription("Converts a string to uppercase.", "The string to convert.")
                 .AddWithoutSideEffects("lower", (string value) => value.ToLowerInvariant())
                 .SetDescription("Converts a string to lowercase.", "The string to convert.")
-                .AddWithoutSideEffects("int", (object value) => ToInt(value))
+                .AddWithoutSideEffects("int", (object value) => DefaultFunctions.ToInt(value))
                 .SetDescription("Converts a value to an int.", "The value to convert.")
-                .AddWithoutSideEffects("float", (object value) => ToFloat(value))
+                .AddWithoutSideEffects("float", (object value) => DefaultFunctions.ToFloat(value))
                 .SetDescription("Converts a value to a float.", "The value to convert.")
                 .AddWithoutSideEffects("floor", (double? value) => value == null ? null : (double?)Math.Floor(value.Value))
                 .SetDescription("Returns the largest integer less than or equal to the value.", "The value.")
                 .AddWithoutSideEffects("string", (object value) => (value ?? string.Empty).ToString())
                 .SetDescription("Converts a value to a string.", "The value to convert.")
-                .AddWithoutSideEffects("datetime", (string value) => Parse(value))
+                .AddWithoutSideEffects("datetime", (string value) => DefaultFunctions.Parse(value))
                 .SetDescription("Converts a string to a date/time.", "The value to convert.")
                 .AddWithoutSideEffects("datetime", (int year, int month, int day) => new DateTime(year, month, day))
                 .SetDescription("Converts a year, month and day to a date/time.", "The years.", "The months.", "The days.")
@@ -195,7 +195,7 @@ namespace ConnectQl.Internal.Plugins
                 .SetDescription("Gets the day number in the week of a date/time.", "The date/time.")
                 .AddWithoutSideEffects("weekend", (DateTime value) => value.DayOfWeek == DayOfWeek.Saturday || value.DayOfWeek == DayOfWeek.Sunday)
                 .SetDescription("Returns true if the date/time is in the weekend, false otherwise.", "The date/time.")
-                .AddWithoutSideEffects("weeknum", (DateTime value) => GetIso8601WeekOfYear(value))
+                .AddWithoutSideEffects("weeknum", (DateTime value) => DefaultFunctions.GetIso8601WeekOfYear(value))
                 .SetDescription("Returns the ISO 8601 week number of the date/time.", "The date/time.")
                 .AddWithoutSideEffects("localtime", (DateTime value) => (value.Kind != DateTimeKind.Local ? value.ToLocalTime() : value).ToString("o"))
                 .SetDescription("Converts the date/time to local time if the date/time is universal.", "The date/time.")
@@ -203,11 +203,11 @@ namespace ConnectQl.Internal.Plugins
                 .SetDescription("Converts the date/time to UTC time if the date/time is local.", "The date/time.")
                 .AddWithoutSideEffects("tickstamp", (DateTime value) => DateTime.MaxValue.Ticks - value.ToUniversalTime().Ticks)
                 .SetDescription("Gets the tick stamp (maximum ticks - utc time ticks) of the date/time.", "The date/time.")
-                .AddWithoutSideEffects("inversetimestamp", (DateTime value) => ToInverseDateStamp(value))
+                .AddWithoutSideEffects("inversetimestamp", (DateTime value) => DefaultFunctions.ToInverseDateStamp(value))
                 .SetDescription("Gets the inverse time stamp (100000000000000 - YYYYMMddHHmmss) of the date/time.", "The date/time.")
-                .AddWithoutSideEffects("timestamp", (DateTime value) => ToDateStamp(value))
+                .AddWithoutSideEffects("timestamp", (DateTime value) => DefaultFunctions.ToDateStamp(value))
                 .SetDescription("Gets the time stamp (YYYYMMddHHmmss) of the date/time.", "The date/time.")
-                .AddWithoutSideEffects("unixtimestamp", (DateTime value) => ToUnixTimestamp(value))
+                .AddWithoutSideEffects("unixtimestamp", (DateTime value) => DefaultFunctions.ToUnixTimestamp(value))
                 .SetDescription("Gets the unix time stamp of the date/time.", "The date/time.")
                 .AddWithoutSideEffects("avg", (IAsyncEnumerable<double?> value) => value.AverageAsync())
                 .SetDescription("Gets the average of the values in a group.", "The value.")
@@ -253,9 +253,9 @@ namespace ConnectQl.Internal.Plugins
                 .SetDescription("Trims leading whitespace of a value.", "The value.")
                 .AddWithoutSideEffects("trimend", (string value) => value.TrimEnd())
                 .SetDescription("Trims trailing whitespace of a value.", "The value.")
-                .AddWithoutSideEffects("triggerafter", (string jobName) => AfterJob(jobName))
+                .AddWithoutSideEffects("triggerafter", (string jobName) => DefaultFunctions.AfterJob(jobName))
                 .SetDescription("Triggers a job after the specified job.", "The name of the specified job.")
-                .AddWithoutSideEffects("triggerevery", (TimeSpan interval) => Interval(interval))
+                .AddWithoutSideEffects("triggerevery", (TimeSpan interval) => DefaultFunctions.Interval(interval))
                 .SetDescription("Triggers a job after every interval.", "The interval.")
                 .AddWithoutSideEffects("temp", () => new TempDataSource())
                 .SetDescription("Creates a temporary data source.")
@@ -267,11 +267,11 @@ namespace ConnectQl.Internal.Plugins
                 .SetDescription("Creates a data source with value as the column name, and value as true.", "The value to create column names from.")
                 .AddWithoutSideEffects("tocolumn", (string columnName, object columnValue) => ColumnDataSource.Create(columnName, columnValue))
                 .SetDescription("Creates a data source with value as the column name, and value as true.", "The value to create column names from.", "The value to create column values from.")
-                .AddWithoutSideEffects("classify", (string value, string classes, string values) => Classify(value, classes, values, ",", null))
+                .AddWithoutSideEffects("classify", (string value, string classes, string values) => DefaultFunctions.Classify(value, classes, values, ",", null))
                 .SetDescription("Looks up the value in the comma separated classes, an replaces it with the value at the same index in the comma separatored values.", "The value to look up.", "The classes, separated by commas.", "The values, separated by commas.")
-                .AddWithoutSideEffects("classify", (string value, string separator, string classes, string values) => Classify(value, classes, values, separator, null))
+                .AddWithoutSideEffects("classify", (string value, string separator, string classes, string values) => DefaultFunctions.Classify(value, classes, values, separator, null))
                 .SetDescription("Looks up the value in the classes separated by separator, an replaces it with the value at the same index in the values separated by separator.", "The value to look up.", "The separator", "The classes, separated by commas.", "The values, separated by commas.")
-                .AddWithoutSideEffects("classify", (string value, string separator, string classes, string values, string defaultValue) => Classify(value, classes, values, separator, defaultValue))
+                .AddWithoutSideEffects("classify", (string value, string separator, string classes, string values, string defaultValue) => DefaultFunctions.Classify(value, classes, values, separator, defaultValue))
                 .SetDescription("Looks up the value in the classes separated by separator, an replaces it with the value at the same index in the values separated by separator. When value is not found, defaultValue is returned.", "The value to look up.", "The separator", "The classes, separated by commas.", "The values, separated by commas.", "The default value.");
         }
 
@@ -514,7 +514,7 @@ namespace ConnectQl.Internal.Plugins
         /// </returns>
         private static long ToInverseDateStamp(DateTime value)
         {
-            return 100000000000000 - ToDateStamp(value);
+            return 100000000000000 - DefaultFunctions.ToDateStamp(value);
         }
 
         /// <summary>

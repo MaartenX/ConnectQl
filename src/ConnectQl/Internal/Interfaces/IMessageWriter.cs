@@ -30,7 +30,7 @@ namespace ConnectQl.Internal.Interfaces
     /// <summary>
     /// The MessageWriter interface.
     /// </summary>
-    internal interface IMessageWriter : IEnumerable<Message>
+    internal interface IMessageWriter : IReadOnlyCollection<Message>
     {
         /// <summary>
         /// Gets a value indicating whether has errors.

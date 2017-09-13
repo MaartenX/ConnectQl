@@ -23,6 +23,8 @@
 namespace ConnectQl.Crm.Sources
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -36,11 +38,12 @@ namespace ConnectQl.Crm.Sources
     using Microsoft.Xrm.Sdk.Messages;
     using Microsoft.Xrm.Sdk.Metadata;
     using Microsoft.Xrm.Tooling.Connector;
+    using IExecutionContext = Interfaces.IExecutionContext;
 
     /// <summary>
     /// The entity data source.
     /// </summary>
-    public class EntityDataSource : IDataSource, IDescriptableDataSource
+    public class EntityDataSource : IDataSource, ISupportsJoin, IDescriptableDataSource
     {
         /// <summary>
         /// The entity name.
@@ -59,10 +62,11 @@ namespace ConnectQl.Crm.Sources
 
         /// <summary>
         /// Initializes static members of the <see cref="EntityDataSource"/> class.
+        /// Ugly hack to make XRM work when using this data source from VS (the Microsoft.Xrm.Sdk.dll assembly is not loaded yet).
         /// </summary>
         static EntityDataSource()
         {
-            typeof(OrganizationServiceProxy).GetField("_xrmSdkAssemblyFileVersion", BindingFlags.NonPublic | BindingFlags.Static).SetValue(null, "8.2.0.362");
+            typeof(OrganizationServiceProxy).GetField("_xrmSdkAssemblyFileVersion", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, FileVersionInfo.GetVersionInfo(typeof(Entity).Assembly.Location).FileVersion);
         }
 
         /// <summary>
@@ -86,6 +90,11 @@ namespace ConnectQl.Crm.Sources
         }
 
         /// <summary>
+        /// Gets the types of data sources that are supported when joining.
+        /// </summary>
+        public IReadOnlyList<Type> SupportedDataSourceTypes { get; } = new[] { typeof(EntityDataSource) };
+
+        /// <summary>
         /// Gets the descriptor for this data source.
         /// </summary>
         /// <param name="sourceAlias">The data source source alias.</param>
@@ -105,8 +114,7 @@ namespace ConnectQl.Crm.Sources
 
                 return Descriptor.ForDataSource(
                     sourceAlias,
-                    metadata.Attributes.Select(a => Descriptor.ForColumn(a.LogicalName, ToType(a.AttributeType), a.DisplayName?.UserLocalizedLabel?.Label)).Where(a => a.Type != null),
-                    false);
+                    metadata.Attributes.Select(a => Descriptor.ForColumn(a.LogicalName, ToType(a.AttributeType), a.DisplayName?.UserLocalizedLabel?.Label)).Where(a => a.Type != null));
             });
         }
 
@@ -119,9 +127,44 @@ namespace ConnectQl.Crm.Sources
         /// <returns>
         /// A task returning the data set.
         /// </returns>
-        public IAsyncEnumerable<Row> GetRows(Interfaces.IExecutionContext context, IRowBuilder rowBuilder, IQuery query)
+        public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, IQuery query)
         {
             return context.CreateEmptyAsyncEnumerable<Row>();
+        }
+
+        /// <summary>
+        /// Checks if this data source supports the join query.
+        /// </summary>
+        /// <param name="context">
+        /// The execution context.
+        /// </param>
+        /// <param name="query">
+        /// The query to check.
+        /// </param>
+        /// <returns><c>true</c> if the <see cref="ISupportsJoin"/> supports the specified <paramref name="query"/>, <c>false</c> otherwise.</returns>
+        bool ISupportsJoin.SupportsJoinQuery(IExecutionContext context, IJoinQuery query)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves the data from multiple sources as an <see cref="IAsyncEnumerable{T}"/>.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <param name="rowBuilder">
+        /// The row builder.
+        /// </param>
+        /// <param name="query">
+        /// The join query expression. Can be <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// A task returning the data set.
+        /// </returns>
+        IAsyncEnumerable<Row> ISupportsJoin.GetRows(IExecutionContext context, IRowBuilder rowBuilder, IJoinQuery query)
+        {
+            throw new NotSupportedException("Join support is not yet implemented.");
         }
 
         /// <summary>

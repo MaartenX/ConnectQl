@@ -95,7 +95,7 @@ namespace ConnectQl.Internal.Ast.Statements
         {
             var settingFunction = visitor.Visit(this.SettingFunction);
 
-            return !ReferenceEquals(settingFunction, this.SettingFunction) ? new UseStatement(settingFunction, this.FunctionName) : this;
+            return !object.ReferenceEquals(settingFunction, this.SettingFunction) ? new UseStatement(settingFunction, this.FunctionName) : this;
         }
     }
 }

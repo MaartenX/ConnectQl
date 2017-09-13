@@ -22,11 +22,12 @@
 
 namespace ConnectQl.Internal.DataSources
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-
+    using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Expressions;
     using ConnectQl.Expressions.Visitors;
@@ -118,7 +119,7 @@ namespace ConnectQl.Internal.DataSources
 
                 if (unsupportedFilters != null)
                 {
-                    context.Log.Warning($"Data source {functionName} {this.alias} has unsupported filter {unsupportedFilters}. This could impact performance.");
+                    context.Logger.Warning($"Data source {functionName} {this.alias} has unsupported filter {unsupportedFilters}. This could impact performance.");
                 }
             }
 
@@ -133,26 +134,35 @@ namespace ConnectQl.Internal.DataSources
                     query = new Query(query.Fields.Concat(unsupportedOrderByExpressions.SelectMany(e => e.Expression.GetFields().Select(f => f.FieldName))).Distinct(), query.FilterExpression, null, query.Count);
                 }
 
-                context.Log.Warning($"Data source  {functionName} {this.alias} has unsupported ORDER BY {string.Join(", ", unsupportedOrderByExpressions.Select(u => u.Expression + " " + (u.Ascending ? "ASC" : "DESC")))}. This could impact performance.");
+                context.Logger.Warning($"Data source  {functionName} {this.alias} has unsupported ORDER BY {string.Join(", ", unsupportedOrderByExpressions.Select(u => u.Expression + " " + (u.Ascending ? "ASC" : "DESC")))}. This could impact performance.");
             }
 
             var sourceName = functionName + (query.FilterExpression == null ? string.Empty : $" with query '{query.FilterExpression}'");
 
-            context.Log.Verbose($"Retrieving data from {sourceName}.");
+            context.Logger.Verbose($"Retrieving data from {sourceName}.");
 
-            var result = this.dataSource.GetRows(context, new RowBuilder(this.alias), query).AfterLastElement(count => context.Log.Verbose($"Retrieved {count} items from {sourceName}."));
-
-            if (unsupportedFilters != null)
+            try
             {
-                result = result.Where(unsupportedFilters.GetRowFilter());
-            }
+                var result = this.dataSource.GetRows(context, new RowBuilder(this.alias), query).AfterLastElement(count => context.Logger.Verbose($"Retrieved {count} items from {sourceName}."));
 
-            if (unsupportedOrderByExpressions != null)
+                if (unsupportedFilters != null)
+                {
+                    result = result.Where(unsupportedFilters.GetRowFilter());
+                }
+
+                if (unsupportedOrderByExpressions != null)
+                {
+                    result.OrderBy(unsupportedOrderByExpressions);
+                }
+
+                return result;
+            }
+            catch (Exception e)
             {
-                result.OrderBy(unsupportedOrderByExpressions);
-            }
+                context.Logger.Error($"An error occurred while querying {sourceName}: {e.Message}.");
 
-            return result;
+                return context.CreateEmptyAsyncEnumerable<Row>();
+            }
         }
 
         /// <summary>

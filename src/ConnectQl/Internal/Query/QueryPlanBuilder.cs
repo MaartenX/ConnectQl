@@ -361,12 +361,12 @@ namespace ConnectQl.Internal.Query
         private static Expression<T> ConcatenateLambdas<T>(Expression<T> first, Expression<T> second)
         {
             return Expression.Lambda<T>(
-                Concatenate.Body
+                QueryPlanBuilder.Concatenate.Body
                     .ReplaceParameter(
-                        Concatenate.Parameters[0],
+                        QueryPlanBuilder.Concatenate.Parameters[0],
                         first.Body)
                     .ReplaceParameter(
-                        Concatenate.Parameters[1],
+                        QueryPlanBuilder.Concatenate.Parameters[1],
                         second.Body.ReplaceParameters(second.Parameters, first.Parameters)),
                 first.Parameters);
         }
@@ -447,7 +447,7 @@ namespace ConnectQl.Internal.Query
             var fields = expressions.Select(
                 expression =>
                     Expression.New(
-                        KeyValuePairConstructor,
+                        QueryPlanBuilder.KeyValuePairConstructor,
                         Expression.Constant(expression.Alias),
                         Expression.Convert(lambdaVisitor.Visit(this.data.ConvertToLinqExpression(expression.Expression)), typeof(object)))).ToArray();
 
@@ -536,7 +536,7 @@ namespace ConnectQl.Internal.Query
                 {
                     var lambda = lambdaVisitor.Visit(expression.EvaluateAsValue());
                     lambda = lambda.Type == typeof(object) ? lambda : Expression.Convert(lambda, typeof(object));
-                    return Expression.Lambda<Func<IExecutionContext, Row, KeyValuePair<string, object>>>(Expression.New(KeyValuePairConstructor, Expression.Constant(alias), lambda.CatchErrors()), context, row);
+                    return Expression.Lambda<Func<IExecutionContext, Row, KeyValuePair<string, object>>>(Expression.New(QueryPlanBuilder.KeyValuePairConstructor, Expression.Constant(alias), lambda.CatchErrors()), context, row);
                 };
 
             Expression<ValueFactory> result = null;
@@ -567,14 +567,14 @@ namespace ConnectQl.Internal.Query
 
                     if (fieldFactories.Count != 0)
                     {
-                        var fields = ToArrayInit<ValueFactory>(fieldFactories);
+                        var fields = QueryPlanBuilder.ToArrayInit<ValueFactory>(fieldFactories);
 
-                        result = result == null ? fields : ConcatenateLambdas(result, fields);
+                        result = result == null ? fields : QueryPlanBuilder.ConcatenateLambdas(result, fields);
 
                         fieldFactories.Clear();
                     }
 
-                    result = result == null ? lambda : ConcatenateLambdas(result, lambda);
+                    result = result == null ? lambda : QueryPlanBuilder.ConcatenateLambdas(result, lambda);
                 }
                 else
                 {
@@ -584,9 +584,9 @@ namespace ConnectQl.Internal.Query
 
             if (fieldFactories.Count != 0)
             {
-                var fields = ToArrayInit<ValueFactory>(fieldFactories);
+                var fields = QueryPlanBuilder.ToArrayInit<ValueFactory>(fieldFactories);
 
-                result = result == null ? fields : ConcatenateLambdas(result, fields);
+                result = result == null ? fields : QueryPlanBuilder.ConcatenateLambdas(result, fields);
             }
 
             if (hasGlobalAlias)

@@ -71,7 +71,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
 
             return other != null &&
                    string.Equals(this.Name, other.Name) &&
-                   Equals(this.Type, other.Type) &&
+                   object.Equals(this.Type, other.Type) &&
                    string.Equals(this.Value, other.Value);
         }
 

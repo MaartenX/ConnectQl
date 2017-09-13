@@ -63,7 +63,7 @@ namespace ConnectQl.Internal.Comparers
             /// </returns>
             public override int Compare(object x, object y)
             {
-                return x == null ? y == null ? 0 : -1 : y == null ? 1 : StringComparer.Compare(x.ToString(), y.ToString());
+                return x == null ? y == null ? 0 : -1 : y == null ? 1 : ObjectComparer.StringComparer.Compare(x.ToString(), y.ToString());
             }
         }
     }

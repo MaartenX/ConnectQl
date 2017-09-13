@@ -184,7 +184,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
                         var count = this.offset % this.batchSize;
 
-                        return count == 0 ? null : EnumerateItem(new Batch<TSource>(this.materialized, this.offset - count, count));
+                        return count == 0 ? null : ValueBatchesEnumerator<TSource, TValue>.EnumerateItem(new Batch<TSource>(this.materialized, this.offset - count, count));
                     }
 
                     return this.EnumerateBatches();

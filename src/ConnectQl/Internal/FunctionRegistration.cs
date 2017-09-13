@@ -55,9 +55,9 @@ namespace ConnectQl.Internal
         }
 
         /// <summary>
-        /// Gets the log.
+        /// Gets the logger.
         /// </summary>
-        public ILog Log => this.functions.Log;
+        public ILogger Logger => this.functions.Logger;
 
         /// <summary>
         /// The set description.

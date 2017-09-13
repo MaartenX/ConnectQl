@@ -105,7 +105,7 @@ namespace ConnectQl.Internal.Ast.Sources
             var left = visitor.Visit(this.Left);
             var right = visitor.Visit(this.Right);
 
-            return ReferenceEquals(left, this.Left) && ReferenceEquals(right, this.Right)
+            return object.ReferenceEquals(left, this.Left) && object.ReferenceEquals(right, this.Right)
                        ? this
                        : new ApplySource(left, right, this.IsOuterApply);
         }

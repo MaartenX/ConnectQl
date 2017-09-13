@@ -36,7 +36,6 @@ namespace ConnectQl
     using ConnectQl.Internal;
     using ConnectQl.Internal.Ast.Statements;
     using ConnectQl.Internal.Interfaces;
-    using ConnectQl.Internal.Loggers;
     using ConnectQl.Internal.Query;
     using ConnectQl.Internal.Validation;
     using ConnectQl.Results;
@@ -59,14 +58,14 @@ namespace ConnectQl
         private readonly Dictionary<string, IFunctionDescriptor> functions = new Dictionary<string, IFunctionDescriptor>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
+        /// Stores the loggers.
+        /// </summary>
+        private readonly LoggerCollection loggers = new LoggerCollection();
+
+        /// <summary>
         /// <c>true</c> if we are disposed.
         /// </summary>
         private bool disposed;
-
-        /// <summary>
-        ///     Stores the logger.
-        /// </summary>
-        private ILog log = new NullLogger();
 
         /// <summary>
         ///     Stores the materialization policy.
@@ -78,13 +77,13 @@ namespace ConnectQl
         /// The URI resolver.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Func<string, UriResolveMode, Task<Stream>> uriResolver;
+        private IUriResolver uriResolver;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConnectQlContext" /> class.
         /// </summary>
         public ConnectQlContext()
-            : this(DefaultPluginResolver)
+            : this(ConnectQlContext.DefaultPluginResolver)
         {
         }
 
@@ -104,15 +103,9 @@ namespace ConnectQl
         /// </summary>
         public static IPluginResolver DefaultPluginResolver
         {
-            get
-            {
-                return defaultPluginResolver ?? ReflectionLoader.PluginResolver.Value;
-            }
+            get => ConnectQlContext.defaultPluginResolver ?? ReflectionLoader.PluginResolver.Value;
 
-            set
-            {
-                defaultPluginResolver = value;
-            }
+            set => ConnectQlContext.defaultPluginResolver = value;
         }
 
         /// <summary>
@@ -121,40 +114,23 @@ namespace ConnectQl
         public IJobRunner JobRunner { get; set; }
 
         /// <summary>
-        ///     Gets or sets the logger.
+        /// Gets the loggers for the context.
         /// </summary>
-        public ILog Log
-        {
-            get
-            {
-                return this.log;
-            }
+        public ICollection<ILogger> Loggers => this.loggers;
 
-            set
-            {
-                if (this.log is NullLogger logger && value != null)
-                {
-                    logger.ForwardMessages(value);
-                }
-
-                this.log = value;
-            }
-        }
+        /// <summary>
+        ///     Gets the logger.
+        /// </summary>
+        public ILogger Logger => this.loggers;
 
         /// <summary>
         ///     Gets or sets the materialization policy.
         /// </summary>
         public IMaterializationPolicy MaterializationPolicy
         {
-            get
-            {
-                return this.materializationPolicy ?? (this.materializationPolicy = new InMemoryPolicy());
-            }
+            get => this.materializationPolicy ?? (this.materializationPolicy = new InMemoryPolicy());
 
-            set
-            {
-                this.materializationPolicy = value;
-            }
+            set => this.materializationPolicy = value;
         }
 
         /// <summary>
@@ -165,7 +141,7 @@ namespace ConnectQl
         /// <summary>
         ///     Gets or sets a lambda that opens the file at the specified path and returns the stream.
         /// </summary>
-        public Func<string, UriResolveMode, Task<Stream>> UriResolver
+        public IUriResolver UriResolver
         {
             get
             {
@@ -173,16 +149,13 @@ namespace ConnectQl
 
                 if (result == null)
                 {
-                    this.Log.Verbose("No uri resolver could be created, please specify one directly.");
+                    this.Logger.Verbose("No uri resolver could be created, please specify one directly.");
                 }
 
                 return result;
             }
 
-            set
-            {
-                this.uriResolver = value;
-            }
+            set => this.uriResolver = value;
         }
 
         /// <summary>
@@ -255,7 +228,9 @@ namespace ConnectQl
                 throw new InvalidOperationException("No URI resolver registered.");
             }
 
-            return await this.ExecuteInternalAsync(filename, await this.UriResolver(filename, UriResolveMode.Read));
+            filename = this.UriResolver.GetFullPath(filename);
+
+            return await this.ExecuteInternalAsync(filename, await this.UriResolver.ResolveToStream(filename, UriResolveMode.Read));
         }
 
         /// <summary>
@@ -325,6 +300,7 @@ namespace ConnectQl
                 if (disposing)
                 {
                     this.functions.Clear();
+                    this.loggers.Dispose();
                 }
 
                 this.disposed = true;
@@ -360,7 +336,7 @@ namespace ConnectQl
             var context = script.Context;
             var plan = QueryPlanBuilder.Build(context.Messages, context.NodeData, script.Root);
 
-            if (!this.HandleErrors(context))
+            if (!this.HandleErrors(context, script.Root))
             {
                 return null;
             }
@@ -390,14 +366,14 @@ namespace ConnectQl
             var context = new ExecutionContextImplementation(this, filename);
             var script = this.Parse(content, context.NodeData, context.Messages, emitComments);
 
-            if (!this.HandleErrors(context))
+            if (!this.HandleErrors(context, script))
             {
                 return null;
             }
 
             script = Validator.Validate(context, script);
 
-            return this.HandleErrors(context) ? new ParsedDocument(context, script) : null;
+            return this.HandleErrors(context, script) ? new ParsedDocument(context, script) : null;
         }
 
         /// <summary>
@@ -406,13 +382,16 @@ namespace ConnectQl
         /// <param name="context">
         ///     The context.
         /// </param>
+        /// <param name="script">
+        /// The script to handle errors for.
+        /// </param>
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
         /// <exception cref="Exception">
         ///     Thrown when an error was found.
         /// </exception>
-        private bool HandleErrors(ExecutionContextImplementation context)
+        private bool HandleErrors(ExecutionContextImplementation context, Block script)
         {
             if (context.Messages.HasErrors)
             {
@@ -421,22 +400,23 @@ namespace ConnectQl
                     switch (message.Type)
                     {
                         case ResultMessageType.Error:
-                            this.Log.Error(message.ToString());
+                            this.Logger.Error(message.ToString());
                             break;
                         case ResultMessageType.Warning:
-                            this.Log.Warning(message.ToString());
+                            this.Logger.Warning(message.ToString());
                             break;
                         case ResultMessageType.Information:
-                            this.Log.Information(message.ToString());
+                            this.Logger.Information(message.ToString());
                             break;
                     }
                 }
 
-                var errors = context.Messages
-                    .Where(m => m.Type == ResultMessageType.Error).Select(m => $"- {m.Text}")
-                    .ToArray();
+                var errorMessage = (context.Messages.Count(e => e.Type == ResultMessageType.Error) == 1 ? "An error occurred" : "Errors occurred") + " while parsing:\n";
 
-                throw new Exception($"{(errors.Length == 1 ? "An error occurred:" : "Multiple errors occurred:")}\n\n{string.Join("\n", errors)}");
+                // Load the log plugins before we exit, this allows displaying the log messages using imported log plugins.
+                PluginLoader.LoadLogPlugins(script, this.loggers, this.PluginResolver);
+
+                throw new ExecutionException(errorMessage, context.Messages);
             }
 
             return true;

@@ -49,7 +49,7 @@ namespace ConnectQl.Expressions
         /// <summary>
         /// The <see cref="CompareValues"/> method.
         /// </summary>
-        private static readonly MethodInfo CompareValuesMethod = typeof(CompareExpression).GetTypeInfo().GetDeclaredMethods(nameof(CompareValues)).First();
+        private static readonly MethodInfo CompareValuesMethod = typeof(CompareExpression).GetTypeInfo().GetDeclaredMethods(nameof(CompareExpression.CompareValues)).First();
 
         /// <summary>
         /// The ops.
@@ -97,16 +97,16 @@ namespace ConnectQl.Expressions
             {
                 var field = left as SourceFieldExpression;
                 left = field != null
-                           ? (Expression)MakeSourceField(field.SourceName, field.FieldName, right.Type)
-                           : Convert(Call(null, ChangeTypeMethod, left, Constant(right.Type)), right.Type);
+                           ? (Expression)CustomExpression.MakeSourceField(field.SourceName, field.FieldName, right.Type)
+                           : Expression.Convert(Expression.Call(null, CompareExpression.ChangeTypeMethod, left, Expression.Constant(right.Type)), right.Type);
             }
 
             if (left.Type != typeof(object) && right.Type == typeof(object))
             {
                 var field = right as SourceFieldExpression;
                 right = field != null
-                            ? (Expression)MakeSourceField(field.SourceName, field.FieldName, left.Type)
-                            : Convert(Call(null, ChangeTypeMethod, right, Constant(left.Type)), left.Type);
+                            ? (Expression)CustomExpression.MakeSourceField(field.SourceName, field.FieldName, left.Type)
+                            : Expression.Convert(Expression.Call(null, CompareExpression.ChangeTypeMethod, right, Expression.Constant(left.Type)), left.Type);
             }
 
             this.Left = left;
@@ -161,16 +161,16 @@ namespace ConnectQl.Expressions
             {
                 if (this.Left.Type != typeof(object) && this.Left.Type != typeof(string))
                 {
-                    return MakeBinary(this.CompareType, this.Left, this.Right);
+                    return Expression.MakeBinary(this.CompareType, this.Left, this.Right);
                 }
 
                 if (this.Left.Type == typeof(string))
                 {
-                    return MakeBinary(this.CompareType, Call(CompareMethod, this.Left, this.Right), Constant(0));
+                    return Expression.MakeBinary(this.CompareType, Expression.Call(CompareExpression.CompareMethod, this.Left, this.Right), Expression.Constant(0));
                 }
             }
 
-            return Call(null, CompareValuesMethod, Constant(this.CompareType), Convert(this.Left, typeof(object)), Convert(this.Right, typeof(object)));
+            return Expression.Call(null, CompareExpression.CompareValuesMethod, Expression.Constant(this.CompareType), Expression.Convert(this.Left, typeof(object)), Expression.Convert(this.Right, typeof(object)));
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace ConnectQl.Expressions
         /// </returns>
         public override string ToString()
         {
-            return $"{this.Left} {Ops[this.CompareType]} {this.Right}";
+            return $"{this.Left} {CompareExpression.Ops[this.CompareType]} {this.Right}";
         }
 
         /// <summary>
@@ -215,9 +215,9 @@ namespace ConnectQl.Expressions
             switch (type)
             {
                 case ExpressionType.Equal:
-                    return Equals(first, second);
+                    return object.Equals(first, second);
                 case ExpressionType.NotEqual:
-                    return !Equals(first, second);
+                    return !object.Equals(first, second);
             }
 
             if (first?.GetType() == second?.GetType())
@@ -288,7 +288,7 @@ namespace ConnectQl.Expressions
             var left = visitor.Visit(this.Left);
             var right = visitor.Visit(this.Right);
 
-            return ReferenceEquals(left, this.Left) && ReferenceEquals(right, this.Right)
+            return object.ReferenceEquals(left, this.Left) && object.ReferenceEquals(right, this.Right)
                        ? this
                        : new CompareExpression(this.CompareType, left, right);
         }

@@ -104,7 +104,7 @@ namespace ConnectQl.Internal.FileFormats
         public Task<IDataSourceDescriptor> GetDataSourceDescriptorAsync(string alias, IFileFormatExecutionContext context, StreamReader reader)
         {
             var separator = context.GetDefault("SEPARATOR", false) as string ?? ",";
-            return Task.FromResult(Descriptor.ForDataSource(alias, GetHeaders(GetSplitter(separator), reader, separator).Where(header => header.Length > 0).Select(column => Descriptor.ForColumn(column, typeof(string)))));
+            return Task.FromResult(Descriptor.ForDataSource(alias, CsvFileFormat.GetHeaders(CsvFileFormat.GetSplitter(separator), reader, separator).Where(header => header.Length > 0).Select(column => Descriptor.ForColumn(column, typeof(string)))));
         }
 
         /// <summary>
@@ -128,8 +128,8 @@ namespace ConnectQl.Internal.FileFormats
         public IEnumerable<Row> Read(IFileFormatExecutionContext context, IRowBuilder rowBuilder, StreamReader reader, HashSet<string> fields)
         {
             var separator = context.GetDefault("SEPARATOR", false) as string ?? ",";
-            var splitter = GetSplitter(separator);
-            var headers = GetHeaders(splitter, reader, separator);
+            var splitter = CsvFileFormat.GetSplitter(separator);
+            var headers = CsvFileFormat.GetHeaders(splitter, reader, separator);
 
             if (headers.Length == 1 && string.IsNullOrEmpty(headers[0]))
             {
@@ -144,7 +144,7 @@ namespace ConnectQl.Internal.FileFormats
                     .Cast<Match>()
                     .Select(match => match.Groups[1].Value)
                     .Select(value => value.Trim())
-                    .Select(value => EscapedString.IsMatch(value) ? value.Substring(1, value.Length - 2).Replace("\"\"", "\"") : value)
+                    .Select(value => CsvFileFormat.EscapedString.IsMatch(value) ? value.Substring(1, value.Length - 2).Replace("\"\"", "\"") : value)
                     .ToArray();
 
                 if (line.Length == headers.Length)
@@ -210,7 +210,7 @@ namespace ConnectQl.Internal.FileFormats
 
             foreach (var row in rows)
             {
-                writer.WriteLine(string.Join(",", row.ColumnNames.Select(c => Escape(row[c]))));
+                writer.WriteLine(string.Join(",", row.ColumnNames.Select(c => CsvFileFormat.Escape(row[c]))));
                 count++;
             }
 
@@ -252,7 +252,7 @@ namespace ConnectQl.Internal.FileFormats
                 .Cast<Match>()
                 .Select(match => match.Groups[1].Value)
                 .Select(header => header.Trim())
-                .Select(header => EscapedString.IsMatch(header) ? header.Substring(1, header.Length - 2).Replace("\"\"", "\"") : header)
+                .Select(header => CsvFileFormat.EscapedString.IsMatch(header) ? header.Substring(1, header.Length - 2).Replace("\"\"", "\"") : header)
                 .ToArray();
 
             return headers;
