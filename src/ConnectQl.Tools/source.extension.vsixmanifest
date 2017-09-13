@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="ConnectQl.bdbe4b3d-e08c-4b7b-a214-c03f30f5af28" Version="0.2.0.0" Language="en-US" Publisher="Maarten van Sambeek" />
+    <Identity Id="ConnectQl.bdbe4b3d-e08c-4b7b-a214-c03f30f5af28" Version="100.0.1.0" Language="en-US" Publisher="Maarten van Sambeek" />
     <DisplayName>ConnectQl Tools</DisplayName>
     <Description>Tools for the ConnectQl language.</Description>
     <Icon>Resources\ConnectQl.png</Icon>
