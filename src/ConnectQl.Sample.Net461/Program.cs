@@ -47,7 +47,7 @@ namespace ConnectQl.Sample.Net461
                 {
                     c.DocumentUpdated += (o, e) => { };
 
-                    //c.UpdateDocument("Script3.cql", File.ReadAllText("Script3.cql"), 1);
+                    c.UpdateDocument("Script3.cql", File.ReadAllText("Script3.cql"), 1);
 
                     await Task.Delay(1000000);
                 }
@@ -62,6 +62,6 @@ namespace ConnectQl.Sample.Net461
         /// The entry point.
         /// </summary>
         /// <param name="args">The command line arguments.</param>
-        public static void Main(string[] args) => MainAsync(args).GetAwaiter().GetResult();
+        public static void Main(string[] args) => Program.MainAsync(args).GetAwaiter().GetResult();
     }
 }
