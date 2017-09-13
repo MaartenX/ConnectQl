@@ -111,7 +111,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// </param>
         public int Exec(ref Guid commandGroup, uint commandId, uint commandExecutionOptions, IntPtr inputArguments, IntPtr outputArguments)
         {
-            if (VsShellUtilities.IsInAutomationFunction((IServiceProvider)Package.GetGlobalService(typeof(IServiceProvider))))
+            if (VsShellUtilities.IsInAutomationFunction(this.listener.serviceProvider))
             {
                 return this.next.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments);
             }

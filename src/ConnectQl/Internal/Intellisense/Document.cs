@@ -250,7 +250,7 @@ namespace ConnectQl.Internal.Intellisense
         /// </returns>
         private SerializableDocumentDescriptor GetChanges(SerializableDocumentDescriptor currentDocument)
         {
-            var result = new SerializableDocumentDescriptor { Filename = this.Filename };
+            var result = new SerializableDocumentDescriptor { Filename = this.Filename, Version = this.Version };
 
             var updated = this.TryUpdate(currentDocument, result, d => d.Tokens) |
                           this.TryUpdate(currentDocument, result, d => d.Functions) |

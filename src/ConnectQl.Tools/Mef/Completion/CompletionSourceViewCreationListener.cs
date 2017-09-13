@@ -26,6 +26,7 @@ namespace ConnectQl.Tools.Mef.Completion
 
     using Microsoft.VisualStudio.Editor;
     using Microsoft.VisualStudio.Language.Intellisense;
+    using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.TextManager.Interop;
     using Microsoft.VisualStudio.Utilities;
@@ -50,6 +51,12 @@ namespace ConnectQl.Tools.Mef.Completion
         /// </summary>
         [Import]
         internal ICompletionBroker CompletionBroker { get; set; }
+
+        /// <summary>
+        /// Gets or sets the service provider.
+        /// </summary>
+        [Import]
+        internal SVsServiceProvider serviceProvider { get; set; }
 
         /// <summary>
         /// Called when a <see cref="T:Microsoft.VisualStudio.TextManager.Interop.IVsTextView"/> adapter has been created
