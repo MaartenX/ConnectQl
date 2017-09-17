@@ -44,7 +44,7 @@ namespace ConnectQl.Sample.Net461
             {
                 using (var context = new ConnectQlContext(new PluginResolver()))
                 {
-                    await context.ExecuteFileAsync("script3.cql");
+                    await context.ExecuteFileAsync("script3.connectql");
                 }
             }
             catch
@@ -52,7 +52,7 @@ namespace ConnectQl.Sample.Net461
             }
 
             /*
-                var result = await context.ExecuteFileAsync("Example.cql");
+                var result = await context.ExecuteFileAsync("Example.connectql");
             }*/
         }
 

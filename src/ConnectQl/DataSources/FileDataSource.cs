@@ -34,6 +34,7 @@ namespace ConnectQl.DataSources
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
+    using ConnectQl.Internal.DataSources;
     using ConnectQl.Results;
 
     /// <summary>
@@ -41,6 +42,11 @@ namespace ConnectQl.DataSources
     /// </summary>
     public class FileDataSource : IDataSource, IDataTarget, IDescriptableDataSource
     {
+        /// <summary>
+        /// The number of bytes that are read to guess the file format.
+        /// </summary>
+        private const int PreviewByteCount = 1024;
+
         /// <summary>
         /// Gets the encoding.
         /// </summary>
@@ -92,17 +98,20 @@ namespace ConnectQl.DataSources
         /// </returns>
         async Task<IDataSourceDescriptor> IDescriptableDataSource.GetDataSourceDescriptorAsync(string sourceAlias, IExecutionContext context)
         {
-            var reader = this.GetFileReader(context);
-            var descriptable = reader as IDescriptableFileFormat;
-
-            if (descriptable == null)
+            using (var streamBuffer = await StreamBuffer.CreateAsync(await this.OpenStreamAsync(context, UriResolveMode.Read, this.Uri).ConfigureAwait(false), FileDataSource.PreviewByteCount)
+                .ConfigureAwait(false))
             {
+                var reader = this.GetFileReader(context, streamBuffer);
+
+                if (reader is IDescriptableFileFormat descriptable)
+                {
+                    using (var streamReader = this.GetStreamReader(streamBuffer, reader))
+                    {
+                        return await descriptable.GetDataSourceDescriptorAsync(sourceAlias, new FileFormatExecutionContext(context, this), streamReader).ConfigureAwait(false);
+                    }
+                }
+
                 return Descriptor.DynamicDataSource(sourceAlias);
-            }
-
-            using (var streamReader = await this.GetStreamReaderAsync(context, reader))
-            {
-                return await descriptable.GetDataSourceDescriptorAsync(sourceAlias, new FileFormatExecutionContext(context, this), streamReader).ConfigureAwait(false);
             }
         }
 
@@ -126,19 +135,30 @@ namespace ConnectQl.DataSources
             var whereFilter = query.GetFilter(context);
             var sortOrders = query.GetSortOrders(context).ToArray();
             var fields = query.RetrieveAllFields ? null : new HashSet<string>(query.Fields);
-            var fileReader = this.GetFileReader(context);
-
-            if (fileReader == null)
-            {
-                throw new InvalidOperationException($"Unable to load file with extension '{Path.GetExtension(this.Uri)}', did you load the file format?");
-            }
-
             var fileFormatContext = new FileFormatExecutionContext(context, this);
 
+            IFileReader fileReader = null;
+
             return context.CreateAsyncEnumerableAndRunOnce(
-                    () => this.GetStreamReaderAsync(context, fileReader),
-                    stream => fileReader.Read(fileFormatContext, rowBuilder, stream, fields),
-                    stream => stream?.Dispose())
+                    async () =>
+                    {
+                        var streamBuffer = await StreamBuffer.CreateAsync(await this.OpenStreamAsync(context, UriResolveMode.Read, this.Uri).ConfigureAwait(false), FileDataSource.PreviewByteCount).ConfigureAwait(false);
+
+                        fileReader = this.GetFileReader(context, streamBuffer);
+
+                        if (fileReader == null)
+                        {
+                            throw new InvalidOperationException($"Unable to load file with extension '{Path.GetExtension(this.Uri)}', did you load the file format?");
+                        }
+
+                        return Tuple.Create(this.GetStreamReader(streamBuffer, fileReader), streamBuffer);
+                    },
+                    stream => fileReader.Read(fileFormatContext, rowBuilder, stream.Item1, fields),
+                    stream =>
+                    {
+                        stream?.Item1?.Dispose();
+                        stream?.Item2?.Dispose();
+                    })
                 .Where(whereFilter?.GetRowFilter())
                 .OrderBy(sortOrders);
         }
@@ -160,7 +180,7 @@ namespace ConnectQl.DataSources
         /// </returns>
         async Task<long> IDataTarget.WriteRowsAsync(IExecutionContext context, IAsyncEnumerable<Row> rowsToWrite, bool upsert)
         {
-            var fileWriter = context.FileFormats.OfType<IFileWriter>().FirstOrDefault(reader => reader.CanWriteThisFile(this.Uri));
+            var fileWriter = context.FileFormats.OfType<IFileWriter>().FirstOrDefault(writer => writer.CanWriteThisFile(this.Uri));
 
             if (fileWriter == null)
             {
@@ -281,19 +301,22 @@ namespace ConnectQl.DataSources
         /// <param name="context">
         /// The context.
         /// </param>
+        /// <param name="streamBuffer">
+        /// The stream buffer.
+        /// </param>
         /// <returns>
         /// The <see cref="IFileReader"/> or <c>null</c> if none was found.
         /// </returns>
-        private IFileReader GetFileReader(IExecutionContext context)
+        private IFileReader GetFileReader(IExecutionContext context, StreamBuffer streamBuffer)
         {
-            return context.FileFormats.OfType<IFileReader>().FirstOrDefault(reader => reader.CanReadThisFile(new FileFormatExecutionContext(context, this), this.Uri, new byte[0]));
+            return context.FileFormats.OfType<IFileReader>().FirstOrDefault(reader => reader.CanReadThisFile(new FileFormatExecutionContext(context, this), this.Uri, streamBuffer.Buffer));
         }
 
         /// <summary>
         /// Gets the stream reader.
         /// </summary>
-        /// <param name="context">
-        /// The context.
+        /// <param name="stream">
+        /// The stream to read.
         /// </param>
         /// <param name="fileReader">
         /// The file reader.
@@ -301,9 +324,9 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        private async Task<StreamReader> GetStreamReaderAsync(IExecutionContext context, IFileReader fileReader)
+        private StreamReader GetStreamReader(StreamBuffer stream, IFileReader fileReader)
         {
-            return new StreamReader(await this.OpenStreamAsync(context, UriResolveMode.Read, this.Uri), (fileReader as IOverrideEncoding)?.Encoding ?? this.encoding, true);
+            return new StreamReader(stream.Stream, (fileReader as IOverrideEncoding)?.Encoding ?? this.encoding, true);
         }
 
         /// <summary>

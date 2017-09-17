@@ -7,9 +7,9 @@
     <TemplateID>94b2e6f3-790b-48d9-9096-b20d8837662b</TemplateID>
     <ProjectType>CSharp</ProjectType>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
-    <DefaultName>Script.cql</DefaultName>
+    <DefaultName>Script.connectql</DefaultName>
   </TemplateData>
   <TemplateContent>
-    <ProjectItem ReplaceParameters="true">Script.cql</ProjectItem>
+    <ProjectItem ReplaceParameters="true">Script.connectql</ProjectItem>
   </TemplateContent>
 </VSTemplate>
