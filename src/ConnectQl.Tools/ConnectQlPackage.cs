@@ -81,14 +81,6 @@ namespace ConnectQl.Tools
         /// The ConnectQl file extension definition.
         /// </summary>
         [Export]
-        [FileExtension(".cql")]
-        [ContentType("ConnectQl")]
-        private static FileExtensionToContentTypeDefinition cqlFileExtensionDefinition;
-
-        /// <summary>
-        /// The ConnectQl file extension definition.
-        /// </summary>
-        [Export]
         [FileExtension(".connectql")]
         [ContentType("ConnectQl")]
         private static FileExtensionToContentTypeDefinition connectqlFileExtensionDefinition;

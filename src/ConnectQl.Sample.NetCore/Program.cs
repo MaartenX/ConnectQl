@@ -40,7 +40,7 @@ namespace ConnectQl.Sample.NetCore
         {
             using (var context = new ConnectQlContext())
             {
-                var result = await context.ExecuteFileAsync("Example.cql");
+                var result = await context.ExecuteFileAsync("Example.connectql");
             }
         }
 

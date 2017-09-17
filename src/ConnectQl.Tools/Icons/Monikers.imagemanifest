@@ -5,17 +5,17 @@
   <Symbols>
     <String Name="Resources" Value="/ConnectQl.Tools;Component/Icons" />
     <Guid Name="MonikersGuid" Value="{b4bf7902-526b-4900-a9b2-cf18876d816d}" />
-    <ID Name="cql" Value="0" />
+    <ID Name="ConnectQl" Value="0" />
   </Symbols>
   <Images>
-    <Image Guid="$(MonikersGuid)" ID="$(cql)">
-      <Source Uri="$(Resources)/cql.16.16.png">
+    <Image Guid="$(MonikersGuid)" ID="$(ConnectQl)">
+      <Source Uri="$(Resources)/connectql.16.16.png">
         <Size Value="16" />
       </Source>
-      <Source Uri="$(Resources)/cql.48.48.png">
+      <Source Uri="$(Resources)/connectql.48.48.png">
         <Size Value="48" />
       </Source>
-      <Source Uri="$(Resources)/cql.96.96.png">
+      <Source Uri="$(Resources)/connectql.96.96.png">
         <Size Value="96" />
       </Source>
     </Image>

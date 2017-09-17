@@ -9,10 +9,6 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
 
   <ItemGroup>
-    <None Remove="Script3.cql" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ConnectQl.Logger.Console\ConnectQl.Logger.Console.csproj" />
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Condition="$(DevelopingLocally)" />
     <PackageReference Include="ConnectQl" Version="$(ConnectQlPluginReferenceVersion)" Condition="!$(DevelopingLocally)" />
@@ -23,10 +19,8 @@
 
   <ItemGroup>
     <Content Include="Example.json" CopyToOutputDirectory="Always" />
-    <Content Include="Example.cql" CopyToOutputDirectory="Always" />
-    <Content Include="Script3.cql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Example.connectql" CopyToOutputDirectory="Always" />
+    <Content Include="Script3.connectql" CopyToOutputDirectory="Always" />    
   </ItemGroup>
 
 </Project>
