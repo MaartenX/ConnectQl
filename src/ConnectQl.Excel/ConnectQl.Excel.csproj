@@ -9,8 +9,7 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Condition="$(DevelopingLocally)" />
-    <PackageReference Include="ConnectQl" Version="$(ConnectQlPluginReferenceVersion)" Condition="!$(DevelopingLocally)" />
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
     <PackageReference Include="EPPlus" Version="4.1.0" Condition="'$(TargetFramework)'=='net45'" />
     <PackageReference Include="EPPlus.Core" Version="1.5.1" Condition="'$(TargetFramework)'=='netstandard1.3'" />
   </ItemGroup>

@@ -29,13 +29,19 @@ namespace ConnectQl.Tools.Mef.Intellisense
     using System.IO;
     using System.Linq;
     using System.Reflection;
+
+    using AssemblyLoader;
+
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
-    using AssemblyLoader;
+
     using EnvDTE;
+
     using EnvDTE80;
+
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
+
     using VSLangProj;
 
     using Task = System.Threading.Tasks.Task;
@@ -43,7 +49,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
     /// <summary>
     /// The intellisense proxy.
     /// </summary>
-    internal class IntellisenseProxy : IDisposable, IIntellisenseSession
+    internal class IntellisenseProxy : IIntellisenseSession
     {
         /// <summary>
         /// The app domain.
@@ -258,8 +264,8 @@ namespace ConnectQl.Tools.Mef.Intellisense
                         this.handler = new RemoteEventHandler<byte[]>(this.IntellisenseSessionOnDocumentUpdated);
 
                         this.intellisenseSession = (AppDomainIntellisenseSession)this.appDomain.CreateInstanceFromAndUnwrap(
-                            typeof(AppDomainIntellisenseSession).Assembly.Location ?? string.Empty,
-                            typeof(AppDomainIntellisenseSession).FullName,
+                            typeof(AppDomainIntellisenseSession).Assembly.Location,
+                            typeof(AppDomainIntellisenseSession).FullName ?? string.Empty,
                             false,
                             BindingFlags.CreateInstance,
                             null,

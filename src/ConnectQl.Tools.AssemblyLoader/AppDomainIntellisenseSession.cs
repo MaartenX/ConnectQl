@@ -87,7 +87,7 @@ namespace ConnectQl.Tools.AssemblyLoader
                                            new LoadedAssembly(this.GetType().Assembly)
                                        };
 
-            var handler = CreateAssemblyResolver(loadedAssemblies);
+            var handler = AppDomainIntellisenseSession.CreateAssemblyResolver(loadedAssemblies);
 
             AppDomain.CurrentDomain.AssemblyResolve += handler;
 
@@ -110,7 +110,7 @@ namespace ConnectQl.Tools.AssemblyLoader
                 }
             }
 
-            var connectQl = GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
+            var connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
 
             if (connectQl == null)
             {
@@ -119,12 +119,12 @@ namespace ConnectQl.Tools.AssemblyLoader
                 referencedAssemblies.Add(assembly);
                 loadedAssemblies.Add(new LoadedAssembly(assembly, fallbackConnectQl));
 
-                connectQl = GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
+                connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
             }
 
             var assemblyLookup = loadedAssemblies.ToDictionary(a => a.Assembly.GetName().ToString());
 
-            LoadReferencesRecursively(loadedAssemblies, assemblyLookup);
+            AppDomainIntellisenseSession.LoadReferencesRecursively(loadedAssemblies, assemblyLookup);
 
             var pluginLoader = Activator.CreateInstance(connectQl.GetType("ConnectQl.Intellisense.AssemblyPluginResolver"), referencedAssemblies);
             var contextType = connectQl.GetType("ConnectQl.ConnectQlContext");
@@ -140,7 +140,7 @@ namespace ConnectQl.Tools.AssemblyLoader
             this.updateDocumentSpan = sessionType.GetMethod("UpdateDocumentSpan");
 
             sessionType.GetEvent("InternalDocumentUpdated", BindingFlags.Public | BindingFlags.Instance)
-                .AddEventHandler(this.session, Delegate.CreateDelegate(typeof(EventHandler<byte[]>), this, nameof(this.HandleEvent)));
+                ?.AddEventHandler(this.session, Delegate.CreateDelegate(typeof(EventHandler<byte[]>), this, nameof(this.HandleEvent)));
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace ConnectQl.Tools.AssemblyLoader
                     var name = a.Assembly.GetName();
 
                     return name.Name.Equals(assemblyName, StringComparison.InvariantCultureIgnoreCase) &&
-                           (PublicKey.Length == 0 || name.GetPublicKey().SequenceEqual(PublicKey));
+                           (AppDomainIntellisenseSession.PublicKey.Length == 0 || name.GetPublicKey().SequenceEqual(AppDomainIntellisenseSession.PublicKey));
                 })?.Assembly;
         }
 
@@ -357,7 +357,7 @@ namespace ConnectQl.Tools.AssemblyLoader
 
             if (extraAssemblies.Count > 0)
             {
-                LoadReferencesRecursively(extraAssemblies, assemblyLookup);
+                AppDomainIntellisenseSession.LoadReferencesRecursively(extraAssemblies, assemblyLookup);
 
                 assemblies.AddRange(extraAssemblies);
             }
@@ -372,6 +372,7 @@ namespace ConnectQl.Tools.AssemblyLoader
         /// <param name="eventArgs">
         /// The event args.
         /// </param>
+        // ReSharper disable once UnusedParameter.Local, event handler needs this parameter.
         private void HandleEvent(object sender, byte[] eventArgs)
         {
             this.DocumentUpdated?.Invoke(this, eventArgs);

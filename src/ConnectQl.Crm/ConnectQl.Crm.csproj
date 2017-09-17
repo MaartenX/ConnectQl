@@ -7,8 +7,7 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Condition="$(DevelopingLocally)" />
-    <PackageReference Include="ConnectQl" Version="$(ConnectQlPluginReferenceVersion)" Condition="!$(DevelopingLocally)" />
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
     <PackageReference Include="Microsoft.CrmSdk.XrmTooling.CoreAssembly" Version="8.2.0.5" />
   </ItemGroup>
   
