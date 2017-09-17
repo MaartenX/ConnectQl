@@ -9,8 +9,7 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Condition="$(DevelopingLocally)" />
-    <PackageReference Include="ConnectQl" Version="$(ConnectQlPluginReferenceVersion)" Condition="!$(DevelopingLocally)" />
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
     <PackageReference Include="System.Console" Version="4.3.0" Condition="'$(TargetFramework)' == 'netstandard1.3'" />
   </ItemGroup>
 </Project>

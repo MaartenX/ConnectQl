@@ -10,8 +10,7 @@
   <Import Project="..\ConnectQl.Defaults.targets" />
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" Condition="$(DevelopingLocally)" />
-    <PackageReference Include="ConnectQl" Version="$(ConnectQlPluginReferenceVersion)" Condition="!$(DevelopingLocally)" />
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
     <PackageReference Include="WindowsAzure.Storage" Version="8.4.0" />
   </ItemGroup>
   
