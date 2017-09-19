@@ -14,7 +14,7 @@ $replaceVersions = ($projects | ?{ $PackProjects.BaseName -notcontains $_.BaseNa
 		} catch {} 
 	}
 
-$nugets = ls *.nupkg.zip -r
+$nugets = ls *.nupkg -r
 
 [Reflection.Assembly]::LoadWithPartialName( "System.IO" ) | Out-Null
 [Reflection.Assembly]::LoadWithPartialName( "System.IO.Compression.FileSystem" ) | Out-Null
