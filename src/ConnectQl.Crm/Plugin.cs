@@ -36,7 +36,7 @@ namespace ConnectQl.Crm
         public string Name => "Crm";
 
         /// <summary>
-        /// Registers the CRM plugin on the context.
+        /// Registers the Dynamics CRM plugin on the context.
         /// </summary>
         /// <param name="context">
         /// The context to register the plugin on.
