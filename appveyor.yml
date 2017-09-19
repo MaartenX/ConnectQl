@@ -44,7 +44,12 @@ before_build:
 
 build_script:
   - msbuild /t:build src
-  - ps: .\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts }
+  - ps: >-
+      {
+        $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN) 
+        $packProjects | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts }
+        .\ps\UpdatePackageReferences.ps1 -PackProjects $packProjects
+      }
 
 deploy:
   - provider: NuGet

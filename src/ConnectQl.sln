@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectQl Solution Items", 
 		..\ConnectQl.png = ..\ConnectQl.png
 		..\ps\GetChangesSinceLastBuild.ps1 = ..\ps\GetChangesSinceLastBuild.ps1
 		stylecop.json = stylecop.json
+		..\ps\UpdatePackageReferences.ps1 = ..\ps\UpdatePackageReferences.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Tests", "ConnectQl.Tests\ConnectQl.Tests.csproj", "{37172183-EE9C-41E6-B165-BE9DFB8FEBF6}"
@@ -50,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Sample.Net461", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Crm", "ConnectQl.Crm\ConnectQl.Crm.csproj", "{272200B7-E76E-4D82-9C21-EF174C9F4A88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectQl.Logger.Console", "ConnectQl.Logger.Console\ConnectQl.Logger.Console.csproj", "{5C12E592-A82F-4B63-9793-B38886241231}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Logger.Console", "ConnectQl.Logger.Console\ConnectQl.Logger.Console.csproj", "{5C12E592-A82F-4B63-9793-B38886241231}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

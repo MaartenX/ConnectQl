@@ -13,7 +13,7 @@ $filesForRebuildAll = "appveyor.yml", "ConnectQl.Defaults.targets", "GetChangesS
 
 if ("$apiToken" -eq "")
 {
-	$result = $projects | ? { $_ -eq "asdf" }
+	$result = $projects
 }
 else 
 {
