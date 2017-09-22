@@ -24,6 +24,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
@@ -91,7 +92,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
             this.projectHierarchyItem = projectHierarchyItem;
             this.errorList = errorList;
 
-            var newProxy = new IntellisenseProxy(projectUniqueName, this.documents);
+            var newProxy = new IntellisenseProxy(projectUniqueName);
 
             newProxy.Initialized += this.ProxyOnInitialized;
         }
@@ -179,8 +180,11 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         private void ProxyOnDocumentUpdated(object sender, DocumentUpdatedEventArgs documentUpdatedEventArgs)
         {
+            Debug.WriteLine($"Updated {documentUpdatedEventArgs.Document.Filename}.");
             if (this.documents.TryGetValue(documentUpdatedEventArgs.Document.Filename, out var doc))
             {
+
+                Debug.WriteLine($"Updating classification {documentUpdatedEventArgs.Document.Filename}.");
                 doc.UpdateClassification(documentUpdatedEventArgs.Document);
 
                 if (documentUpdatedEventArgs.Document.Messages != null)
@@ -237,8 +241,14 @@ namespace ConnectQl.Tools.Mef.Intellisense
 
             if (oldProxy != null)
             {
+                oldProxy.ReloadRequested -= this.ProxyOnReloadRequested;
                 oldProxy.DocumentUpdated -= this.ProxyOnDocumentUpdated;
                 oldProxy.Dispose();
+            }
+
+            foreach (var keyValuePair in this.documents)
+            {
+                this.proxy.UpdateDocument(keyValuePair.Key, keyValuePair.Value.Content, keyValuePair.Value.Version);
             }
         }
 
@@ -255,7 +265,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         {
             this.proxy.ReloadRequested -= this.ProxyOnReloadRequested;
 
-            var newProxy = new IntellisenseProxy(this.projectUniqueName, this.documents);
+            var newProxy = new IntellisenseProxy(this.projectUniqueName);
 
             newProxy.Initialized += this.ProxyOnInitialized;
         }

@@ -24,6 +24,7 @@ namespace ConnectQl.Tools.Mef.Classification
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using ConnectQl.Intellisense;
     using Interfaces;
@@ -111,16 +112,17 @@ namespace ConnectQl.Tools.Mef.Classification
             this.document = document;
             this.document.DocumentChanged += (o, e) =>
                 {
+
+                    Debug.WriteLine($"Updated classification {document.Filename}.");
                     if (e.Change.HasFlag(DocumentChangeType.Tokens))
                     {
+                        Debug.WriteLine($"Sending ClassificationChanged for {document.Filename}.");
                         this.ClassificationChanged?.Invoke(this, new ClassificationChangedEventArgs(new SnapshotSpan(buffer.CurrentSnapshot, 0, buffer.CurrentSnapshot.Length)));
                     }
                 };
 
             this.classificationTypes = Classifier.Mapping.ToDictionary(kv => kv.Key, kv => registry.GetClassificationType(kv.Value));
         }
-
-#pragma warning disable 67
 
         /// <summary>
         /// An event that occurs when the classification of a span of text has changed.
@@ -131,8 +133,6 @@ namespace ConnectQl.Tools.Mef.Classification
         ///     affecting the span.
         /// </remarks>
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
-
-#pragma warning restore 67
 
         /// <summary>
         /// Gets all the <see cref="ClassificationSpan"/> objects that intersect with the given range of text.

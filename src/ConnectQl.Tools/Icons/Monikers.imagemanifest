@@ -4,7 +4,7 @@
 <ImageManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/VisualStudio/ImageManifestSchema/2014">
   <Symbols>
     <String Name="Resources" Value="/ConnectQl.Tools;Component/Icons" />
-    <Guid Name="MonikersGuid" Value="{b4bf7902-526b-4900-a9b2-cf18876d816d}" />
+    <Guid Name="MonikersGuid" Value="{b4bf7902-526b-4900-a9b2-cf18876d816e}" />
     <ID Name="ConnectQl" Value="0" />
   </Symbols>
   <Images>

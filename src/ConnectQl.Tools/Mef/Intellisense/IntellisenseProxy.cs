@@ -29,6 +29,8 @@ namespace ConnectQl.Tools.Mef.Intellisense
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Security;
+    using System.Security.Permissions;
 
     using AssemblyLoader;
 
@@ -95,9 +97,9 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// <param name="documents">
         /// The documents.
         /// </param>
-        public IntellisenseProxy(string projectUniqueName, IDictionary<string, ConnectQlDocument> documents)
+        public IntellisenseProxy(string projectUniqueName)
         {
-            this.Init(projectUniqueName, documents);
+            this.Init(projectUniqueName);
         }
 
         /// <summary>
@@ -176,10 +178,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// <param name="projectId">
         /// The project id.
         /// </param>
-        /// <param name="documents">
-        /// The documents.
-        /// </param>
-        public void Init(string projectId, IDictionary<string, ConnectQlDocument> documents)
+        public void Init(string projectId)
         {
             Debug.WriteLine("Initializing proxy.");
 
@@ -242,6 +241,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
 
                         setupInfomation.ApplicationBase = string.Empty;
                         setupInfomation.ConfigurationFile = configFile;
+                        setupInfomation.LoaderOptimization = LoaderOptimization.SingleDomain;
 
                         AppDomain.CurrentDomain.AssemblyResolve += IntellisenseProxy.AppDomainFix;
 
@@ -275,11 +275,6 @@ namespace ConnectQl.Tools.Mef.Intellisense
 
                         this.intellisenseSession.DocumentUpdated += this.handler.Handler;
 
-                        foreach (var keyValuePair in documents)
-                        {
-                            this.intellisenseSession.UpdateDocument(keyValuePair.Key, keyValuePair.Value.Content, keyValuePair.Value.Version);
-                        }
-
                         this.Initialized?.Invoke(this, EventArgs.Empty);
 
                         Debug.WriteLine("Initialized proxy.");
@@ -294,7 +289,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                             {
                                 await Task.Delay(TimeSpan.FromSeconds(1));
 
-                                this.Init(projectId, documents);
+                                this.Init(projectId);
                             });
                     }
                     finally
@@ -318,6 +313,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         public void UpdateDocument(string filename, string contents, int documentVersion)
         {
+            Debug.WriteLine($"Updating document {filename}");
             this.intellisenseSession.UpdateDocument(filename, contents, documentVersion);
         }
 
@@ -462,6 +458,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         private void IntellisenseSessionOnDocumentUpdated(object sender, byte[] serializedDocumentDescriptor)
         {
+            Debug.WriteLine($"Document updated ({(DocumentUpdated == null ? "null" : "handled")}).");
             this.DocumentUpdated?.Invoke(this, new DocumentUpdatedEventArgs(serializedDocumentDescriptor));
         }
 

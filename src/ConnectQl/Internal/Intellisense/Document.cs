@@ -65,14 +65,9 @@ namespace ConnectQl.Internal.Intellisense
         /// <param name="filename">
         /// The filename.
         /// </param>
-        /// <param name="contents">
-        /// The contents.
-        /// </param>
-        public Document(IntellisenseSession session, string filename, string contents)
+        public Document(IntellisenseSession session, string filename)
         {
             this.session = session;
-            this.Contents = contents;
-
             this.Descriptor = new SerializableDocumentDescriptor { Filename = filename };
         }
 

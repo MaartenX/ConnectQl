@@ -80,26 +80,24 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
         /// <summary>
         /// Getst the content.
         /// </summary>
-        public string Content => $"{this.function.Name}({string.Join(", ", this.function.Arguments.Select(a => $"{a.Type.SimplifiedType.FullName} {a.Name}"))})";
+        public string Content => $"{this.function.Name.ToUpperInvariant()}({string.Join(", ", this.function.Arguments.Select(a => $"{a.Type.SimplifiedType.Name} {a.Name}"))})";
 
         /// <summary>
         /// Gets the current parameter.
         /// </summary>
         public IParameter CurrentParameter
         {
-            get
-            {
-                return this.currentParameter;
-            }
+            get => this.currentParameter;
 
             private set
             {
-                if (this.currentParameter != value)
+                if (this.currentParameter == value)
                 {
-                    this.CurrentParameterChanged?.Invoke(this, new CurrentParameterChangedEventArgs(this.currentParameter, value));
-
-                    this.currentParameter = value;
+                    return;
                 }
+
+                this.CurrentParameterChanged?.Invoke(this, new CurrentParameterChangedEventArgs(this.currentParameter, value));
+                this.currentParameter = value;
             }
         }
 

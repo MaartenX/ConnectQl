@@ -139,14 +139,12 @@ namespace ConnectQl.Intellisense
         /// </param>
         public void UpdateDocument(string filename, string contents, int documentVersion)
         {
-            if (this.documents.TryGetValue(filename, out var doc))
+            if (!this.documents.TryGetValue(filename, out var doc))
             {
-                doc.Update(contents, documentVersion);
+                doc = this.documents[filename] = new Document(this, filename);
             }
-            else
-            {
-                this.documents[filename] = new Document(this, filename, contents);
-            }
+
+            doc.Update(contents, documentVersion);
         }
 
         /// <summary>
@@ -169,7 +167,7 @@ namespace ConnectQl.Intellisense
         /// </param>
         public void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string span, int documentVersion)
         {
-            if (!this.documents.TryGetValue(filename, out Document doc))
+            if (!this.documents.TryGetValue(filename, out var doc))
             {
                 return;
             }
