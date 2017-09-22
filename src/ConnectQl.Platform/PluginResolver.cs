@@ -56,6 +56,11 @@ namespace ConnectQl.Platform
         private IConnectQlPlugin[] plugins;
 
         /// <summary>
+        /// The available plugins changed.
+        /// </summary>
+        public event EventHandler AvailablePluginsChanged;
+
+        /// <summary>
         /// Loads plugins by assembly name.
         /// </summary>
         /// <returns>
@@ -72,8 +77,8 @@ namespace ConnectQl.Platform
 
             return this.plugins
                    ?? (this.plugins = Directory.GetFiles(folder, "*.dll")
-                   .SelectMany(LoadAssembly)
-                   .SelectMany(EnumeratePlugins).ToArray());
+                   .SelectMany(PluginResolver.LoadAssembly)
+                   .SelectMany(PluginResolver.EnumeratePlugins).ToArray());
         }
 
         /// <summary>
@@ -87,12 +92,12 @@ namespace ConnectQl.Platform
         /// </returns>
         private static IEnumerable<Assembly> LoadAssembly(string path)
         {
-            Assembly result = null;
+            Assembly result;
 
             try
             {
 #if NETSTANDARD1_5
-                result = DefaultPluginAssemblies.FirstOrDefault(a => a.Location.Equals(path)) ?? DefaultAssemblyLoadContext.LoadFromAssemblyPath(path);
+                result = PluginResolver.DefaultPluginAssemblies.FirstOrDefault(a => a.Location.Equals(path)) ?? PluginResolver.DefaultAssemblyLoadContext.LoadFromAssemblyPath(path);
 #elif NET45
                 result = DefaultPluginAssemblies.FirstOrDefault(a => a.Location.Equals(path)) ?? Assembly.LoadFrom(path);
 #endif

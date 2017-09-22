@@ -548,8 +548,6 @@ namespace ConnectQl.AsyncEnumerablePolicies
                 this.file.Dispose();
                 this.file = null;
 
-                Debug.WriteLine($"{this.GetType()}: Created collection with {this.count} items.");
-
                 var result = new Collection<T>(this.policy, this.fileId, this.count, this.transform, this.context);
 
                 this.policy = null;

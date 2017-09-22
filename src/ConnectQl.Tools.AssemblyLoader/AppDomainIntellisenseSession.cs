@@ -69,46 +69,25 @@ namespace ConnectQl.Tools.AssemblyLoader
         /// <summary>
         /// Initializes a new instance of the <see cref="AppDomainIntellisenseSession"/> class.
         /// </summary>
-        /// <param name="assemblies">
+        /// <param name="assembliesToLoad">
         /// The assemblies.
         /// </param>
         /// <param name="fallbackConnectQl">
         /// The fallback ConnectQl assembly when no reference is available in the project.
         /// </param>
-        public AppDomainIntellisenseSession(IList<string> assemblies, string fallbackConnectQl)
+        public AppDomainIntellisenseSession(IList<string> assembliesToLoad, string fallbackConnectQl)
         {
-            AppDomain.CurrentDomain.AssemblyLoad += (o, e) =>
-                {
-                    Debug.WriteLine($"Assembly loaded: {e.LoadedAssembly.FullName}.");
-                };
-
-            var loadedAssemblies = new List<LoadedAssembly>
-                                       {
-                                           new LoadedAssembly(this.GetType().Assembly)
-                                       };
-
-            var handler = AppDomainIntellisenseSession.CreateAssemblyResolver(loadedAssemblies);
-
-            AppDomain.CurrentDomain.AssemblyResolve += handler;
+            var sw = Stopwatch.StartNew();
 
             var referencedAssemblies = new List<Assembly>();
+            var loadedAssemblies = new List<LoadedAssembly> { new LoadedAssembly(this.GetType().Assembly) };
 
-            foreach (var assemblyFile in assemblies)
-            {
-                try
-                {
-                    var pdb = Regex.Replace(assemblyFile, @"\.dll$", ".pdb", RegexOptions.IgnoreCase);
-                    var assembly = Assembly.Load(File.ReadAllBytes(assemblyFile), File.Exists(pdb) ? File.ReadAllBytes(pdb) : null, SecurityContextSource.CurrentAppDomain);
-                    referencedAssemblies.Add(assembly);
-                    loadedAssemblies.Add(new LoadedAssembly(assembly, assemblyFile));
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine($"Error loading assembly {assemblyFile}: {e.Message.TrimEnd('.')}.");
+            AppDomain.CurrentDomain.AssemblyResolve += AppDomainIntellisenseSession.CreateAssemblyResolver(loadedAssemblies);
 
-                    // Ignore.
-                }
-            }
+            AppDomainIntellisenseSession.LoadAssemblies(
+                assembliesToLoad, 
+                referencedAssemblies,
+                loadedAssemblies);
 
             var connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
 
@@ -141,6 +120,10 @@ namespace ConnectQl.Tools.AssemblyLoader
 
             sessionType.GetEvent("InternalDocumentUpdated", BindingFlags.Public | BindingFlags.Instance)
                 ?.AddEventHandler(this.session, Delegate.CreateDelegate(typeof(EventHandler<byte[]>), this, nameof(this.HandleEvent)));
+
+            sw.Stop();
+
+            Debug.WriteLine($"Appdomain load took {sw.ElapsedMilliseconds}ms.");
         }
 
         /// <summary>
@@ -252,6 +235,54 @@ namespace ConnectQl.Tools.AssemblyLoader
                 };
 
             this.updateDocumentSpan.Invoke(this.session, arguments);
+        }
+
+        /// <summary>
+        /// Checks if the path is an assembly that is needed for intellisense.
+        /// </summary>
+        /// <param name="assemblyPath">
+        /// The assembly path.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if this assembly is needed for intellisense.
+        /// </returns>
+        private static bool IsIntellisenseAssembly(string assemblyPath)
+        {
+            var file = Path.GetFileName(assemblyPath);
+
+            return file != null && (file.Equals("ConnectQl.dll", StringComparison.InvariantCultureIgnoreCase) || file.Equals("ConnectQl.Platform.dll", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        /// <summary>
+        /// Loads the specified assemblies.
+        /// </summary>
+        /// <param name="assemblies">
+        /// The assemblies.
+        /// </param>
+        /// <param name="referencedAssemblies">
+        /// The referenced assemblies.
+        /// </param>
+        /// <param name="loadedAssemblies">
+        /// The loaded assemblies.
+        /// </param>
+        private static void LoadAssemblies(IEnumerable<string> assemblies, ICollection<Assembly> referencedAssemblies, ICollection<LoadedAssembly> loadedAssemblies)
+        {
+            foreach (var assemblyFile in assemblies)
+            {
+                try
+                {
+                    var pdb = Regex.Replace(assemblyFile, @"\.dll$", ".pdb", RegexOptions.IgnoreCase);
+                    var assembly = Assembly.Load(File.ReadAllBytes(assemblyFile), File.Exists(pdb) ? File.ReadAllBytes(pdb) : null, SecurityContextSource.CurrentAppDomain);
+                    referencedAssemblies.Add(assembly);
+                    loadedAssemblies.Add(new LoadedAssembly(assembly, assemblyFile));
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine($"Error loading assembly {assemblyFile}: {e.Message.TrimEnd('.')}.");
+
+                    // Ignore.
+                }
+            }
         }
 
         /// <summary>

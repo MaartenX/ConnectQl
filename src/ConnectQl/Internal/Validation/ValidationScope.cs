@@ -103,6 +103,9 @@ namespace ConnectQl.Internal.Validation
         /// </summary>
         public IFileFormats FileFormats { get; }
 
+        /// <summary>
+        /// Gets the loggers.
+        /// </summary>
         public ICollection<ILogger> Loggers { get; }
 
         /// <summary>

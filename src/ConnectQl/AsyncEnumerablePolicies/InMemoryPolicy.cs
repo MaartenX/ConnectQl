@@ -188,8 +188,6 @@ namespace ConnectQl.AsyncEnumerablePolicies
                     Array.Resize(ref this.array, this.numItems);
                 }
 
-                Debug.WriteLine($"{this.GetType()}: Created collection with {this.numItems} items.");
-
                 var result = Task.FromResult<IAsyncReadOnlyCollection<T>>(new InMemoryAsyncReadOnlyCollection<T>(this.policy, this.array ?? new T[0]));
 
                 this.array = new T[InMemoryAsyncEnumerableBuilder<T>.MinimumBufferSize];

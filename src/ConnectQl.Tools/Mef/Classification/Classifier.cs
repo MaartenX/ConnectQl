@@ -113,10 +113,8 @@ namespace ConnectQl.Tools.Mef.Classification
             this.document.DocumentChanged += (o, e) =>
                 {
 
-                    Debug.WriteLine($"Updated classification {document.Filename}.");
                     if (e.Change.HasFlag(DocumentChangeType.Tokens))
                     {
-                        Debug.WriteLine($"Sending ClassificationChanged for {document.Filename}.");
                         this.ClassificationChanged?.Invoke(this, new ClassificationChangedEventArgs(new SnapshotSpan(buffer.CurrentSnapshot, 0, buffer.CurrentSnapshot.Length)));
                     }
                 };

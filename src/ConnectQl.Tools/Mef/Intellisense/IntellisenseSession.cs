@@ -180,11 +180,8 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         private void ProxyOnDocumentUpdated(object sender, DocumentUpdatedEventArgs documentUpdatedEventArgs)
         {
-            Debug.WriteLine($"Updated {documentUpdatedEventArgs.Document.Filename}.");
             if (this.documents.TryGetValue(documentUpdatedEventArgs.Document.Filename, out var doc))
             {
-
-                Debug.WriteLine($"Updating classification {documentUpdatedEventArgs.Document.Filename}.");
                 doc.UpdateClassification(documentUpdatedEventArgs.Document);
 
                 if (documentUpdatedEventArgs.Document.Messages != null)

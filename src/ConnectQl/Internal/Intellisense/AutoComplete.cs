@@ -61,6 +61,18 @@ namespace ConnectQl.Internal.Intellisense
             Expression
         }
 
+        /// <summary>
+        /// Gets the completions.
+        /// </summary>
+        /// <param name="tokens">
+        /// The tokens.
+        /// </param>
+        /// <param name="current">
+        /// The current.
+        /// </param>
+        /// <returns>
+        /// The <see cref="AutoCompletions"/>.
+        /// </returns>
         public static AutoCompletions GetCompletions(IReadOnlyList<IClassifiedToken> tokens, IClassifiedToken current)
         {
             var scope = TokenScope.Root;
@@ -115,6 +127,7 @@ namespace ConnectQl.Internal.Intellisense
                     {
                         return new AutoCompletions(AutoCompleteType.Field);
                     }
+
                     break;
 
                 case TokenScope.From:

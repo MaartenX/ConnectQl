@@ -73,7 +73,7 @@ namespace ConnectQl.Internal
         /// The plugins.
         /// </summary>
         private IConnectQlPlugin[] plugins;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionContextImplementation"/> class.
         /// </summary>

@@ -66,6 +66,10 @@ namespace ConnectQl.Internal
         /// </summary>
         public bool HasErrors => this.messages.Any(msg => msg.Type == ResultMessageType.Error);
 
+        /// <summary>Gets the number of elements in the collection.</summary>
+        /// <returns>The number of elements in the collection. </returns>
+        public int Count => this.messages.Count;
+
         /// <summary>
         /// The get enumerator.
         /// </summary>
@@ -138,9 +142,5 @@ namespace ConnectQl.Internal
         {
             return this.GetEnumerator();
         }
-
-        /// <summary>Gets the number of elements in the collection.</summary>
-        /// <returns>The number of elements in the collection. </returns>
-        public int Count => this.messages.Count;
     }
 }

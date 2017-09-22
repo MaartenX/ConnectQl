@@ -80,7 +80,7 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
         /// <summary>
         /// Getst the content.
         /// </summary>
-        public string Content => $"{this.function.Name.ToUpperInvariant()}({string.Join(", ", this.function.Arguments.Select(a => $"{a.Type.SimplifiedType.Name} {a.Name}"))})";
+        public string Content => $"{this.function.Name.ToUpperInvariant()} ({string.Join(", ", this.function.Arguments.Select(a => $" {a.Type.SimplifiedType.Name} {a.Name} "))})";
 
         /// <summary>
         /// Gets the current parameter.

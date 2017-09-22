@@ -37,7 +37,7 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// The assemblies.
         /// </summary>
-        private readonly IList<Assembly> assemblies;
+        private readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
 
         /// <summary>
         /// The plugins.
@@ -52,7 +52,33 @@ namespace ConnectQl.Intellisense
         /// </param>
         public AssemblyPluginResolver(IList<Assembly> assemblies)
         {
-            this.assemblies = assemblies;
+            foreach (var assembly in assemblies)
+            {
+                this.assemblies.Add(assembly);
+            }
+        }
+
+        /// <summary>
+        /// The available plugins changed.
+        /// </summary>
+        public event EventHandler AvailablePluginsChanged;
+
+        /// <summary>
+        /// Adds assemblies to the resolver.
+        /// </summary>
+        /// <param name="assembliesToAdd">
+        /// The assemblies to add.
+        /// </param>
+        public void AddAssemblies(IEnumerable<Assembly> assembliesToAdd)
+        {
+            foreach (var assemblyToAdd in assembliesToAdd)
+            {
+                this.assemblies.Add(assemblyToAdd);
+            }
+
+            this.plugins = null;
+
+            this.AvailablePluginsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

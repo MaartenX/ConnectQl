@@ -180,8 +180,6 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         public void Init(string projectId)
         {
-            Debug.WriteLine("Initializing proxy.");
-
             Task.Run(() =>
                 {
                     try
@@ -205,7 +203,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                             }
                             catch (NotImplementedException)
                             {
-                                Debug.WriteLine("ReferencesEvents not implemented for this project.");
+                                //// CPS does not have reference events.
                             }
 
                             try
@@ -216,7 +214,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
                             }
                             catch (NotImplementedException)
                             {
-                                Debug.WriteLine("ImportsEvents not implemented for this project.");
+                                //// CPS does not have import events.
                             }
 
                             configFile = visualStudioProject.Project.ProjectItems.OfType<ProjectItem>().FirstOrDefault(i => i.Name.EndsWith(".config", StringComparison.OrdinalIgnoreCase))?.FileNames[0];
@@ -276,13 +274,9 @@ namespace ConnectQl.Tools.Mef.Intellisense
                         this.intellisenseSession.DocumentUpdated += this.handler.Handler;
 
                         this.Initialized?.Invoke(this, EventArgs.Empty);
-
-                        Debug.WriteLine("Initialized proxy.");
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine($"Error while initializing proxy: {e.Message}.");
-
                         this.Dispose();
 
                         Task.Run(async () =>
@@ -313,7 +307,6 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         public void UpdateDocument(string filename, string contents, int documentVersion)
         {
-            Debug.WriteLine($"Updating document {filename}");
             this.intellisenseSession.UpdateDocument(filename, contents, documentVersion);
         }
 
@@ -458,7 +451,6 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         private void IntellisenseSessionOnDocumentUpdated(object sender, byte[] serializedDocumentDescriptor)
         {
-            Debug.WriteLine($"Document updated ({(DocumentUpdated == null ? "null" : "handled")}).");
             this.DocumentUpdated?.Invoke(this, new DocumentUpdatedEventArgs(serializedDocumentDescriptor));
         }
 

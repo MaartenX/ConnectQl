@@ -35,9 +35,24 @@ namespace ConnectQl.Internal
     /// </summary>
     internal class PluginLoader : NodeVisitor
     {
+        /// <summary>
+        /// The plugins.
+        /// </summary>
         private readonly IConnectQlPlugin[] plugins;
+
+        /// <summary>
+        /// The context.
+        /// </summary>
         private readonly IPluginContext context;
+
+        /// <summary>
+        /// The registered.
+        /// </summary>
         private readonly HashSet<IConnectQlPlugin> registered = new HashSet<IConnectQlPlugin>();
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
         private readonly ILogger logger;
 
         /// <summary>
@@ -80,7 +95,7 @@ namespace ConnectQl.Internal
         /// </returns>
         protected internal override Node VisitImportPluginStatement(ImportPluginStatement node)
         {
-            var plugin = this.plugins.FirstOrDefault(p => string.Equals(p.Name,node.Plugin, StringComparison.OrdinalIgnoreCase));
+            var plugin = this.plugins.FirstOrDefault(p => string.Equals(p.Name, node.Plugin, StringComparison.OrdinalIgnoreCase));
 
             try
             {
