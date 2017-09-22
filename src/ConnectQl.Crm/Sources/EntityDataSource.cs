@@ -66,7 +66,7 @@ namespace ConnectQl.Crm.Sources
         /// </summary>
         static EntityDataSource()
         {
-            typeof(OrganizationServiceProxy).GetField("_xrmSdkAssemblyFileVersion", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, FileVersionInfo.GetVersionInfo(typeof(Entity).Assembly.Location).FileVersion);
+            typeof(OrganizationServiceProxy).GetField("_xrmSdkAssemblyFileVersion", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, typeof(Entity).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
         }
 
         /// <summary>
