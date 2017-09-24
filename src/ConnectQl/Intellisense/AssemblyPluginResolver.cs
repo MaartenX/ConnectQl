@@ -37,7 +37,7 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// The assemblies.
         /// </summary>
-        private readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
+        private readonly Dictionary<AssemblyName, Assembly> assemblies = new Dictionary<AssemblyName, Assembly>();
 
         /// <summary>
         /// The plugins.
@@ -54,7 +54,7 @@ namespace ConnectQl.Intellisense
         {
             foreach (var assembly in assemblies)
             {
-                this.assemblies.Add(assembly);
+                this.assemblies[assembly.GetName()] = assembly;
             }
 
             this.IsLoading = true;
@@ -80,7 +80,7 @@ namespace ConnectQl.Intellisense
         {
             foreach (var assemblyToAdd in assembliesToAdd)
             {
-                this.assemblies.Add(assemblyToAdd);
+                this.assemblies[assemblyToAdd.GetName()] = assemblyToAdd;
             }
 
             this.plugins = null;
@@ -103,7 +103,7 @@ namespace ConnectQl.Intellisense
 
             var typeName = typeof(IConnectQlPlugin).FullName;
 
-            return this.plugins = this.assemblies
+            return this.plugins = this.assemblies.Values
                                         .SelectMany(a => a.ExportedTypes
                                             .Select(type => new
                                             {
