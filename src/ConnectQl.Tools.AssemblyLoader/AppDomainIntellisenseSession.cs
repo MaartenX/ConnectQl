@@ -85,27 +85,16 @@ namespace ConnectQl.Tools.AssemblyLoader
             AppDomain.CurrentDomain.AssemblyResolve += AppDomainIntellisenseSession.CreateAssemblyResolver(loadedAssemblies);
 
             AppDomainIntellisenseSession.LoadAssemblies(
-                assembliesToLoad, 
+                assembliesToLoad.Where(AppDomainIntellisenseSession.IsIntellisenseAssembly),
                 referencedAssemblies,
                 loadedAssemblies);
 
-            var connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
-
-            if (connectQl == null)
-            {
-                var pdb = Regex.Replace(fallbackConnectQl, @"\.dll$", ".pdb", RegexOptions.IgnoreCase);
-                var assembly = Assembly.Load(File.ReadAllBytes(fallbackConnectQl), File.Exists(pdb) ? File.ReadAllBytes(pdb) : null, SecurityContextSource.CurrentAppDomain);
-                referencedAssemblies.Add(assembly);
-                loadedAssemblies.Add(new LoadedAssembly(assembly, fallbackConnectQl));
-
-                connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
-            }
+            var connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(fallbackConnectQl, loadedAssemblies, referencedAssemblies);
 
             var assemblyLookup = loadedAssemblies.ToDictionary(a => a.Assembly.GetName().ToString());
 
-            AppDomainIntellisenseSession.LoadReferencesRecursively(loadedAssemblies, assemblyLookup);
-
-            var pluginLoader = Activator.CreateInstance(connectQl.GetType("ConnectQl.Intellisense.AssemblyPluginResolver"), referencedAssemblies);
+            var pluginLoaderType = connectQl.GetType("ConnectQl.Intellisense.AssemblyPluginResolver");
+            var pluginLoader = Activator.CreateInstance(pluginLoaderType, referencedAssemblies);
             var contextType = connectQl.GetType("ConnectQl.ConnectQlContext");
             var createSession = connectQl.GetType("ConnectQl.Intellisense.ConnectQlExtensions").GetMethod("CreateIntellisenseSession");
             var sessionType = connectQl.GetType("ConnectQl.Intellisense.IntellisenseSession");
@@ -121,9 +110,35 @@ namespace ConnectQl.Tools.AssemblyLoader
             sessionType.GetEvent("InternalDocumentUpdated", BindingFlags.Public | BindingFlags.Instance)
                 ?.AddEventHandler(this.session, Delegate.CreateDelegate(typeof(EventHandler<byte[]>), this, nameof(this.HandleEvent)));
 
-            sw.Stop();
+            Debug.WriteLine($"Intellisense load took {sw.ElapsedMilliseconds}ms.");
+
+            AppDomainIntellisenseSession.LoadAssemblies(
+                assembliesToLoad.Where(AppDomainIntellisenseSession.IsIntellisenseAssembly),
+                referencedAssemblies,
+                loadedAssemblies);
+
+            AppDomainIntellisenseSession.LoadReferencesRecursively(loadedAssemblies, assemblyLookup);
+
+            pluginLoaderType.GetProperty("IsLoading")?.SetValue(pluginLoader, false);
+            pluginLoaderType.GetMethod("AddAssemblies")?.Invoke(pluginLoader, new object[] { referencedAssemblies });
 
             Debug.WriteLine($"Appdomain load took {sw.ElapsedMilliseconds}ms.");
+        }
+
+        private static Assembly GetConnectQlAssembly(string fallbackConnectQl, List<LoadedAssembly> loadedAssemblies, List<Assembly> referencedAssemblies)
+        {
+            var connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
+
+            if (connectQl == null)
+            {
+                var pdb = Regex.Replace(fallbackConnectQl, @"\.dll$", ".pdb", RegexOptions.IgnoreCase);
+                var assembly = Assembly.Load(File.ReadAllBytes(fallbackConnectQl), File.Exists(pdb) ? File.ReadAllBytes(pdb) : null, SecurityContextSource.CurrentAppDomain);
+                referencedAssemblies.Add(assembly);
+                loadedAssemblies.Add(new LoadedAssembly(assembly, fallbackConnectQl));
+
+                connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
+            }
+            return connectQl;
         }
 
         /// <summary>

@@ -25,7 +25,6 @@ namespace ConnectQl.Internal
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
 
     using ConnectQl.AsyncEnumerablePolicies;
@@ -72,7 +71,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// The plugins.
         /// </summary>
-        private IConnectQlPlugin[] plugins;
+        private IPluginCollection plugins;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionContextImplementation"/> class.
@@ -179,7 +178,7 @@ namespace ConnectQl.Internal
         /// </returns>
         public object GetDefault(string setting, IDataAccess source, bool throwOnError)
         {
-            if (this.defaults.TryGetValue($"{setting}|{this.functionNames[source]}", out object result) && result != null)
+            if (this.defaults.TryGetValue($"{setting}|{this.functionNames[source]}", out var result) && result != null)
             {
                 return result;
             }
@@ -198,9 +197,9 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The plugin, or <c>null</c> if it wasn't found.
         /// </returns>
-        public IEnumerable<IConnectQlPlugin> GetPlugins()
+        public IPluginCollection GetPlugins()
         {
-            return this.plugins ?? (this.plugins = this.ParentContext.PluginResolver?.EnumerateAvailablePlugins().ToArray()) ?? new IConnectQlPlugin[0];
+            return this.plugins ?? (this.plugins = new PluginCollection(this.ParentContext.PluginResolver));
         }
 
         /// <summary>
@@ -217,7 +216,7 @@ namespace ConnectQl.Internal
         /// </returns>
         public T GetVariable<T>(string variable)
         {
-            if (this.values.TryGetValue(variable, out object result))
+            if (this.values.TryGetValue(variable, out var result))
             {
                 if (typeof(T) == typeof(object))
                 {

@@ -57,6 +57,6 @@ namespace ConnectQl.Internal.Interfaces
         /// <returns>
         /// The plugin, or <c>null</c> if it wasn't found.
         /// </returns>
-        IEnumerable<IConnectQlPlugin> GetPlugins();
+        IPluginCollection GetPlugins();
     }
 }

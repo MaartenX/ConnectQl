@@ -20,43 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Internal
+namespace ConnectQl.Interfaces
 {
-    using ConnectQl.Internal.Ast.Statements;
+    using System;
 
     /// <summary>
-    /// The parsed script.
+    /// The DynamicPluginResolver interface.
     /// </summary>
-    internal class ParsedDocument
+    public interface IDynamicPluginResolver : IPluginResolver
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParsedDocument"/> class.
+        /// Raised when the available plugins have changed.
         /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="root">
-        /// The script root.
-        /// </param>
-        public ParsedDocument(ExecutionContextImplementation context, Block root)
-        {
-            this.Root = root;
-            this.Context = context;
-        }
+        event EventHandler AvailablePluginsChanged;
 
         /// <summary>
-        /// Gets the context.
+        /// Gets a value indicating whether the resolver is currently loading.
         /// </summary>
-        public ExecutionContextImplementation Context { get; }
-
-        /// <summary>
-        /// Gets the filename.
-        /// </summary>
-        public string Filename => this.Context.Filename;
-
-        /// <summary>
-        /// Gets or sets the script.
-        /// </summary>
-        public Block Root { get; set; }
+        bool IsLoading { get; }
     }
 }

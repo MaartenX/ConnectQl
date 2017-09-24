@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,43 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Internal
+namespace ConnectQl.Interfaces
 {
-    using ConnectQl.Internal.Ast.Statements;
+    using System.Collections.Generic;
 
     /// <summary>
-    /// The parsed script.
+    /// The PluginCollection interface.
     /// </summary>
-    internal class ParsedDocument
+    public interface IPluginCollection : IEnumerable<IConnectQlPlugin>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParsedDocument"/> class.
+        /// Gets a value indicating whether the plugin collection is still loaded.
         /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="root">
-        /// The script root.
-        /// </param>
-        public ParsedDocument(ExecutionContextImplementation context, Block root)
-        {
-            this.Root = root;
-            this.Context = context;
-        }
-
-        /// <summary>
-        /// Gets the context.
-        /// </summary>
-        public ExecutionContextImplementation Context { get; }
-
-        /// <summary>
-        /// Gets the filename.
-        /// </summary>
-        public string Filename => this.Context.Filename;
-
-        /// <summary>
-        /// Gets or sets the script.
-        /// </summary>
-        public Block Root { get; set; }
+        bool IsLoading { get; }
     }
 }

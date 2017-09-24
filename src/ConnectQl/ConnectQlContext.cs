@@ -134,9 +134,9 @@ namespace ConnectQl
         }
 
         /// <summary>
-        ///     Gets or sets the plugin resolver.
+        ///     Gets the plugin resolver.
         /// </summary>
-        public IPluginResolver PluginResolver { get; set; }
+        public IPluginResolver PluginResolver { get; }
 
         /// <summary>
         ///     Gets or sets a lambda that opens the file at the specified path and returns the stream.

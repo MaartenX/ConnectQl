@@ -360,11 +360,10 @@ namespace ConnectQl.Internal.Validation
                 this.AddWarning(node, $"Plugin {node.Plugin} was already enabled.");
             }
 
-            if (!this.Scope.EnablePlugin(node.Plugin))
+            if (!this.Scope.EnablePlugin(node.Plugin) && !this.Scope.IsLoadingPlugins)
             {
                 var plugins = this.Scope.GetAvailablePlugins().ToArray();
                 var availablePlugins = plugins.Length == 0 ? string.Empty : $" Available plugins: {string.Join(", ", plugins.Where(p => !string.Equals(p, "DefaultFunctions")))}";
-
                 this.AddError(node, $"Plugin {node.Plugin} was not found.{availablePlugins}");
             }
 

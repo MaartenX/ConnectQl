@@ -119,6 +119,11 @@ namespace ConnectQl.Internal.Validation
         public ValidationScope Parent { get; }
 
         /// <summary>
+        /// Gets a value indicating whether the plugins are still loading.
+        /// </summary>
+        public bool IsLoadingPlugins => this.context.GetPlugins().IsLoading;
+
+        /// <summary>
         /// Adds an alias for a field to the scope. When an alias already exists in the current scope, it is appended by a
         ///     number.
         /// </summary>

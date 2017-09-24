@@ -288,7 +288,7 @@ namespace ConnectQl.Internal.Intellisense
         /// </param>
         private void ValidateDocument(ParsedDocument document, SerializableDocumentDescriptor descriptorToUpdate)
         {
-            var root = Validator.Validate(document.Context, document.Root, out ILookup<string, IFunctionDescriptor> functionDefinitions);
+            document.Root = Validator.Validate(document.Context, document.Root, out var functionDefinitions);
             var messages = document.Context.Messages.Select(message => new SerializableMessage(message)).ToArray();
             var functions = functionDefinitions.SelectMany(lookup => lookup.Select(function => new SerializableFunctionDescriptor(lookup.Key, function))).ToArray();
 

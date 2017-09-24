@@ -22,7 +22,6 @@
 
 namespace ConnectQl.Interfaces
 {
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -30,11 +29,6 @@ namespace ConnectQl.Interfaces
     /// </summary>
     public interface IPluginResolver
     {
-        /// <summary>
-        /// Raised when the available plugins have changed.
-        /// </summary>
-        event EventHandler AvailablePluginsChanged;
-
         /// <summary>
         /// Enumerates the available plugins.
         /// </summary>

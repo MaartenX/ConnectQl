@@ -54,12 +54,7 @@ namespace ConnectQl.Platform
         /// The plugins.
         /// </summary>
         private IConnectQlPlugin[] plugins;
-
-        /// <summary>
-        /// The available plugins changed.
-        /// </summary>
-        public event EventHandler AvailablePluginsChanged;
-
+        
         /// <summary>
         /// Loads plugins by assembly name.
         /// </summary>

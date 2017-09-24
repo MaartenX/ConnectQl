@@ -27,8 +27,10 @@ namespace ConnectQl.Intellisense
     using System.Linq;
 
     using ConnectQl.Interfaces;
+    using ConnectQl.Internal;
     using ConnectQl.Internal.Intellisense;
     using ConnectQl.Internal.Intellisense.Protocol;
+    using ConnectQl.Internal.Interfaces;
 
     /// <summary>
     /// The <c>Intellisense</c> session.
@@ -41,6 +43,11 @@ namespace ConnectQl.Intellisense
         private readonly Dictionary<string, Document> documents = new Dictionary<string, Document>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
+        /// Gets the plugins.
+        /// </summary>
+        private readonly IPluginCollection plugins;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="IntellisenseSession"/> class.
         /// </summary>
         /// <param name="context">
@@ -48,7 +55,7 @@ namespace ConnectQl.Intellisense
         /// </param>
         internal IntellisenseSession(ConnectQlContext context)
         {
-            this.Plugins = context.PluginResolver?.EnumerateAvailablePlugins()?.ToArray() ?? new IConnectQlPlugin[0];
+            this.plugins = new PluginCollection(context.PluginResolver);
             this.Context = context;
         }
 
@@ -61,11 +68,6 @@ namespace ConnectQl.Intellisense
         /// Occurs when a document is updated (used internally for cross-appdomain communication).
         /// </summary>
         public event EventHandler<byte[]> InternalDocumentUpdated;
-
-        /// <summary>
-        /// Gets the plugins.
-        /// </summary>
-        public IConnectQlPlugin[] Plugins { get; }
 
         /// <summary>
         /// Gets the context.

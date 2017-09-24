@@ -32,7 +32,7 @@ namespace ConnectQl.Intellisense
     /// <summary>
     /// Resolves plugins using the assembly list provided.
     /// </summary>
-    public class AssemblyPluginResolver : IPluginResolver
+    public class AssemblyPluginResolver : IDynamicPluginResolver
     {
         /// <summary>
         /// The assemblies.
@@ -56,12 +56,19 @@ namespace ConnectQl.Intellisense
             {
                 this.assemblies.Add(assembly);
             }
+
+            this.IsLoading = true;
         }
 
         /// <summary>
         /// The available plugins changed.
         /// </summary>
         public event EventHandler AvailablePluginsChanged;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the resolver is currently loading plugins.
+        /// </summary>
+        public bool IsLoading { get; set; }
 
         /// <summary>
         /// Adds assemblies to the resolver.
