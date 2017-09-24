@@ -30,6 +30,9 @@ namespace ConnectQl.Tools.AssemblyLoader
     using System.Reflection;
     using System.Security;
     using System.Text.RegularExpressions;
+    using System.Xml;
+    using System.Xml.Linq;
+    using System.Xml.XPath;
 
     /// <summary>
     /// The intellisense session implementation.
@@ -83,7 +86,7 @@ namespace ConnectQl.Tools.AssemblyLoader
             var loadedAssemblies = new List<LoadedAssembly> { new LoadedAssembly(this.GetType().Assembly) };
 
             AppDomain.CurrentDomain.AssemblyResolve += AppDomainIntellisenseSession.CreateAssemblyResolver(loadedAssemblies);
-
+            
             AppDomainIntellisenseSession.LoadAssemblies(
                 assembliesToLoad.Where(AppDomainIntellisenseSession.IsIntellisenseAssembly),
                 referencedAssemblies,
@@ -113,7 +116,7 @@ namespace ConnectQl.Tools.AssemblyLoader
             Debug.WriteLine($"Intellisense load took {sw.ElapsedMilliseconds}ms.");
 
             AppDomainIntellisenseSession.LoadAssemblies(
-                assembliesToLoad.Where(AppDomainIntellisenseSession.IsIntellisenseAssembly),
+                assembliesToLoad.Where(a => !AppDomainIntellisenseSession.IsIntellisenseAssembly(a)),
                 referencedAssemblies,
                 loadedAssemblies);
 
@@ -124,7 +127,22 @@ namespace ConnectQl.Tools.AssemblyLoader
 
             Debug.WriteLine($"Appdomain load took {sw.ElapsedMilliseconds}ms.");
         }
-
+        
+        /// <summary>
+        /// Gets the ConnectQl assembly.
+        /// </summary>
+        /// <param name="fallbackConnectQl">
+        /// The assembly to fall back on, when it cannot be found in the project.
+        /// </param>
+        /// <param name="loadedAssemblies">
+        /// The assemblies that were loaded.
+        /// </param>
+        /// <param name="referencedAssemblies">
+        /// The assemblies that were referenced.
+        /// </param>
+        /// <returns>
+        /// The ConnectQl assembly.
+        /// </returns>
         private static Assembly GetConnectQlAssembly(string fallbackConnectQl, List<LoadedAssembly> loadedAssemblies, List<Assembly> referencedAssemblies)
         {
             var connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
@@ -317,7 +335,11 @@ namespace ConnectQl.Tools.AssemblyLoader
                 {
                     var assemblyName = new AssemblyName(e.Name);
                     var token = assemblyName.GetPublicKeyToken();
-                    var result = assemblies.FirstOrDefault(a => a.Assembly.GetName().Name == assemblyName.Name && (token == null || token.SequenceEqual(a.Assembly.GetName().GetPublicKeyToken() ?? new byte[0])));
+                    var result = assemblies.FirstOrDefault(a =>
+                        {
+                            var assemblyToken = a.Assembly.GetName().GetPublicKeyToken();
+                            return a.Assembly.GetName().Name == assemblyName.Name && (token == null || assemblyToken == null || token.SequenceEqual(assemblyToken));
+                        });
 
                     return result?.Assembly;
                 };
@@ -466,5 +488,18 @@ namespace ConnectQl.Tools.AssemblyLoader
             /// </summary>
             public string Path { get; }
         }
+    }
+
+    internal class BindingRedirect
+    {
+        public string Name { get; set; }
+
+        public string PublicKeyToken { get; set; }
+
+        public string Culture { get; set; }
+
+        public string OldVersion { get; set; }
+
+        public string NewVersion { get; set; }
     }
 }

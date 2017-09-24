@@ -37,12 +37,14 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// The assemblies.
         /// </summary>
-        private readonly Dictionary<AssemblyName, Assembly> assemblies = new Dictionary<AssemblyName, Assembly>();
+        private readonly Dictionary<string, Assembly> assemblies = new Dictionary<string, Assembly>();
 
         /// <summary>
         /// The plugins.
         /// </summary>
         private IConnectQlPlugin[] plugins;
+
+        private string[] types;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyPluginResolver"/> class.
@@ -54,7 +56,7 @@ namespace ConnectQl.Intellisense
         {
             foreach (var assembly in assemblies)
             {
-                this.assemblies[assembly.GetName()] = assembly;
+                this.assemblies[assembly.GetName().ToString()] = assembly;
             }
 
             this.IsLoading = true;
@@ -70,6 +72,8 @@ namespace ConnectQl.Intellisense
         /// </summary>
         public bool IsLoading { get; set; }
 
+        public IEnumerable<string> Types => this.types = this.assemblies.Keys.Select(k => k.ToString()).ToArray();
+
         /// <summary>
         /// Adds assemblies to the resolver.
         /// </summary>
@@ -80,7 +84,7 @@ namespace ConnectQl.Intellisense
         {
             foreach (var assemblyToAdd in assembliesToAdd)
             {
-                this.assemblies[assemblyToAdd.GetName()] = assemblyToAdd;
+                this.assemblies[assemblyToAdd.GetName().ToString()] = assemblyToAdd;
             }
 
             this.plugins = null;
@@ -102,7 +106,7 @@ namespace ConnectQl.Intellisense
             }
 
             var typeName = typeof(IConnectQlPlugin).FullName;
-
+            
             return this.plugins = this.assemblies.Values
                                         .SelectMany(a => a.ExportedTypes
                                             .Select(type => new
