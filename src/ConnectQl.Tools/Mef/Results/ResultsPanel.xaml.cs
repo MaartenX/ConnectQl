@@ -26,6 +26,8 @@ namespace ConnectQl.Tools.Mef.Results
     using System.Collections.ObjectModel;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Media;
+
     using ConnectQl.Results;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
@@ -36,9 +38,19 @@ namespace ConnectQl.Tools.Mef.Results
     internal partial class ResultsPanel : UserControl, IWpfTextViewMargin
     {
         /// <summary>
-        /// The <see cref="Expanded"/> property.
+        /// The is expanded property.
         /// </summary>
-        public static readonly DependencyProperty ExpandedProperty = DependencyProperty.Register("Expanded", typeof(bool), typeof(ResultsPanel), new PropertyMetadata(default(bool)));
+        public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(ResultsPanel), new PropertyMetadata(default(bool)));
+
+        /// <summary>
+        /// The panel height.
+        /// </summary>
+        public static readonly DependencyProperty PanelHeightProperty = DependencyProperty.Register("PanelHeight", typeof(double), typeof(ResultsPanel), new PropertyMetadata(400d));
+
+        /// <summary>
+        /// Transforms a virtual vector to a device vector.
+        /// </summary>
+        private Matrix transformToDevice;
 
         /// <summary>
         /// The text view.
@@ -54,6 +66,11 @@ namespace ConnectQl.Tools.Mef.Results
         /// Stores the results.
         /// </summary>
         private IExecuteResult result;
+
+        /// <summary>
+        /// Stores whether the panel is expanded.
+        /// </summary>
+        private bool isExpanded;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResultsPanel"/> class.
@@ -73,6 +90,36 @@ namespace ConnectQl.Tools.Mef.Results
 
             this.textView = textView;
             this.document = document;
+
+            RoutedEventHandler loaded = null;
+
+            loaded = (o, e) =>
+                {
+                    this.transformToDevice = PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice;
+
+                    this.Loaded -= loaded;
+                };
+
+            this.Loaded += loaded;
+        }
+        
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the panel is expanded.
+        /// </summary>
+        public bool IsExpanded
+        {
+            get => (bool)this.GetValue(ResultsPanel.IsExpandedProperty);
+            set => this.SetValue(ResultsPanel.IsExpandedProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the panel height.
+        /// </summary>
+        public double PanelHeight
+        {
+            get => (double)this.GetValue(ResultsPanel.PanelHeightProperty);
+            set => this.SetValue(ResultsPanel.PanelHeightProperty, value);
         }
 
         /// <summary>
@@ -92,15 +139,6 @@ namespace ConnectQl.Tools.Mef.Results
         public ObservableCollection<object> Items { get; } = new ObservableCollection<object>();
 
         /// <summary>
-        /// Gets or sets a value indicating whether this panel is enabled.
-        /// </summary>
-        public bool Expanded
-        {
-            get => (bool)(this.GetValue(ResultsPanel.ExpandedProperty) ?? false);
-            set => this.SetValue(ResultsPanel.ExpandedProperty, value);
-        }
-
-        /// <summary>
         /// Gets or sets the current execute result.
         /// </summary>
         public IExecuteResult Result
@@ -114,9 +152,14 @@ namespace ConnectQl.Tools.Mef.Results
 
                 if (this.result != null)
                 {
-                    this.Expanded = true;
+                    this.IsExpanded = true;
                 }
             }
+        }
+
+        void GridSplitterDragCompleted(object sender, RoutedEventArgs e)
+        {
+            this.PanelHeight = ((Grid)((GridSplitter)sender).Parent).RowDefinitions[2].ActualHeight;
         }
 
         /// <summary>
@@ -135,9 +178,28 @@ namespace ConnectQl.Tools.Mef.Results
         bool ITextViewMargin.Enabled => true;
 
         /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+        }
+
+        /// <summary>
+        /// Gets the <see cref="T:Microsoft.VisualStudio.Text.Editor.ITextViewMargin" /> with the specified margin name.
+        /// </summary>
+        /// <param name="marginName">The name of the <see cref="T:Microsoft.VisualStudio.Text.Editor.ITextViewMargin" />.</param>
+        /// <returns>
+        /// The <see cref="T:Microsoft.VisualStudio.Text.Editor.ITextViewMargin" /> named <paramref name="marginName" />, or null if no match is found.
+        /// </returns>
+        ITextViewMargin ITextViewMargin.GetTextViewMargin(string marginName)
+        {
+            return this;
+        }
+
+        /// <summary>
         /// Binds the result to this viewer.
         /// </summary>
-        public async void BindResultAsync()
+        private async void BindResultAsync()
         {
             await this.Dispatcher.InvokeAsync(() =>
             {
@@ -160,25 +222,6 @@ namespace ConnectQl.Tools.Mef.Results
                     }
                 }
             });
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        void IDisposable.Dispose()
-        {
-        }
-
-        /// <summary>
-        /// Gets the <see cref="T:Microsoft.VisualStudio.Text.Editor.ITextViewMargin" /> with the specified margin name.
-        /// </summary>
-        /// <param name="marginName">The name of the <see cref="T:Microsoft.VisualStudio.Text.Editor.ITextViewMargin" />.</param>
-        /// <returns>
-        /// The <see cref="T:Microsoft.VisualStudio.Text.Editor.ITextViewMargin" /> named <paramref name="marginName" />, or null if no match is found.
-        /// </returns>
-        ITextViewMargin ITextViewMargin.GetTextViewMargin(string marginName)
-        {
-            return this;
         }
     }
 }

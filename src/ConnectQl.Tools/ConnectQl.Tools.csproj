@@ -1,7 +1,8 @@
 ﻿<Project>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="..\ConnectQl.Defaults.targets" />
+
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
 
   <PropertyGroup>
     <UICulture>en</UICulture>
@@ -58,6 +59,8 @@
     <Compile Remove="Mef\ToolBar\CommandButtons.cs" />
 
     <Compile Remove="Mef\ToolBar\RunScriptCommand.cs" />
+
+    <Compile Remove="Properties\Annotations.cs" />
 
     <VSCTCompile Include="Vsct\ConnectQl.Tools.en.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />
     <VSCTCompile Include="Vsct\ConnectQl.Tools.nl.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />

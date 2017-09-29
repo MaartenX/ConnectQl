@@ -1,7 +1,8 @@
 ﻿<Project>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="..\ConnectQl.Defaults.targets" />
+
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
 
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>

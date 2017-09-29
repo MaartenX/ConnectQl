@@ -7,7 +7,7 @@
     <Description>Utilities for ConnectQl plugins.</Description>
   </PropertyGroup>
 
-  <Import Project="..\ConnectQl.Defaults.targets" />
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
     <PackageReference Include="System.Data.Common" Version="4.3.0" />

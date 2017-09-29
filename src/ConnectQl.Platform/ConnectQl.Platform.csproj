@@ -7,8 +7,8 @@
     <Description>ConnectQl plugin for loading of plugins and CSV and JSON file formats.</Description>
   </PropertyGroup>
 
-  <Import Project="..\ConnectQl.Defaults.targets" />
-  
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+
   <ItemGroup>
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />

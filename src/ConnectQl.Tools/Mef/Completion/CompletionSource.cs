@@ -250,6 +250,11 @@ namespace ConnectQl.Tools.Mef.Completion
             var current = document.GetTokenAt(subjectTriggerPoint);
             var previous = document.GetTokenBefore(current) ?? current;
 
+            if (current == null)
+            {
+                return Tuple.Create(extend.Span, Enumerable.Empty<Completion>());
+            }
+
             if (subjectTriggerPoint.Position < subjectTriggerPoint.Snapshot.Length)
             {
                 switch (subjectTriggerPoint.Snapshot.GetText(new Span(subjectTriggerPoint.Position, 1)))

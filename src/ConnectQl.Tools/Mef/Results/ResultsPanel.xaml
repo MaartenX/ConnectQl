@@ -10,14 +10,45 @@
              d:DesignWidth="300"
              VerticalAlignment="Stretch"
              HorizontalAlignment="Stretch"
-             x:ClassModifier="internal">
-    
-    <Grid>
+             x:ClassModifier="internal"
+             x:Name="Root">
 
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0*" />
             <RowDefinition Height="5px" />
-            <RowDefinition Height="500px" />
+            <RowDefinition local:AnimatedRow.Multiplier="{Binding PanelHeight}">
+                <RowDefinition.Style>
+                    <Style TargetType="RowDefinition">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsExpanded}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(local:AnimatedRow.Height)"  Duration="0:0:0.100" To="1">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CircleEase EasingMode="EaseInOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(local:AnimatedRow.Height)"  Duration="0:0:0.100" To="0">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CircleEase EasingMode="EaseInOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RowDefinition.Style>
+            </RowDefinition>
         </Grid.RowDefinitions>
 
         <GridSplitter 
@@ -26,7 +57,11 @@
             VerticalAlignment="Stretch"
             HorizontalAlignment="Stretch"
             Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}" 
-            BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}" />
+            BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}" 
+            IsEnabled="{Binding IsExpanded}"
+            DragCompleted="GridSplitterDragCompleted"
+            Focusable="false"
+            />
 
         <Border 
             x:Name="Border"

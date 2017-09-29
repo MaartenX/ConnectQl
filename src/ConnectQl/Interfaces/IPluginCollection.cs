@@ -22,6 +22,7 @@
 
 namespace ConnectQl.Interfaces
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -29,6 +30,11 @@ namespace ConnectQl.Interfaces
     /// </summary>
     public interface IPluginCollection : IEnumerable<IConnectQlPlugin>
     {
+        /// <summary>
+        /// Triggered when the available plugins change.
+        /// </summary>
+        event EventHandler AvailablePluginsChanged;
+
         /// <summary>
         /// Gets a value indicating whether the plugin collection is still loaded.
         /// </summary>

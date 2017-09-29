@@ -5,6 +5,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <Import Project="..\ConnectQl.Defaults.targets" />
-  
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+
 </Project>

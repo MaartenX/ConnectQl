@@ -1,17 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl", "ConnectQl\ConnectQl.csproj", "{7A245E0E-267D-4115-9A4B-A08C651AFEA5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectQl Solution Items", "ConnectQl Solution Items", "{DD93BAB1-431A-42E3-9285-F0C44CC78783}"
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
-		ConnectQl.Defaults.targets = ConnectQl.Defaults.targets
 		..\ConnectQl.png = ..\ConnectQl.png
 		..\ps\GetChangesSinceLastBuild.ps1 = ..\ps\GetChangesSinceLastBuild.ps1
-		stylecop.json = stylecop.json
 		..\ps\UpdatePackageReferences.ps1 = ..\ps\UpdatePackageReferences.ps1
 	EndProjectSection
 EndProject
@@ -53,7 +51,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Crm", "ConnectQl.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Logger.Console", "ConnectQl.Logger.Console\ConnectQl.Logger.Console.csproj", "{5C12E592-A82F-4B63-9793-B38886241231}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ConnectQl.Shared", "ConnectQl.Shared\ConnectQl.Shared.shproj", "{B95C77E7-6B6E-4861-87A0-1B5BD8A52E0C}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ConnectQl.Shared\ConnectQl.Shared.projitems*{b95c77e7-6b6e-4861-87a0-1b5bd8a52e0c}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

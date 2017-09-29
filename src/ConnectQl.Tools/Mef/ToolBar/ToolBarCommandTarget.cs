@@ -23,6 +23,9 @@
 namespace ConnectQl.Tools.Mef.ToolBar
 {
     using System;
+
+    using ConnectQl.Tools.Mef.Results;
+
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.OLE.Interop;
     using Microsoft.VisualStudio.Text.Editor;
@@ -96,6 +99,12 @@ namespace ConnectQl.Tools.Mef.ToolBar
         {
             if (commandGroup == Commands.ConnectQlCommandSet)
             {
+                if (this.textView.Properties.TryGetProperty<ResultsPanel>(typeof(ResultsPanel), out var panel))
+                {
+                    panel.IsExpanded = !panel.IsExpanded;
+                }
+
+                return VSConstants.S_OK;
             }
 
             return this.next.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments);

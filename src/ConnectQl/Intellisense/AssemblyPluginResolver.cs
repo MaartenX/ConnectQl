@@ -44,8 +44,6 @@ namespace ConnectQl.Intellisense
         /// </summary>
         private IConnectQlPlugin[] plugins;
 
-        private string[] types;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyPluginResolver"/> class.
         /// </summary>
@@ -71,8 +69,6 @@ namespace ConnectQl.Intellisense
         /// Gets or sets a value indicating whether the resolver is currently loading plugins.
         /// </summary>
         public bool IsLoading { get; set; }
-
-        public IEnumerable<string> Types => this.types = this.assemblies.Keys.Select(k => k.ToString()).ToArray();
 
         /// <summary>
         /// Adds assemblies to the resolver.
@@ -106,7 +102,7 @@ namespace ConnectQl.Intellisense
             }
 
             var typeName = typeof(IConnectQlPlugin).FullName;
-            
+
             return this.plugins = this.assemblies.Values
                                         .SelectMany(a => a.ExportedTypes
                                             .Select(type => new

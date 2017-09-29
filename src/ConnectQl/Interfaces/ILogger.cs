@@ -23,6 +23,7 @@
 namespace ConnectQl.Interfaces
 {
     using System;
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The Logger interface.
@@ -31,11 +32,12 @@ namespace ConnectQl.Interfaces
     {
         /// <summary>
         /// Writes a message to the logger.
-        /// </summary>
+        /// </summary>C:\Users\Maarten\Source\Repos\ConnectQl\src\ConnectQl\Interfaces\ILogger.cs
         /// <param name="logLevel">The log level to write.</param>
         /// <param name="exception">Optinonal. The <see cref="Exception"/> if there was one, <c>null</c> otherwise.</param>
         /// <param name="format">The format string.</param>
         /// <param name="args">The arguments.</param>
+        [StringFormatMethod("format")]
         void Write(LogLevel logLevel, Exception exception, string format = "", params object[] args);
     }
 }

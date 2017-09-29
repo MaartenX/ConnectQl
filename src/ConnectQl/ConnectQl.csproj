@@ -8,7 +8,7 @@
     <AtgChildren>*.log;*.Parser.frame;*.Scanner.frame;*.Scanner.cs;*.Parser.cs</AtgChildren>
   </PropertyGroup>
 
-  <Import Project="..\ConnectQl.Defaults.targets" />
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
     <Compile Update="$(AtgChildren)">

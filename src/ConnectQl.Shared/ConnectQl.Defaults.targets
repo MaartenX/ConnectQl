@@ -32,9 +32,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -45,7 +42,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release' And Exists('$(MSBuildThisFileDirectory)..\key\Key.snk')">
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\key\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\..\key\Key.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
   </PropertyGroup>
 

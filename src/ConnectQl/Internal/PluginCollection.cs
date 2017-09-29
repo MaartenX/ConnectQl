@@ -22,6 +22,7 @@
 
 namespace ConnectQl.Internal
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -53,6 +54,8 @@ namespace ConnectQl.Internal
                     {
                         this.IsLoading = dynamicResolver.IsLoading;
                         this.plugins = dynamicResolver.EnumerateAvailablePlugins().ToArray();
+
+                        this.AvailablePluginsChanged?.Invoke(this, e);
                     };
 
                 this.IsLoading = dynamicResolver.IsLoading;
@@ -60,6 +63,11 @@ namespace ConnectQl.Internal
 
             this.plugins = resolver?.EnumerateAvailablePlugins().ToArray() ?? new IConnectQlPlugin[0];
         }
+
+        /// <summary>
+        /// Triggered when the available plugins change.
+        /// </summary>
+        public event EventHandler AvailablePluginsChanged;
 
         /// <summary>
         /// Gets a value indicating whether the plugin collection is still loaded.

@@ -42,7 +42,7 @@ namespace ConnectQl.Tools.Mef.ToolBar
         /// </summary>
         [Import]
         internal IVsEditorAdaptersFactoryService AdapterService { get; set; }
-
+        
         /// <summary>
         /// Called when a <see cref="T:Microsoft.VisualStudio.TextManager.Interop.IVsTextView"/> adapter has been created
         ///     and initialized.
