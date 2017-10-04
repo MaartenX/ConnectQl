@@ -33,6 +33,8 @@ namespace ConnectQl.Internal
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The execution context implementation.
     /// </summary>
@@ -82,7 +84,7 @@ namespace ConnectQl.Internal
         /// <param name="filename">
         /// The filename.
         /// </param>
-        public ExecutionContextImplementation(ConnectQlContext parentContext, string filename)
+        public ExecutionContextImplementation([NotNull] ConnectQlContext parentContext, string filename)
         {
             this.Filename = filename;
             this.ParentContext = parentContext;
@@ -176,6 +178,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The value for the function for the specified source.
         /// </returns>
+        [CanBeNull]
         public object GetDefault(string setting, IDataAccess source, bool throwOnError)
         {
             if (this.defaults.TryGetValue($"{setting}|{this.functionNames[source]}", out var result) && result != null)
@@ -197,6 +200,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The plugin, or <c>null</c> if it wasn't found.
         /// </returns>
+        [NotNull]
         public IPluginCollection GetPlugins()
         {
             return this.plugins ?? (this.plugins = new PluginCollection(this.ParentContext.PluginResolver));

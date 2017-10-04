@@ -34,6 +34,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The inner join source.
     /// </summary>
@@ -71,7 +73,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// A data set containing the rows retrieved from the source.
         /// </returns>
-        protected override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, JoinQuery query)
+        protected override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, [NotNull] JoinQuery query)
         {
             var rowBuilder = new RowBuilder();
 

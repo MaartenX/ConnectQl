@@ -24,7 +24,11 @@ namespace ConnectQl.Tools.Interfaces
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     using ConnectQl.Interfaces;
+    using ConnectQl.Results;
+
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text;
 
@@ -153,5 +157,11 @@ namespace ConnectQl.Tools.Interfaces
         /// <param name="current">The current token.</param>
         /// <returns>The completions.</returns>
         IAutoCompletions GetAutoCompletions(IClassifiedToken current);
+
+        /// <summary>
+        /// Executes the query in the document.
+        /// </summary>
+        /// <returns></returns>
+        Task<IExecuteResult> ExecuteAsync();
     }
 }

@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator used by the <see cref="AsyncEnumerableExtensions.Skip{T}"/> method.
     /// </summary>
@@ -89,7 +91,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="afterIndex">
         /// The after Index.
         /// </param>
-        public CallbackEnumerator(IAsyncEnumerable<TSource> source, Action before, Action<long> after, long index, Action<TSource> afterIndex)
+        public CallbackEnumerator([NotNull] IAsyncEnumerable<TSource> source, Action before, Action<long> after, long index, Action<TSource> afterIndex)
         {
             this.asyncEnumerator = source.GetAsyncEnumerator();
             this.before = before;

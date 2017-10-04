@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Extensions
     using System.Linq;
     using System.Reflection;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The type extensions.
     /// </summary>
@@ -46,6 +48,7 @@ namespace ConnectQl.Internal.Extensions
         /// <returns>
         /// The <see cref="MethodInfo"/>.
         /// </returns>
+        [CanBeNull]
         public static MethodInfo GetGenericMethod(this Type type, string name, params Type[] parameters)
         {
             return type.GetRuntimeMethods().FirstOrDefault(
@@ -70,6 +73,7 @@ namespace ConnectQl.Internal.Extensions
         /// <returns>
         /// The <see cref="Type"/>.
         /// </returns>
+        [CanBeNull]
         public static Type GetInterface(this Type type, Type interfaceType)
         {
             if (interfaceType.GetTypeInfo().IsGenericTypeDefinition)
@@ -95,6 +99,7 @@ namespace ConnectQl.Internal.Extensions
         /// <returns>
         /// The <see cref="Type"/>.
         /// </returns>
+        [CanBeNull]
         public static Type GetBaseType(this Type type, Type baseType)
         {
             var baseTypeInfo = baseType.GetTypeInfo();

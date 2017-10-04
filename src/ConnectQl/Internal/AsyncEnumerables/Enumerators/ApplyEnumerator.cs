@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Applies all elements in the left collection to the function in the right collection and returns the results.
     /// </summary>
@@ -97,7 +99,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="resultSelector">
         /// The result selector.
         /// </param>
-        public ApplyEnumerator(bool isOuterApply, IAsyncEnumerable<TLeft> left, Func<TLeft, IAsyncEnumerable<TRight>> rightFactory, Func<TLeft, TRight, TResult> resultSelector)
+        public ApplyEnumerator(bool isOuterApply, [NotNull] IAsyncEnumerable<TLeft> left, Func<TLeft, IAsyncEnumerable<TRight>> rightFactory, Func<TLeft, TRight, TResult> resultSelector)
         {
             this.isOuterApply = isOuterApply;
             this.rightFactory = rightFactory;

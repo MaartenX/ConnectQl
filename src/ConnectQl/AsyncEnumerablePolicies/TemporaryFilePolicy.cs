@@ -33,6 +33,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The temporary file policy.
     /// </summary>
@@ -92,6 +94,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         ///     The <see cref="IAsyncEnumerableBuilder{T}" />.
         /// </returns>
+        [NotNull]
         public IAsyncEnumerableBuilder<T> CreateBuilder<T>()
         {
             return new Builder<T>(this);
@@ -109,6 +112,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="TemporaryFilePolicy"/>.
         /// </returns>
+        [NotNull]
         public TemporaryFilePolicy RegisterTransform<T>(ITransform<T> transform)
         {
             if (!this.registeredTransforms.ContainsKey(typeof(T)))
@@ -210,7 +214,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The items that were taken synchronously.
         /// </returns>
-        private static IEnumerable<T> TakeItems<T>(List<IAsyncEnumerator<T>> enumerators, Comparison<T> comparison)
+        private static IEnumerable<T> TakeItems<T>([NotNull] List<IAsyncEnumerator<T>> enumerators, Comparison<T> comparison)
         {
             while (true)
             {
@@ -237,7 +241,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <typeparam name="T">
         /// The type of the items.
         /// </typeparam>
-        private static void SortEnumerators<T>(List<IAsyncEnumerator<T>> enumerators, Comparison<T> comparison)
+        private static void SortEnumerators<T>([NotNull] List<IAsyncEnumerator<T>> enumerators, Comparison<T> comparison)
         {
             for (var i = 1; i < enumerators.Count; i++)
             {
@@ -415,6 +419,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             ///     The <see cref="Task" />.
             /// </returns>
+            [ItemNotNull]
             private async Task<IEnumerable<T>> ReadAndTransformItemsAsync<TItem>(Stream stream)
             {
                 return (await this.policy.serializer.ReadAsync<TItem>(stream, this.policy.MaximumChunkSize)).Select(item => this.transform.Deserialize(this.context, item));
@@ -499,6 +504,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             /// This builder.
             /// </returns>
+            [NotNull]
             public IAsyncEnumerableBuilder<T> Add(IEnumerable<T> items)
             {
                 if (this.policy == null)
@@ -531,6 +537,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             ///     The <see cref="Task" />.
             /// </returns>
+            [ItemNotNull]
             public async Task<IAsyncReadOnlyCollection<T>> BuildAsync()
             {
                 if (this.policy == null)
@@ -564,6 +571,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             ///     The <see cref="Task" />.
             /// </returns>
+            [ItemNotNull]
             public async Task<IAsyncEnumerableBuilder<T>> AddAsync(IEnumerable<T> items)
             {
                 if (this.file == null)
@@ -614,7 +622,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             /// The number of items that were written.
             /// </returns>
-            private async Task<long> WriteItemsAsync<TItem>(IEnumerable<T> items)
+            private async Task<long> WriteItemsAsync<TItem>([NotNull] IEnumerable<T> items)
             {
                 return await this.policy.serializer.WriteAsync(this.file, items.Select(i => this.transform.Serialize(this.context, i)).Cast<TItem>()).ConfigureAwait(false);
             }

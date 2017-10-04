@@ -31,6 +31,8 @@ namespace ConnectQl.Internal.Expressions
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Represents an expression that is a reference to a field.
     /// </summary>
@@ -101,7 +103,7 @@ namespace ConnectQl.Internal.Expressions
         /// <returns>
         /// The <see cref="MethodCallExpression"/>.
         /// </returns>
-        public MethodCallExpression CreateGetter(ParameterExpression row, Type type = null)
+        public MethodCallExpression CreateGetter(ParameterExpression row, [CanBeNull] Type type = null)
             => Expression.Call(row, (this.UseInternalName ? SourceFieldExpression.RowGetByInternalNameMethod : SourceFieldExpression.RowGetMethod).MakeGenericMethod(type ?? this.Type), Expression.Constant(this.SourceName == null ? this.FieldName : $"{this.SourceName}.{this.FieldName}"));
 
         /// <summary>
@@ -129,6 +131,7 @@ namespace ConnectQl.Internal.Expressions
         /// <returns>
         /// A textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.
         /// </returns>
+        [NotNull]
         public override string ToString()
         {
             return $"[{this.SourceName}].[{this.FieldName}]";
@@ -144,6 +147,7 @@ namespace ConnectQl.Internal.Expressions
         /// <param name="visitor">
         /// An instance of <see cref="T:System.Func`2"/>.
         /// </param>
+        [NotNull]
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             return this;

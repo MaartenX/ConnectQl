@@ -24,15 +24,19 @@ namespace ConnectQl.Tools.AssemblyLoader
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Security;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Linq;
     using System.Xml.XPath;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The intellisense session implementation.
@@ -70,6 +74,16 @@ namespace ConnectQl.Tools.AssemblyLoader
         private readonly MethodInfo updateDocumentSpan;
 
         /// <summary>
+        /// The ConnectQL context.
+        /// </summary>
+        private readonly object context;
+
+        /// <summary>
+        /// The executeToByteArrayAsync method.
+        /// </summary>
+        private readonly MethodInfo executeToByteArrayAsync;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AppDomainIntellisenseSession"/> class.
         /// </summary>
         /// <param name="assembliesToLoad">
@@ -86,7 +100,7 @@ namespace ConnectQl.Tools.AssemblyLoader
             var loadedAssemblies = new List<LoadedAssembly> { new LoadedAssembly(this.GetType().Assembly) };
 
             AppDomain.CurrentDomain.AssemblyResolve += AppDomainIntellisenseSession.CreateAssemblyResolver(loadedAssemblies);
-            
+
             AppDomainIntellisenseSession.LoadAssemblies(
                 assembliesToLoad.Where(AppDomainIntellisenseSession.IsIntellisenseAssembly),
                 referencedAssemblies,
@@ -99,12 +113,14 @@ namespace ConnectQl.Tools.AssemblyLoader
             var pluginLoaderType = connectQl.GetType("ConnectQl.Intellisense.AssemblyPluginResolver");
             var pluginLoader = Activator.CreateInstance(pluginLoaderType, referencedAssemblies);
             var contextType = connectQl.GetType("ConnectQl.ConnectQlContext");
+            var contextInterfaceType = connectQl.GetType("ConnectQl.Intellisense.IConnectQlContext");
             var createSession = connectQl.GetType("ConnectQl.Intellisense.ConnectQlExtensions").GetMethod("CreateIntellisenseSession");
             var sessionType = connectQl.GetType("ConnectQl.Intellisense.IntellisenseSession");
 
-            var context = Activator.CreateInstance(contextType, pluginLoader);
+            this.context = Activator.CreateInstance(contextType, pluginLoader);
+            this.session = createSession.Invoke(null, new[] { this.context });
 
-            this.session = createSession.Invoke(null, new[] { context });
+            this.executeToByteArrayAsync = contextInterfaceType?.GetMethod("ExecuteToByteArrayAsync");
             this.getDocument = sessionType.GetMethod("GetDocumentAsByteArray");
             this.removeDocument = sessionType.GetMethod("RemoveDocument");
             this.updateDocument = sessionType.GetMethod("UpdateDocument");
@@ -126,37 +142,6 @@ namespace ConnectQl.Tools.AssemblyLoader
             pluginLoaderType.GetMethod("AddAssemblies")?.Invoke(pluginLoader, new object[] { referencedAssemblies });
 
             Debug.WriteLine($"Appdomain load took {sw.ElapsedMilliseconds}ms.");
-        }
-        
-        /// <summary>
-        /// Gets the ConnectQl assembly.
-        /// </summary>
-        /// <param name="fallbackConnectQl">
-        /// The assembly to fall back on, when it cannot be found in the project.
-        /// </param>
-        /// <param name="loadedAssemblies">
-        /// The assemblies that were loaded.
-        /// </param>
-        /// <param name="referencedAssemblies">
-        /// The assemblies that were referenced.
-        /// </param>
-        /// <returns>
-        /// The ConnectQl assembly.
-        /// </returns>
-        private static Assembly GetConnectQlAssembly(string fallbackConnectQl, List<LoadedAssembly> loadedAssemblies, List<Assembly> referencedAssemblies)
-        {
-            var connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
-
-            if (connectQl == null)
-            {
-                var pdb = Regex.Replace(fallbackConnectQl, @"\.dll$", ".pdb", RegexOptions.IgnoreCase);
-                var assembly = Assembly.Load(File.ReadAllBytes(fallbackConnectQl), File.Exists(pdb) ? File.ReadAllBytes(pdb) : null, SecurityContextSource.CurrentAppDomain);
-                referencedAssemblies.Add(assembly);
-                loadedAssemblies.Add(new LoadedAssembly(assembly, fallbackConnectQl));
-
-                connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
-            }
-            return connectQl;
         }
 
         /// <summary>
@@ -239,7 +224,7 @@ namespace ConnectQl.Tools.AssemblyLoader
                 document, contents, documentVersion
             };
 
-           this.updateDocument.Invoke(this.session, arguments);
+            this.updateDocument.Invoke(this.session, arguments);
         }
 
         /// <summary>
@@ -268,6 +253,59 @@ namespace ConnectQl.Tools.AssemblyLoader
                 };
 
             this.updateDocumentSpan.Invoke(this.session, arguments);
+        }
+
+        /// <summary>
+        /// Executes the queries in the filename or stream.
+        /// </summary>
+        /// <param name="filename">The name of the file that contains the queries.</param>
+        /// <param name="stream">The contents of the file that contains the queries, or <c>null</c> if the file should be opened by its name.</param>
+        /// <param name="resultCallback">Callback in the remote appdomain.</param>
+        public async void ExecuteWithCallback(string filename, Stream stream, [NotNull] ResultCallback<byte[]> resultCallback)
+        {
+            try
+            {
+                var arguments = new object[] { filename, stream };
+                var task = (Task<byte[]>)this.executeToByteArrayAsync.Invoke(this.context, arguments);
+
+                resultCallback.SetResult(await task);
+            }
+            catch (Exception e)
+            {
+                resultCallback.SetException(e);
+            }
+        }
+
+        /// <summary>
+        /// Gets the ConnectQl assembly.
+        /// </summary>
+        /// <param name="fallbackConnectQl">
+        /// The assembly to fall back on, when it cannot be found in the project.
+        /// </param>
+        /// <param name="loadedAssemblies">
+        /// The assemblies that were loaded.
+        /// </param>
+        /// <param name="referencedAssemblies">
+        /// The assemblies that were referenced.
+        /// </param>
+        /// <returns>
+        /// The ConnectQl assembly.
+        /// </returns>
+        private static Assembly GetConnectQlAssembly(string fallbackConnectQl, List<LoadedAssembly> loadedAssemblies, List<Assembly> referencedAssemblies)
+        {
+            var connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
+
+            if (connectQl == null)
+            {
+                var pdb = Regex.Replace(fallbackConnectQl, @"\.dll$", ".pdb", RegexOptions.IgnoreCase);
+                var assembly = Assembly.Load(File.ReadAllBytes(fallbackConnectQl), File.Exists(pdb) ? File.ReadAllBytes(pdb) : null, SecurityContextSource.CurrentAppDomain);
+                referencedAssemblies.Add(assembly);
+                loadedAssemblies.Add(new LoadedAssembly(assembly, fallbackConnectQl));
+
+                connectQl = AppDomainIntellisenseSession.GetConnectQlAssembly(loadedAssemblies, "ConnectQl");
+            }
+
+            return connectQl;
         }
 
         /// <summary>
@@ -488,18 +526,5 @@ namespace ConnectQl.Tools.AssemblyLoader
             /// </summary>
             public string Path { get; }
         }
-    }
-
-    internal class BindingRedirect
-    {
-        public string Name { get; set; }
-
-        public string PublicKeyToken { get; set; }
-
-        public string Culture { get; set; }
-
-        public string OldVersion { get; set; }
-
-        public string NewVersion { get; set; }
     }
 }

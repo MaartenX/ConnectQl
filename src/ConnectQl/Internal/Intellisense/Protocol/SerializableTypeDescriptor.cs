@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The serializable type descriptor.
     /// </summary>
@@ -46,7 +48,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="argumentType">
         /// The argument type.
         /// </param>
-        public SerializableTypeDescriptor(ITypeDescriptor argumentType)
+        public SerializableTypeDescriptor([NotNull] ITypeDescriptor argumentType)
         {
             this.Interfaces = argumentType.Interfaces.Length == 0 ? null : argumentType.Interfaces.Select(i => $"{i.FullName}, {i.GetTypeInfo().Assembly.GetName().Name}").ToArray();
             this.SimplifiedType = $"{argumentType.SimplifiedType.FullName}, {argumentType.SimplifiedType.GetTypeInfo().Assembly.GetName().Name}";
@@ -65,11 +67,13 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <summary>
         /// Gets the implemented interfaces.
         /// </summary>
+        [NotNull]
         Type[] ITypeDescriptor.Interfaces => (this.Interfaces?.Select(i => Type.GetType(i)).Where(i => i != null) ?? Enumerable.Empty<Type>()).ToArray();
 
         /// <summary>
         /// Gets the simplified type.
         /// </summary>
+        [NotNull]
         Type ITypeDescriptor.SimplifiedType => Type.GetType(this.SimplifiedType) ?? typeof(object);
 
         /// <summary>

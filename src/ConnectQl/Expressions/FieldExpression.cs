@@ -29,6 +29,8 @@ namespace ConnectQl.Expressions
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The field expression.
     /// </summary>
@@ -80,7 +82,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="MethodCallExpression"/>.
         /// </returns>
-        public MethodCallExpression CreateGetter(ParameterExpression row, Type type = null)
+        public MethodCallExpression CreateGetter(ParameterExpression row, [CanBeNull] Type type = null)
             => Expression.Call(row, FieldExpression.RowGetMethod.MakeGenericMethod(type ?? this.Type), Expression.Constant($"{this.source}.{this.FieldName}"));
 
         /// <summary>
@@ -89,6 +91,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// A textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.
         /// </returns>
+        [NotNull]
         public override string ToString()
         {
             return $"[{this.FieldName}]";
@@ -104,6 +107,7 @@ namespace ConnectQl.Expressions
         /// <param name="visitor">
         /// An instance of <see cref="T:System.Func`2"/>.
         /// </param>
+        [NotNull]
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             return this;

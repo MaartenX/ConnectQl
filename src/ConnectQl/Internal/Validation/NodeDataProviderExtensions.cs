@@ -29,6 +29,8 @@ namespace ConnectQl.Internal.Validation
     using ConnectQl.Internal.Ast.Expressions;
     using ConnectQl.Internal.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The node data provider extensions.
     /// </summary>
@@ -46,7 +48,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The alias or <c>null</c> when no alias is available.
         /// </returns>
-        public static string GetAlias(this INodeDataProvider dataProvider, Node node)
+        [CanBeNull]
+        public static string GetAlias([NotNull] this INodeDataProvider dataProvider, Node node)
         {
             return dataProvider.TryGet(node, "Alias", out string result) ? result : null;
         }
@@ -63,7 +66,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression GetExpression(this INodeDataProvider dataProvider, SqlExpressionBase node)
+        public static Expression GetExpression([NotNull] this INodeDataProvider dataProvider, SqlExpressionBase node)
         {
             return dataProvider.Get<Expression>(node, "Expression");
         }
@@ -80,7 +83,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The source factory.
         /// </returns>
-        public static Expression GetFactoryExpression(this INodeDataProvider dataProvider, Node node)
+        public static Expression GetFactoryExpression([NotNull] this INodeDataProvider dataProvider, Node node)
         {
             return dataProvider.Get<Expression>(node, "FactoryExpression");
         }
@@ -97,7 +100,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="SqlExpressionBase"/>.
         /// </returns>
-        public static SqlExpressionBase GetFieldReplacer(this INodeDataProvider dataProvider, FieldReferenceSqlExpression field)
+        [CanBeNull]
+        public static SqlExpressionBase GetFieldReplacer([NotNull] this INodeDataProvider dataProvider, FieldReferenceSqlExpression field)
         {
             return dataProvider.TryGet(field, "FieldReplacer", out SqlExpressionBase result) ? result : null;
         }
@@ -114,7 +118,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The function.
         /// </returns>
-        public static IFunctionDescriptor GetFunction(this INodeDataProvider dataProvider, Node node)
+        public static IFunctionDescriptor GetFunction([NotNull] this INodeDataProvider dataProvider, Node node)
         {
             return dataProvider.Get<IFunctionDescriptor>(node, "Function");
         }
@@ -131,7 +135,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The scope.
         /// </returns>
-        public static NodeScope GetScope(this INodeDataProvider dataProvider, Node node)
+        public static NodeScope GetScope([NotNull] this INodeDataProvider dataProvider, Node node)
         {
             return dataProvider.TryGet(node, "Scope", out NodeScope result) ? result : NodeScope.Initial;
         }
@@ -148,7 +152,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="ITypeDescriptor"/>.
         /// </returns>
-        public static ITypeDescriptor GetType(this INodeDataProvider dataProvider, Node node)
+        [NotNull]
+        public static ITypeDescriptor GetType(this INodeDataProvider dataProvider, [CanBeNull] Node node)
         {
             return node != null && dataProvider.TryGet(node, "Type", out ITypeDescriptor result) ? result ?? new TypeDescriptor(typeof(object)) : new TypeDescriptor(typeof(object));
         }
@@ -165,7 +170,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// <c>true</c> if the node is a group function, <c>false</c> otherwise.
         /// </returns>
-        public static bool IsGroupFunction(this INodeDataProvider dataProvider, Node node)
+        public static bool IsGroupFunction([NotNull] this INodeDataProvider dataProvider, Node node)
         {
             return dataProvider.TryGet(node, "IsGroupFunction", out object isGroupFunction) && (bool)isGroupFunction;
         }
@@ -179,7 +184,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="node">
         /// The node.
         /// </param>
-        public static void MarkAsGroupFunction(this INodeDataProvider dataProvider, Node node)
+        public static void MarkAsGroupFunction([NotNull] this INodeDataProvider dataProvider, Node node)
         {
             dataProvider.Set(node, "IsGroupFunction", true);
         }
@@ -196,7 +201,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="alias">
         /// The alias.
         /// </param>
-        public static void SetAlias(this INodeDataProvider dataProvider, Node node, string alias)
+        public static void SetAlias([NotNull] this INodeDataProvider dataProvider, Node node, string alias)
         {
             dataProvider.Set(node, "Alias", alias);
         }
@@ -213,7 +218,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="expression">
         /// The expression.
         /// </param>
-        public static void SetExpression(this INodeDataProvider dataProvider, SqlExpressionBase node, Expression expression)
+        public static void SetExpression([NotNull] this INodeDataProvider dataProvider, SqlExpressionBase node, Expression expression)
         {
             dataProvider.Set(node, "Expression", expression);
         }
@@ -230,7 +235,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="factory">
         /// The factory.
         /// </param>
-        public static void SetFactoryExpression(this INodeDataProvider dataProvider, Node node, Expression factory)
+        public static void SetFactoryExpression([NotNull] this INodeDataProvider dataProvider, Node node, Expression factory)
         {
             dataProvider.Set(node, "FactoryExpression", factory);
         }
@@ -247,7 +252,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="expression">
         /// The expression.
         /// </param>
-        public static void SetFieldReplacer(this INodeDataProvider dataProvider, FieldReferenceSqlExpression field, SqlExpressionBase expression)
+        public static void SetFieldReplacer([NotNull] this INodeDataProvider dataProvider, FieldReferenceSqlExpression field, SqlExpressionBase expression)
         {
             dataProvider.Set(field, "FieldReplacer", expression);
         }
@@ -264,7 +269,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="function">
         /// The function.
         /// </param>
-        public static void SetFunction(this INodeDataProvider dataProvider, Node node, IFunctionDescriptor function)
+        public static void SetFunction([NotNull] this INodeDataProvider dataProvider, Node node, IFunctionDescriptor function)
         {
             dataProvider.Set(node, "Function", function);
         }
@@ -281,7 +286,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="scope">
         /// The scope.
         /// </param>
-        public static void SetScope(this INodeDataProvider dataProvider, Node node, NodeScope scope)
+        public static void SetScope([NotNull] this INodeDataProvider dataProvider, Node node, NodeScope scope)
         {
             dataProvider.Set(node, "Scope", scope);
         }
@@ -298,7 +303,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="type">
         /// The type.
         /// </param>
-        public static void SetType(this INodeDataProvider dataProvider, Node node, ITypeDescriptor type)
+        public static void SetType([NotNull] this INodeDataProvider dataProvider, Node node, ITypeDescriptor type)
         {
             dataProvider.Set(node, "Type", type);
         }
@@ -315,7 +320,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="IQuery"/>.
         /// </returns>
-        internal static IQueryPlan GetQueryPlan(this INodeDataProvider dataProvider, Node node)
+        [CanBeNull]
+        internal static IQueryPlan GetQueryPlan([NotNull] this INodeDataProvider dataProvider, Node node)
         {
             return dataProvider.TryGet(node, "Query", out IQueryPlan result) ? result : null;
         }
@@ -332,7 +338,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="query">
         /// The query.
         /// </param>
-        internal static void SetQueryPlan(this INodeDataProvider dataProvider, Node node, IQueryPlan query)
+        internal static void SetQueryPlan([NotNull] this INodeDataProvider dataProvider, Node node, IQueryPlan query)
         {
             dataProvider.Set(node, "Query", query);
         }

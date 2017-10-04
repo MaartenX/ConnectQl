@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// A serializable version of the <see cref="IAutoCompletions"/> interface.
     /// </summary>
@@ -39,7 +41,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// Initializes a new instance of the <see cref="SerializableAutoCompletions"/> class.
         /// </summary>
         /// <param name="completions">The completions.</param>
-        public SerializableAutoCompletions(IAutoCompletions completions)
+        public SerializableAutoCompletions([NotNull] IAutoCompletions completions)
         {
             this.Type = completions.Type;
             this.Literals = completions.Literals?.ToArray();
@@ -65,6 +67,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <summary>
         /// Gets a value used to display the literals in debug mode.
         /// </summary>
+        [NotNull]
         private string LiteralsDisplay => this.Literals == null ? string.Empty : $" ({string.Join(", ", this.Literals)})";
 
         /// <summary>

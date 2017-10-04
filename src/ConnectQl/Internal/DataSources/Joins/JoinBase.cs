@@ -39,6 +39,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The join base.
     /// </summary>
@@ -56,7 +58,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <param name="filter">
         /// The filter.
         /// </param>
-        protected JoinBase(DataSource left, DataSource right, Expression filter)
+        protected JoinBase([NotNull] DataSource left, [NotNull] DataSource right, Expression filter)
             : base(new HashSet<string>(left.Aliases.Union(right.Aliases)))
         {
             this.Left = left;
@@ -91,7 +93,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IAsyncEnumerable{Row}"/>.
         /// </returns>
-        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, IMultiPartQuery multiPartQuery)
+        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, [NotNull] IMultiPartQuery multiPartQuery)
         {
             var rowBuilder = new RowBuilder();
 
@@ -157,6 +159,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// All data sources inside this data source.
         /// </returns>
+        [ItemNotNull]
         protected internal override async Task<IEnumerable<IDataSourceDescriptor>> GetDataSourceDescriptorsAsync(IExecutionContext context)
         {
             return (await this.Left.GetDataSourceDescriptorsAsync(context).ConfigureAwait(false))

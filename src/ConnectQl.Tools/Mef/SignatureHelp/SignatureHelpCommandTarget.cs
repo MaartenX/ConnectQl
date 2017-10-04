@@ -25,6 +25,8 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
     using System;
     using System.Runtime.InteropServices;
 
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.OLE.Interop;
@@ -68,7 +70,7 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
         /// <param name="textViewAdapter">
         /// The text view adapter.
         /// </param>
-        internal SignatureHelpCommandTarget(SignatureHelpViewCreationListener listener,  ITextView textView, IVsTextView textViewAdapter)
+        internal SignatureHelpCommandTarget(SignatureHelpViewCreationListener listener,  ITextView textView, [NotNull] IVsTextView textViewAdapter)
         {
             this.listener = listener;
             this.textView = textView;

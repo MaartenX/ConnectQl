@@ -54,7 +54,7 @@ namespace ConnectQl.Platform
         /// The plugins.
         /// </summary>
         private IConnectQlPlugin[] plugins;
-        
+
         /// <summary>
         /// Loads plugins by assembly name.
         /// </summary>

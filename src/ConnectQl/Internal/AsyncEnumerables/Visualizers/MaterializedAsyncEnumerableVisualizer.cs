@@ -25,6 +25,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Visualizers
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The async enumerable visualizer.
     /// </summary>
@@ -39,7 +41,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Visualizers
         /// <param name="readOnlyCollection">
         /// The enumerable.
         /// </param>
-        public MaterializedAsyncEnumerableVisualizer(IAsyncReadOnlyCollection<T> readOnlyCollection)
+        public MaterializedAsyncEnumerableVisualizer([NotNull] IAsyncReadOnlyCollection<T> readOnlyCollection)
             : base(readOnlyCollection)
         {
             this.Count = readOnlyCollection.Count;

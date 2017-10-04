@@ -62,5 +62,4 @@ namespace ConnectQl.Sample.Net461
         /// <param name="args">The command line arguments.</param>
         public static void Main(string[] args) => Program.MainAsync(args).GetAwaiter().GetResult();
     }
-
 }

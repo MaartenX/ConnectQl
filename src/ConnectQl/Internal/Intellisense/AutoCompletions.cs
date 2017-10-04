@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Intellisense
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Stores the auto completions.
     /// </summary>
@@ -60,7 +62,7 @@ namespace ConnectQl.Internal.Intellisense
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="literals">The literals.</param>
-        public AutoCompletions(AutoCompleteType type, params IEnumerable<string>[] literals)
+        public AutoCompletions(AutoCompleteType type, [NotNull] params IEnumerable<string>[] literals)
             : this(type, literals.Where(l => l != null).SelectMany(l => l).Distinct().ToArray())
         {
         }

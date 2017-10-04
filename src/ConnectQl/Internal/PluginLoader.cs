@@ -30,6 +30,8 @@ namespace ConnectQl.Internal
     using ConnectQl.Internal.Ast.Statements;
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The plugin loader.
     /// </summary>
@@ -79,7 +81,7 @@ namespace ConnectQl.Internal
         /// <param name="pluginResolver">
         /// The plugin resolver to use.
         /// </param>
-        public static void LoadLogPlugins(Block script, LoggerCollection loggers, IPluginResolver pluginResolver)
+        public static void LoadLogPlugins(Block script, LoggerCollection loggers, [NotNull] IPluginResolver pluginResolver)
         {
             new PluginLoader(pluginResolver.EnumerateAvailablePlugins().ToArray(), loggers).Visit(script);
         }

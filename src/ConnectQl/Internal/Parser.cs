@@ -29,6 +29,8 @@ namespace ConnectQl.Internal
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The parser.
     /// </summary>
@@ -53,6 +55,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IParserContext"/>.
         /// </returns>
+        [NotNull]
         internal IParserContext Mark()
         {
             return new ParserContext(this);
@@ -73,7 +76,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <typeparamref name="T"/>.
         /// </returns>
-        internal T SetContext<T>(T node, IParserContext context)
+        internal T SetContext<T>(T node, [NotNull] IParserContext context)
             where T : Node
         {
             var idx = context.End.TokenIndex - 1;
@@ -144,7 +147,8 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The number.
         /// </returns>
-        private object ParseNumber(string value)
+        [NotNull]
+        private object ParseNumber([NotNull] string value)
         {
             if (value.Contains("."))
             {
@@ -177,7 +181,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="TimeSpan"/>.
         /// </returns>
-        private TimeSpan ParseTimeSpan(string unit, object objectValue)
+        private TimeSpan ParseTimeSpan([NotNull] string unit, object objectValue)
         {
             var value = Convert.ToDouble(objectValue);
 
@@ -249,6 +253,7 @@ namespace ConnectQl.Internal
             /// <returns>
             /// The <see cref="string"/>.
             /// </returns>
+            [NotNull]
             public override string ToString()
             {
                 return $"{this.Start.Line}:{this.Start.Column}-{this.End.Line}:{this.End.Column}";
@@ -271,7 +276,7 @@ namespace ConnectQl.Internal
             /// <param name="parent">
             /// The parent.
             /// </param>
-            public ParserContext(Parser parent)
+            public ParserContext([NotNull] Parser parent)
             {
                 this.parent = parent;
                 this.Start = parent.Pos;

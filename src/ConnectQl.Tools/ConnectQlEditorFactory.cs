@@ -24,6 +24,9 @@ namespace ConnectQl.Tools
 {
     using System;
     using System.Runtime.InteropServices;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.OLE.Interop;
     using Microsoft.VisualStudio.Shell.Interop;
@@ -64,7 +67,7 @@ namespace ConnectQl.Tools
         /// <returns>
         /// If the document has a format that cannot be opened in the editor, <see cref="F:Microsoft.VisualStudio.Shell.Interop.VSErrorCodes.VS_E_UNSUPPORTEDFORMAT" /> is returned.If the document is open in an incompatible editor (or <see cref="F:Microsoft.VisualStudio.VSConstants.E_NOINTERFACE" />), <see cref="F:Microsoft.VisualStudio.Shell.Interop.VSErrorCodes.VS_E_INCOMPATIBLEDOCDATA" /> is returned. If the file could not be opened for any other reason, another HRESULT error code is returned.
         /// </returns>
-        public int CreateEditorInstance(uint grfCreateDoc, string pszMkDocument, string pszPhysicalView, IVsHierarchy pvHier, uint itemid, IntPtr punkDocDataExisting, out IntPtr ppunkDocView, out IntPtr ppunkDocData, out string pbstrEditorCaption, out Guid pguidCmdUI, out int pgrfCDW)
+        public int CreateEditorInstance(uint grfCreateDoc, string pszMkDocument, string pszPhysicalView, IVsHierarchy pvHier, uint itemid, IntPtr punkDocDataExisting, out IntPtr ppunkDocView, out IntPtr ppunkDocData, [CanBeNull] out string pbstrEditorCaption, out Guid pguidCmdUI, out int pgrfCDW)
         {
             ppunkDocView = IntPtr.Zero;
             ppunkDocData = IntPtr.Zero;
@@ -151,7 +154,7 @@ namespace ConnectQl.Tools
         /// <returns>
         /// If the method succeeds, it returns <see cref="F:Microsoft.VisualStudio.VSConstants.S_OK" />. If it fails, it returns an error code.
         /// </returns>
-        public int MapLogicalView(ref Guid rguidLogicalView, out string pbstrPhysicalView)
+        public int MapLogicalView(ref Guid rguidLogicalView, [CanBeNull] out string pbstrPhysicalView)
         {
             pbstrPhysicalView = null;
 

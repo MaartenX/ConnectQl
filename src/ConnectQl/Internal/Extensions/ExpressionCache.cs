@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Extensions
     using System.Collections.Generic;
     using System.Linq.Expressions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The expression cache.
     /// </summary>
@@ -47,6 +49,7 @@ namespace ConnectQl.Internal.Extensions
         /// <returns>
         ///     The <see cref="LambdaExpression" />.
         /// </returns>
+        [CanBeNull]
         public static LambdaExpression Get(Delegate func)
         {
             return ExpressionCache.Expressions.TryGetValue(func, out LambdaExpression result) ? result : null;

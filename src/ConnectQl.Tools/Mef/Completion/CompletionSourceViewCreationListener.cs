@@ -56,7 +56,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// Gets or sets the service provider.
         /// </summary>
         [Import]
-        internal SVsServiceProvider serviceProvider { get; set; }
+        internal SVsServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
         /// Called when a <see cref="T:Microsoft.VisualStudio.TextManager.Interop.IVsTextView"/> adapter has been created

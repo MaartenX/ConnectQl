@@ -27,6 +27,8 @@ namespace ConnectQl.Tools.Extensions
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The classification token extensions.
     /// </summary>
@@ -64,7 +66,7 @@ namespace ConnectQl.Tools.Extensions
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public static bool In(this IClassifiedToken token, StringComparison comparison, params string[] values)
+        public static bool In(this IClassifiedToken token, StringComparison comparison, [NotNull] params string[] values)
         {
             return values.Any(v => token.Value.Equals(v, comparison));
         }
@@ -84,7 +86,7 @@ namespace ConnectQl.Tools.Extensions
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public static bool Is(this IClassifiedToken token, string value, StringComparison comparison = StringComparison.CurrentCultureIgnoreCase)
+        public static bool Is([NotNull] this IClassifiedToken token, [NotNull] string value, StringComparison comparison = StringComparison.CurrentCultureIgnoreCase)
         {
             return value.Equals(token.Value, comparison);
         }

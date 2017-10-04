@@ -24,7 +24,10 @@ namespace ConnectQl.Tools.Mef.ToolBar
 {
     using System;
 
+    using ConnectQl.Tools.Interfaces;
     using ConnectQl.Tools.Mef.Results;
+
+    using JetBrains.Annotations;
 
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.OLE.Interop;
@@ -47,7 +50,7 @@ namespace ConnectQl.Tools.Mef.ToolBar
         /// <param name="textViewAdapter">The text view adapter.</param>
         /// <param name="textView">The text view.</param>
         /// <param name="toolBarViewCreationListener">The tool bar view creation listener.</param>
-        public ToolBarCommandTarget(IVsTextView textViewAdapter, ITextView textView, ToolBarViewCreationListener toolBarViewCreationListener)
+        public ToolBarCommandTarget([NotNull] IVsTextView textViewAdapter, ITextView textView, ToolBarViewCreationListener toolBarViewCreationListener)
         {
             this.textViewAdapter = textViewAdapter;
             this.textView = textView;
@@ -99,15 +102,22 @@ namespace ConnectQl.Tools.Mef.ToolBar
         {
             if (commandGroup == Commands.ConnectQlCommandSet)
             {
+                var document = this.toolBarViewCreationListener.DocumentProvider.GetDocument(this.textView.TextBuffer);
+
                 if (this.textView.Properties.TryGetProperty<ResultsPanel>(typeof(ResultsPanel), out var panel))
                 {
-                    panel.IsExpanded = !panel.IsExpanded;
+                    this.ExecuteDocument(document, panel);
                 }
 
                 return VSConstants.S_OK;
             }
 
             return this.next.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments);
+        }
+
+        private async void ExecuteDocument(IDocument document, ResultsPanel resultsPanel)
+        {
+            resultsPanel.Result = await document.ExecuteAsync();
         }
     }
 }

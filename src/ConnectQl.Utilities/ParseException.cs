@@ -24,6 +24,8 @@ namespace ConnectQl.Utilities
 {
     using System;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Thrown when a connection string cannot be parsed.
     /// </summary>
@@ -33,7 +35,7 @@ namespace ConnectQl.Utilities
         /// Initializes a new instance of the <see cref="ParseException"/> class.
         /// </summary>
         /// <param name="innerException">The inner exception.</param>
-        public ParseException(Exception innerException)
+        public ParseException([NotNull] Exception innerException)
             : base(innerException.Message, innerException)
         {
         }

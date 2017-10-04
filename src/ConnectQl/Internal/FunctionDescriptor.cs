@@ -29,6 +29,8 @@ namespace ConnectQl.Internal
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The function descriptor.
     /// </summary>
@@ -56,7 +58,7 @@ namespace ConnectQl.Internal
         /// <param name="lambda">
         /// The lambda.
         /// </param>
-        public FunctionDescriptor(string name, bool hasSideEffects, LambdaExpression lambda)
+        public FunctionDescriptor(string name, bool hasSideEffects, [NotNull] LambdaExpression lambda)
         {
             this.Name = name;
             this.HasSideEffects = hasSideEffects;

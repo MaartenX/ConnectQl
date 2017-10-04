@@ -28,6 +28,8 @@ namespace ConnectQl.Expressions.Visitors
     using System.Linq;
     using System.Linq.Expressions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The generic visitor.
     /// </summary>
@@ -100,6 +102,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [NotNull]
         public static GenericVisitor Create<T>(Func<T, Expression> action)
             where T : Expression
         {
@@ -127,6 +130,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [NotNull]
         public static GenericVisitor Create<T1, T2>(Func<T1, Expression> firstAction, Func<T2, Expression> secondAction)
             where T1 : Expression
             where T2 : Expression
@@ -162,6 +166,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [NotNull]
         public static GenericVisitor Create<T1, T2, T3>(Func<T1, Expression> firstAction, Func<T2, Expression> secondAction, Func<T3, Expression> thirdAction)
             where T1 : Expression
             where T2 : Expression
@@ -187,6 +192,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [NotNull]
         public static GenericVisitor Create<T>(Action<T> action)
             where T : Expression
         {
@@ -214,6 +220,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [NotNull]
         public static GenericVisitor Create<T1, T2>(Action<T1> firstAction, Action<T2> secondAction)
             where T1 : Expression
             where T2 : Expression
@@ -249,6 +256,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [NotNull]
         public static GenericVisitor Create<T1, T2, T3>(Action<T1> firstAction, Action<T2> secondAction, Action<T3> thirdAction)
             where T1 : Expression
             where T2 : Expression
@@ -463,6 +471,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add(Func<CatchBlock, CatchBlock> catchBlock)
         {
             this.visitCatchBlock = catchBlock;
@@ -479,6 +488,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add(Func<ElementInit, ElementInit> elementInit)
         {
             this.visitElementInit = elementInit;
@@ -495,6 +505,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add(Func<LabelTarget, LabelTarget> labelTarget)
         {
             this.visitLabelTarget = labelTarget;
@@ -511,6 +522,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add(Func<MemberAssignment, MemberAssignment> memberAssignment)
         {
             this.visitMemberAssignment = memberAssignment;
@@ -527,6 +539,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add(Func<MemberBinding, MemberBinding> memberBinding)
         {
             this.visitMemberBinding = memberBinding;
@@ -543,6 +556,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add(Func<MemberListBinding, MemberListBinding> memberListBinding)
         {
             this.visitMemberListBinding = memberListBinding;
@@ -559,6 +573,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add(Func<MemberMemberBinding, MemberMemberBinding> memberMemberBinding)
         {
             this.visitMemberMemberBinding = memberMemberBinding;
@@ -575,6 +590,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add(Func<SwitchCase, SwitchCase> switchCase)
         {
             this.visitSwitchCase = switchCase;
@@ -594,6 +610,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add<T>(Action<T> implementation)
             where T : Expression
         {
@@ -618,6 +635,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add<T>(Func<T, Expression> implementation)
             where T : Expression
         {
@@ -638,6 +656,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add<T>(Action<GenericVisitor, T> implementation)
             where T : Expression
         {
@@ -662,6 +681,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Add<T>(Func<GenericVisitor, T, Expression> implementation)
             where T : Expression
         {
@@ -679,6 +699,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Default(Action<Expression> implementation)
         {
             this.defaultImplementation = node =>
@@ -704,6 +725,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Default(Func<Expression, Expression> implementation)
         {
             this.defaultImplementation = node =>
@@ -1286,6 +1308,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [CanBeNull]
         private Expression VisitImplementation<T>(T node)
             where T : Expression
         {
@@ -1301,7 +1324,8 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        private Expression VisitImplementation(Expression node)
+        [CanBeNull]
+        private Expression VisitImplementation([CanBeNull] Expression node)
         {
             if (node == null)
             {

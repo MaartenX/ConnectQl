@@ -27,6 +27,8 @@ namespace ConnectQl.Expressions
 
     using ConnectQl.Internal.Expressions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The custom expression.
     /// </summary>
@@ -62,6 +64,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="ExecutionContextExpression"/>.
         /// </returns>
+        [NotNull]
         public static ExecutionContextExpression ExecutionContext()
         {
             return new ExecutionContextExpression();
@@ -85,6 +88,7 @@ namespace ConnectQl.Expressions
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when an invalid <see cref="ExpressionType"/> is passed in.
         /// </exception>
+        [NotNull]
         public static CompareExpression MakeCompare(ExpressionType compareType, Expression left, Expression right)
         {
             switch (compareType)
@@ -115,6 +119,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="FieldExpression"/>.
         /// </returns>
+        [NotNull]
         public static FieldExpression MakeField(string source, string name)
         {
             return new FieldExpression(source, name, typeof(object));
@@ -135,6 +140,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="FieldExpression"/>.
         /// </returns>
+        [NotNull]
         public static FieldExpression MakeField(string source, string name, Type type)
         {
             return new FieldExpression(source, name, type);
@@ -155,6 +161,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The RangeExpression that results from calling the appropriate factory method.
         /// </returns>
+        [NotNull]
         internal static RangeExpression MakeRange(object min, object max, Type type)
         {
             return new RangeExpression(min, max, type);
@@ -172,7 +179,8 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The RangeExpression that results from calling the appropriate factory method.
         /// </returns>
-        internal static RangeExpression MakeRange(object min, object max)
+        [NotNull]
+        internal static RangeExpression MakeRange([CanBeNull] object min, [CanBeNull] object max)
         {
             return new RangeExpression(min, max, min?.GetType() ?? max?.GetType() ?? typeof(object));
         }
@@ -190,6 +198,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The FieldExpression that results from calling the appropriate factory method.
         /// </returns>
+        [NotNull]
         internal static SourceFieldExpression MakeSourceField(string sourceName, string fieldName)
         {
             return new SourceFieldExpression(sourceName, fieldName, false, typeof(object));
@@ -211,6 +220,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The FieldExpression that results from calling the appropriate factory method.
         /// </returns>
+        [NotNull]
         internal static SourceFieldExpression MakeSourceField(string sourceName, string fieldName, bool useInternalName)
         {
             return new SourceFieldExpression(sourceName, fieldName, useInternalName, typeof(object));
@@ -235,6 +245,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The FieldExpression that results from calling the appropriate factory method.
         /// </returns>
+        [NotNull]
         internal static SourceFieldExpression MakeSourceField(string sourceName, string fieldName, bool useInternalName, Type type)
         {
             return new SourceFieldExpression(sourceName, fieldName, useInternalName, type);
@@ -255,6 +266,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The FieldExpression that results from calling the appropriate factory method.
         /// </returns>
+        [NotNull]
         internal static SourceFieldExpression MakeSourceField(string sourceName, string fieldName, Type type)
         {
             return new SourceFieldExpression(sourceName, fieldName, false, type);

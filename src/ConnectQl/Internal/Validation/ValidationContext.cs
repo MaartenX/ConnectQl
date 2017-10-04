@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Validation
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The validation context.
     /// </summary>
@@ -64,16 +66,19 @@ namespace ConnectQl.Internal.Validation
         /// <summary>
         /// Gets the errors.
         /// </summary>
+        [NotNull]
         public IReadOnlyCollection<Message> Errors => new ReadOnlyCollection<Message>(this.messages.Where(m => m.Type == ResultMessageType.Error).ToArray());
 
         /// <summary>
         /// Gets the information messages.
         /// </summary>
+        [NotNull]
         public IReadOnlyCollection<Message> InformationMessages => new ReadOnlyCollection<Message>(this.messages.Where(m => m.Type == ResultMessageType.Information).ToArray());
 
         /// <summary>
         /// Gets the warnings.
         /// </summary>
+        [NotNull]
         public IReadOnlyCollection<Message> Warnings => new ReadOnlyCollection<Message>(this.messages.Where(m => m.Type == ResultMessageType.Warning).ToArray());
 
         /// <summary>

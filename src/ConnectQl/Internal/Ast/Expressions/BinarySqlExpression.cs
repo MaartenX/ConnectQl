@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Ast.Expressions
 
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The binary expression.
     /// </summary>
@@ -114,6 +116,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString() => $"({this.First} {this.Op.ToUpperInvariant()} {this.Second})";
 
         /// <summary>
@@ -125,7 +128,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitBinarySqlExpression(this);
         }
@@ -139,7 +142,8 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node VisitChildren(NodeVisitor visitor)
+        [NotNull]
+        protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
             var first = visitor.Visit(this.First);
             var second = visitor.Visit(this.Second);

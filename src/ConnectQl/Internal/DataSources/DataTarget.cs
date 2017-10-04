@@ -31,6 +31,8 @@ namespace ConnectQl.Internal.DataSources
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The data target.
     /// </summary>
@@ -67,7 +69,7 @@ namespace ConnectQl.Internal.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public async Task<long> WriteRowsAsync(IInternalExecutionContext context, IAsyncEnumerable<Row> rows, bool upsert)
+        public async Task<long> WriteRowsAsync([NotNull] IInternalExecutionContext context, IAsyncEnumerable<Row> rows, bool upsert)
         {
             var targetName = context.GetDisplayName(this.target);
 

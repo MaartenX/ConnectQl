@@ -26,7 +26,9 @@ namespace ConnectQl.Tools.Mef.Results
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
-    using Microsoft.VisualStudio.Shell;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
 
@@ -35,6 +37,9 @@ namespace ConnectQl.Tools.Mef.Results
     /// </summary>
     internal class ResultsPanelScrollBar : IWpfTextViewMargin
     {
+        /// <summary>
+        /// The scroll bar.
+        /// </summary>
         private readonly ScrollBar scrollbar = new ScrollBar
         {
             Orientation = Orientation.Vertical,
@@ -51,16 +56,12 @@ namespace ConnectQl.Tools.Mef.Results
         /// </summary>
         /// <param name="textView">The text view.</param>
         /// <param name="document">The document.</param>
-        public ResultsPanelScrollBar(IWpfTextView textView, ITextDocument document)
+        public ResultsPanelScrollBar([NotNull] IWpfTextView textView, ITextDocument document)
         {
             this.textView = textView;
             this.document = document;
 
             Grid.SetRow(this.scrollbar, 1);
-
-            var border = new Border();
-
-            border.SetResourceReference(Border.BackgroundProperty, VsBrushes.CommandShelfBackgroundGradientKey);
 
             this.VisualElement = new Grid
             {
@@ -71,7 +72,6 @@ namespace ConnectQl.Tools.Mef.Results
                 },
                 Children =
                 {
-                    border,
                     this.scrollbar
                 }
             };
@@ -135,6 +135,7 @@ namespace ConnectQl.Tools.Mef.Results
         /// <returns>
         /// The <see cref="T:Microsoft.VisualStudio.Text.Editor.ITextViewMargin" /> named <paramref name="marginName" />, or null if no match is found.
         /// </returns>
+        [NotNull]
         public ITextViewMargin GetTextViewMargin(string marginName)
         {
             return this;

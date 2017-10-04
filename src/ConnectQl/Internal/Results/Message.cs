@@ -25,6 +25,8 @@ namespace ConnectQl.Internal.Results
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The result message.
     /// </summary>
@@ -88,6 +90,7 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// A string that represents the current object.
         /// </returns>
+        [NotNull]
         public override string ToString()
         {
             return this.Start.Column == this.End.Column && this.Start.Line == this.End.Line

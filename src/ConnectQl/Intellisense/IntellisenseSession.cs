@@ -24,13 +24,12 @@ namespace ConnectQl.Intellisense
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal;
     using ConnectQl.Internal.Intellisense;
     using ConnectQl.Internal.Intellisense.Protocol;
-    using ConnectQl.Internal.Interfaces;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The <c>Intellisense</c> session.
@@ -43,19 +42,13 @@ namespace ConnectQl.Intellisense
         private readonly Dictionary<string, Document> documents = new Dictionary<string, Document>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Gets the plugins.
-        /// </summary>
-        private readonly IPluginCollection plugins;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="IntellisenseSession"/> class.
         /// </summary>
         /// <param name="context">
         /// The context to create the intellisense session for.
         /// </param>
-        internal IntellisenseSession(ConnectQlContext context)
+        internal IntellisenseSession([NotNull] ConnectQlContext context)
         {
-            this.plugins = new PluginCollection(context.PluginResolver);
             this.Context = context;
         }
 
@@ -67,6 +60,7 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// Occurs when a document is updated (used internally for cross-appdomain communication).
         /// </summary>
+        [UsedImplicitly]
         public event EventHandler<byte[]> InternalDocumentUpdated;
 
         /// <summary>
@@ -95,22 +89,25 @@ namespace ConnectQl.Intellisense
         /// <returns>
         /// The byte array.
         /// </returns>
+        [CanBeNull]
+        [UsedImplicitly]
         public byte[] GetDocumentAsByteArray(string filename)
         {
             return this.documents.TryGetValue(filename, out var document)
-                ? null
-                : ProtocolSerializer.Serialize(document.Descriptor);
+                ? ProtocolSerializer.Serialize(document.Descriptor)
+                : null;
         }
 
         /// <summary>
-        /// Gets .
+        /// Gets a document from the session.
         /// </summary>
         /// <param name="filename">
         /// The filename of the document.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the document is in the session, false otherwise.
+        /// The document, of <c>null</c> if it can't be found.
         /// </returns>
+        [CanBeNull]
         public IDocumentDescriptor GetDocument(string filename)
         {
             return this.documents.TryGetValue(filename, out var result) ? result : null;

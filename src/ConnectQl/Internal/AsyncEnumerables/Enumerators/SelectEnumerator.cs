@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator used by the <see cref="AsyncEnumerableExtensions.Skip{T}"/> method.
     /// </summary>
@@ -63,7 +65,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="transform">
         /// The transform.
         /// </param>
-        public SelectEnumerator(IAsyncEnumerable<TSource> source, Func<TSource, TResult> transform)
+        public SelectEnumerator([NotNull] IAsyncEnumerable<TSource> source, Func<TSource, TResult> transform)
         {
             this.asyncEnumerator = source.GetAsyncEnumerator();
             this.transform = transform;

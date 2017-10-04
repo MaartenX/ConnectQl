@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Query.Plans
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The combined query plan.
     /// </summary>
@@ -41,7 +43,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <param name="subQueries">
         /// The sub queries.
         /// </param>
-        public CombinedQueryPlan(IEnumerable<IQueryPlan> subQueries)
+        public CombinedQueryPlan([NotNull] IEnumerable<IQueryPlan> subQueries)
         {
             this.SubQueries = new ReadOnlyCollection<IQueryPlan>(subQueries.ToList());
         }
@@ -60,6 +62,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <returns>
         /// The <see cref="ExecuteResult"/>.
         /// </returns>
+        [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
             return new ExecuteResult(await this.SubQueries.Where(p => p != null).AggregateAsync(

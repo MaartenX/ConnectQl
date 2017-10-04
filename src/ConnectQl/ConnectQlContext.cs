@@ -31,19 +31,23 @@ namespace ConnectQl
     using System.Text;
     using System.Threading.Tasks;
     using ConnectQl.AsyncEnumerablePolicies;
+    using ConnectQl.AsyncEnumerables;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
     using ConnectQl.Internal.Ast.Statements;
+    using ConnectQl.Internal.Intellisense.Protocol;
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Query;
     using ConnectQl.Internal.Validation;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The ConnectQl context.
     /// </summary>
-    public class ConnectQlContext : IDisposable
+    public class ConnectQlContext : IDisposable, IConnectQlContext
     {
         /// <summary>
         /// The default plugin resolver.
@@ -101,31 +105,36 @@ namespace ConnectQl
         /// <summary>
         /// Gets or sets the default plugin resolver.
         /// </summary>
+        [PublicAPI]
         public static IPluginResolver DefaultPluginResolver
         {
             get => ConnectQlContext.defaultPluginResolver ?? ReflectionLoader.PluginResolver.Value;
-
             set => ConnectQlContext.defaultPluginResolver = value;
         }
 
         /// <summary>
         ///     Gets or sets the job runner.
         /// </summary>
+        [PublicAPI]
         public IJobRunner JobRunner { get; set; }
 
         /// <summary>
         /// Gets the loggers for the context.
         /// </summary>
+        [PublicAPI]
         public ICollection<ILogger> Loggers => this.loggers;
 
         /// <summary>
         ///     Gets the logger.
         /// </summary>
+        [PublicAPI]
         public ILogger Logger => this.loggers;
 
         /// <summary>
         ///     Gets or sets the materialization policy.
         /// </summary>
+        [NotNull]
+        [PublicAPI]
         public IMaterializationPolicy MaterializationPolicy
         {
             get => this.materializationPolicy ?? (this.materializationPolicy = new InMemoryPolicy());
@@ -136,11 +145,14 @@ namespace ConnectQl
         /// <summary>
         ///     Gets the plugin resolver.
         /// </summary>
+        [PublicAPI]
         public IPluginResolver PluginResolver { get; }
 
         /// <summary>
         ///     Gets or sets a lambda that opens the file at the specified path and returns the stream.
         /// </summary>
+        [PublicAPI]
+        [CanBeNull]
         public IUriResolver UriResolver
         {
             get
@@ -162,75 +174,115 @@ namespace ConnectQl
         ///     Gets or sets the write progress interval. When this value is anything other than 0, progress is reported after this
         ///     number of records.
         /// </summary>
+        [PublicAPI]
         public long WriteProgressInterval { get; set; }
 
         /// <summary>
-        ///     Executes the query.
+        ///     Executes the queries in the stream.
         /// </summary>
-        /// <param name="query">
-        ///     The query.
+        /// <param name="filename">
+        ///     The filename.
+        /// </param>
+        /// <param name="stream">
+        ///     The stream.
         /// </param>
         /// <returns>
         ///     The execute result.
         /// </returns>
-        public Task<IExecuteResult> ExecuteAsync(string query)
+        [PublicAPI]
+        public async Task<IExecuteResult> ExecuteAsync(string filename, [CanBeNull] Stream stream)
+        {
+            if (this.disposed)
+            {
+                throw new ObjectDisposedException(this.GetType().Name);
+            }
+
+            var script = this.GetParsedScript(filename, stream ?? await this.ResolveStream(filename), false);
+
+            if (script == null)
+            {
+                return null;
+            }
+
+            var context = script.Context;
+            var plan = QueryPlanBuilder.Build(context.Messages, context.NodeData, script.Root);
+
+            if (!this.HandleErrors(context, script.Root))
+            {
+                return null;
+            }
+
+            var result = await plan.ExecuteAsync(context);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Executes the query.
+        /// </summary>
+        /// <param name="query">
+        /// The query.
+        /// </param>
+        /// <returns>
+        /// The execute result.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public async Task<IExecuteResult> ExecuteAsync([NotNull] string query)
         {
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(query)))
             {
-                return this.ExecuteAsync("inline query", ms);
+                return await this.ExecuteAsync("inline query", ms);
             }
         }
 
         /// <summary>
-        ///     Executes the queries in the stream.
+        /// Executes the queries in the stream.
         /// </summary>
         /// <param name="stream">
-        ///     The stream.
+        /// The stream.
         /// </param>
         /// <returns>
-        ///     The execute result.
+        /// The execute result.
         /// </returns>
-        public Task<IExecuteResult> ExecuteAsync(Stream stream)
+        [NotNull]
+        [PublicAPI]
+        public Task<IExecuteResult> ExecuteAsync([NotNull] Stream stream)
         {
-            return this.ExecuteInternalAsync("inline query", stream);
+            return this.ExecuteAsync("inline query", stream);
         }
 
         /// <summary>
-        ///     Executes the queries in the stream.
+        /// Executes the queries in the stream.
         /// </summary>
         /// <param name="filename">
-        ///     The filename.
-        /// </param>
-        /// <param name="stream">
-        ///     The stream.
+        /// The filename.
         /// </param>
         /// <returns>
-        ///     The execute result.
+        /// The execute result.
         /// </returns>
-        public Task<IExecuteResult> ExecuteAsync(string filename, Stream stream)
+        [NotNull]
+        [PublicAPI]
+        public Task<IExecuteResult> ExecuteFileAsync([NotNull] string filename)
         {
-            return this.ExecuteInternalAsync(filename, stream);
+            return this.ExecuteAsync(filename, null);
         }
 
         /// <summary>
-        ///     Executes the queries in the stream.
+        /// Executes the queries in the stream and serializes the result to a byte array.
         /// </summary>
         /// <param name="filename">
-        ///     The filename.
+        /// The file name.
+        /// </param>
+        /// <param name="stream">
+        /// The stream.
         /// </param>
         /// <returns>
-        ///     The execute result.
+        /// The result, serialized as a byte array.
         /// </returns>
-        public async Task<IExecuteResult> ExecuteFileAsync(string filename)
+        async Task<byte[]> IConnectQlContext.ExecuteToByteArrayAsync(string filename, Stream stream)
         {
-            if (this.UriResolver == null)
-            {
-                throw new InvalidOperationException("No URI resolver registered.");
-            }
-
-            filename = this.UriResolver.GetFullPath(filename);
-
-            return await this.ExecuteInternalAsync(filename, await this.UriResolver.ResolveToStream(filename, UriResolveMode.Read));
+            return ProtocolSerializer.Serialize(new SerializableExecuteResult(await this.ExecuteAsync(filename, stream)));
         }
 
         /// <summary>
@@ -262,7 +314,7 @@ namespace ConnectQl
         /// <returns>
         ///     The <see cref="Block" />.
         /// </returns>
-        internal Block Parse(Stream content, INodeDataProvider data, IMessageWriter messages, bool parseForIntellisense, List<Token> tokens = null)
+        internal static Block Parse(Stream content, INodeDataProvider data, IMessageWriter messages, bool parseForIntellisense, [CanBeNull] List<Token> tokens = null)
         {
             var scanner = new Scanner(content)
                               {
@@ -288,12 +340,29 @@ namespace ConnectQl
         }
 
         /// <summary>
+        /// Resolves a filename to a stream.
+        /// </summary>
+        /// <param name="filename">The filename to resolve.</param>
+        /// <returns>The stream.</returns>
+        private async Task<Stream> ResolveStream(string filename)
+        {
+            if (this.UriResolver == null)
+            {
+                throw new InvalidOperationException("No URI resolver registered.");
+            }
+
+            filename = this.UriResolver.GetFullPath(filename);
+
+            return await this.UriResolver.ResolveToStream(filename, UriResolveMode.Read);
+        }
+
+        /// <summary>
         /// Disposes the context.
         /// </summary>
         /// <param name="disposing">
         /// <c>true</c> if we were called from <see cref="Dispose" />.
         /// </param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!this.disposed)
             {
@@ -305,45 +374,6 @@ namespace ConnectQl
 
                 this.disposed = true;
             }
-        }
-
-        /// <summary>
-        ///     Implementation of the execute.
-        /// </summary>
-        /// <param name="filename">
-        ///     The filename.
-        /// </param>
-        /// <param name="content">
-        ///     The content.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="Task" />.
-        /// </returns>
-        private async Task<IExecuteResult> ExecuteInternalAsync(string filename, Stream content)
-        {
-            if (this.disposed)
-            {
-                throw new ObjectDisposedException(this.GetType().Name);
-            }
-
-            var script = this.GetParsedScript(filename, content, false);
-
-            if (script == null)
-            {
-                return null;
-            }
-
-            var context = script.Context;
-            var plan = QueryPlanBuilder.Build(context.Messages, context.NodeData, script.Root);
-
-            if (!this.HandleErrors(context, script.Root))
-            {
-                return null;
-            }
-
-            var result = await plan.ExecuteAsync(context);
-
-            return result;
         }
 
         /// <summary>
@@ -361,10 +391,11 @@ namespace ConnectQl
         /// <returns>
         ///     The parsed script, or <c>null</c> if errors occurred.
         /// </returns>
+        [CanBeNull]
         private ParsedDocument GetParsedScript(string filename, Stream content, bool emitComments)
         {
             var context = new ExecutionContextImplementation(this, filename);
-            var script = this.Parse(content, context.NodeData, context.Messages, emitComments);
+            var script = ConnectQlContext.Parse(content, context.NodeData, context.Messages, emitComments);
 
             if (!this.HandleErrors(context, script))
             {
@@ -391,7 +422,7 @@ namespace ConnectQl
         /// <exception cref="Exception">
         ///     Thrown when an error was found.
         /// </exception>
-        private bool HandleErrors(ExecutionContextImplementation context, Block script)
+        private bool HandleErrors([NotNull] ExecutionContextImplementation context, Block script)
         {
             if (context.Messages.HasErrors)
             {
@@ -456,9 +487,9 @@ namespace ConnectQl
             }
 
             /// <summary>
-            ///     Gets or sets the classification.
+            ///     Gets the classification.
             /// </summary>
-            public Classification Classification { get; set; }
+            public Classification Classification { get; }
 
             /// <summary>
             ///     Gets the end.
@@ -474,11 +505,6 @@ namespace ConnectQl
             ///     Gets the length.
             /// </summary>
             public int Length { get; }
-
-            /// <summary>
-            ///     Gets or sets the scope.
-            /// </summary>
-            public ClassificationScope Scope { get; set; }
 
             /// <summary>
             ///     Gets the start.

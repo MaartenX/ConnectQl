@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Query
     using ConnectQl.Internal.DataSources;
     using ConnectQl.Internal.Extensions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The query extensions.
     /// </summary>
@@ -47,7 +49,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The <see cref="IQuery"/>.
         /// </returns>
-        public static IQuery AppendFilter(this IQuery query, Expression filterExpression)
+        public static IQuery AppendFilter(this IQuery query, [CanBeNull] Expression filterExpression)
         {
             return filterExpression == null
                        ? query
@@ -69,7 +71,8 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The fields that are used in the query.
         /// </returns>
-        public static IField[] GetUsedFields(this IQuery query, DataSource source, Expression filterExpression = null)
+        [NotNull]
+        public static IField[] GetUsedFields([NotNull] this IQuery query, DataSource source, [CanBeNull] Expression filterExpression = null)
         {
             return
                 query.OrderByExpressions
@@ -92,7 +95,8 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// A new <see cref="Query"/>.
         /// </returns>
-        public static IQuery ReplaceFilter(this IQuery query, Expression filterExpression)
+        [NotNull]
+        public static IQuery ReplaceFilter([NotNull] this IQuery query, Expression filterExpression)
         {
             return new Query(query.Fields, filterExpression, query.OrderByExpressions, query.Count);
         }
@@ -109,7 +113,8 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// A new <see cref="Query"/>.
         /// </returns>
-        public static IQuery ReplaceOrderBy(this IQuery query, IEnumerable<OrderByExpression> orderByExpressions)
+        [NotNull]
+        public static IQuery ReplaceOrderBy([NotNull] this IQuery query, IEnumerable<OrderByExpression> orderByExpressions)
         {
             return new Query(query.Fields, query.FilterExpression, orderByExpressions, query.Count);
         }

@@ -33,6 +33,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The join source base.
     /// </summary>
@@ -97,7 +99,8 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="JoinQuery"/>.
         /// </returns>
-        protected virtual JoinQuery CreateJoinQuery(IExecutionContext context, IMultiPartQuery query)
+        [NotNull]
+        protected virtual JoinQuery CreateJoinQuery(IExecutionContext context, [NotNull] IMultiPartQuery query)
         {
             var filter = query.GetFilter(context);
             var leftFilter = filter.RemoveAllPartsThatAreNotInSource(this.Left);
@@ -157,7 +160,7 @@ namespace ConnectQl.Internal.DataSources.Joins
             /// <param name="orderBy">
             /// The order by.
             /// </param>
-            public JoinQuery(IMultiPartQuery leftQuery, IMultiPartQuery rightQuery, Expression resultFilter, IEnumerable<IOrderByExpression> orderBy)
+            public JoinQuery(IMultiPartQuery leftQuery, IMultiPartQuery rightQuery, Expression resultFilter, [NotNull] IEnumerable<IOrderByExpression> orderBy)
             {
                 this.LeftQuery = leftQuery;
                 this.RightQuery = rightQuery;

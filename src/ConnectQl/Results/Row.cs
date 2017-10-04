@@ -32,6 +32,8 @@ namespace ConnectQl.Results
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Internal.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The row.
     /// </summary>
@@ -129,6 +131,7 @@ namespace ConnectQl.Results
         /// <returns>
         /// The value for the field, or null if the field is not in the row.
         /// </returns>
+        [CanBeNull]
         public object this[string field]
         {
             get
@@ -145,6 +148,7 @@ namespace ConnectQl.Results
         /// <returns>
         /// A dictionary containing all fields and their values.
         /// </returns>
+        [NotNull]
         public IDictionary<string, object> ToDictionary()
         {
             return this.ColumnNames.ToDictionary(cn => cn, cn => this[cn], StringComparer.OrdinalIgnoreCase);
@@ -411,7 +415,7 @@ namespace ConnectQl.Results
             /// <returns>
             /// The cloned row.
             /// </returns>
-            internal override Row Clone(IRowBuilder rowBuilder)
+            internal override Row Clone([NotNull] IRowBuilder rowBuilder)
             {
                 return rowBuilder.CreateRow(this.Id, this.ToDictionary());
             }
@@ -510,7 +514,7 @@ namespace ConnectQl.Results
                 /// <returns>
                 /// The <see cref="IEnumerable{T}"/>.
                 /// </returns>
-                private static IEnumerable<Expression> GetTupleArguments(Expression parameter)
+                private static IEnumerable<Expression> GetTupleArguments([NotNull] Expression parameter)
                 {
                     var type = parameter.Type;
 
@@ -539,7 +543,7 @@ namespace ConnectQl.Results
                 /// <returns>
                 /// The <see cref="Expression"/>.
                 /// </returns>
-                private static NewExpression NewTuple(ICollection<Expression> expressions)
+                private static NewExpression NewTuple([NotNull] ICollection<Expression> expressions)
                 {
                     if (expressions.Count <= 7)
                     {

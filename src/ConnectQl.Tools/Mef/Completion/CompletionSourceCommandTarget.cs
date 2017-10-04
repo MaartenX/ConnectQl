@@ -25,6 +25,8 @@ namespace ConnectQl.Tools.Mef.Completion
     using System;
     using System.Runtime.InteropServices;
 
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.OLE.Interop;
@@ -71,7 +73,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <param name="provider">
         /// The provider.
         /// </param>
-        internal CompletionSourceCommandTarget(IVsTextView textViewAdapter, ITextView textView, CompletionSourceViewCreationListener provider)
+        internal CompletionSourceCommandTarget([NotNull] IVsTextView textViewAdapter, ITextView textView, CompletionSourceViewCreationListener provider)
         {
             this.textView = textView;
             this.listener = provider;
@@ -111,7 +113,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// </param>
         public int Exec(ref Guid commandGroup, uint commandId, uint commandExecutionOptions, IntPtr inputArguments, IntPtr outputArguments)
         {
-            if (VsShellUtilities.IsInAutomationFunction(this.listener.serviceProvider))
+            if (VsShellUtilities.IsInAutomationFunction(this.listener.ServiceProvider))
             {
                 return this.next.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments);
             }

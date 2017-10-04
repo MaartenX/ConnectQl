@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Intellisense
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Extensions for the <see cref="IDocumentDescriptor"/>.
     /// </summary>
@@ -73,7 +75,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The <see cref="AutoCompletions"/>.
         /// </returns>
-        public static AutoCompletions GetCompletions(IReadOnlyList<IClassifiedToken> tokens, IClassifiedToken current)
+        public static AutoCompletions GetCompletions([NotNull] IReadOnlyList<IClassifiedToken> tokens, IClassifiedToken current)
         {
             var scope = TokenScope.Root;
             var openParens = new Stack<OpenParens>();

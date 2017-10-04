@@ -24,6 +24,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
 {
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The serializable argument descriptor.
     /// </summary>
@@ -42,7 +44,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="argument">
         /// The argument.
         /// </param>
-        public SerializableArgumentDescriptor(IArgumentDescriptor argument)
+        public SerializableArgumentDescriptor([NotNull] IArgumentDescriptor argument)
         {
             this.Name = argument.Name;
             this.Description = argument.Description;

@@ -24,6 +24,8 @@ namespace ConnectQl.Results
 {
     using System;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The error.
     /// </summary>
@@ -43,11 +45,13 @@ namespace ConnectQl.Results
         /// <summary>
         /// Gets the exception.
         /// </summary>
+        [PublicAPI]
         public Exception Exception { get; }
 
         /// <summary>
         /// Gets the message.
         /// </summary>
+        [PublicAPI]
         public string Message => this.Exception.Message;
 
         /// <summary>
@@ -56,6 +60,7 @@ namespace ConnectQl.Results
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString() => "#ERROR#";
     }
 }

@@ -35,6 +35,8 @@ namespace ConnectQl.DataSources
     using ConnectQl.Internal;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Data source from an <see cref="IEnumerable{T}"/>.
     /// </summary>
@@ -52,6 +54,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="IDataSource"/>.
         /// </returns>
+        [NotNull]
         public static IDataSource Create<T>(IEnumerable<T> enumerable)
         {
             return new EnumerableDataSourceImplementation<T>(enumerable, EnumerableDataSource.Item);
@@ -72,6 +75,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="IDataSource"/>.
         /// </returns>
+        [NotNull]
         public static IDataSource Create<T>(IEnumerable<T> enumerable, Func<T, IEnumerable<KeyValuePair<string, object>>> rowGenerator)
         {
             return new EnumerableDataSourceImplementation<T>(enumerable, rowGenerator);
@@ -160,7 +164,7 @@ namespace ConnectQl.DataSources
             /// <returns>
             /// A task returning the data set.
             /// </returns>
-            public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, IQuery query)
+            public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, [NotNull] IQuery query)
             {
                 var idx = 0L;
 

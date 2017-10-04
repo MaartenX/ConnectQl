@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The enumerable comparer.
     /// </summary>
@@ -133,7 +135,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <returns>
         /// <c>true</c> if the values are equal, <c>false</c> otherwise.
         /// </returns>
-        bool IEqualityComparer<IEnumerable<T>>.Equals(IEnumerable<T> x, IEnumerable<T> y)
+        bool IEqualityComparer<IEnumerable<T>>.Equals([CanBeNull] IEnumerable<T> x, [CanBeNull] IEnumerable<T> y)
         {
             return (x == null && y == null) || (x != null && y != null && x.SequenceEqual(y));
         }
@@ -147,7 +149,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <returns>
         /// The hash code.
         /// </returns>
-        int IEqualityComparer<IEnumerable<T>>.GetHashCode(IEnumerable<T> obj)
+        int IEqualityComparer<IEnumerable<T>>.GetHashCode([CanBeNull] IEnumerable<T> obj)
         {
             return obj?.Aggregate(0, (hashCode, item) => (hashCode * 397) ^ (item?.GetHashCode() ?? 0)) ?? 0;
         }

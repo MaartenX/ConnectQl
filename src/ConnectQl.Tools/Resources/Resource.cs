@@ -26,6 +26,8 @@ namespace ConnectQl.Tools.Resources
     using System.Globalization;
     using System.Resources;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Holds the resources.
     /// </summary>
@@ -50,7 +52,8 @@ namespace ConnectQl.Tools.Resources
         /// </summary>
         /// <param name="resource">The resource.</param>
         /// <returns>The resource string.</returns>
-        public static string Get(string resource)
+        [CanBeNull]
+        public static string Get([NotNull] string resource)
         {
             return Resource.ResourceManager.Value.GetString(resource, Resource.Culture);
         }

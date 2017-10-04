@@ -16,7 +16,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0*" />
-            <RowDefinition Height="5px" />
+            <RowDefinition Height="Auto" />
             <RowDefinition local:AnimatedRow.Multiplier="{Binding PanelHeight}">
                 <RowDefinition.Style>
                     <Style TargetType="RowDefinition">
@@ -25,7 +25,7 @@
                                 <DataTrigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="(local:AnimatedRow.Height)"  Duration="0:0:0.100" To="1">
+                                            <DoubleAnimation Storyboard.TargetProperty="(local:AnimatedRow.Height)"  Duration="0:0:0.1" To="1">
                                                 <DoubleAnimation.EasingFunction>
                                                     <CircleEase EasingMode="EaseInOut"/>
                                                 </DoubleAnimation.EasingFunction>
@@ -52,16 +52,26 @@
         </Grid.RowDefinitions>
 
         <GridSplitter 
+            x:Name="Splitter"
             Grid.Row="1"
             ResizeDirection="Rows"
             VerticalAlignment="Stretch"
-            HorizontalAlignment="Stretch"
             Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}" 
             BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}" 
             IsEnabled="{Binding IsExpanded}"
             DragCompleted="GridSplitterDragCompleted"
             Focusable="false"
-            />
+            Height="5px">
+            <GridSplitter.Style>
+                <Style TargetType="GridSplitter">
+                    <Style.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </GridSplitter.Style>
+        </GridSplitter>
 
         <Border 
             x:Name="Border"

@@ -29,6 +29,8 @@ namespace ConnectQl.Intellisense
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Resolves plugins using the assembly list provided.
     /// </summary>
@@ -50,7 +52,7 @@ namespace ConnectQl.Intellisense
         /// <param name="assemblies">
         /// The assemblies.
         /// </param>
-        public AssemblyPluginResolver(IList<Assembly> assemblies)
+        public AssemblyPluginResolver([NotNull] IList<Assembly> assemblies)
         {
             foreach (var assembly in assemblies)
             {
@@ -76,7 +78,7 @@ namespace ConnectQl.Intellisense
         /// <param name="assembliesToAdd">
         /// The assemblies to add.
         /// </param>
-        public void AddAssemblies(IEnumerable<Assembly> assembliesToAdd)
+        public void AddAssemblies([NotNull] IEnumerable<Assembly> assembliesToAdd)
         {
             foreach (var assemblyToAdd in assembliesToAdd)
             {
@@ -94,6 +96,7 @@ namespace ConnectQl.Intellisense
         /// <returns>
         /// The available plugins.
         /// </returns>
+        [NotNull]
         public IEnumerable<IConnectQlPlugin> EnumerateAvailablePlugins()
         {
             if (this.plugins != null)

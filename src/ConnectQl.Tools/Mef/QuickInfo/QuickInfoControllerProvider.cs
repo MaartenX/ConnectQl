@@ -26,6 +26,8 @@ namespace ConnectQl.Tools.Mef.QuickInfo
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
 
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
@@ -58,6 +60,7 @@ namespace ConnectQl.Tools.Mef.QuickInfo
         /// The set of text buffers with matching content types that are potentially visible in the
         ///     view.
         /// </param>
+        [NotNull]
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {
             return new QuickInfoController(this, textView, subjectBuffers);

@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator used by the <see cref="AsyncEnumerableExtensions.Skip{T}"/> method.
     /// </summary>
@@ -60,7 +62,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="filter">
         /// The filter.
         /// </param>
-        public WhereEnumerator(IAsyncEnumerable<TSource> source, Func<TSource, bool> filter)
+        public WhereEnumerator([NotNull] IAsyncEnumerable<TSource> source, Func<TSource, bool> filter)
         {
             this.asyncEnumerator = source.GetAsyncEnumerator();
             this.filter = filter;

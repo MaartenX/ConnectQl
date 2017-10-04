@@ -33,6 +33,8 @@ namespace ConnectQl.Interfaces
     using ConnectQl.Internal;
     using ConnectQl.Internal.Extensions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The ConnectQl functions extensions.
     /// </summary>
@@ -64,7 +66,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration1 AddWithoutSideEffects<TArgument, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration1 AddWithoutSideEffects<TArgument, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, false, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -89,7 +92,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration AddWithoutSideEffects<TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration AddWithoutSideEffects<TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, false, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -120,7 +124,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration2 AddWithoutSideEffects<TArgument1, TArgument2, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration2 AddWithoutSideEffects<TArgument1, TArgument2, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, false, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -154,7 +159,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration3 AddWithoutSideEffects<TArgument1, TArgument2, TArgument3, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration3 AddWithoutSideEffects<TArgument1, TArgument2, TArgument3, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, false, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -191,7 +197,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration4 AddWithoutSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration4 AddWithoutSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, false, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -231,7 +238,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration5 AddWithoutSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration5 AddWithoutSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, false, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -274,7 +282,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration6 AddWithoutSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration6 AddWithoutSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, false, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -302,7 +311,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration1 AddWithSideEffects<TArgument, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration1 AddWithSideEffects<TArgument, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, true, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -327,7 +337,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration AddWithSideEffects<TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration AddWithSideEffects<TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, true, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -358,7 +369,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration2 AddWithSideEffects<TArgument1, TArgument2, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration2 AddWithSideEffects<TArgument1, TArgument2, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, true, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -392,7 +404,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration3 AddWithSideEffects<TArgument1, TArgument2, TArgument3, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration3 AddWithSideEffects<TArgument1, TArgument2, TArgument3, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, true, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -429,7 +442,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration4 AddWithSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration4 AddWithSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, true, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -469,7 +483,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration5 AddWithSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration5 AddWithSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, true, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -512,7 +527,8 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public static IFunctionRegistration6 AddWithSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult>(this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult>> function)
+        [NotNull]
+        public static IFunctionRegistration6 AddWithSideEffects<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult>([NotNull] this IConnectQlFunctions functions, string key, Expression<Func<TArgument1, TArgument2, TArgument3, TArgument4, TArgument5, TArgument6, TResult>> function)
         {
             var descriptor = new FunctionDescriptor(key, true, ConnectQlFunctionsExtensions.ReplaceEnumerables(functions, key, function));
 
@@ -534,6 +550,7 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The new lambda.
         /// </returns>
+        [NotNull]
         private static LambdaExpression ReplaceEnumerables(IConnectQlFunctions functions, string name, LambdaExpression lambda)
         {
             while (lambda.Parameters.Any(p => p.Type.HasInterface(typeof(IEnumerable<>)) && p.Type != typeof(string)))

@@ -42,6 +42,8 @@ namespace ConnectQl.Internal.Validation
     using ConnectQl.Internal.Validation.Operators;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The validator.
     /// </summary>
@@ -121,7 +123,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="ValidationContext"/>.
         /// </returns>
-        internal static T Validate<T>(IValidationContext context, T node, out ILookup<string, IFunctionDescriptor> functions)
+        internal static T Validate<T>(IValidationContext context, T node, [NotNull] out ILookup<string, IFunctionDescriptor> functions)
             where T : Node
         {
             var validator = new Validator(context);
@@ -168,6 +170,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitBinarySqlExpression(BinarySqlExpression node)
         {
             node = this.ValidateChildren(node);
@@ -191,7 +194,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitConstSqlExpression(ConstSqlExpression node)
+        [NotNull]
+        protected internal override Node VisitConstSqlExpression([NotNull] ConstSqlExpression node)
         {
             this.Data.SetType(node, new TypeDescriptor(node.Value?.GetType() ?? typeof(object)));
             this.Data.SetScope(node, this.Scope.IsGroupByExpression(node) ? NodeScope.Group : NodeScope.Constant);
@@ -248,7 +252,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallSqlExpression node)
+        protected internal override Node VisitFunctionCallSqlExpression([NotNull] FunctionCallSqlExpression node)
         {
             var function = this.Scope.GetFunction(node.Name, node.Arguments);
 
@@ -297,7 +301,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitFunctionSource(FunctionSource node)
+        [NotNull]
+        protected internal override Node VisitFunctionSource([NotNull] FunctionSource node)
         {
             if (node.Alias != null)
             {
@@ -331,6 +336,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitFunctionTarget(FunctionTarget node)
         {
             var result = this.ValidateChildren(node);
@@ -353,7 +359,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitImportPluginStatement(ImportPluginStatement node)
+        protected internal override Node VisitImportPluginStatement([NotNull] ImportPluginStatement node)
         {
             if (this.Scope.IsPluginEnabled(node.Plugin))
             {
@@ -418,7 +424,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectFromStatement(SelectFromStatement node)
+        protected internal override Node VisitSelectFromStatement([NotNull] SelectFromStatement node)
         {
             using (this.EnterScope())
             {
@@ -489,7 +495,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectSource(SelectSource node)
+        protected internal override Node VisitSelectSource([NotNull] SelectSource node)
         {
             this.Scope.AddSource(node.Alias, node);
 
@@ -505,7 +511,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node VisitTrigger(Trigger node)
+        [NotNull]
+        protected internal override Node VisitTrigger([NotNull] Trigger node)
         {
             var result = (Trigger)node.VisitChildren(this);
             var function = this.Data.GetFunction(result.Function);
@@ -527,6 +534,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitUnarySqlExpression(UnarySqlExpression node)
         {
             node = this.ValidateChildren(node);
@@ -550,6 +558,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitVariableDeclaration(VariableDeclaration node)
         {
             node = this.ValidateChildren(node);
@@ -568,6 +577,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitVariableSource(VariableSource node)
         {
             node = this.ValidateChildren(node);
@@ -607,6 +617,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
         {
             node = this.ValidateChildren(node);
@@ -633,6 +644,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitVariableTarget(VariableTarget node)
         {
             node = this.ValidateChildren(node);
@@ -663,7 +675,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitWildCardSqlExpression(WildcardSqlExpression node)
+        [NotNull]
+        protected internal override Node VisitWildCardSqlExpression([NotNull] WildcardSqlExpression node)
         {
             if (node.Source != null)
             {
@@ -688,6 +701,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// A <see cref="IDisposable"/>, that will exit the scope when disposed.
         /// </returns>
+        [NotNull]
         protected IDisposable EnterScope()
         {
             var scope = this.Scope;
@@ -741,7 +755,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node with replaced.
         /// </returns>
-        private Node ReplaceEnumArguments(FunctionCallSqlExpression node)
+        private Node ReplaceEnumArguments([NotNull] FunctionCallSqlExpression node)
         {
             var arguments = node.Arguments;
             var function = this.Data.GetFunction(node);
@@ -800,7 +814,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        private T ValidateChildren<T>(T node)
+        private T ValidateChildren<T>([NotNull] T node)
             where T : Node
         {
             var result = (T)node.VisitChildren(this);

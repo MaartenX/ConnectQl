@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Comparers
 
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The row unique id comparer.
     /// </summary>
@@ -65,7 +67,7 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool Equals(Row x, Row y)
+        public bool Equals([CanBeNull] Row x, [CanBeNull] Row y)
         {
             return object.Equals(x?.UniqueId, y?.UniqueId);
         }
@@ -79,7 +81,7 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public int GetHashCode(Row obj)
+        public int GetHashCode([NotNull] Row obj)
         {
             return obj.UniqueId?.GetHashCode() ?? 0;
         }

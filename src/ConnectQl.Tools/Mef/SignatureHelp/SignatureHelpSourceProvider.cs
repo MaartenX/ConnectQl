@@ -24,6 +24,9 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
 {
     using System.ComponentModel.Composition;
     using Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Operations;
@@ -59,6 +62,7 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
         /// <returns>
         /// The <see cref="ISignatureHelpSource"/>.
         /// </returns>
+        [NotNull]
         public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer)
         {
             return new SignatureHelpSource(this, textBuffer);

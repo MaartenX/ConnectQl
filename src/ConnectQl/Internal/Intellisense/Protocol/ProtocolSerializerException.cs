@@ -31,6 +31,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using System.Text;
     using ConnectQl.Internal.Extensions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Thrown when an error occurs while serializing an object.
     /// </summary>
@@ -40,7 +42,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// Initializes a new instance of the <see cref="ProtocolSerializerException" /> class.
         /// </summary>
         /// <param name="e">The inner exception.</param>
-        public ProtocolSerializerException(Exception e)
+        public ProtocolSerializerException([NotNull] Exception e)
             : base(e.Message, e)
         {
         }

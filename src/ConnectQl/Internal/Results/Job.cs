@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Results
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The job.
     /// </summary>
@@ -55,7 +57,7 @@ namespace ConnectQl.Internal.Results
         /// <param name="triggers">
         /// The triggers.
         /// </param>
-        internal Job(IInternalExecutionContext executionContext, string name, IQueryPlan plan, IEnumerable<IJobTrigger> triggers)
+        internal Job(IInternalExecutionContext executionContext, string name, IQueryPlan plan, [NotNull] IEnumerable<IJobTrigger> triggers)
         {
             this.Name = name;
             this.Triggers = triggers.ToArray();

@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The serializable token.
     /// </summary>
@@ -47,7 +49,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="token">
         /// The token.
         /// </param>
-        public SerializableToken(IClassifiedToken token)
+        public SerializableToken([NotNull] IClassifiedToken token)
         {
             this.Start = token.Start;
             this.Classification = token.Classification;

@@ -25,6 +25,8 @@ namespace ConnectQl.Interfaces
     using System;
     using System.Diagnostics;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Extensions for the loggeri nterface.
     /// </summary>
@@ -38,7 +40,7 @@ namespace ConnectQl.Interfaces
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
         [Conditional("DEBUG")]
-        public static void Debug(this ILogger logger, Exception exception, string format = "", params object[] args)
+        public static void Debug([NotNull] this ILogger logger, Exception exception, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Debug, exception, format, args);
         }
@@ -50,7 +52,7 @@ namespace ConnectQl.Interfaces
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
         [Conditional("DEBUG")]
-        public static void Debug(this ILogger logger, string format = "", params object[] args)
+        public static void Debug([NotNull] this ILogger logger, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Debug, null, format, args);
         }
@@ -62,7 +64,7 @@ namespace ConnectQl.Interfaces
         /// <param name="exception">The exception to write.</param>
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
-        public static void Verbose(this ILogger logger, Exception exception, string format = "", params object[] args)
+        public static void Verbose([NotNull] this ILogger logger, Exception exception, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Verbose, exception, format, args);
         }
@@ -73,7 +75,7 @@ namespace ConnectQl.Interfaces
         /// <param name="logger">The logger.</param>
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
-        public static void Verbose(this ILogger logger, string format = "", params object[] args)
+        public static void Verbose([NotNull] this ILogger logger, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Verbose, null, format, args);
         }
@@ -85,7 +87,7 @@ namespace ConnectQl.Interfaces
         /// <param name="exception">The exception to write.</param>
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
-        public static void Information(this ILogger logger, Exception exception, string format = "", params object[] args)
+        public static void Information([NotNull] this ILogger logger, Exception exception, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Information, exception, format, args);
         }
@@ -96,7 +98,7 @@ namespace ConnectQl.Interfaces
         /// <param name="logger">The logger.</param>
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
-        public static void Information(this ILogger logger, string format = "", params object[] args)
+        public static void Information([NotNull] this ILogger logger, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Information, null, format, args);
         }
@@ -108,7 +110,7 @@ namespace ConnectQl.Interfaces
         /// <param name="exception">The exception to write.</param>
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
-        public static void Warning(this ILogger logger, Exception exception, string format = "", params object[] args)
+        public static void Warning([NotNull] this ILogger logger, Exception exception, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Warning, exception, format, args);
         }
@@ -119,7 +121,7 @@ namespace ConnectQl.Interfaces
         /// <param name="logger">The logger.</param>
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
-        public static void Warning(this ILogger logger, string format = "", params object[] args)
+        public static void Warning([NotNull] this ILogger logger, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Warning, null, format, args);
         }
@@ -131,7 +133,7 @@ namespace ConnectQl.Interfaces
         /// <param name="exception">The exception to write.</param>
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
-        public static void Error(this ILogger logger, Exception exception, string format = "", params object[] args)
+        public static void Error([NotNull] this ILogger logger, Exception exception, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Error, exception, format, args);
         }
@@ -142,7 +144,7 @@ namespace ConnectQl.Interfaces
         /// <param name="logger">The logger.</param>
         /// <param name="format">The message to write.</param>
         /// <param name="args">The message arguments.</param>
-        public static void Error(this ILogger logger, string format = "", params object[] args)
+        public static void Error([NotNull] this ILogger logger, string format = "", params object[] args)
         {
             logger.Write(LogLevel.Error, null, format, args);
         }

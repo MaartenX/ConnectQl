@@ -29,6 +29,8 @@ namespace ConnectQl.Internal
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Validation;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The node data.
     /// </summary>
@@ -48,6 +50,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// An enumerable of keys and values.
         /// </returns>
+        [NotNull]
         public KeyValuePair<string, object>[] GetAllValues(Node node)
         {
             return this.nodeData.TryGetValue(node, out Dictionary<string, object> values) ? values.OrderBy(kv => kv.Key).ToArray() : new KeyValuePair<string, object>[0];
@@ -163,7 +166,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// <c>true</c> if the data was found, <c>false</c> otherwise.
         /// </returns>
-        bool INodeDataProvider.TryGet<T>(Node node, string data, out T value)
+        bool INodeDataProvider.TryGet<T>([CanBeNull] Node node, string data, out T value)
         {
             if (node != null && this.nodeData.TryGetValue(node, out Dictionary<string, object> nodeValues) && nodeValues.TryGetValue(data, out object objectValue))
             {

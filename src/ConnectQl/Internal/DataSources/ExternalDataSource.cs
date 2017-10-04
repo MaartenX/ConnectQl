@@ -39,6 +39,8 @@ namespace ConnectQl.Internal.DataSources
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The external data source.
     /// </summary>
@@ -63,7 +65,7 @@ namespace ConnectQl.Internal.DataSources
         /// <param name="aliases">
         /// The aliases.
         /// </param>
-        public ExternalDataSource(IDataSource dataSource, HashSet<string> aliases)
+        public ExternalDataSource(IDataSource dataSource, [NotNull] HashSet<string> aliases)
             : base(aliases)
         {
             this.dataSource = dataSource;
@@ -82,7 +84,7 @@ namespace ConnectQl.Internal.DataSources
         /// <returns>
         /// The <see cref="IAsyncEnumerable{Row}"/>.
         /// </returns>
-        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, IMultiPartQuery multiPartQuery)
+        internal override IAsyncEnumerable<Row> GetRows([NotNull] IInternalExecutionContext context, [NotNull] IMultiPartQuery multiPartQuery)
         {
             var functionName = context.GetDisplayName(this.dataSource);
             var fieldReplacer = GenericVisitor.Create((SourceFieldExpression e) => CustomExpression.MakeField(e.SourceName, e.FieldName, e.Type));
@@ -174,6 +176,7 @@ namespace ConnectQl.Internal.DataSources
         /// <returns>
         /// All data sources inside this data source.
         /// </returns>
+        [ItemNotNull]
         protected internal override async Task<IEnumerable<IDataSourceDescriptor>> GetDataSourceDescriptorsAsync(IExecutionContext context)
         {
             var descriptor = this.dataSource as IDescriptableDataSource;

@@ -31,6 +31,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The in memory policy.
     /// </summary>
@@ -50,6 +52,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         ///     The <see cref="IAsyncEnumerableBuilder{T}" />.
         /// </returns>
+        [NotNull]
         public IAsyncEnumerableBuilder<T> CreateBuilder<T>()
         {
             return new InMemoryAsyncEnumerableBuilder<T>(this);
@@ -71,6 +74,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         ///     The sorted <see cref="IAsyncReadOnlyCollection{T}" />.
         /// </returns>
+        [ItemNotNull]
         public async Task<IAsyncReadOnlyCollection<T>> SortAsync<T>(IAsyncEnumerable<T> source, Comparison<T> comparison)
         {
             T[] items;
@@ -136,7 +140,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             /// This builder.
             /// </returns>
-            ISynchronousAsyncEnumerableBuilder<T> ISynchronousAsyncEnumerableBuilder<T>.Add(IEnumerable<T> items)
+            [NotNull]
+            ISynchronousAsyncEnumerableBuilder<T> ISynchronousAsyncEnumerableBuilder<T>.Add([NotNull] IEnumerable<T> items)
             {
                 if (this.numItems == -1)
                 {
@@ -254,6 +259,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             ///     The enumerator.
             /// </returns>
+            [NotNull]
             public IAsyncEnumerator<T> GetAsyncEnumerator()
             {
                 if (this.Items == null)
@@ -273,6 +279,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             ///     The <see cref="IAsyncEnumerator{T}" />.
             /// </returns>
+            [NotNull]
             public IAsyncEnumerator<T> GetAsyncEnumerator(long offset)
             {
                 if (this.Items == null)

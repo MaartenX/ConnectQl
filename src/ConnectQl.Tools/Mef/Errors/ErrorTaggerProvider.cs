@@ -24,6 +24,9 @@ namespace ConnectQl.Tools.Mef.Errors
 {
     using System.ComponentModel.Composition;
     using Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Tagging;
@@ -65,6 +68,7 @@ namespace ConnectQl.Tools.Mef.Errors
         /// <typeparam name="T">
         /// The type of the tag.
         /// </typeparam>
+        [CanBeNull]
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer)
             where T : ITag
         {

@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Results
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The job runner.
     /// </summary>
@@ -52,7 +54,8 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// The <see cref="IDisposable"/>.
         /// </returns>
-        public IDisposable Start(IEnumerable<IJob> jobs)
+        [NotNull]
+        public IDisposable Start([NotNull] IEnumerable<IJob> jobs)
         {
             var contexts = new List<TriggerContext>();
 
@@ -82,6 +85,7 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// The <see cref="IJobContext"/>.
         /// </returns>
+        [CanBeNull]
         private IJobContext CreateJobContext(IJob job)
         {
             return null;
@@ -93,7 +97,7 @@ namespace ConnectQl.Internal.Results
         /// <param name="contexts">
         /// The contexts.
         /// </param>
-        private void Stop(IEnumerable<TriggerContext> contexts)
+        private void Stop([NotNull] IEnumerable<TriggerContext> contexts)
         {
             foreach (var context in contexts)
             {
@@ -133,7 +137,7 @@ namespace ConnectQl.Internal.Results
             /// <param name="trigger">
             /// The trigger.
             /// </param>
-            public TriggerContext(JobRunner jobRunner, IJob job, IJobTrigger trigger)
+            public TriggerContext([NotNull] JobRunner jobRunner, IJob job, IJobTrigger trigger)
             {
                 this.Logger = jobRunner.Logger;
                 this.jobRunner = jobRunner;

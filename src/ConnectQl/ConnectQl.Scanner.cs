@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 namespace ConnectQl.Internal
 {
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The token.
     /// </summary>
@@ -167,7 +169,7 @@ namespace ConnectQl.Internal
         /// <param name="b">
         /// The buffer to base this buffer on.
         /// </param>
-        protected Buffer(Buffer b)
+        protected Buffer([NotNull] Buffer b)
         {
             this.byteBuffer = b.byteBuffer;
             this.firstByte = b.firstByte;
@@ -249,6 +251,7 @@ namespace ConnectQl.Internal
         /// <returns>
         ///	The string.
         /// </returns>
+        [NotNull]
         public string GetString(int beg, int end)
         {
             var len = 0;
@@ -1031,6 +1034,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The token.
         /// </returns>
+        [NotNull]
         public Token Scan()
         {
             Token result;
@@ -1054,6 +1058,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The next token.
         /// </returns>
+        [NotNull]
         public Token Peek()
         {
             do

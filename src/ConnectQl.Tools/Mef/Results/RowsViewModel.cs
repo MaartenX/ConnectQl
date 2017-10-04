@@ -31,6 +31,8 @@ namespace ConnectQl.Tools.Mef.Results
     using AsyncEnumerables;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The query result view model.
     /// </summary>
@@ -61,7 +63,7 @@ namespace ConnectQl.Tools.Mef.Results
         /// <param name="rows">
         /// The rows to add to the view model.
         /// </param>
-        public async void InitializeAsync(IAsyncEnumerable<Row> rows)
+        public async void InitializeAsync([NotNull] IAsyncEnumerable<Row> rows)
         {
             var table = new DataTable();
 

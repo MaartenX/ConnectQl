@@ -24,6 +24,9 @@ namespace ConnectQl.Tools.Mef.Classification
 {
     using System.ComponentModel.Composition;
     using Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Classification;
     using Microsoft.VisualStudio.Utilities;
@@ -60,7 +63,7 @@ namespace ConnectQl.Tools.Mef.Classification
         /// <returns>
         /// A classifier for the text buffer, or null if the provider cannot do so in its current state.
         /// </returns>
-        public IClassifier GetClassifier(ITextBuffer buffer)
+        public IClassifier GetClassifier([NotNull] ITextBuffer buffer)
         {
             return buffer.Properties.GetOrCreateSingletonProperty(() => new Classifier(buffer, this.documentProvider.GetDocument(buffer), this.classificationRegistry));
         }

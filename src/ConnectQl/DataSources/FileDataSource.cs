@@ -37,6 +37,8 @@ namespace ConnectQl.DataSources
     using ConnectQl.Internal.DataSources;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The file data source.
     /// </summary>
@@ -73,7 +75,7 @@ namespace ConnectQl.DataSources
         /// <param name="encoding">
         /// The encoding to use. Defaults to UTF8.
         /// </param>
-        public FileDataSource(string uri, Encoding encoding)
+        public FileDataSource(string uri, [CanBeNull] Encoding encoding)
         {
             this.encoding = encoding ?? Encoding.UTF8;
             this.Uri = uri;
@@ -130,7 +132,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        IAsyncEnumerable<Row> IDataSource.GetRows(IExecutionContext context, IRowBuilder rowBuilder, IQuery query)
+        IAsyncEnumerable<Row> IDataSource.GetRows(IExecutionContext context, IRowBuilder rowBuilder, [NotNull] IQuery query)
         {
             var whereFilter = query.GetFilter(context);
             var sortOrders = query.GetSortOrders(context).ToArray();
@@ -178,7 +180,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        async Task<long> IDataTarget.WriteRowsAsync(IExecutionContext context, IAsyncEnumerable<Row> rowsToWrite, bool upsert)
+        async Task<long> IDataTarget.WriteRowsAsync([NotNull] IExecutionContext context, IAsyncEnumerable<Row> rowsToWrite, bool upsert)
         {
             var fileWriter = context.FileFormats.OfType<IFileWriter>().FirstOrDefault(writer => writer.CanWriteThisFile(this.Uri));
 
@@ -271,7 +273,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        protected virtual Task<Stream> OpenStreamAsync(IExecutionContext context, UriResolveMode uriResolveMode, string fileUri)
+        protected virtual Task<Stream> OpenStreamAsync([NotNull] IExecutionContext context, UriResolveMode uriResolveMode, string fileUri)
         {
             return context.OpenStreamAsync(fileUri, uriResolveMode);
         }
@@ -285,7 +287,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="IEnumerable{T}"/>.
         /// </returns>
-        private static IEnumerable<Row> CurrentAndRest(IAsyncEnumerator<Row> enumerator)
+        private static IEnumerable<Row> CurrentAndRest([NotNull] IAsyncEnumerator<Row> enumerator)
         {
             yield return enumerator.Current;
 
@@ -307,7 +309,8 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="IFileReader"/> or <c>null</c> if none was found.
         /// </returns>
-        private IFileReader GetFileReader(IExecutionContext context, StreamBuffer streamBuffer)
+        [CanBeNull]
+        private IFileReader GetFileReader([NotNull] IExecutionContext context, StreamBuffer streamBuffer)
         {
             return context.FileFormats.OfType<IFileReader>().FirstOrDefault(reader => reader.CanReadThisFile(new FileFormatExecutionContext(context, this), this.Uri, streamBuffer.Buffer));
         }
@@ -324,7 +327,8 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        private StreamReader GetStreamReader(StreamBuffer stream, IFileReader fileReader)
+        [NotNull]
+        private StreamReader GetStreamReader([NotNull] StreamBuffer stream, IFileReader fileReader)
         {
             return new StreamReader(stream.Stream, (fileReader as IOverrideEncoding)?.Encoding ?? this.encoding, true);
         }

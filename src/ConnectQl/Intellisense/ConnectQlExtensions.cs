@@ -22,9 +22,12 @@
 
 namespace ConnectQl.Intellisense
 {
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Extensions for the <see cref="ConnectQlContext"/>.
     /// </summary>
+    [PublicAPI]
     public static class ConnectQlExtensions
     {
         /// <summary>
@@ -32,6 +35,7 @@ namespace ConnectQl.Intellisense
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>The intellisense session.</returns>
+        [NotNull]
         public static IIntellisenseSession CreateIntellisenseSession(this ConnectQlContext context)
         {
             return new IntellisenseSession(context);

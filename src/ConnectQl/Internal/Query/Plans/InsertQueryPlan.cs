@@ -33,6 +33,8 @@ namespace ConnectQl.Internal.Query.Plans
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The insert query plan.
     /// </summary>
@@ -81,6 +83,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <returns>
         /// The <see cref="ExecuteResult"/>.
         /// </returns>
+        [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
             var dataSet = (await this.dataGenerator.ExecuteAsync(context)).QueryResults.First().Rows;

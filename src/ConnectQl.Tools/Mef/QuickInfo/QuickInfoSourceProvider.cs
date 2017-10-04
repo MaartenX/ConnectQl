@@ -24,6 +24,9 @@ namespace ConnectQl.Tools.Mef.QuickInfo
 {
     using System.ComponentModel.Composition;
     using Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Utilities;
@@ -53,6 +56,7 @@ namespace ConnectQl.Tools.Mef.QuickInfo
         /// <param name="textBuffer">
         /// The text buffer for which to create a provider.
         /// </param>
+        [NotNull]
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
         {
             return new QuickInfoSource(this, textBuffer);

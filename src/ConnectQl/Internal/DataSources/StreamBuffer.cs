@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.DataSources
     using System.IO;
     using System.Threading.Tasks;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Contains a stream and a buffer of the first bytes in the stream.
     /// </summary>
@@ -58,7 +60,8 @@ namespace ConnectQl.Internal.DataSources
         /// <param name="stream">The stream.</param>
         /// <param name="bufferSize">The size of the bufer.</param>
         /// <returns>A <see cref="StreamBuffer"/></returns>
-        public static async Task<StreamBuffer> CreateAsync(Stream stream, int bufferSize)
+        [ItemNotNull]
+        public static async Task<StreamBuffer> CreateAsync([NotNull] Stream stream, int bufferSize)
         {
             int bufferItems;
             var buffer = new byte[bufferSize];

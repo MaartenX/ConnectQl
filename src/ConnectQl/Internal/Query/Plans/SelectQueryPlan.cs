@@ -34,6 +34,8 @@ namespace ConnectQl.Internal.Query.Plans
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Results;
 
+    using JetBrains.Annotations;
+
     using AsyncValueFactory = System.Func<ConnectQl.Interfaces.IExecutionContext, ConnectQl.Results.Row, System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>>;
     using ValueFactory = System.Func<ConnectQl.Interfaces.IExecutionContext, ConnectQl.Results.Row, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>;
 
@@ -135,8 +137,9 @@ namespace ConnectQl.Internal.Query.Plans
         /// The context.
         /// </param>
         /// <returns>
-        /// The <see cref="ExecuteResult"/>.
+        /// The <see cref="Result"/>.
         /// </returns>
+        [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
             var rows = (await this.dataSourceFactory(context).ConfigureAwait(false)).GetRows(context, this.query);

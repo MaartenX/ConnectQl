@@ -26,6 +26,8 @@ namespace ConnectQl.Tools.Extensions
     using System.Collections.Generic;
     using System.Linq;
 
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
 
@@ -46,7 +48,8 @@ namespace ConnectQl.Tools.Extensions
         /// <returns>
         /// The concatenated items.
         /// </returns>
-        public static Tuple<SnapshotSpan, IEnumerable<Completion>> Concat(this Tuple<SnapshotSpan, IEnumerable<Completion>> tuple, Tuple<SnapshotSpan, IEnumerable<Completion>> other)
+        [NotNull]
+        public static Tuple<SnapshotSpan, IEnumerable<Completion>> Concat([NotNull] this Tuple<SnapshotSpan, IEnumerable<Completion>> tuple, [NotNull] Tuple<SnapshotSpan, IEnumerable<Completion>> other)
         {
             return Tuple.Create(
                 tuple.Item1,

@@ -24,6 +24,9 @@ namespace ConnectQl.Tools.Mef.Completion
 {
     using System.ComponentModel.Composition;
     using Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Operations;
@@ -63,7 +66,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <param name="textBuffer">
         /// The text buffer over which to create a provider.
         /// </param>
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
+        public ICompletionSource TryCreateCompletionSource([NotNull] ITextBuffer textBuffer)
         {
             return textBuffer.Properties.GetOrCreateSingletonProperty(() => new CompletionSource(this, textBuffer));
         }

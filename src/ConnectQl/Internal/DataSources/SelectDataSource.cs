@@ -39,6 +39,8 @@ namespace ConnectQl.Internal.DataSources
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The select data source.
     /// </summary>
@@ -63,7 +65,7 @@ namespace ConnectQl.Internal.DataSources
         /// <param name="aliases">
         /// The aliases.
         /// </param>
-        public SelectDataSource(IQueryPlan selectPlan, HashSet<string> aliases)
+        public SelectDataSource(IQueryPlan selectPlan, [NotNull] HashSet<string> aliases)
             : base(aliases)
         {
             this.selectPlan = selectPlan;
@@ -82,7 +84,7 @@ namespace ConnectQl.Internal.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, IMultiPartQuery multiPartQuery)
+        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, [NotNull] IMultiPartQuery multiPartQuery)
         {
             var fieldReplacer = GenericVisitor.Create((SourceFieldExpression e) => CustomExpression.MakeField(e.SourceName, e.FieldName, e.Type));
 
@@ -116,6 +118,7 @@ namespace ConnectQl.Internal.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
+        [ItemNotNull]
         protected internal override async Task<IEnumerable<IDataSourceDescriptor>> GetDataSourceDescriptorsAsync(IExecutionContext context)
         {
             var source = this.selectPlan as IDescriptableDataSource;

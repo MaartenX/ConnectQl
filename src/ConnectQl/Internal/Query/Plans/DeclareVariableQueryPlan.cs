@@ -33,6 +33,8 @@ namespace ConnectQl.Internal.Query.Plans
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The declare variable query plan.
     /// </summary>
@@ -90,6 +92,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
+        [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
             await this.evaluateVariable(context);

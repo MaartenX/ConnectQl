@@ -14,6 +14,8 @@ namespace ConnectQl.Internal
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Event arguments for the <see cref="Parser.TokenScanned" /> event.
     /// </summary>
@@ -408,7 +410,7 @@ namespace ConnectQl.Internal
             this.Expect(0);
         }
 
-        void Statement(out StatementBase statement)
+        void Statement([CanBeNull] out StatementBase statement)
         {
             statement = null; SelectStatement select;
             switch (this.LookAhead.Kind)
@@ -450,7 +452,7 @@ namespace ConnectQl.Internal
             }
         }
 
-        void DeclareStatement(out StatementBase statement)
+        void DeclareStatement([CanBeNull] out StatementBase statement)
         {
             statement = null; VariableDeclaration variable; FunctionCallSqlExpression function; string jobName = null; var vars = new List<VariableDeclaration>(); var ctx = this.Mark();
             this.Expect(13);
@@ -568,7 +570,7 @@ namespace ConnectQl.Internal
             else this.SynErr(76);
         }
 
-        void ImportStatement(out StatementBase statement)
+        void ImportStatement([CanBeNull] out StatementBase statement)
         {
             string uri; statement = null; var ctx = this.Mark();
             this.Expect(24);
@@ -704,7 +706,7 @@ namespace ConnectQl.Internal
             }
         }
 
-        void Name(out string value)
+        void Name([CanBeNull] out string value)
         {
             value = null;
             if (this.LookAhead.Kind == 3)
@@ -746,7 +748,7 @@ namespace ConnectQl.Internal
             value = this.t.Val;
         }
 
-        void InsertTarget(out TargetBase target)
+        void InsertTarget([CanBeNull] out TargetBase target)
         {
             string name; target = null; var ctx = this.Mark(); string variable;
             if (this.LookAhead.Kind == 5)
@@ -968,7 +970,7 @@ namespace ConnectQl.Internal
             orderBy = this.SetContext(new OrderBySqlExpression(expression, ascending), ctx);
         }
 
-        void SourceSelector(out SourceBase source)
+        void SourceSelector([CanBeNull] out SourceBase source)
         {
             string name;
             source = null;
@@ -1000,7 +1002,7 @@ namespace ConnectQl.Internal
             else this.SynErr(84);
         }
 
-        void SourceBase(out SourceBase source)
+        void SourceBase([CanBeNull] out SourceBase source)
         {
             string name, alias = null; source = null; FunctionCallSqlExpression function = null; var ctx = this.Mark(); string variable;
             if (this.LookAhead.Kind == 5)
@@ -1186,7 +1188,7 @@ namespace ConnectQl.Internal
             expression = op == null ? expr : this.SetContext(new UnarySqlExpression(op, expr), ctx);
         }
 
-        void ValueExpression(out SqlExpressionBase expression)
+        void ValueExpression([CanBeNull] out SqlExpressionBase expression)
         {
             string stringValue; object numberValue; SqlExpressionBase function; expression = null; string VariableSqlExpression; var ctx = this.Mark();
             switch (this.LookAhead.Kind)
@@ -1253,7 +1255,7 @@ namespace ConnectQl.Internal
             }
         }
 
-        void FieldOrFunction(out SqlExpressionBase field)
+        void FieldOrFunction([CanBeNull] out SqlExpressionBase field)
         {
             string first, second = null; field = null; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = this.Mark();
             if (this.LookAhead.Kind == 4)

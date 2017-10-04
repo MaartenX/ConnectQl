@@ -24,6 +24,8 @@ namespace ConnectQl.Internal
 {
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The function registration.
     /// </summary>
@@ -68,6 +70,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description)
         {
             this.descriptor.SetDescription(description);
@@ -87,6 +90,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1)
         {
             this.descriptor.SetDescription(description);
@@ -110,6 +114,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2)
         {
             this.descriptor.SetDescription(description);
@@ -137,6 +142,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2, string argument3)
         {
             this.descriptor.SetDescription(description);
@@ -168,6 +174,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2, string argument3, string argument4)
         {
             this.descriptor.SetDescription(description);
@@ -203,6 +210,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2, string argument3, string argument4, string argument5)
         {
             this.descriptor.SetDescription(description);
@@ -242,6 +250,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2, string argument3, string argument4, string argument5, string argument6)
         {
             this.descriptor.SetDescription(description);
@@ -285,6 +294,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2, string argument3, string argument4, string argument5, string argument6, string argument7)
         {
             this.descriptor.SetDescription(description);
@@ -332,6 +342,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2, string argument3, string argument4, string argument5, string argument6, string argument7, string argument8)
         {
             this.descriptor.SetDescription(description);
@@ -383,6 +394,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2, string argument3, string argument4, string argument5, string argument6, string argument7, string argument8, string argument9)
         {
             this.descriptor.SetDescription(description);
@@ -438,6 +450,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
+        [NotNull]
         public IConnectQlFunctions SetDescription(string description, string argument1, string argument2, string argument3, string argument4, string argument5, string argument6, string argument7, string argument8, string argument9, string argument10)
         {
             this.descriptor.SetDescription(description);

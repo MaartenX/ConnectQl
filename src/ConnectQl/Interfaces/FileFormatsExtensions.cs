@@ -22,6 +22,8 @@
 
 namespace ConnectQl.Interfaces
 {
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The file formats extensions.
     /// </summary>
@@ -39,7 +41,7 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IFileFormats"/>.
         /// </returns>
-        public static IFileFormats Add(this IFileFormats formats, IFileFormat format)
+        public static IFileFormats Add([NotNull] this IFileFormats formats, IFileFormat format)
         {
             return formats.AddFileAccess(format);
         }
@@ -56,7 +58,7 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IFileFormats"/>.
         /// </returns>
-        public static IFileFormats Add(this IFileFormats formats, IFileReader reader)
+        public static IFileFormats Add([NotNull] this IFileFormats formats, IFileReader reader)
         {
             return formats.AddFileAccess(reader);
         }
@@ -73,7 +75,7 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="IFileFormats"/>.
         /// </returns>
-        public static IFileFormats Add(this IFileFormats formats, IFileWriter writer)
+        public static IFileFormats Add([NotNull] this IFileFormats formats, IFileWriter writer)
         {
             return formats.AddFileAccess(writer);
         }

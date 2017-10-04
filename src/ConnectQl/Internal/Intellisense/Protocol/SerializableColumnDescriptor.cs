@@ -24,6 +24,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
 {
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The serializable column descriptor.
     /// </summary>
@@ -42,7 +44,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="columnDescriptor">
         /// The column descriptor.
         /// </param>
-        public SerializableColumnDescriptor(IColumnDescriptor columnDescriptor)
+        public SerializableColumnDescriptor([NotNull] IColumnDescriptor columnDescriptor)
         {
             this.Name = columnDescriptor.Name;
             this.Description = columnDescriptor.Description;

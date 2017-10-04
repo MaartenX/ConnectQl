@@ -27,6 +27,9 @@ namespace ConnectQl.Tools.Mef.QuickInfo
     using System.Linq;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
 
@@ -74,7 +77,7 @@ namespace ConnectQl.Tools.Mef.QuickInfo
         /// The <see cref="T:Microsoft.VisualStudio.Text.ITrackingSpan"/> to which this session
         ///     applies.
         /// </param>
-        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
+        public void AugmentQuickInfoSession([NotNull] IQuickInfoSession session, IList<object> quickInfoContent, [CanBeNull] out ITrackingSpan applicableToSpan)
         {
             var subjectTriggerPoint = session.GetTriggerPoint(this.textBuffer.CurrentSnapshot);
 

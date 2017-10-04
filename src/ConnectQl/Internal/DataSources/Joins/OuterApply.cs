@@ -29,6 +29,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The cross apply.
     /// </summary>
@@ -72,7 +74,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IAsyncEnumerable{Row}"/>.
         /// </returns>
-        protected override IAsyncEnumerable<Row> CombineResults(IInternalExecutionContext context, IAsyncReadOnlyCollection<Row> leftData, IAsyncReadOnlyCollection<Row> rightData, MultiPartQuery rightQuery, RowBuilder rowBuilder)
+        protected override IAsyncEnumerable<Row> CombineResults(IInternalExecutionContext context, IAsyncReadOnlyCollection<Row> leftData, IAsyncReadOnlyCollection<Row> rightData, MultiPartQuery rightQuery, [NotNull] RowBuilder rowBuilder)
         {
             return this.RightFactory != null
                        ? leftData.OuterApply(row => this.RightFactory(context, row).GetRows(context, rightQuery), rowBuilder.CombineRows)

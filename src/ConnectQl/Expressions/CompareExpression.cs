@@ -30,6 +30,8 @@ namespace ConnectQl.Expressions
     using ConnectQl.Internal.Expressions;
     using ConnectQl.Internal.Extensions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The compare expression.
     /// </summary>
@@ -190,6 +192,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString()
         {
             return $"{this.Left} {CompareExpression.Ops[this.CompareType]} {this.Right}";
@@ -283,7 +286,8 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        protected override Expression VisitChildren(ExpressionVisitor visitor)
+        [NotNull]
+        protected override Expression VisitChildren([NotNull] ExpressionVisitor visitor)
         {
             var left = visitor.Visit(this.Left);
             var right = visitor.Visit(this.Right);

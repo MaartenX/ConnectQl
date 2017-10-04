@@ -25,15 +25,23 @@ namespace ConnectQl.Tools.Mef.Intellisense
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
+
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
     using Interfaces;
     using Errors;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Text;
+
+    using Task = Microsoft.VisualStudio.Shell.Task;
 
     /// <summary>
     /// The intellisense session.
@@ -98,6 +106,24 @@ namespace ConnectQl.Tools.Mef.Intellisense
         }
 
         /// <summary>
+        /// Executes the queries in the file name or stream.
+        /// </summary>
+        /// <param name="filename">
+        /// The name of the file to execute.
+        /// </param>
+        /// <param name="stream">
+        /// The stream containing the queries.
+        /// </param>
+        /// <returns>
+        /// The result.
+        /// </returns>
+        [NotNull]
+        public Task<IExecuteResult> ExecuteAsync(string filename, Stream stream)
+        {
+            return this.proxy?.ExecuteAsync(filename, stream) ?? System.Threading.Tasks.Task.FromResult(Result.Empty());
+        }
+
+        /// <summary>
         /// The get document.
         /// </summary>
         /// <param name="textBuffer">
@@ -116,11 +142,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
             }
 
             result = this.documents[document.FilePath] =
-                         new ConnectQlDocument(document.FilePath)
-                             {
-                                Version = textBuffer.CurrentSnapshot.Version.VersionNumber,
-                                 Content = textBuffer.CurrentSnapshot.GetText()
-                             };
+                         new ConnectQlDocument(this, document.FilePath) { Version = textBuffer.CurrentSnapshot.Version.VersionNumber, Content = textBuffer.CurrentSnapshot.GetText() };
 
             this.proxy?.UpdateDocument(document.FilePath, result.Content, result.Version);
 
@@ -137,7 +159,8 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// <returns>
         /// The task.
         /// </returns>
-        private Task ToTask(IDocument document, IMessage message)
+        [NotNull]
+        private Task ToTask([NotNull] IDocument document, [NotNull] IMessage message)
         {
             var result = new ErrorTask
             {
@@ -178,7 +201,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// <param name="documentUpdatedEventArgs">
         /// The document updated event args.
         /// </param>
-        private void ProxyOnDocumentUpdated(object sender, DocumentUpdatedEventArgs documentUpdatedEventArgs)
+        private void ProxyOnDocumentUpdated(object sender, [NotNull] DocumentUpdatedEventArgs documentUpdatedEventArgs)
         {
             if (this.documents.TryGetValue(documentUpdatedEventArgs.Document.Filename, out var doc))
             {

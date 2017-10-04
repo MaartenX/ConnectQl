@@ -30,6 +30,8 @@ namespace ConnectQl.Internal
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The plugin collection.
     /// </summary>
@@ -46,7 +48,7 @@ namespace ConnectQl.Internal
         /// <param name="resolver">
         /// The resolver.
         /// </param>
-        public PluginCollection(IPluginResolver resolver)
+        public PluginCollection([CanBeNull] IPluginResolver resolver)
         {
             if (resolver is IDynamicPluginResolver dynamicResolver)
             {

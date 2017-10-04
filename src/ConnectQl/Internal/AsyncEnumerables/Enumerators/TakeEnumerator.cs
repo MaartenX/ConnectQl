@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator used by the
     ///     <see cref="AsyncEnumerableExtensions.Take{T}(ConnectQl.AsyncEnumerables.IAsyncEnumerable{T},long)"/> method.
@@ -61,7 +63,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="takeCount">
         /// The number of items to take.
         /// </param>
-        public TakeEnumerator(IAsyncEnumerable<TSource> source, long takeCount)
+        public TakeEnumerator([NotNull] IAsyncEnumerable<TSource> source, long takeCount)
         {
             this.asyncEnumerator = source.GetAsyncEnumerator();
             this.takeCount = takeCount;

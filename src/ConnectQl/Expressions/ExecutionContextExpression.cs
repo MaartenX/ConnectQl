@@ -26,6 +26,8 @@ namespace ConnectQl.Expressions
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The execution context expression.
     /// </summary>
@@ -45,6 +47,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString() => "ExecutionContext";
 
         /// <summary>
@@ -56,6 +59,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [NotNull]
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             return this;

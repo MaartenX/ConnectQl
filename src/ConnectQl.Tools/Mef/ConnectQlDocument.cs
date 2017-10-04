@@ -24,10 +24,20 @@ namespace ConnectQl.Tools.Mef
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
     using ConnectQl.Interfaces;
+    using ConnectQl.Results;
+    using ConnectQl.Tools.Mef.Intellisense;
+
     using Interfaces;
     using Internal.Intellisense;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text;
 
     /// <summary>
@@ -35,6 +45,8 @@ namespace ConnectQl.Tools.Mef
     /// </summary>
     internal class ConnectQlDocument : IDocument
     {
+        private readonly IntellisenseSession session;
+
         /// <summary>
         /// The functions.
         /// </summary>
@@ -71,8 +83,9 @@ namespace ConnectQl.Tools.Mef
         /// <param name="filename">
         /// The filename.
         /// </param>
-        public ConnectQlDocument(string filename)
+        public ConnectQlDocument(IntellisenseSession session, string filename)
         {
+            this.session = session;
             this.Filename = filename;
         }
 
@@ -105,6 +118,7 @@ namespace ConnectQl.Tools.Mef
         /// <returns>
         /// The tokens.
         /// </returns>
+        [NotNull]
         public IEnumerable<IClassifiedToken> GetClassifiedTokens(SnapshotSpan span)
         {
             return this.tokens.SkipWhile(t => t.End < span.Start.Position).TakeWhile(t => t.Start < span.End.Position);
@@ -119,6 +133,7 @@ namespace ConnectQl.Tools.Mef
         /// <returns>
         /// The function descriptors.
         /// </returns>
+        [NotNull]
         public IEnumerable<IFunctionDescriptor> GetFunctionsByName(string name)
         {
             return this.functions.Where(f => string.Equals(f.Name, name, StringComparison.InvariantCultureIgnoreCase));
@@ -169,6 +184,7 @@ namespace ConnectQl.Tools.Mef
         /// <returns>
         /// The tokens.
         /// </returns>
+        [CanBeNull]
         public IClassifiedToken GetTokenAt(SnapshotPoint point)
         {
             return this.tokens.SkipWhile(t => t.End < point.Position).FirstOrDefault();
@@ -182,7 +198,7 @@ namespace ConnectQl.Tools.Mef
         /// <param name="document">
         /// The document received from the app domain.
         /// </param>
-        public void UpdateClassification(IDocumentDescriptor document)
+        public void UpdateClassification([NotNull] IDocumentDescriptor document)
         {
             var changeType = DocumentChangeType.None;
 
@@ -240,6 +256,7 @@ namespace ConnectQl.Tools.Mef
         /// <returns>
         /// The sources.
         /// </returns>
+        [NotNull]
         public IEnumerable<IDataSourceDescriptor> GetAvailableSources(SnapshotPoint snapshotPoint)
         {
             return this.sources.Where(s => s.Start <= snapshotPoint.Position && s.End >= snapshotPoint.Position).Select(s => s.DataSource);
@@ -254,6 +271,7 @@ namespace ConnectQl.Tools.Mef
         /// <returns>
         /// The variables.
         /// </returns>
+        [NotNull]
         public IEnumerable<IVariableDescriptor> GetAvailableVariables(SnapshotPoint snapshotPoint)
         {
             return this.variables.Where(v => v.Start < snapshotPoint.Position).OrderByDescending(v => v.Start).Select(v => v.Variable);
@@ -268,6 +286,7 @@ namespace ConnectQl.Tools.Mef
         /// <returns>
         /// The tokens.
         /// </returns>
+        [CanBeNull]
         public IClassifiedToken GetTokenBefore(IClassifiedToken token)
         {
             return this.tokens.TakeWhile(t => !t.Equals(token)).LastOrDefault();
@@ -292,6 +311,20 @@ namespace ConnectQl.Tools.Mef
         public IAutoCompletions GetAutoCompletions(IClassifiedToken current)
         {
             return AutoComplete.GetCompletions(this.tokens, current);
+        }
+
+        /// <summary>
+        /// Executes the query in the document.
+        /// </summary>
+        /// <returns>
+        /// The execute result.
+        /// </returns>
+        public async Task<IExecuteResult> ExecuteAsync()
+        {
+            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(this.Content)))
+            {
+                return await this.session.ExecuteAsync(this.Filename, ms);
+            }
         }
     }
 }

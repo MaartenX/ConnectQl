@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Ast.Sources
     using ConnectQl.Internal.Ast.Expressions;
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The inner join source.
     /// </summary>
@@ -47,7 +49,7 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <param name="expression">
         /// The expression.
         /// </param>
-        public JoinSource(JoinType joinType, SourceBase first, SourceBase second, SqlExpressionBase expression = null)
+        public JoinSource(JoinType joinType, SourceBase first, SourceBase second, [CanBeNull] SqlExpressionBase expression = null)
         {
             this.JoinType = joinType;
             this.First = first;
@@ -101,7 +103,7 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitJoinSource(this);
         }
@@ -115,7 +117,8 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node VisitChildren(NodeVisitor visitor)
+        [NotNull]
+        protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
             var first = visitor.Visit(this.First);
             var second = visitor.Visit(this.Second);

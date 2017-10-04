@@ -40,6 +40,8 @@ namespace System.Linq.Expressions
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The expression extensions.
     /// </summary>
@@ -187,6 +189,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [CanBeNull]
         public static Expression FilterByAliases(this Expression source, HashSet<string> sources)
         {
             var orParts = source.SplitByOrExpressions()
@@ -209,6 +212,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// The <see cref="System.Collections.IEnumerable"/>.
         /// </returns>
+        [NotNull]
         public static IEnumerable<IField> GetFields(this Expression expression)
         {
             var fields = new List<IField>();
@@ -230,6 +234,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// An enumerable of fields that were used.
         /// </returns>
+        [NotNull]
         public static IEnumerable<IField> GetFieldsFromSource(this Expression expression, string source)
         {
             return expression.GetFields().Where(field => field.SourceAlias.Equals(source, StringComparison.OrdinalIgnoreCase));
@@ -247,7 +252,8 @@ namespace System.Linq.Expressions
         /// <returns>
         /// The values of the fields in the specified rows.
         /// </returns>
-        public static object[] GetGroupValues(IEnumerable<Row> rows, string field)
+        [NotNull]
+        public static object[] GetGroupValues([NotNull] IEnumerable<Row> rows, string field)
         {
             return rows.Select(row => row[field]).ToArray();
         }
@@ -327,7 +333,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// A function that takes a row and returns true when a row should be in the result.
         /// </returns>
-        public static Func<Row, bool> GetRowFilter(this Expression expression)
+        public static Func<Row, bool> GetRowFilter([CanBeNull] this Expression expression)
         {
             if (expression == null)
             {
@@ -420,7 +426,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// The <typeparamref name="TExpression"/>.
         /// </returns>
-        public static TExpression ReplaceParameters<TExpression>(this TExpression haystack, IEnumerable<ParameterExpression> needles, IEnumerable<Expression> replaces)
+        public static TExpression ReplaceParameters<TExpression>(this TExpression haystack, [NotNull] IEnumerable<ParameterExpression> needles, [NotNull] IEnumerable<Expression> replaces)
             where TExpression : Expression
         {
             return needles.Zip(replaces, Tuple.Create).Aggregate(haystack, (current, replaceAction) => current.ReplaceParameter(replaceAction.Item1, replaceAction.Item2));
@@ -435,7 +441,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static LambdaExpression RewriteTasksToAsyncExpression(this LambdaExpression expression)
+        public static LambdaExpression RewriteTasksToAsyncExpression([NotNull] this LambdaExpression expression)
         {
             return Expression.Lambda(expression.Body.RewriteTasksToAsyncExpression(), expression.Parameters);
         }
@@ -713,7 +719,8 @@ namespace System.Linq.Expressions
         /// <returns>
         /// An enumerable of expressions that represent the different parts of the or-expression.
         /// </returns>
-        public static IList<Expression> SplitByAndExpressions(this Expression expression)
+        [NotNull]
+        public static IList<Expression> SplitByAndExpressions([CanBeNull] this Expression expression)
         {
             if (expression == null)
             {
@@ -766,6 +773,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// An enumerable of expressions that represent the different parts of the or-expression.
         /// </returns>
+        [NotNull]
         public static List<Expression> SplitByOrExpressions(this Expression expression)
         {
             Func<Expression, BinaryExpression> getOrExpression =
@@ -882,6 +890,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// An array of <see cref="Expression"/>s.
         /// </returns>
+        [ItemNotNull]
         public static async Task<Expression[]> ToRangedExpressionAsync(this IEnumerable<Expression> expressions, IAsyncReadOnlyCollection<Row> rows, HashSet<string> ignoreAliases)
         {
             expressions = expressions.ToArray();
@@ -994,7 +1003,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        internal static bool ContainsField(this Expression expression, DataSource source = null)
+        internal static bool ContainsField(this Expression expression, [CanBeNull] DataSource source = null)
         {
             var result = false;
 
@@ -1197,6 +1206,7 @@ namespace System.Linq.Expressions
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
+        [CanBeNull]
         private static Expression MoveUpRange(Expression expression, params Expression[] subExpressions)
         {
             if (ExpressionExtensions.ContainsField(expression) || expression is RangeExpression)

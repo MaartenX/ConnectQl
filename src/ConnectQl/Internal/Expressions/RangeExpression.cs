@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Expressions
 
     using ConnectQl.Expressions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The range expression.
     /// </summary>
@@ -77,6 +79,7 @@ namespace ConnectQl.Internal.Expressions
         /// <returns>
         /// A textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.
         /// </returns>
+        [NotNull]
         public override string ToString()
         {
             return $"RANGE({RangeExpression.Quote(this.Min)}, {RangeExpression.Quote(this.Max)})";
@@ -92,6 +95,7 @@ namespace ConnectQl.Internal.Expressions
         /// <param name="visitor">
         /// An instance of <see cref="T:System.Func`2"/>.
         /// </param>
+        [NotNull]
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             return this;

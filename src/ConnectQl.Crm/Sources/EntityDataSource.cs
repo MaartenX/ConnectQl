@@ -24,19 +24,25 @@ namespace ConnectQl.Crm.Sources
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.Expressions;
+    using ConnectQl.Expressions.Visitors;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
+
+    using JetBrains.Annotations;
+
     using Microsoft.Xrm.Sdk;
     using Microsoft.Xrm.Sdk.Client;
     using Microsoft.Xrm.Sdk.Messages;
     using Microsoft.Xrm.Sdk.Metadata;
+    using Microsoft.Xrm.Sdk.Query;
     using Microsoft.Xrm.Tooling.Connector;
     using IExecutionContext = Interfaces.IExecutionContext;
 
@@ -102,7 +108,7 @@ namespace ConnectQl.Crm.Sources
         /// <returns>
         /// The <see cref="T:System.Threading.Tasks.Task" />.
         /// </returns>
-        public async Task<IDataSourceDescriptor> GetDataSourceDescriptorAsync(string sourceAlias, Interfaces.IExecutionContext context)
+        public async Task<IDataSourceDescriptor> GetDataSourceDescriptorAsync(string sourceAlias, IExecutionContext context)
         {
             return await Task.Run(() =>
             {
@@ -114,7 +120,7 @@ namespace ConnectQl.Crm.Sources
 
                 return Descriptor.ForDataSource(
                     sourceAlias,
-                    metadata.Attributes.Select(a => Descriptor.ForColumn(a.LogicalName, ToType(a.AttributeType), a.DisplayName?.UserLocalizedLabel?.Label)).Where(a => a.Type != null));
+                    metadata.Attributes.Select(a => Descriptor.ForColumn(a.LogicalName, EntityDataSource.ToType(a.AttributeType), a.DisplayName?.UserLocalizedLabel?.Label)).Where(a => a.Type != null));
             });
         }
 
@@ -129,7 +135,16 @@ namespace ConnectQl.Crm.Sources
         /// </returns>
         public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, IQuery query)
         {
+            GetQueryExpression(query.GetFilter(context));
+
             return context.CreateEmptyAsyncEnumerable<Row>();
+        }
+
+        private QueryExpression GetQueryExpression(Expression filter)
+        {
+            var f = new GenericVisitor() { (CompareExpression c) => { return c; } }.Visit(filter);
+
+            return null;
         }
 
         /// <summary>
@@ -172,6 +187,7 @@ namespace ConnectQl.Crm.Sources
         /// </summary>
         /// <param name="attributeType">Type of the attribute.</param>
         /// <returns>The type.</returns>
+        [CanBeNull]
         private static Type ToType(AttributeTypeCode? attributeType)
         {
             switch (attributeType)
@@ -206,7 +222,8 @@ namespace ConnectQl.Crm.Sources
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>The organization service.</returns>
-        private IOrganizationService GetService(Interfaces.IExecutionContext context)
+        [NotNull]
+        private IOrganizationService GetService(IExecutionContext context)
         {
             var result = this.client ?? (this.client = new CrmServiceClient(this.connectionString ?? (string)context.GetDefault("connectionstring", this)));
 

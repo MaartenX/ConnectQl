@@ -24,6 +24,8 @@ namespace ConnectQl.Tools.Mef.QuickInfo
 {
     using System.Collections.Generic;
 
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
@@ -53,7 +55,7 @@ namespace ConnectQl.Tools.Mef.QuickInfo
         /// <param name="provider">The provider.</param>
         /// <param name="textView">The text view.</param>
         /// <param name="subjectBuffers">The subject buffers.</param>
-        public QuickInfoController(QuickInfoControllerProvider provider, ITextView textView, IList<ITextBuffer> subjectBuffers)
+        public QuickInfoController(QuickInfoControllerProvider provider, [NotNull] ITextView textView, IList<ITextBuffer> subjectBuffers)
         {
             this.provider = provider;
             this.textView = textView;
@@ -96,7 +98,7 @@ namespace ConnectQl.Tools.Mef.QuickInfo
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="eventArgs">The <see cref="MouseHoverEventArgs"/> instance containing the event data.</param>
-        private void TextViewOnMouseHover(object sender, MouseHoverEventArgs eventArgs)
+        private void TextViewOnMouseHover(object sender, [NotNull] MouseHoverEventArgs eventArgs)
         {
             var point = this.textView.BufferGraph.MapDownToFirstMatch(
                 new SnapshotPoint(this.textView.TextSnapshot, eventArgs.Position),

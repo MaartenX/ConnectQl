@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Ast.Expressions
 
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The unary expression.
     /// </summary>
@@ -41,7 +43,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <param name="expression">
         /// The expression.
         /// </param>
-        public UnarySqlExpression(string op, SqlExpressionBase expression)
+        public UnarySqlExpression([CanBeNull] string op, SqlExpressionBase expression)
         {
             this.Op = op?.ToUpperInvariant();
             this.Expression = expression;
@@ -104,6 +106,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString() => $"({this.Op.ToUpperInvariant()} {this.Expression})";
 
         /// <summary>
@@ -115,7 +118,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitUnarySqlExpression(this);
         }
@@ -129,7 +132,8 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node VisitChildren(NodeVisitor visitor)
+        [NotNull]
+        protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
             var expression = visitor.Visit(this.Expression);
 

@@ -32,6 +32,8 @@ namespace ConnectQl.Internal.Validation.Operators
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The converter.
     /// </summary>
@@ -54,7 +56,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The <paramref name="from"/> or a new expression if conversion was necessary.
         /// </returns>
-        public static Expression Convert(Expression from, Type to)
+        public static Expression Convert([NotNull] Expression from, Type to)
         {
             if (from.Type == to)
             {

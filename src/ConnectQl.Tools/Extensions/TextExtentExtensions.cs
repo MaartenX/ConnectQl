@@ -24,6 +24,8 @@ namespace ConnectQl.Tools.Extensions
 {
     using System;
 
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Operations;
 
@@ -67,7 +69,7 @@ namespace ConnectQl.Tools.Extensions
         /// <returns>
         /// The <see cref="TextExtent"/>.
         /// </returns>
-        public static TextExtent IncludeLeft(this TextExtent extent, string surrounding, StringComparison comparison = StringComparison.OrdinalIgnoreCase)
+        public static TextExtent IncludeLeft(this TextExtent extent, [NotNull] string surrounding, StringComparison comparison = StringComparison.OrdinalIgnoreCase)
         {
             var span = extent.Span;
             var start = extent.Span.Start;
@@ -97,7 +99,7 @@ namespace ConnectQl.Tools.Extensions
         /// <returns>
         /// The <see cref="TextExtent"/>.
         /// </returns>
-        public static TextExtent IncludeRight(this TextExtent extent, string surrounding, StringComparison comparison = StringComparison.OrdinalIgnoreCase)
+        public static TextExtent IncludeRight(this TextExtent extent, [NotNull] string surrounding, StringComparison comparison = StringComparison.OrdinalIgnoreCase)
         {
             var span = extent.Span;
             var start = extent.Span.Start;

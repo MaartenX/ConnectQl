@@ -26,6 +26,9 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
     using System.Collections.ObjectModel;
     using System.Linq;
     using ConnectQl.Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
 
@@ -56,7 +59,7 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
         /// <param name="trackingSpan">
         /// The tracking span.
         /// </param>
-        public Signature(ITextBuffer buffer, IFunctionDescriptor function, ITrackingSpan trackingSpan)
+        public Signature([NotNull] ITextBuffer buffer, IFunctionDescriptor function, ITrackingSpan trackingSpan)
         {
             this.ApplicableToSpan = trackingSpan;
             this.function = function;
@@ -80,6 +83,7 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
         /// <summary>
         /// Getst the content.
         /// </summary>
+        [NotNull]
         public string Content => $"{this.function.Name.ToUpperInvariant()} ({string.Join(", ", this.function.Arguments.Select(a => $" {a.Type.SimplifiedType.Name} {a.Name} "))})";
 
         /// <summary>

@@ -32,6 +32,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The inner join source.
     /// </summary>
@@ -72,7 +74,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IAsyncEnumerable{Row}"/>.
         /// </returns>
-        protected override IAsyncEnumerable<Row> CombineResults(CompareExpression[][] joinsParts, RowBuilder rowBuilder, IAsyncReadOnlyCollection<Row> leftData, IAsyncReadOnlyCollection<Row> rightData)
+        protected override IAsyncEnumerable<Row> CombineResults([NotNull] CompareExpression[][] joinsParts, RowBuilder rowBuilder, IAsyncReadOnlyCollection<Row> leftData, IAsyncReadOnlyCollection<Row> rightData)
         {
             return joinsParts
                 .Select(joinPart =>

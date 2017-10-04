@@ -25,6 +25,8 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
     using System.Collections.Generic;
     using System.Linq;
 
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
 
@@ -67,7 +69,7 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
         /// <param name="signatures">
         /// The signatures.
         /// </param>
-        public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures)
+        public void AugmentSignatureHelpSession([NotNull] ISignatureHelpSession session, IList<ISignature> signatures)
         {
             var point = session.GetTriggerPoint(this.textBuffer).GetPoint(this.textBuffer.CurrentSnapshot);
             var functionName = this.provider.NavigatorService.GetTextStructureNavigator(this.textBuffer).GetExtentOfWord(point - 1).Span.GetText();
@@ -95,7 +97,8 @@ namespace ConnectQl.Tools.Mef.SignatureHelp
         /// <returns>
         /// The <see cref="ISignature"/>.
         /// </returns>
-        public ISignature GetBestMatch(ISignatureHelpSession session)
+        [CanBeNull]
+        public ISignature GetBestMatch([NotNull] ISignatureHelpSession session)
         {
             return session.Signatures.FirstOrDefault();
         }

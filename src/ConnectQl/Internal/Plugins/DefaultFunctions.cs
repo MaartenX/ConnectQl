@@ -34,6 +34,8 @@ namespace ConnectQl.Internal.Plugins
     using ConnectQl.Internal.Triggers;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The default functions.
     /// </summary>
@@ -128,6 +130,7 @@ namespace ConnectQl.Internal.Plugins
         /// <summary>
         /// Gets the name.
         /// </summary>
+        [NotNull]
         public string Name => "DefaultFunctions";
 
         /// <summary>
@@ -136,7 +139,7 @@ namespace ConnectQl.Internal.Plugins
         /// <param name="context">
         /// The context.
         /// </param>
-        public void RegisterPlugin(IPluginContext context)
+        public void RegisterPlugin([NotNull] IPluginContext context)
         {
             context.FileFormats.Add(new CsvFileFormat());
 
@@ -282,7 +285,7 @@ namespace ConnectQl.Internal.Plugins
         /// <returns>
         /// The value as int or <c>null</c> if it cannot be converted.
         /// </returns>
-        private static int? ToInt(object value)
+        private static int? ToInt([CanBeNull] object value)
         {
             return int.TryParse(value as string ?? value?.ToString() ?? string.Empty, out int result) ? (int?)result : null;
         }
@@ -294,7 +297,7 @@ namespace ConnectQl.Internal.Plugins
         /// <returns>
         /// The value as float or <c>null</c> if it cannot be converted.
         /// </returns>
-        private static float? ToFloat(object value)
+        private static float? ToFloat([CanBeNull] object value)
         {
             return float.TryParse(value as string ?? value?.ToString() ?? string.Empty, out float result) ? (int?)result : null;
         }
@@ -308,6 +311,7 @@ namespace ConnectQl.Internal.Plugins
         /// <returns>
         /// The <see cref="ITrigger"/>.
         /// </returns>
+        [NotNull]
         private static ITrigger AfterJob(string jobName)
         {
             return new AfterJobTrigger(jobName);
@@ -335,7 +339,7 @@ namespace ConnectQl.Internal.Plugins
         /// <returns>
         /// The value belonging to the classes, or defaultValue if it's not null, or value if defaultValue is null.
         /// </returns>
-        private static string Classify(string value, string classes, string values, string separator, string defaultValue)
+        private static string Classify(string value, [NotNull] string classes, [NotNull] string values, string separator, [CanBeNull] string defaultValue)
         {
             var splittedValues = values.Split(new[] { separator, }, StringSplitOptions.None);
             var splittedClasses = classes.Split(new[] { separator, }, StringSplitOptions.None);
@@ -470,6 +474,7 @@ namespace ConnectQl.Internal.Plugins
         /// <returns>
         /// The <see cref="ITrigger"/>.
         /// </returns>
+        [NotNull]
         private static ITrigger Interval(TimeSpan interval)
         {
             return new IntervalTrigger(interval);

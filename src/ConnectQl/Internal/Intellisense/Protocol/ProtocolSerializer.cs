@@ -32,6 +32,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using System.Text;
     using ConnectQl.Internal.Extensions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The protocol serializer.
     /// </summary>
@@ -277,7 +279,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <returns>
         /// The expression.
         /// </returns>
-        private static Expression WriteObject(ParameterExpression stream, Expression value)
+        private static Expression WriteObject(ParameterExpression stream, [NotNull] Expression value)
         {
             var obj = Expression.Parameter(value.Type);
             var valueIsNotNull = Expression.Parameter(typeof(bool));
@@ -307,7 +309,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <returns>
         /// The expression.
         /// </returns>
-        private static Expression WriteValue(ParameterExpression stream, Expression value)
+        private static Expression WriteValue(ParameterExpression stream, [NotNull] Expression value)
         {
             if (value.Type == typeof(string))
             {
@@ -392,7 +394,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="stream">The stream.</param>
         /// <param name="value">The value.</param>
         /// <returns>The expression.</returns>
-        private static Expression WriteEnumerable(ParameterExpression stream, Expression value)
+        private static Expression WriteEnumerable(ParameterExpression stream, [NotNull] Expression value)
         {
             var collection = value.Type.GetInterface(typeof(ICollection<>));
 

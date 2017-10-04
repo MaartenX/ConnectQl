@@ -34,6 +34,8 @@ namespace ConnectQl.Internal.Intellisense
     using ConnectQl.Internal.Intellisense.Protocol;
     using ConnectQl.Internal.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The statement info.
     /// </summary>
@@ -361,7 +363,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <param name="wasEvaluated">
         ///     <c>true</c> if the variable was evaluated, <c>false</c> if it had side effects.
         /// </param>
-        internal void SetVariable(string variable, object value, bool wasEvaluated)
+        internal void SetVariable(string variable, [CanBeNull] object value, bool wasEvaluated)
         {
             this.variablesValues[variable] = value;
 

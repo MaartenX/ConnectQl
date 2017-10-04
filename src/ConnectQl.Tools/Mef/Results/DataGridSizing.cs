@@ -26,6 +26,8 @@ namespace ConnectQl.Tools.Mef.Results
     using System.Windows;
     using System.Windows.Controls;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Contains attached properties for data grid sizing.
     /// </summary>
@@ -60,7 +62,7 @@ namespace ConnectQl.Tools.Mef.Results
         /// </summary>
         /// <param name="dataGrid">The data grid.</param>
         /// <param name="value">The value.</param>
-        public static void SetInitialWidth(DataGrid dataGrid, double value)
+        public static void SetInitialWidth([NotNull] DataGrid dataGrid, double value)
         {
             dataGrid.SetValue(DataGridSizing.InitialWidthProperty, value);
         }
@@ -70,7 +72,7 @@ namespace ConnectQl.Tools.Mef.Results
         /// </summary>
         /// <param name="dataGrid">The data grid.</param>
         /// <returns>The value.</returns>
-        public static double GetInitialWidth(DataGrid dataGrid)
+        public static double GetInitialWidth([NotNull] DataGrid dataGrid)
         {
             return (double)dataGrid.GetValue(DataGridSizing.InitialWidthProperty);
         }

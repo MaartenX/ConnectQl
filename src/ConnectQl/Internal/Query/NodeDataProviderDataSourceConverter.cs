@@ -42,6 +42,9 @@ namespace ConnectQl.Internal.Query
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Validation;
     using ConnectQl.Results;
+
+    using JetBrains.Annotations;
+
     using JoinSource = Ast.Sources.JoinSource;
 
     /// <summary>
@@ -93,7 +96,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         ///     The <see cref="Expression" />.
         /// </returns>
-        public static Expression ConvertToDataSource(this INodeDataProvider dataProvider, SourceBase source, IMessageWriter messages = null)
+        public static Expression ConvertToDataSource(this INodeDataProvider dataProvider, SourceBase source, [CanBeNull] IMessageWriter messages = null)
         {
             new Evaluator(dataProvider, messages ?? new MessageWriter("null")).Visit(source);
 
@@ -117,7 +120,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         ///     The <see cref="Expression" />.
         /// </returns>
-        public static Expression ConvertToDataTarget(this INodeDataProvider dataProvider, TargetBase target, IMessageWriter messages = null)
+        public static Expression ConvertToDataTarget(this INodeDataProvider dataProvider, TargetBase target, [CanBeNull] IMessageWriter messages = null)
         {
             new Evaluator(dataProvider, messages ?? new MessageWriter("null")).Visit(target);
 
@@ -201,6 +204,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             ///     The node, or a new version of the node.
             /// </returns>
+            [NotNull]
             protected internal override Node VisitApplySource(ApplySource node)
             {
                 node = (ApplySource)base.VisitApplySource(node);
@@ -255,6 +259,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             ///     The node, or a new version of the node.
             /// </returns>
+            [NotNull]
             protected internal override Node VisitFunctionSource(FunctionSource node)
             {
                 node = (FunctionSource)base.VisitFunctionSource(node);
@@ -275,6 +280,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             ///     The node, or a new version of the node.
             /// </returns>
+            [NotNull]
             protected internal override Node VisitFunctionTarget(FunctionTarget node)
             {
                 node = (FunctionTarget)base.VisitFunctionTarget(node);
@@ -293,6 +299,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             ///     The node, or a new version of the node.
             /// </returns>
+            [NotNull]
             protected internal override Node VisitJoinSource(JoinSource node)
             {
                 node = (JoinSource)base.VisitJoinSource(node);
@@ -368,6 +375,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             ///     The node, or a new version of the node.
             /// </returns>
+            [NotNull]
             protected internal override Node VisitSelectSource(SelectSource node)
             {
                 node = (SelectSource)base.VisitSelectSource(node);
@@ -398,6 +406,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             ///     The node, or a new version of the node.
             /// </returns>
+            [NotNull]
             protected internal override Node VisitVariableSource(VariableSource node)
             {
                 node = (VariableSource)base.VisitVariableSource(node);
@@ -416,6 +425,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             ///     The node, or a new version of the node.
             /// </returns>
+            [NotNull]
             protected internal override Node VisitVariableTarget(VariableTarget node)
             {
                 node = (VariableTarget)base.VisitVariableTarget(node);
@@ -458,7 +468,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             ///     The join-expression.
             /// </returns>
-            private static Expression CreateJoin(ConstructorInfo constructor, Expression first, Expression second, params Expression[] rest)
+            private static Expression CreateJoin(ConstructorInfo constructor, Expression first, Expression second, [NotNull] params Expression[] rest)
             {
                 var arguments = new[]
                                     {

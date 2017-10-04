@@ -46,6 +46,10 @@ namespace ConnectQl.Tools.Mef
         /// The DTE.
         /// </summary>
         private readonly DTE dte;
+
+        /// <summary>
+        /// The Visual Studio solution.
+        /// </summary>
         private readonly IVsSolution vsSolution;
 
         /// <summary>

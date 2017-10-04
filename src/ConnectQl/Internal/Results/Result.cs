@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Results
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The result.
     /// </summary>
@@ -64,16 +66,19 @@ namespace ConnectQl.Internal.Results
         /// <summary>
         /// Gets the errors.
         /// </summary>
+        [NotNull]
         public ReadOnlyCollection<Message> Errors => new ReadOnlyCollection<Message>(this.messages.Where(m => m.Type == ResultMessageType.Error).ToList());
 
         /// <summary>
         /// Gets the information messages.
         /// </summary>
+        [NotNull]
         public ReadOnlyCollection<Message> InformationMessages => new ReadOnlyCollection<Message>(this.messages.Where(m => m.Type == ResultMessageType.Information).ToList());
 
         /// <summary>
         /// Gets the warnings.
         /// </summary>
+        [NotNull]
         public ReadOnlyCollection<Message> Warnings => new ReadOnlyCollection<Message>(this.messages.Where(m => m.Type == ResultMessageType.Warning).ToList());
 
         /// <summary>
@@ -91,6 +96,7 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// The data, or <c>default{T}</c> if no data is available.
         /// </returns>
+        [CanBeNull]
         public T GetNodeData<T>(Node node, string type)
         {
             return this.nodeData.TryGetValue(node, out Dictionary<string, object> existingData) && existingData.TryGetValue(type, out object data) && data is T ? (T)data : default(T);

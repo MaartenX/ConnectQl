@@ -29,6 +29,8 @@ namespace ConnectQl.Internal
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The ConnectQl functions.
     /// </summary>
@@ -86,7 +88,8 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IConnectQlFunctions"/>.
         /// </returns>
-        public IConnectQlFunctions AddFunction(string name, IFunctionDescriptor function)
+        [NotNull]
+        public IConnectQlFunctions AddFunction(string name, [NotNull] IFunctionDescriptor function)
         {
             var keyName = $"{name}'{function.Arguments.Count}";
 

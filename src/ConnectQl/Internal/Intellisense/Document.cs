@@ -36,6 +36,8 @@ namespace ConnectQl.Internal.Intellisense
     using ConnectQl.Internal.Intellisense.Protocol;
     using ConnectQl.Internal.Validation;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The document.
     /// </summary>
@@ -243,6 +245,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The <see cref="SerializableDocumentDescriptor"/>.
         /// </returns>
+        [CanBeNull]
         private SerializableDocumentDescriptor GetChanges(SerializableDocumentDescriptor currentDocument)
         {
             var result = new SerializableDocumentDescriptor { Filename = this.Filename, Version = this.Version };
@@ -263,13 +266,14 @@ namespace ConnectQl.Internal.Intellisense
         /// <param name="content">The content to parse.</param>
         /// <param name="descriptorToUpdate">The document to update.</param>
         /// <returns>The parsed document.</returns>
-        private ParsedDocument ParseContent(string content, SerializableDocumentDescriptor descriptorToUpdate)
+        [NotNull]
+        private ParsedDocument ParseContent(string content, [NotNull] SerializableDocumentDescriptor descriptorToUpdate)
         {
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(content)))
             {
                 var tokens = new List<Token>();
                 var context = new ExecutionContextImplementation(this.session.Context, this.Filename);
-                var root = this.session.Context.Parse(stream, context.NodeData, context.Messages, true, tokens);
+                var root = ConnectQlContext.Parse(stream, context.NodeData, context.Messages, true, tokens);
 
                 descriptorToUpdate.Tokens = Classifier.Classify(tokens).Select(token => new SerializableToken(token)).ToArray();
 
@@ -286,7 +290,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <param name="descriptorToUpdate">
         /// The descriptor to update.
         /// </param>
-        private void ValidateDocument(ParsedDocument document, SerializableDocumentDescriptor descriptorToUpdate)
+        private void ValidateDocument([NotNull] ParsedDocument document, [NotNull] SerializableDocumentDescriptor descriptorToUpdate)
         {
             document.Root = Validator.Validate(document.Context, document.Root, out var functionDefinitions);
             var messages = document.Context.Messages.Select(message => new SerializableMessage(message)).ToArray();
@@ -315,7 +319,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// True if the document was updated, false otherwise.
         /// </returns>
-        private bool TryUpdate<T>(SerializableDocumentDescriptor newDocument, SerializableDocumentDescriptor delta, Expression<Func<SerializableDocumentDescriptor, IReadOnlyList<T>>> selector)
+        private bool TryUpdate<T>(SerializableDocumentDescriptor newDocument, SerializableDocumentDescriptor delta, [NotNull] Expression<Func<SerializableDocumentDescriptor, IReadOnlyList<T>>> selector)
         {
             var propertyInfo = (PropertyInfo)((MemberExpression)selector.Body).Member;
             var getValue = selector.Compile();

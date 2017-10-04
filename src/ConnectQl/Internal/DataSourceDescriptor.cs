@@ -27,6 +27,8 @@ namespace ConnectQl.Internal
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Describes a data source.
     /// </summary>
@@ -44,7 +46,7 @@ namespace ConnectQl.Internal
         /// <param name="allowsAnyColumnName">
         /// The allows any column name.
         /// </param>
-        public DataSourceDescriptor(string alias, IEnumerable<IColumnDescriptor> columns, bool allowsAnyColumnName)
+        public DataSourceDescriptor(string alias, [NotNull] IEnumerable<IColumnDescriptor> columns, bool allowsAnyColumnName)
         {
             this.Alias = alias;
             this.Columns = columns.ToArray();

@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Comparers
     using ConnectQl.Expressions;
     using ConnectQl.Internal.Expressions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The expression comparer.
     /// </summary>
@@ -76,7 +78,7 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool Equals(Expression x, Expression y)
+        public bool Equals([CanBeNull] Expression x, [CanBeNull] Expression y)
         {
             return x == null && y == null || x != null && y != null && x.GetType() == y.GetType() &&
                    (
@@ -120,7 +122,7 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public int GetHashCode(Expression obj)
+        public int GetHashCode([CanBeNull] Expression obj)
         {
             return obj?.GetType().GetHashCode() ?? 0;
         }

@@ -28,6 +28,9 @@ namespace ConnectQl.Tools.Mef.Classification
     using System.Linq;
     using ConnectQl.Intellisense;
     using Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Language.StandardClassification;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Classification;
@@ -145,6 +148,7 @@ namespace ConnectQl.Tools.Mef.Classification
         /// <returns>
         /// A list of ClassificationSpans that represent spans identified to be of this classification.
         /// </returns>
+        [NotNull]
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             try

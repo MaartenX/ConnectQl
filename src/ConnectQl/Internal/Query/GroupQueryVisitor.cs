@@ -37,6 +37,8 @@ namespace ConnectQl.Internal.Query
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Validation;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Converts a select query to a group query.
     /// </summary>
@@ -109,6 +111,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The <see cref="IGroupQuery"/>.
         /// </returns>
+        [NotNull]
         public static IGroupQuery GetGroupQuery(SelectFromStatement select, INodeDataProvider data)
         {
             var visitor = new GroupQueryVisitor(select, data);
@@ -123,7 +126,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitAliasedSqlExpression(AliasedSqlExpression node)
+        protected internal override Node VisitAliasedSqlExpression([NotNull] AliasedSqlExpression node)
         {
             if (this.data.GetScope(node.Expression) == NodeScope.Group)
             {
@@ -197,7 +200,8 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectFromStatement(SelectFromStatement node)
+        [NotNull]
+        protected internal override Node VisitSelectFromStatement([NotNull] SelectFromStatement node)
         {
             this.Having = this.Visit(node.Having);
             this.Expressions = this.Visit(node.Expressions);

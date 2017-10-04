@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Results
     using System.Collections.ObjectModel;
     using System.Linq;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Translates wildcard fields so no duplicates are in the result set.
     /// </summary>
@@ -53,7 +55,7 @@ namespace ConnectQl.Internal.Results
         /// <param name="fields">
         /// The fields.
         /// </param>
-        public FieldMapping(IEnumerable<string> fields)
+        public FieldMapping([NotNull] IEnumerable<string> fields)
         {
             this.mappedFields = fields.Select(field => new MappedField(field)).ToArray();
         }
@@ -72,6 +74,7 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// The field name.
         /// </returns>
+        [CanBeNull]
         public string this[string name] => this.mapToInternalName.TryGetValue(name, out string result) ? result : null;
 
         /// <summary>
@@ -94,7 +97,7 @@ namespace ConnectQl.Internal.Results
         /// <param name="fieldNames">
         /// The names of the fields to add.
         /// </param>
-        public void AddRowFields(IEnumerable<string> fieldNames)
+        public void AddRowFields([NotNull] IEnumerable<string> fieldNames)
         {
             if (fieldNames.Aggregate(false, (result, name) => result | this.AddFieldInternal(name)))
             {

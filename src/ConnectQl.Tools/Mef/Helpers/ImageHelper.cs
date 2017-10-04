@@ -25,6 +25,9 @@ namespace ConnectQl.Tools.Mef.Helpers
     using System.Runtime.InteropServices;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Imaging.Interop;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
@@ -43,6 +46,7 @@ namespace ConnectQl.Tools.Mef.Helpers
         /// <returns>
         /// The <see cref="ImageSource"/>.
         /// </returns>
+        [CanBeNull]
         public static ImageSource GetIcon(ImageMoniker moniker)
         {
             var iconService = ServiceProvider.GlobalProvider.GetService(typeof(SVsImageService)) as IVsImageService2;

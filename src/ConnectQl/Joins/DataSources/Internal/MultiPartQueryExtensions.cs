@@ -26,11 +26,12 @@ namespace ConnectQl.Internal.DataSources.Joins
     using System.Linq;
     using System.Linq.Expressions;
 
-    using ConnectQl.AsyncEnumerables;
     using ConnectQl.Expressions;
     using ConnectQl.Expressions.Visitors;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Interfaces;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The multi part query extensions.
@@ -49,7 +50,8 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression GetFilter(this IMultiPartQuery query, IExecutionContext context)
+        [CanBeNull]
+        public static Expression GetFilter([NotNull] this IMultiPartQuery query, IExecutionContext context)
         {
             return query.FilterExpression == null ? null : GenericVisitor.Visit((ExecutionContextExpression e) => Expression.Constant(context), query.FilterExpression);
         }
@@ -69,7 +71,8 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="System.Collections.IEnumerable"/>.
         /// </returns>
-        public static IEnumerable<string> GetUsedFields(this IQuery query, object left, object filter)
+        [NotNull]
+        public static IEnumerable<string> GetUsedFields([NotNull] this IQuery query, object left, object filter)
         {
             return query.Fields.Concat(query.FilterExpression.GetFields().Select(f => f.FieldName)).Concat(query.OrderByExpressions.SelectMany(o => o.Expression.GetFields().Select(f => f.FieldName))).Distinct();
         }
@@ -89,7 +92,8 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="System.Collections.IEnumerable"/>.
         /// </returns>
-        public static IEnumerable<IField> GetUsedFields(this IMultiPartQuery query, object left, object filter)
+        [NotNull]
+        public static IEnumerable<IField> GetUsedFields([NotNull] this IMultiPartQuery query, object left, object filter)
         {
             return query.Fields.Concat(query.FilterExpression.GetFields().Concat(query.OrderByExpressions.SelectMany(o => o.Expression.GetFields()))).Distinct();
         }
@@ -106,7 +110,8 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IMultiPartQuery"/>.
         /// </returns>
-        public static IMultiPartQuery ReplaceFilter(this IMultiPartQuery expression, Expression filter)
+        [NotNull]
+        public static IMultiPartQuery ReplaceFilter([NotNull] this IMultiPartQuery expression, Expression filter)
         {
             return new MultiPartQuery
                        {
@@ -130,7 +135,8 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IMultiPartQuery"/>.
         /// </returns>
-        public static IMultiPartQuery ReplaceOrderBy(this IMultiPartQuery expression, IEnumerable<IOrderByExpression> orderby)
+        [NotNull]
+        public static IMultiPartQuery ReplaceOrderBy([NotNull] this IMultiPartQuery expression, IEnumerable<IOrderByExpression> orderby)
         {
             return new MultiPartQuery
                        {

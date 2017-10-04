@@ -32,6 +32,8 @@ namespace ConnectQl.Internal.Validation
     using ConnectQl.Internal.Ast.Sources;
     using ConnectQl.Internal.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The validation scope.
     /// </summary>
@@ -78,7 +80,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="context">
         /// The context.
         /// </param>
-        public ValidationScope(IValidationContext context)
+        public ValidationScope([NotNull] IValidationContext context)
         {
             this.context = context;
             this.Functions = new ConnectQlFunctions(this.functions, null);
@@ -92,7 +94,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="parent">
         /// The parent.
         /// </param>
-        private ValidationScope(ValidationScope parent)
+        private ValidationScope([NotNull] ValidationScope parent)
             : this(parent.context)
         {
             this.Parent = parent;
@@ -133,6 +135,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The alias for the node.
         /// </returns>
+        [NotNull]
         public string AddAlias(string alias)
         {
             alias = alias ?? "Expr";
@@ -168,7 +171,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="source">
         /// The source.
         /// </param>
-        public void AddSource(string sourceAlias, SourceBase source)
+        public void AddSource([CanBeNull] string sourceAlias, SourceBase source)
         {
             if (sourceAlias != null)
             {
@@ -196,6 +199,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="ValidationScope"/>.
         /// </returns>
+        [NotNull]
         public ValidationScope CreateSubScope()
         {
             return new ValidationScope(this);
@@ -207,7 +211,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="plugin">
         /// The plugin.
         /// </param>
-        public void EnablePlugin(IConnectQlPlugin plugin)
+        public void EnablePlugin([NotNull] IConnectQlPlugin plugin)
         {
             if (this.IsPluginEnabled(plugin.Name))
             {
@@ -248,6 +252,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="IEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
         public IEnumerable<string> GetAvailablePlugins()
         {
             return this.context.GetPlugins().Select(p => p.Name);
@@ -265,7 +270,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="IFunctionDescriptor"/>.
         /// </returns>
-        public IFunctionDescriptor GetFunction(string name, ReadOnlyCollection<SqlExpressionBase> arguments)
+        public IFunctionDescriptor GetFunction(string name, [NotNull] ReadOnlyCollection<SqlExpressionBase> arguments)
         {
             var scope = this;
 
@@ -294,7 +299,7 @@ namespace ConnectQl.Internal.Validation
         /// <exception cref="InvalidOperationException">
         /// Thrown when the source is not found.
         /// </exception>
-        public SourceBase GetSource(string alias)
+        public SourceBase GetSource([CanBeNull] string alias)
         {
             var scope = this;
             while (scope != null && alias != null)

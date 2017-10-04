@@ -29,6 +29,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator used by the <see cref="AsyncEnumerableExtensions.Batch{TSource}"/> method.
     /// </summary>
@@ -125,6 +127,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [CanBeNull]
         protected override IEnumerator<IAsyncEnumerable<TSource>> InitialBatch()
         {
             return this.enumerator == null ? null : this.EnumerateBatches();

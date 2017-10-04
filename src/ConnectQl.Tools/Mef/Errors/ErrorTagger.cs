@@ -27,6 +27,9 @@ namespace ConnectQl.Tools.Mef.Errors
     using System.Linq;
     using ConnectQl.Results;
     using Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
@@ -65,7 +68,7 @@ namespace ConnectQl.Tools.Mef.Errors
         /// The buffer.
         /// </param>
         internal ErrorTagger(
-            ErrorTaggerProvider provider,
+            [NotNull] ErrorTaggerProvider provider,
             ITextView view,
             ITextBuffer buffer)
         {
@@ -93,7 +96,7 @@ namespace ConnectQl.Tools.Mef.Errors
         /// <returns>
         /// A <see cref="T:Microsoft.VisualStudio.Text.Tagging.TagSpan`1" /> for each tag.
         /// </returns>
-        IEnumerable<ITagSpan<ErrorTag>> ITagger<ErrorTag>.GetTags(NormalizedSnapshotSpanCollection spans)
+        IEnumerable<ITagSpan<ErrorTag>> ITagger<ErrorTag>.GetTags([NotNull] NormalizedSnapshotSpanCollection spans)
         {
             foreach (var span in spans)
             {

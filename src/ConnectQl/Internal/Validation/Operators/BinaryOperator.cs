@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Validation.Operators
     using ConnectQl.Expressions;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The binary operator.
     /// </summary>
@@ -104,7 +106,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression GenerateExpression(Expression first, string op, Expression second, Action<string> onError = null)
+        public static Expression GenerateExpression(Expression first, string op, Expression second, [CanBeNull] Action<string> onError = null)
         {
             if (!BinaryOperator.Operators.TryGetValue(op, out Func<Expression, Expression, Expression> generator))
             {
@@ -167,7 +169,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        private static Expression DoConversion(Expression first, Expression second, Func<Expression, Expression, Expression> expression)
+        private static Expression DoConversion(Expression first, Expression second, [NotNull] Func<Expression, Expression, Expression> expression)
         {
             if (first.Type != second.Type)
             {
@@ -198,7 +200,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The generated expression.
         /// </returns>
-        private static Expression GenerateAdd(Expression first, Expression second)
+        private static Expression GenerateAdd([NotNull] Expression first, Expression second)
         {
             return first.Type == typeof(string) || second.Type == typeof(string)
                        ? Expression.Call(typeof(string).GetRuntimeMethod("Concat", new[] { typeof(string), typeof(string) }), Operator.ToString(first), Operator.ToString(second))

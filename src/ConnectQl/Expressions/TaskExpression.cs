@@ -27,6 +27,8 @@ namespace ConnectQl.Expressions
     using System.Reflection;
     using System.Threading.Tasks;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The task expression.
     /// </summary>
@@ -41,7 +43,7 @@ namespace ConnectQl.Expressions
         /// <exception cref="ArgumentException">
         /// Thrown when the expression is not a <see cref="Task{TResult}"/>.
         /// </exception>
-        protected TaskExpression(Expression expression)
+        protected TaskExpression([NotNull] Expression expression)
             : base(TaskExpression.ConvertType(expression.Type))
         {
             this.Expression = expression;
@@ -66,6 +68,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="TaskExpression"/>.
         /// </returns>
+        [NotNull]
         public static TaskExpression Task(Expression expression)
         {
             return new TaskExpression(expression);
@@ -88,6 +91,7 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString()
         {
             return $"await {this.Expression}";
@@ -102,7 +106,8 @@ namespace ConnectQl.Expressions
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        protected override Expression VisitChildren(ExpressionVisitor visitor)
+        [NotNull]
+        protected override Expression VisitChildren([NotNull] ExpressionVisitor visitor)
         {
             var result = visitor.Visit(this.Expression);
 

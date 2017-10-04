@@ -43,6 +43,6 @@ namespace ConnectQl.Results
         /// <summary>
         ///     Gets or sets the warnings.
         /// </summary>
-        IReadOnlyList<IMessage> Warnings { get; set; }
+        IReadOnlyList<IMessage> Warnings { get; }
     }
 }

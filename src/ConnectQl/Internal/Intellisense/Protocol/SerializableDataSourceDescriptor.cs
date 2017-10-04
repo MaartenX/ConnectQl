@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The serializable data source descriptor.
     /// </summary>
@@ -45,7 +47,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="source">
         /// The source.
         /// </param>
-        public SerializableDataSourceDescriptor(IDataSourceDescriptor source)
+        public SerializableDataSourceDescriptor([NotNull] IDataSourceDescriptor source)
         {
             this.Alias = source.Alias;
             this.AllowsAnyColumnName = source.AllowsAnyColumnName;
@@ -71,6 +73,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <summary>
         /// Gets gets or sets the columns for this data source.
         /// </summary>
+        [NotNull]
         IReadOnlyCollection<IColumnDescriptor> IDataSourceDescriptor.Columns => this.Columns ?? new IColumnDescriptor[0];
 
         /// <summary>

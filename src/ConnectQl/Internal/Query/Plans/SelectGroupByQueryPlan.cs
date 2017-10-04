@@ -38,6 +38,8 @@ namespace ConnectQl.Internal.Query.Plans
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The select group query source.
     /// </summary>
@@ -97,7 +99,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <param name="fields">
         /// The fields.
         /// </param>
-        public SelectGroupByQueryPlan(SelectQueryPlan plan, Func<IExecutionContext, IAsyncReadOnlyCollection<Row>, Task<KeyValuePair<string, object>[]>> rowFactory, IEnumerable<string> groupFields, ReadOnlyCollection<AliasedSqlExpression> aliases, Expression having, IEnumerable<OrderByExpression> orders, IEnumerable<string> fields)
+        public SelectGroupByQueryPlan(SelectQueryPlan plan, Func<IExecutionContext, IAsyncReadOnlyCollection<Row>, Task<KeyValuePair<string, object>[]>> rowFactory, [NotNull] IEnumerable<string> groupFields, ReadOnlyCollection<AliasedSqlExpression> aliases, Expression having, IEnumerable<OrderByExpression> orders, [NotNull] IEnumerable<string> fields)
         {
             this.plan = plan;
             this.rowFactory = async (c, rows) =>
@@ -126,6 +128,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <returns>
         /// The <see cref="ExecuteResult"/>.
         /// </returns>
+        [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
             var rowBuilder = new RowBuilder(new FieldMapping(this.fields));

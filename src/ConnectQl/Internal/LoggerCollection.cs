@@ -28,6 +28,8 @@ namespace ConnectQl.Internal
     using System.Linq;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// A collection of loggers.
     /// </summary>
@@ -50,7 +52,7 @@ namespace ConnectQl.Internal
         /// <param name="loggers">
         /// The collection to base this logger collection on.
         /// </param>
-        public LoggerCollection(ICollection<ILogger> loggers)
+        public LoggerCollection([NotNull] ICollection<ILogger> loggers)
         {
             this.loggers = loggers.ToList();
         }
@@ -200,7 +202,7 @@ namespace ConnectQl.Internal
             /// <param name="logger">
             /// The logger to write to.
             /// </param>
-            public void WriteTo(ILogger logger)
+            public void WriteTo([NotNull] ILogger logger)
             {
                 logger.Write(this.logLevel, this.exception, this.format, this.args);
             }

@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Query
     using ConnectQl.Expressions.Visitors;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The query.
     /// </summary>
@@ -50,7 +52,7 @@ namespace ConnectQl.Internal.Query
         /// <param name="count">
         /// The count.
         /// </param>
-        public Query(IEnumerable<string> fields, Expression filter, IEnumerable<IOrderByExpression> orderBy, int? count = null)
+        public Query([CanBeNull] IEnumerable<string> fields, Expression filter, [CanBeNull] IEnumerable<IOrderByExpression> orderBy, int? count = null)
         {
             this.Fields = fields?.ToArray() ?? new string[0];
             this.RetrieveAllFields = false;
@@ -71,7 +73,7 @@ namespace ConnectQl.Internal.Query
         /// <param name="count">
         /// The count.
         /// </param>
-        public Query(Expression filter, IEnumerable<IOrderByExpression> orderBy, int? count = null)
+        public Query(Expression filter, [CanBeNull] IEnumerable<IOrderByExpression> orderBy, int? count = null)
         {
             this.Fields = new string[0];
             this.RetrieveAllFields = true;
@@ -119,6 +121,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The filter for this query, or <c>null</c> when no filter exists.
         /// </returns>
+        [CanBeNull]
         public Expression GetFilter(IExecutionContext context)
         {
             return this.FilterExpression == null ? null : GenericVisitor.Visit((ExecutionContextExpression e) => Expression.Constant(context), this.FilterExpression);
@@ -133,6 +136,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// A collection of sort orders.
         /// </returns>
+        [NotNull]
         public IEnumerable<IOrderByExpression> GetSortOrders(IExecutionContext context)
         {
             var visitor = GenericVisitor.Create((ExecutionContextExpression e) => Expression.Constant(context));

@@ -30,6 +30,8 @@ namespace ConnectQl.Internal
     using System.Threading.Tasks;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The reflection loader.
     /// </summary>
@@ -51,6 +53,7 @@ namespace ConnectQl.Internal
         /// <returns>
         ///     The <see cref="IPluginResolver" />.
         /// </returns>
+        [CanBeNull]
         private static IPluginResolver TryLoadPluginProvider()
         {
             try
@@ -84,6 +87,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The UriResolveMode
         /// </returns>
+        [CanBeNull]
         private static IUriResolver TryCreateUriResolver()
         {
             Type fileType, fileModeType;

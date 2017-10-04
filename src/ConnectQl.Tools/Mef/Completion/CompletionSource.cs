@@ -30,6 +30,9 @@ namespace ConnectQl.Tools.Mef.Completion
     using ConnectQl.Interfaces;
     using Helpers;
     using Interfaces;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Imaging;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
@@ -118,7 +121,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// The set of <see cref="T:Microsoft.VisualStudio.Language.Intellisense.CompletionSet"/>
         ///     objects to be added to the session.
         /// </param>
-        public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
+        public void AugmentCompletionSession([NotNull] ICompletionSession session, IList<CompletionSet> completionSets)
         {
             var subjectTriggerPoint = session.GetTriggerPoint(this.textBuffer.CurrentSnapshot) - 1;
 
@@ -157,7 +160,8 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <returns>
         /// The span to replace and the completions.
         /// </returns>
-        private static IEnumerable<Completion> GetFunctionCompletions(IDocument document)
+        [NotNull]
+        private static IEnumerable<Completion> GetFunctionCompletions([NotNull] IDocument document)
         {
             return
                 document.GetAvailableFunctions().Select(f => new Completion($"{f.Name.ToUpperInvariant()} ( {string.Join(", ", f.Arguments.Select(a => a.Name))} )", f.Name.ToUpperInvariant(), f.Description, f.IsAggregateFunction ? CompletionSource.Aggregate : CompletionSource.Function, "function"));
@@ -175,7 +179,8 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <returns>
         /// The <see cref="Tuple"/>.
         /// </returns>
-        private static Tuple<SnapshotSpan, IEnumerable<Completion>> GetKeywordCompletions(SnapshotSpan spanToReplace, params string[] keywords)
+        [NotNull]
+        private static Tuple<SnapshotSpan, IEnumerable<Completion>> GetKeywordCompletions(SnapshotSpan spanToReplace, [NotNull] params string[] keywords)
         {
             return Tuple.Create(
                 spanToReplace,
@@ -191,7 +196,8 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <returns>
         /// The <see cref="Tuple"/>.
         /// </returns>
-        private static IEnumerable<Completion> GetPluginCompletions(IDocument document)
+        [NotNull]
+        private static IEnumerable<Completion> GetPluginCompletions([NotNull] IDocument document)
         {
             return document.GetAvailablePlugins().Select(p => new Completion($"'{p}'", $"'{p}'", null, CompletionSource.Plugin, "plugin"));
         }
@@ -208,12 +214,14 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <returns>
         /// The <see cref="Tuple"/>.
         /// </returns>
-        private static IEnumerable<Completion> GetVariableCompletions(SnapshotSpan spanToReplace, IDocument document)
+        [NotNull]
+        private static IEnumerable<Completion> GetVariableCompletions(SnapshotSpan spanToReplace, [NotNull] IDocument document)
         {
             return document.GetAvailableVariables(spanToReplace.End).Select(p => new Completion(p.Name, p.Name, p.Value, CompletionSource.Variable, "variable"));
         }
 
-        private static IEnumerable<Completion> GetSourceCompletions(SnapshotSpan spanToReplace, IDocument document)
+        [NotNull]
+        private static IEnumerable<Completion> GetSourceCompletions(SnapshotSpan spanToReplace, [NotNull] IDocument document)
         {
             return document.GetAvailableSources(spanToReplace.End).Select(p => new Completion(p.Alias, p.Alias, null, CompletionSource.Source, "source"));
         }
@@ -223,7 +231,8 @@ namespace ConnectQl.Tools.Mef.Completion
         /// </summary>
         /// <param name="source">The source.</param>
         /// <returns>The span and the completions.</returns>
-        private static IEnumerable<Completion> GetColumnCompletions(IDataSourceDescriptor source)
+        [NotNull]
+        private static IEnumerable<Completion> GetColumnCompletions([NotNull] IDataSourceDescriptor source)
         {
             return
                 source.Columns.SelectMany(c =>
@@ -242,6 +251,7 @@ namespace ConnectQl.Tools.Mef.Completion
         /// <returns>
         /// The <see cref="Tuple"/>.
         /// </returns>
+        [NotNull]
         private Tuple<SnapshotSpan, IEnumerable<Completion>> GuessCompletions(SnapshotPoint subjectTriggerPoint)
         {
             var document = this.provider.DocumentProvider.GetDocument(this.textBuffer);

@@ -34,6 +34,8 @@ namespace ConnectQl.Internal.FileFormats
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The CSV file reader.
     /// </summary>
@@ -67,7 +69,7 @@ namespace ConnectQl.Internal.FileFormats
         /// <returns>
         ///     <c>true</c> if this reader can read the file, <c>false</c> otherwise.
         /// </returns>
-        public bool CanReadThisFile(IFileFormatExecutionContext context, string fileName, byte[] firstBytes)
+        public bool CanReadThisFile(IFileFormatExecutionContext context, [NotNull] string fileName, byte[] firstBytes)
         {
             return fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase);
         }
@@ -81,7 +83,7 @@ namespace ConnectQl.Internal.FileFormats
         /// <returns>
         ///     <c>true</c> if this reader can write the file, <c>false</c> otherwise.
         /// </returns>
-        public bool CanWriteThisFile(string fileName)
+        public bool CanWriteThisFile([NotNull] string fileName)
         {
             return fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase);
         }
@@ -101,7 +103,7 @@ namespace ConnectQl.Internal.FileFormats
         /// <returns>
         ///     The <see cref="System.Threading.Tasks.Task" />.
         /// </returns>
-        public Task<IDataSourceDescriptor> GetDataSourceDescriptorAsync(string alias, IFileFormatExecutionContext context, StreamReader reader)
+        public Task<IDataSourceDescriptor> GetDataSourceDescriptorAsync(string alias, [NotNull] IFileFormatExecutionContext context, StreamReader reader)
         {
             var separator = context.GetDefault("SEPARATOR", false) as string ?? ",";
             return Task.FromResult(Descriptor.ForDataSource(alias, CsvFileFormat.GetHeaders(CsvFileFormat.GetSplitter(separator), reader, separator).Where(header => header.Length > 0).Select(column => Descriptor.ForColumn(column, typeof(string)))));
@@ -125,7 +127,7 @@ namespace ConnectQl.Internal.FileFormats
         /// <returns>
         ///     The rows.
         /// </returns>
-        public IEnumerable<Row> Read(IFileFormatExecutionContext context, IRowBuilder rowBuilder, StreamReader reader, HashSet<string> fields)
+        public IEnumerable<Row> Read([NotNull] IFileFormatExecutionContext context, IRowBuilder rowBuilder, StreamReader reader, HashSet<string> fields)
         {
             var separator = context.GetDefault("SEPARATOR", false) as string ?? ",";
             var splitter = CsvFileFormat.GetSplitter(separator);
@@ -181,7 +183,7 @@ namespace ConnectQl.Internal.FileFormats
         /// <param name="fields">
         ///     The fields.
         /// </param>
-        public void WriteHeader(IFileFormatExecutionContext context, StreamWriter writer, IEnumerable<string> fields)
+        public void WriteHeader(IFileFormatExecutionContext context, [NotNull] StreamWriter writer, [NotNull] IEnumerable<string> fields)
         {
             writer.WriteLine(string.Join(",", fields.Select(c => $"\"{c}\"")));
         }
@@ -204,7 +206,7 @@ namespace ConnectQl.Internal.FileFormats
         /// <returns>
         ///     The number of rows that were written.
         /// </returns>
-        public long WriteRows(IFileFormatExecutionContext context, StreamWriter writer, IEnumerable<Row> rows, bool upsert)
+        public long WriteRows(IFileFormatExecutionContext context, StreamWriter writer, [NotNull] IEnumerable<Row> rows, bool upsert)
         {
             var count = 0L;
 
@@ -226,7 +228,8 @@ namespace ConnectQl.Internal.FileFormats
         /// <returns>
         ///     The <see cref="string" />.
         /// </returns>
-        private static string Escape(object o) =>
+        [CanBeNull]
+        private static string Escape([CanBeNull] object o) =>
             o is Enum || o is string || (o?.GetType().GetTypeInfo().IsValueType ?? false)
                 ? $"\"{o.ToString().Replace("\"", "\"\"")}\""
                 : o?.ToString();
@@ -246,7 +249,8 @@ namespace ConnectQl.Internal.FileFormats
         /// <returns>
         /// The <see cref="T:string[]"/>.
         /// </returns>
-        private static string[] GetHeaders(Regex splitter, TextReader reader, string separator)
+        [NotNull]
+        private static string[] GetHeaders([NotNull] Regex splitter, [NotNull] TextReader reader, string separator)
         {
             var headers = splitter.Matches($"{reader.ReadLine()}{separator}")
                 .Cast<Match>()
@@ -267,6 +271,7 @@ namespace ConnectQl.Internal.FileFormats
         /// <returns>
         ///     The <see cref="Regex" />.
         /// </returns>
+        [NotNull]
         private static Regex GetSplitter(string separator)
         {
             var splitter = new Regex($@"^?\s*(""(?:[^""]|"""")*""\s*|.*?){Regex.Escape(separator)}");

@@ -23,6 +23,10 @@
 namespace ConnectQl.Tools.Mef.ToolBar
 {
     using System.ComponentModel.Composition;
+
+    using ConnectQl.Tools.Interfaces;
+    using ConnectQl.Tools.Mef.Results;
+
     using Microsoft.VisualStudio.Editor;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.TextManager.Interop;
@@ -42,7 +46,19 @@ namespace ConnectQl.Tools.Mef.ToolBar
         /// </summary>
         [Import]
         internal IVsEditorAdaptersFactoryService AdapterService { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the document provider.
+        /// </summary>
+        [Import]
+        internal IDocumentProvider DocumentProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets the panel provider.
+        /// </summary>
+        [Import]
+        internal ResultsPanelProvider PanelProvider { get; set; }
+
         /// <summary>
         /// Called when a <see cref="T:Microsoft.VisualStudio.TextManager.Interop.IVsTextView"/> adapter has been created
         ///     and initialized.

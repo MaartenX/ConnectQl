@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Ast.Expressions
 
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The order by.
     /// </summary>
@@ -103,6 +105,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString() => this.Expression + " " + (this.Ascending ? "ASC" : "DESC");
 
         /// <summary>
@@ -114,7 +117,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitOrderBySqlExpression(this);
         }
@@ -128,7 +131,8 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node VisitChildren(NodeVisitor visitor)
+        [NotNull]
+        protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
             var expression = visitor.Visit(this.Expression);
 

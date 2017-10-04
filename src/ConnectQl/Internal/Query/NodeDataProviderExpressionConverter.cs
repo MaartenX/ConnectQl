@@ -43,6 +43,8 @@ namespace ConnectQl.Internal.Query
     using ConnectQl.Internal.Validation.Operators;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Adds an expression converter to the <see cref="INodeDataProvider"/>.
     /// </summary>
@@ -60,7 +62,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression ConvertToLinqExpression(this INodeDataProvider dataProvider, SqlExpressionBase expression)
+        public static Expression ConvertToLinqExpression(this INodeDataProvider dataProvider, [CanBeNull] SqlExpressionBase expression)
         {
             if (expression == null)
             {
@@ -175,7 +177,7 @@ namespace ConnectQl.Internal.Query
         /// The <paramref name="expression"/> or a new <see cref="CompareExpression"/> when the binary expression was a
         ///     comparison.
         /// </returns>
-        private static Expression ReplaceBinaryCompares(BinaryExpression expression)
+        private static Expression ReplaceBinaryCompares([NotNull] BinaryExpression expression)
         {
             switch (expression.NodeType)
             {
@@ -231,7 +233,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitBinarySqlExpression(BinarySqlExpression node)
+            protected internal override Node VisitBinarySqlExpression([NotNull] BinarySqlExpression node)
             {
                 var result = base.VisitBinarySqlExpression(node);
 
@@ -249,7 +251,8 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitConstSqlExpression(ConstSqlExpression node)
+            [NotNull]
+            protected internal override Node VisitConstSqlExpression([NotNull] ConstSqlExpression node)
             {
                 this.data.SetExpression(node, Expression.Constant(node.Value));
 
@@ -265,7 +268,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
+            protected internal override Node VisitFieldReferenceSqlExpression([NotNull] FieldReferenceSqlExpression node)
             {
                 var result = base.VisitFieldReferenceSqlExpression(node);
 
@@ -340,7 +343,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitUnarySqlExpression(UnarySqlExpression node)
+            protected internal override Node VisitUnarySqlExpression([NotNull] UnarySqlExpression node)
             {
                 var result = base.VisitUnarySqlExpression(node);
 
@@ -358,7 +361,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
+            protected internal override Node VisitVariableSqlExpression([NotNull] VariableSqlExpression node)
             {
                 var result = base.VisitVariableSqlExpression(node);
                 var getVariable = typeof(IExecutionContext).GetRuntimeMethod("GetVariable", new[] { typeof(string), }).MakeGenericMethod(this.data.GetType(node).SimplifiedType);
@@ -459,7 +462,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
+            protected internal override Node VisitVariableSqlExpression([NotNull] VariableSqlExpression node)
             {
                 this.HasSideEffects |= this.hasVariableSideEffects(node.Name);
 
@@ -475,7 +478,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitVariableSource(VariableSource node)
+            protected internal override Node VisitVariableSource([NotNull] VariableSource node)
             {
                 this.HasSideEffects |= this.hasVariableSideEffects(node.Variable);
 

@@ -24,12 +24,14 @@ namespace ConnectQl.Tools.Mef.Results
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Media;
 
     using ConnectQl.Results;
-    using Microsoft.VisualStudio.Text;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text.Editor;
 
     /// <summary>
@@ -48,36 +50,15 @@ namespace ConnectQl.Tools.Mef.Results
         public static readonly DependencyProperty PanelHeightProperty = DependencyProperty.Register("PanelHeight", typeof(double), typeof(ResultsPanel), new PropertyMetadata(400d));
 
         /// <summary>
-        /// Transforms a virtual vector to a device vector.
-        /// </summary>
-        private Matrix transformToDevice;
-
-        /// <summary>
-        /// The text view.
-        /// </summary>
-        private IWpfTextView textView;
-
-        /// <summary>
-        /// The document.
-        /// </summary>
-        private ITextDocument document;
-
-        /// <summary>
         /// Stores the results.
         /// </summary>
         private IExecuteResult result;
 
         /// <summary>
-        /// Stores whether the panel is expanded.
-        /// </summary>
-        private bool isExpanded;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ResultsPanel"/> class.
         /// </summary>
         /// <param name="textView">The text view.</param>
-        /// <param name="document">The document.</param>
-        public ResultsPanel(IWpfTextView textView, ITextDocument document)
+        public ResultsPanel([NotNull] IWpfTextView textView)
         {
             this.DataContext = this;
 
@@ -87,26 +68,12 @@ namespace ConnectQl.Tools.Mef.Results
             {
                 scrollBar.Panel = this;
             }
-
-            this.textView = textView;
-            this.document = document;
-
-            RoutedEventHandler loaded = null;
-
-            loaded = (o, e) =>
-                {
-                    this.transformToDevice = PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice;
-
-                    this.Loaded -= loaded;
-                };
-
-            this.Loaded += loaded;
         }
-        
 
         /// <summary>
         /// Gets or sets a value indicating whether the panel is expanded.
         /// </summary>
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException", Justification = "Dependency property will never be null.")]
         public bool IsExpanded
         {
             get => (bool)this.GetValue(ResultsPanel.IsExpandedProperty);
@@ -116,19 +83,12 @@ namespace ConnectQl.Tools.Mef.Results
         /// <summary>
         /// Gets or sets the panel height.
         /// </summary>
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException", Justification = "Dependency property will never be null.")]
         public double PanelHeight
         {
             get => (double)this.GetValue(ResultsPanel.PanelHeightProperty);
             set => this.SetValue(ResultsPanel.PanelHeightProperty, value);
         }
-
-        /// <summary>
-        /// Gets or sets the scroll bar.
-        /// </summary>
-        /// <value>
-        /// The scroll bar.
-        /// </value>
-        public ResultsPanelScrollBar ScrollBar { get; set; }
 
         /// <summary>
         /// Gets the items.
@@ -157,14 +117,10 @@ namespace ConnectQl.Tools.Mef.Results
             }
         }
 
-        void GridSplitterDragCompleted(object sender, RoutedEventArgs e)
-        {
-            this.PanelHeight = ((Grid)((GridSplitter)sender).Parent).RowDefinitions[2].ActualHeight;
-        }
-
         /// <summary>
         /// Gets the <see cref="T:System.Windows.FrameworkElement" /> that renders the margin.
         /// </summary>
+        [NotNull]
         FrameworkElement IWpfTextViewMargin.VisualElement => this;
 
         /// <summary>
@@ -191,6 +147,7 @@ namespace ConnectQl.Tools.Mef.Results
         /// <returns>
         /// The <see cref="T:Microsoft.VisualStudio.Text.Editor.ITextViewMargin" /> named <paramref name="marginName" />, or null if no match is found.
         /// </returns>
+        [NotNull]
         ITextViewMargin ITextViewMargin.GetTextViewMargin(string marginName)
         {
             return this;
@@ -222,6 +179,20 @@ namespace ConnectQl.Tools.Mef.Results
                     }
                 }
             });
+        }
+
+        /// <summary>
+        /// Called when the grid splitter is dragged.
+        /// </summary>
+        /// <param name="sender">
+        /// The splitter.
+        /// </param>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        private void GridSplitterDragCompleted(object sender, RoutedEventArgs e)
+        {
+            this.PanelHeight = ((Grid)((GridSplitter)sender).Parent).RowDefinitions[2].ActualHeight;
         }
     }
 }

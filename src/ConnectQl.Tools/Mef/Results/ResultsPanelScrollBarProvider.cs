@@ -23,6 +23,9 @@
 namespace ConnectQl.Tools.Mef.Results
 {
     using System.ComponentModel.Composition;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Utilities;
@@ -52,7 +55,7 @@ namespace ConnectQl.Tools.Mef.Results
         /// <returns>
         /// The <see cref="T:Microsoft.VisualStudio.Text.Editor.IWpfTextViewMargin" />.
         /// </returns>
-        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
+        public IWpfTextViewMargin CreateMargin([NotNull] IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             if (!this.DocumentFactoryService.TryGetTextDocument(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer, out var document))
             {

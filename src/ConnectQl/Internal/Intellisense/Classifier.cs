@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Intellisense
 
     using ConnectQl.Intellisense;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Changes classifications for the tokens.
     /// </summary>
@@ -41,7 +43,8 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The classified tokens.
         /// </returns>
-        public static IReadOnlyList<ConnectQlContext.ClassifiedToken> Classify(IList<Token> tokens)
+        [NotNull]
+        public static IReadOnlyList<ConnectQlContext.ClassifiedToken> Classify([NotNull] IList<Token> tokens)
         {
             var result = new List<ConnectQlContext.ClassifiedToken>(tokens.Count);
 
@@ -69,7 +72,7 @@ namespace ConnectQl.Internal.Intellisense
             /// <param name="token">The token.</param>
             /// <param name="classification">The classification.</param>
             /// <param name="completions">The completions.</param>
-            public TokenInfo(Token token, Classification classification, AutoCompletions completions = null)
+            public TokenInfo(Token token, Classification classification, [CanBeNull] AutoCompletions completions = null)
             {
                 this.Token = token;
                 this.Classification = classification;
@@ -88,7 +91,8 @@ namespace ConnectQl.Internal.Intellisense
         /// </summary>
         /// <param name="tokens">The tokens.</param>
         /// <returns>The classified tokens.</returns>
-        private static IEnumerable<TokenInfo> GetClassificiations(IEnumerable<Token> tokens)
+        [ItemNotNull]
+        private static IEnumerable<TokenInfo> GetClassificiations([NotNull] IEnumerable<Token> tokens)
         {
             Token current = null, last = null;
 
@@ -123,7 +127,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The <see cref="Classification"/>.
         /// </returns>
-        private static Classification ClassifyToken(Token previous, Token token, Token next)
+        private static Classification ClassifyToken(Token previous, [NotNull] Token token, Token next)
         {
             switch (token.Kind)
             {

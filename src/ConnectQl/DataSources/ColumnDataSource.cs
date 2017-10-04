@@ -32,6 +32,8 @@ namespace ConnectQl.DataSources
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The column data source.
     /// </summary>
@@ -46,6 +48,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="IDataSource"/>.
         /// </returns>
+        [NotNull]
         public static IDataSource Create(string columnName)
         {
             return new ColumnDataSourceImplementation(columnName);
@@ -63,6 +66,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="IDataSource"/>.
         /// </returns>
+        [NotNull]
         public static IDataSource Create(string columnName, object columnValue)
         {
             return new ColumnDataSourceImplementation(columnName, columnValue);

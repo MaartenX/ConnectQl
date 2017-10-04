@@ -23,6 +23,9 @@
 namespace ConnectQl.Tools.Mef.Results
 {
     using System.ComponentModel.Composition;
+
+    using JetBrains.Annotations;
+
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Classification;
     using Microsoft.VisualStudio.Text.Editor;
@@ -59,14 +62,14 @@ namespace ConnectQl.Tools.Mef.Results
         /// <returns>
         /// The <see cref="T:Microsoft.VisualStudio.Text.Editor.IWpfTextViewMargin" />.
         /// </returns>
-        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
+        public IWpfTextViewMargin CreateMargin([NotNull] IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             if (!this.DocumentFactoryService.TryGetTextDocument(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer, out var document))
             {
                 return null;
             }
 
-            return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(() => new ResultsPanel(wpfTextViewHost.TextView, document));
+            return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(() => new ResultsPanel(wpfTextViewHost.TextView));
         }
     }
 }
