@@ -282,7 +282,7 @@ namespace ConnectQl
         /// </returns>
         async Task<byte[]> IConnectQlContext.ExecuteToByteArrayAsync(string filename, Stream stream)
         {
-            return ProtocolSerializer.Serialize(new SerializableExecuteResult(await this.ExecuteAsync(filename, stream)));
+            return ProtocolSerializer.Serialize(await SerializableExecuteResult.CreateAync(await this.ExecuteAsync(filename, stream)));
         }
 
         /// <summary>

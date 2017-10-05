@@ -1677,12 +1677,12 @@ namespace ConnectQl.AsyncEnumerables
             {
                 do
                 {
-                    result = result == null ? enumerator.CurrentBatchToEnumerable().ToArray() : result.Concat(enumerator.CurrentBatchToEnumerable()).ToArray();
+                    result = result?.Concat(enumerator.CurrentBatchToEnumerable()).ToArray() ?? enumerator.CurrentBatchToEnumerable().ToArray();
                 }
                 while (!enumerator.IsSynchronous && await enumerator.NextBatchAsync().ConfigureAwait(false));
             }
 
-            return result ?? new T[0];
+            return result;
         }
 
         /// <summary>

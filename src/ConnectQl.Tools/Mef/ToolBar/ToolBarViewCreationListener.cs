@@ -54,12 +54,6 @@ namespace ConnectQl.Tools.Mef.ToolBar
         internal IDocumentProvider DocumentProvider { get; set; }
 
         /// <summary>
-        /// Gets or sets the panel provider.
-        /// </summary>
-        [Import]
-        internal ResultsPanelProvider PanelProvider { get; set; }
-
-        /// <summary>
         /// Called when a <see cref="T:Microsoft.VisualStudio.TextManager.Interop.IVsTextView"/> adapter has been created
         ///     and initialized.
         /// </summary>

@@ -30,20 +30,23 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Interfaces;
+    using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
     internal class SerializableExecuteResult : IExecuteResult
     {
         public SerializableExecuteResult()
         {
-            
         }
 
-        public SerializableExecuteResult(IExecuteResult executeResult)
+        public static async Task<SerializableExecuteResult> CreateAync(IExecuteResult executeResult)
         {
-            this.Jobs = executeResult.Jobs.Select(job => new SerializableJob(job)).ToArray();
-            this.QueryResults = executeResult.QueryResults.Select(result => new SerializableQueryResult(result)).ToArray();
-            this.Warnings = executeResult.Warnings.Select(warning => new SerializableMessage(warning)).ToArray();
+            return new SerializableExecuteResult
+                       {
+                           Jobs = executeResult.Jobs.Select(job => new SerializableJob(job)).ToArray(),
+                           Warnings = executeResult.Warnings.Select(warning => new SerializableMessage(warning)).ToArray(),
+                           QueryResults = await Task.WhenAll(executeResult.QueryResults.Select(SerializableQueryResult.CreateAsync))
+                       };
         }
 
         public SerializableJob[] Jobs { get; set; }
@@ -62,21 +65,47 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     internal class SerializableQueryResult : IQueryResult
     {
         public SerializableQueryResult()
-        {
-            
+        {   
         }
 
-        public SerializableQueryResult(IQueryResult result)
-        {
-            this.AffectedRecords = result.AffectedRecords;
-            this.Rows = new string[][] { };
-        }
+        private readonly RowBuilder RowBuilder = new RowBuilder();
 
         public long AffectedRecords { get; set; }
 
-        public string[][] Rows { get; set; }
+        public List<NameValuePair>[] Rows { get; set; }
 
-        IAsyncEnumerable<Row> IQueryResult.Rows { get; }
+        IAsyncEnumerable<Row> IQueryResult.Rows =>
+            new InMemoryPolicy().CreateAsyncEnumerable(this.Rows.Select((r, i) => Row.Create(this.RowBuilder, i, r.Select(nv => new KeyValuePair<string, object>(nv.Name, nv.Value)))));
+
+        public static async Task<SerializableQueryResult> CreateAsync(IQueryResult result)
+        {
+            return new SerializableQueryResult
+                       {
+                           AffectedRecords = result.AffectedRecords,
+                           Rows = await SerializableQueryResult.FlattenRowsAsync(result.Rows)
+                       };
+        }
+
+        private static async Task<List<NameValuePair>[]> FlattenRowsAsync(IAsyncEnumerable<Row> resultRows)
+        {
+            return (await resultRows.ToArrayAsync()).Select(r => r.ToDictionary().Select(kv => new NameValuePair(kv)).ToList()).ToArray();
+        }
+
+        internal class NameValuePair
+        {
+            public NameValuePair()
+            {
+            }
+
+            public NameValuePair(KeyValuePair<string, object> keyValuePair)
+            {
+                this.Name = keyValuePair.Key;
+                this.Value = keyValuePair.Value?.ToString();
+            }
+
+            public string Name { get; set; }
+            public string Value { get; set; }
+        }
     }
 
     internal class SerializableJob : IJob

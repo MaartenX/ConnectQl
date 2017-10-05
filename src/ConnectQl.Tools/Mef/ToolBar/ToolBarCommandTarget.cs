@@ -23,6 +23,7 @@
 namespace ConnectQl.Tools.Mef.ToolBar
 {
     using System;
+    using System.IO;
 
     using ConnectQl.Tools.Interfaces;
     using ConnectQl.Tools.Mef.Results;
@@ -31,6 +32,8 @@ namespace ConnectQl.Tools.Mef.ToolBar
 
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.OLE.Interop;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -43,6 +46,11 @@ namespace ConnectQl.Tools.Mef.ToolBar
         private ITextView textView;
         private ToolBarViewCreationListener toolBarViewCreationListener;
         private IOleCommandTarget next;
+        private bool isScriptRunning;
+
+        private IVsUIShell shell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+
+        private IVsStatusbar statusbar = (IVsStatusbar)Package.GetGlobalService(typeof(SVsStatusbar));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ToolBarCommandTarget"/> class.
@@ -80,7 +88,7 @@ namespace ConnectQl.Tools.Mef.ToolBar
                             commands[i].cmdf = (uint)OLECMDF.OLECMDF_ENABLED | (uint)OLECMDF.OLECMDF_SUPPORTED;
                             return VSConstants.S_OK;
                         case Commands.RunScriptCommandId:
-                            commands[i].cmdf = (uint)OLECMDF.OLECMDF_ENABLED | (uint)OLECMDF.OLECMDF_SUPPORTED;
+                            commands[i].cmdf = (this.isScriptRunning ? 0 : (uint)OLECMDF.OLECMDF_ENABLED) | (uint)OLECMDF.OLECMDF_SUPPORTED;
                             return VSConstants.S_OK;
                     }
                 }
@@ -100,24 +108,46 @@ namespace ConnectQl.Tools.Mef.ToolBar
         /// <returns>The status code.</returns>
         public int Exec(ref Guid commandGroup, uint commandId, uint commandExecutionOptions, IntPtr inputArguments, IntPtr outputArguments)
         {
-            if (commandGroup == Commands.ConnectQlCommandSet)
+            if (commandGroup != Commands.ConnectQlCommandSet)
             {
-                var document = this.toolBarViewCreationListener.DocumentProvider.GetDocument(this.textView.TextBuffer);
-
-                if (this.textView.Properties.TryGetProperty<ResultsPanel>(typeof(ResultsPanel), out var panel))
-                {
-                    this.ExecuteDocument(document, panel);
-                }
-
-                return VSConstants.S_OK;
+                return this.next.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments);
             }
 
-            return this.next.Exec(ref commandGroup, commandId, commandExecutionOptions, inputArguments, outputArguments);
+            var document = this.toolBarViewCreationListener.DocumentProvider.GetDocument(this.textView.TextBuffer);
+
+            if (this.textView.Properties.TryGetProperty<ResultsPanel>(typeof(ResultsPanel), out var panel))
+            {
+                this.ExecuteDocument(document, panel);
+            }
+
+            return VSConstants.S_OK;
         }
 
-        private async void ExecuteDocument(IDocument document, ResultsPanel resultsPanel)
+        /// <summary>
+        /// Executes the document.
+        /// </summary>
+        /// <param name="document">The document to execute.</param>
+        /// <param name="resultsPanel">The results panel to send the result to.</param>
+        private async void ExecuteDocument([NotNull] IDocument document, [NotNull] ResultsPanel resultsPanel)
         {
-            resultsPanel.Result = await document.ExecuteAsync();
+            this.statusbar.GetText(out var text);
+
+            try
+            {
+                this.isScriptRunning = true;
+
+                this.statusbar.SetText($"Running {Path.GetFileName(document.Filename)}...");
+
+                resultsPanel.Result = await document.ExecuteAsync();
+            }
+            finally
+            {
+                this.isScriptRunning = false;
+
+                this.statusbar.SetText(text);
+
+                this.shell.UpdateCommandUI(VSConstants.S_FALSE);
+            }
         }
     }
 }
