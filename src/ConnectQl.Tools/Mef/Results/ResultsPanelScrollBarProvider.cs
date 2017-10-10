@@ -62,7 +62,7 @@ namespace ConnectQl.Tools.Mef.Results
                 return null;
             }
 
-            return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(() => new ResultsPanelScrollBar(wpfTextViewHost.TextView, document));
+            return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(() => new ResultsPanelScrollBar(wpfTextViewHost.TextView));
         }
     }
 }

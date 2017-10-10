@@ -29,6 +29,7 @@ namespace ConnectQl.Tools.Mef.Helpers
     using JetBrains.Annotations;
 
     using Microsoft.VisualStudio.Imaging.Interop;
+    using Microsoft.VisualStudio.PlatformUI;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
 
@@ -43,15 +44,16 @@ namespace ConnectQl.Tools.Mef.Helpers
         /// <param name="moniker">
         /// The moniker.
         /// </param>
+        /// <param name="backColor">
+        /// The background color.
+        /// </param>
         /// <returns>
         /// The <see cref="ImageSource"/>.
         /// </returns>
         [CanBeNull]
-        public static ImageSource GetIcon(ImageMoniker moniker)
+        public static ImageSource GetIcon(ImageMoniker moniker, Color backColor = default(Color))
         {
-            var iconService = ServiceProvider.GlobalProvider.GetService(typeof(SVsImageService)) as IVsImageService2;
-
-            if (iconService == null)
+            if (!(ServiceProvider.GlobalProvider.GetService(typeof(SVsImageService)) is IVsImageService2 iconService))
             {
                 return null;
             }
@@ -65,6 +67,12 @@ namespace ConnectQl.Tools.Mef.Helpers
                 LogicalWidth = 20,
                 StructSize = Marshal.SizeOf(typeof(ImageAttributes))
             };
+
+            if (backColor != default(Color))
+            {
+                imageAttributes.Background = backColor.ToRgba();
+                imageAttributes.Flags |= unchecked((uint)_ImageAttributesFlags.IAF_Background);
+            }
 
             iconService.GetImage(moniker, imageAttributes).get_Data(out var data);
 

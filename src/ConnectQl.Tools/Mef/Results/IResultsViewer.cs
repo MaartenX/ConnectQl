@@ -23,6 +23,7 @@
 namespace ConnectQl.Tools.Mef.Results
 {
     using System.Threading.Tasks;
+
     using ConnectQl.Results;
 
     /// <summary>

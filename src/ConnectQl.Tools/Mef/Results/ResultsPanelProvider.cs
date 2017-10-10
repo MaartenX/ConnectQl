@@ -36,7 +36,7 @@ namespace ConnectQl.Tools.Mef.Results
     /// </summary>
     [Export(typeof(IWpfTextViewMarginProvider))]
     [Name(nameof(ResultsPanelProvider))]
-    [Order(Before = PredefinedMarginNames.BottomControl)]
+    [Order(After = PredefinedMarginNames.BottomControl)]
     [MarginContainer(PredefinedMarginNames.Bottom)]
     [ContentType("ConnectQl")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)] // This is to prevent the margin from loading in the diff view

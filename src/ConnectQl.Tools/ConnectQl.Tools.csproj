@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.1.192" />
     <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
     <PackageReference Include="VSLangProj140" Version="14.0.25029" />
+    <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,7 +39,12 @@
     <Content Include="Icons\Monikers.imagemanifest" IncludeInVSIX="true" />
     <Content Include="Icons.pkgdef" IncludeInVSIX="true" />
     <Content Include="Resources\source.extension.ico" DependentUpon="source.extension.en.resx" />
-    <Compile Update="Mef\Results\ResultsPanel.xaml.cs" DependentUpon="Mef\Results\ResultsPanel.xaml" />
+    
+    <Page Include="Mef\Results\ResultsPanel.xaml" Generator="MSBuild:Compile" />
+    <Page Include="Mef\Results\ResultsPanelScrollBar.xaml" Generator="MSBuild:Compile" />
+    
+    <Compile Update="Mef\Results\ResultsPanel.xaml.cs" DependentUpon="Mef\Results\ResultsPanel.xaml" SubType="Code" />
+    <Compile Update="Mef\Results\ResultsPanelScrollBar.xaml.cs" DependentUpon="Mef\Results\ResultsPanelScrollBar.xaml" SubType="Code" />
     
     <EmbeddedResource Include="Resources\source.extension.en.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -51,16 +57,8 @@
       <MergeWithCTO>true</MergeWithCTO>
       <LogicalName>VSPackage.nl.Resources</LogicalName>
     </EmbeddedResource>
-    
-    <Page Include="Mef\Results\ResultsPanel.xaml" Generator="MSBuild:Compile" />
 
     <Resource Include="Icons\cql.*.png" />
-
-    <Compile Remove="Mef\ToolBar\CommandButtons.cs" />
-
-    <Compile Remove="Mef\ToolBar\RunScriptCommand.cs" />
-
-    <Compile Remove="Properties\Annotations.cs" />
 
     <VSCTCompile Include="Vsct\ConnectQl.Tools.en.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />
     <VSCTCompile Include="Vsct\ConnectQl.Tools.nl.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />
@@ -73,6 +71,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="System.ComponentModel.Composition" />
+    
     <ProjectReference Include="..\ConnectQl.Tools.AssemblyLoader\ConnectQl.Tools.AssemblyLoader.csproj" AdditionalProperties="TargetFramework=net452" />
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" AdditionalProperties="TargetFramework=portable-net45+win8+wpa81+wp8" />
     <ProjectReference Include="..\ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj" AdditionalProperties="TargetFramework=net452">
@@ -80,8 +79,6 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
     </ProjectReference>
-
-    
     
     <!-- Helps to resolve the project references, name is missing when building using the new csproj. -->
     <ProjectReference Update="@(ProjectReference)" Name="%(FileName)" />
