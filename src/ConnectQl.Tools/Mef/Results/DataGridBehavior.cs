@@ -11,14 +11,17 @@
 
     public class DataGridBehavior
     {
-        public static DependencyProperty DisplayRowNumberProperty = DependencyProperty.RegisterAttached("RowNumber", typeof(bool), typeof(DataGridBehavior), new FrameworkPropertyMetadata(false, DataGridBehavior.RowNumberChanged));
+        /// <summary>
+        /// The display row number property.
+        /// </summary>
+        public static readonly DependencyProperty DisplayRowNumberProperty = DependencyProperty.RegisterAttached("RowNumber", typeof(bool), typeof(DataGridBehavior), new FrameworkPropertyMetadata(false, DataGridBehavior.RowNumberChanged));
 
-        public static bool GetDisplayRowNumber(DependencyObject target)
+        public static bool GetDisplayRowNumber(DataGrid target)
         {
             return (bool)target.GetValue(DataGridBehavior.DisplayRowNumberProperty);
         }
 
-        public static void SetDisplayRowNumber(DependencyObject target, bool value)
+        public static void SetDisplayRowNumber(DataGrid target, bool value)
         {
             target.SetValue(DataGridBehavior.DisplayRowNumberProperty, value);
         }
