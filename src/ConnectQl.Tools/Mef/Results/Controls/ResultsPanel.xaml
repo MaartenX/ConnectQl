@@ -284,7 +284,7 @@
                                 <DataTrigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="(local:AnimatedRow.Height)"  Duration="0:0:0.1" To="1">
+                                            <DoubleAnimation Storyboard.TargetProperty="(attachedProperties:AnimatedRow.Height)"  Duration="0:0:0.1" To="1">
                                                 <DoubleAnimation.EasingFunction>
                                                     <CircleEase EasingMode="EaseInOut"/>
                                                 </DoubleAnimation.EasingFunction>
@@ -295,7 +295,7 @@
                                 <DataTrigger.ExitActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="(local:AnimatedRow.Height)"  Duration="0:0:0.100" To="0">
+                                            <DoubleAnimation Storyboard.TargetProperty="(attachedProperties:AnimatedRow.Height)"  Duration="0:0:0.100" To="0">
                                                 <DoubleAnimation.EasingFunction>
                                                     <CircleEase EasingMode="EaseInOut"/>
                                                 </DoubleAnimation.EasingFunction>
