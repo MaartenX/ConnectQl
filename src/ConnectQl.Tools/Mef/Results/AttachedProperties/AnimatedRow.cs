@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Tools.Mef.Results
+namespace ConnectQl.Tools.Mef.Results.AttachedProperties
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;

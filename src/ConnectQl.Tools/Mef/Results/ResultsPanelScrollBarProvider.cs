@@ -24,6 +24,8 @@ namespace ConnectQl.Tools.Mef.Results
 {
     using System.ComponentModel.Composition;
 
+    using ConnectQl.Tools.Mef.Results.Controls;
+
     using JetBrains.Annotations;
 
     using Microsoft.VisualStudio.Text;

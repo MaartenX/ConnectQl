@@ -26,7 +26,7 @@ namespace ConnectQl.Tools.Mef.ToolBar
     using System.IO;
 
     using ConnectQl.Tools.Interfaces;
-    using ConnectQl.Tools.Mef.Results;
+    using ConnectQl.Tools.Mef.Results.Controls;
 
     using JetBrains.Annotations;
 

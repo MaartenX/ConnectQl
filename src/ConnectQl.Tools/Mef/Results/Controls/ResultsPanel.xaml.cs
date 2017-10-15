@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Tools.Mef.Results
+namespace ConnectQl.Tools.Mef.Results.Controls
 {
     using System;
     using System.Collections.ObjectModel;
@@ -30,6 +30,7 @@ namespace ConnectQl.Tools.Mef.Results
     using System.Windows.Media;
 
     using ConnectQl.Results;
+    using ConnectQl.Tools.Mef.Results.ViewModels;
 
     using JetBrains.Annotations;
 
@@ -121,14 +122,13 @@ namespace ConnectQl.Tools.Mef.Results
             set => this.SetValue(ResultsPanel.PanelHeightProperty, value);
         }
         
-
         /// <summary>
         /// Gets the items.
         /// </summary>
         /// <value>
         /// The items.
         /// </value>
-        public ObservableCollection<object> Items { get; } = new ObservableCollection<object>();
+        public ObservableCollection<object> Results { get; } = new ObservableCollection<object>();
 
         /// <summary>
         /// Gets the <see cref="T:System.Windows.FrameworkElement" /> that renders the margin.
@@ -190,7 +190,7 @@ namespace ConnectQl.Tools.Mef.Results
         {
             await this.Dispatcher.InvokeAsync(() =>
             {
-                this.Items.Clear();
+                this.Results.Clear();
 
                 this.IsExpanded = result != null;
 
@@ -201,13 +201,9 @@ namespace ConnectQl.Tools.Mef.Results
 
                 foreach (var qr in result.QueryResults)
                 {
-                    if (qr.Rows == null)
+                    if (qr.Rows != null)
                     {
-                        this.Items.Add(new AffectedRecordsViewModel(qr.AffectedRecords));
-                    }
-                    else
-                    {
-                        this.Items.Add(new RowsViewModel(qr.Rows));
+                        this.Results.Add(new RowsViewModel(qr));
                     }
                 }
             });

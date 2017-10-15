@@ -1,6 +1,5 @@
-﻿namespace ConnectQl.Tools.Mef.Results
+﻿namespace ConnectQl.Tools.Mef.Results.AttachedProperties
 {
-    using System;
     using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Controls;

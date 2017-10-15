@@ -20,16 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Tools.Mef.Results
+namespace ConnectQl.Tools.Mef.Results.ViewModels
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Data;
     using System.Linq;
+    using System.Threading.Tasks;
 
-    using AsyncEnumerablePolicies;
-    using AsyncEnumerables;
+    using ConnectQl.AsyncEnumerablePolicies;
+    using ConnectQl.AsyncEnumerables;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
@@ -42,10 +43,10 @@ namespace ConnectQl.Tools.Mef.Results
         /// <summary>
         /// Initializes a new instance of the <see cref="RowsViewModel" /> class.
         /// </summary>
-        /// <param name="rows">The rows.</param>
-        public RowsViewModel(IAsyncEnumerable<Row> rows)
+        /// <param name="result">The result.</param>
+        public RowsViewModel(IQueryResult result)
         {
-            this.InitializeAsync(rows);
+            Task.Run(() => this.InitializeAsync(result));
         }
 
         /// <summary>
@@ -54,23 +55,22 @@ namespace ConnectQl.Tools.Mef.Results
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Gets the rows.
+        /// Gets the result.
         /// </summary>
         public DataTable Rows { get; private set; }
 
         /// <summary>
         /// Initializes the observable collection.
         /// </summary>
-        /// <param name="rows">
-        /// The rows to add to the view model.
+        /// <param name="result">
+        /// The result to add to the view model.
         /// </param>
-        public async void InitializeAsync([NotNull] IAsyncEnumerable<Row> rows)
+        public async void InitializeAsync([NotNull] IQueryResult result)
         {
             var table = new DataTable();
-
             var types = new Dictionary<string, HashSet<Type>>();
 
-            var rowCollection = await new InMemoryPolicy().MaterializeAsync(rows.Select(row =>
+            var rowCollection = await new InMemoryPolicy().MaterializeAsync(result.Rows.Select(row =>
             {
                 foreach (var column in row.ColumnNames)
                 {

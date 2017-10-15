@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Tools.Mef.Results
+namespace ConnectQl.Tools.Mef.Results.Controls
 {
     using System;
     using System.Globalization;
@@ -30,9 +30,10 @@ namespace ConnectQl.Tools.Mef.Results
     using System.Windows.Data;
 
     using JetBrains.Annotations;
-
+    
     using Microsoft.VisualStudio.PlatformUI;
     using Microsoft.VisualStudio.Text.Editor;
+    using ConnectQl.Tools.Mef.Results.Converters;
 
     /// <summary>
     /// Interaction logic for ResultsPanelScrollBar.xaml
@@ -71,6 +72,10 @@ namespace ConnectQl.Tools.Mef.Results
                 this.GridSplitter.SetBinding(UIElement.VisibilityProperty, new Binding(nameof(UIElement.Visibility)) { Source = value.Splitter, Mode = BindingMode.OneWay });
                 this.ResultsButton.SetBinding(UIElement.IsEnabledProperty, new Binding(nameof(value.Result)) { Source = value, Mode = BindingMode.OneWay, Converter = new NotNullConverter() });
                 this.TopRow.SetBinding(RowDefinition.HeightProperty, new Binding(nameof(value.PanelOffset)) { Source = value, Mode = BindingMode.OneWay, Converter = new DoubleToGridLengthConverter()});
+
+                this.ResultsButton.SetBinding(
+                    FrameworkElement.ToolTipProperty,
+                    new Binding(nameof(value.IsExpanded)) { Source = value, Mode = BindingMode.OneWay, Converter = new BoolToStringConverter { IfTrue = "Hide results", IfFalse = "Show results" } });
 
                 this.ResultsButton.AddHandler(
                     ButtonBase.ClickEvent,

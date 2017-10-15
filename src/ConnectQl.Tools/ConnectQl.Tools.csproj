@@ -40,11 +40,11 @@
     <Content Include="Icons.pkgdef" IncludeInVSIX="true" />
     <Content Include="Resources\source.extension.ico" DependentUpon="source.extension.en.resx" />
     
-    <Page Include="Mef\Results\ResultsPanel.xaml" Generator="MSBuild:Compile" />
-    <Page Include="Mef\Results\ResultsPanelScrollBar.xaml" Generator="MSBuild:Compile" />
+    <Page Include="Mef\Results\Controls\ResultsPanel.xaml" Generator="MSBuild:Compile" />
+    <Page Include="Mef\Results\Controls\ResultsPanelScrollBar.xaml" Generator="MSBuild:Compile" />
     
-    <Compile Update="Mef\Results\ResultsPanel.xaml.cs" DependentUpon="Mef\Results\ResultsPanel.xaml" SubType="Code" />
-    <Compile Update="Mef\Results\ResultsPanelScrollBar.xaml.cs" DependentUpon="Mef\Results\ResultsPanelScrollBar.xaml" SubType="Code" />
+    <Compile Update="Mef\Results\Controls\ResultsPanel.xaml.cs" DependentUpon="Mef\Results\ResultsPanel.xaml" SubType="Code" />
+    <Compile Update="Mef\Results\Controls\ResultsPanelScrollBar.xaml.cs" DependentUpon="Mef\Results\ResultsPanelScrollBar.xaml" SubType="Code" />
     
     <EmbeddedResource Include="Resources\source.extension.en.resx">
       <Generator>ResXFileCodeGenerator</Generator>
