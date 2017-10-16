@@ -113,6 +113,19 @@ namespace ConnectQl.Tools.Mef.Results.Controls
         }
 
         /// <summary>
+        /// Gets the scroll viewer.
+        /// </summary>
+        public ScrollViewer ScrollViewer
+        {
+            get
+            {
+                this.Tabs.ApplyTemplate();
+
+                return this.Tabs.ScrollViewer;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the panel height.
         /// </summary>
         [SuppressMessage("ReSharper", "PossibleNullReferenceException", Justification = "Dependency property will never be null.")]

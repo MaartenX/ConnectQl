@@ -43,7 +43,7 @@
 
         private void OnDragDelta(object o, DragDeltaEventArgs e)
         {
-            this.DragOffset = Math.Max(this.DragOffset + e.VerticalChange, -this.InitialHeight + this.MinValue);
+            this.DragOffset = Math.Max(this.DragOffset + e.VerticalChange, Math.Min(0, -this.InitialHeight + this.MinValue));
         }
 
         public double DragOffset

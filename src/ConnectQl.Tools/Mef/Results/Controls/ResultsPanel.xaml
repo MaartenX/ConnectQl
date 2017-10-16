@@ -23,12 +23,12 @@
         <converters:DataGridMaxHeightConverter x:Key="DataGridMaxHeightConverter" />
         <converters:DivideConverter x:Key="DivideBy2" By="2" />
         <converters:IntToVisibilityConverter x:Key="CollapsedIfOne" Value="1" IfEqual="Collapsed" IfNotEqual="Visible" />
-        <Style TargetType="{x:Type TabControl}">
+        <Style TargetType="{x:Type local:ScrollableTabControl}">
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type TabControl}">
+                    <ControlTemplate TargetType="{x:Type local:ScrollableTabControl}">
                         <Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -57,7 +57,14 @@
                                 Grid.Row="1" 
                                 KeyboardNavigation.TabIndex="2" 
                                 KeyboardNavigation.TabNavigation="Local">
-                                <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="4" SnapsToDevicePixels="true"/>
+                                <ScrollViewer 
+                                    x:Name="PART_ScrollViewer" 
+                                    HorizontalScrollBarVisibility="Disabled" 
+                                    VerticalScrollBarVisibility="Hidden" 
+                                    Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabSelectedTabKey}}" 
+                                    Margin="6">
+                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" SnapsToDevicePixels="true"/>
+                                </ScrollViewer>
                             </Border>
                         </Grid>
                     </ControlTemplate>
@@ -272,7 +279,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="{DynamicResource {x:Static vsfx:VsBrushes.ScrollBarArrowBackgroundKey}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="0*" />
             <RowDefinition Height="Auto" />
@@ -325,9 +332,10 @@
             x:Name="Border"
             Grid.Row="2"
             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" 
-            BorderThickness="0">
+            BorderThickness="0"
+            Focusable="false">
 
-            <TabControl Visibility="{Binding IsExpanded, Converter={StaticResource VisibilityConverter}}">
+            <local:ScrollableTabControl x:Name="Tabs" Visibility="{Binding IsExpanded, Converter={StaticResource VisibilityConverter}}" Focusable="false">
                 <TabItem>
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal">
@@ -341,58 +349,51 @@
                             <TextBlock Text="Results"  />
                         </StackPanel>
                     </TabItem.Header>
-                    <ScrollViewer 
-                        x:Name="ScrollViewer" 
-                        HorizontalScrollBarVisibility="Disabled" 
-                        VerticalScrollBarVisibility="Hidden" 
-                        Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabSelectedTabKey}}" 
-                        Margin="2">
-                        <ItemsControl 
-                            x:Name="Rows"
-                            ItemsSource="{Binding Path=Results}" 
-                            HorizontalAlignment="Stretch" 
-                            HorizontalContentAlignment="Stretch">
-                            <ItemsControl.Resources>
-                                <DataTemplate DataType="{x:Type viewModels:RowsViewModel}">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*" />
-                                            <RowDefinition Height="5" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.Height>
-                                            <MultiBinding Converter="{StaticResource DataGridHeightConverter}">
-                                                <Binding ElementName="ScrollViewer" Path="ActualHeight" />
-                                                <Binding ElementName="Rows" Path="ItemsSource.Count" />
-                                            </MultiBinding>
-                                        </Grid.Height>
-                                        <Grid.MaxHeight>
-                                            <MultiBinding Converter="{StaticResource DataGridMaxHeightConverter}">
-                                                <Binding ElementName="ScrollViewer" Path="ActualHeight" />
-                                                <Binding ElementName="Rows" Path="ItemsSource.Count" />
-                                                <Binding ElementName="Thumb" Path="DragOffset" />
-                                            </MultiBinding>
-                                        </Grid.MaxHeight>
-                                        <DataGrid 
-                                            Grid.Row="0"
-                                            ItemsSource="{Binding Path=Rows}" 
-                                            attachedProperties:DataGridBehavior.DisplayRowNumber="true" 
-                                            CellStyle="{StaticResource DataGridCellStyle}">
-                                        </DataGrid>
-                                        <local:ResizeThumb
-                                            x:Name="Thumb"
-                                            Grid.Row="1"
-                                            HorizontalAlignment="Stretch"
-                                            Height="5"
-                                            MinValue="40"
-                                            Opacity="0"
-                                            Visibility="{Binding ElementName=Rows, Path=ItemsSource.Count, Converter={StaticResource CollapsedIfOne}}"
-                                            InitialHeight="{Binding ElementName=ScrollViewer, Path=ActualHeight, Converter={StaticResource DivideBy2}}"
-                                            Cursor="SizeNS" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.Resources>
-                        </ItemsControl>
-                    </ScrollViewer>
+                    <ItemsControl 
+                        x:Name="Rows"
+                        ItemsSource="{Binding Path=Results}" 
+                        HorizontalAlignment="Stretch" 
+                        HorizontalContentAlignment="Stretch">
+                        <ItemsControl.Resources>
+                            <DataTemplate DataType="{x:Type viewModels:RowsViewModel}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="5" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.Height>
+                                        <MultiBinding Converter="{StaticResource DataGridHeightConverter}">
+                                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ScrollViewer}}" Path="ActualHeight" />
+                                            <Binding ElementName="Rows" Path="ItemsSource.Count" />
+                                        </MultiBinding>
+                                    </Grid.Height>
+                                    <Grid.MaxHeight>
+                                        <MultiBinding Converter="{StaticResource DataGridMaxHeightConverter}">
+                                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ScrollViewer}}" Path="ActualHeight" />
+                                            <Binding ElementName="Rows" Path="ItemsSource.Count" />
+                                            <Binding ElementName="Thumb" Path="DragOffset" />
+                                        </MultiBinding>
+                                    </Grid.MaxHeight>
+                                    <DataGrid 
+                                        Grid.Row="0"
+                                        ItemsSource="{Binding Path=Rows}" 
+                                        attachedProperties:DataGridBehavior.DisplayRowNumber="true" 
+                                        CellStyle="{StaticResource DataGridCellStyle}">
+                                    </DataGrid>
+                                    <local:ResizeThumb
+                                        x:Name="Thumb"
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Stretch"
+                                        Height="5"
+                                        MinValue="40"
+                                        Opacity="0"
+                                        Visibility="{Binding ElementName=Rows, Path=ItemsSource.Count, Converter={StaticResource CollapsedIfOne}}"
+                                        InitialHeight="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ActualHeight, Converter={StaticResource DivideBy2}}"
+                                        Cursor="SizeNS" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.Resources>
+                    </ItemsControl>
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
@@ -409,7 +410,7 @@
                     </TabItem.Header>
                     <Border Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabSelectedTabKey}}" />
                 </TabItem>
-            </TabControl>
+            </local:ScrollableTabControl>
         </Border>
     </Grid>
 </UserControl>
