@@ -7,7 +7,7 @@
 
   <Commands package="guidConnectQlPackage">
     <Menus>
-      <Menu guid="guidConnectQlCommandSet" id="ConnectQlToolBar" type="Toolbar" priority="0x0050">
+      <Menu guid="guidConnectQlCommandSet" id="ConnectQlToolBar" type="Toolbar">
         <CommandFlag>DefaultDocked</CommandFlag>
         <Strings>
           <ButtonText>ConnectQl</ButtonText>
@@ -28,7 +28,6 @@
         <CommandFlag>RouteToDocs</CommandFlag>
         <CommandFlag>IconAndText</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Script uitvoeren</ButtonText>
         </Strings>
