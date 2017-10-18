@@ -58,7 +58,7 @@
       <LogicalName>VSPackage.nl.Resources</LogicalName>
     </EmbeddedResource>
 
-    <Resource Include="Icons\cql.*.png" />
+    <Resource Include="Icons\connectql.*.png" />
 
     <VSCTCompile Include="Vsct\ConnectQl.Tools.en.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />
     <VSCTCompile Include="Vsct\ConnectQl.Tools.nl.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />

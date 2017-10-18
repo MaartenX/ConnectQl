@@ -39,6 +39,7 @@ namespace ConnectQl
     using ConnectQl.Internal.Intellisense.Protocol;
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Query;
+    using ConnectQl.Internal.Results;
     using ConnectQl.Internal.Validation;
     using ConnectQl.Results;
 

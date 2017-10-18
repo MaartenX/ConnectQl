@@ -86,7 +86,9 @@
             Grid.Row="2"
             Orientation="Vertical"
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch" />
+            VerticalAlignment="Stretch"
+            LargeChange="{Binding RelativeSource={RelativeSource Self}, Path=ViewportSize}"
+            SmallChange="10"/>
 
     </Grid>
 </UserControl>

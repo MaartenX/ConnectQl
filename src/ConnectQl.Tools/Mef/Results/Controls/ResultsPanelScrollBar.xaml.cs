@@ -87,7 +87,7 @@ namespace ConnectQl.Tools.Mef.Results.Controls
 
                 value.ScrollViewer.AddHandler(
                     ScrollViewer.ScrollChangedEvent,
-                    (ScrollChangedEventHandler)((o, e) => this.ScrollBar.Value = e.VerticalOffset));
+                    (ScrollChangedEventHandler)((o, e) => this.ScrollBar.Value = o == e.OriginalSource ? e.VerticalOffset : this.ScrollBar.Value));
             }
         }
 
