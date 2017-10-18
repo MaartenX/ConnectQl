@@ -22,18 +22,15 @@
 
   <ItemGroup>
     <Content Include="source.extension.ico" />
-    <None Include="..\ConnectQl.Tools\source.extensions.vsixmanifest">
+    <SourceVsixManifest Include="..\ConnectQl.Tools\source.extensions.vsixmanifest">
       <Link>source.extensions.vsixmanifest</Link>
-    </None>
+    </SourceVsixManifest>
     <VSTemplate Include="ConnectQl.Tools.ItemTemplate.CSharp.vstemplate" OutputSubPath="ConnectQl" SubType="Designer" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.1.192" />
   </ItemGroup>
   
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VsSDKInstall)\Microsoft.VsSDK.targets" Condition="'$(vsSDKInstall)' != '' And Exists('$(VsSDKInstall)\Microsoft.VsSDK.targets')" />
-  
-  <Target Name="VSIXNameProjectOutputGroup" />
+
+  <Target Name="PkgdefProjectOutputGroup" />
+  <Target Name="TemplateProjectOutputGroup" />
 </Project>

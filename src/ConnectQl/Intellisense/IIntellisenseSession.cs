@@ -23,10 +23,10 @@
 namespace ConnectQl.Intellisense
 {
     using System;
-    using ConnectQl.Interfaces;
     using System.IO;
     using System.Threading.Tasks;
 
+    using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
     /// <summary>
@@ -65,15 +65,6 @@ namespace ConnectQl.Intellisense
         /// </param>
         void RemoveDocument(string filename);
         
-        /// <summary>
-        /// Executes the queries in the file or stream.
-        /// </summary>
-        /// <param name="filename">The name of the file.</param>
-        /// <param name="stream">The stream.</param>
-        /// <returns>
-        /// The result.
-        /// </returns>Task<IExecuteResult> ExecuteAsync(string filename, Stream stream);
-
         /// <summary>
         /// Gets the document.
         /// </summary>

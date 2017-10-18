@@ -22,6 +22,7 @@
 
 namespace ConnectQl.Internal.Intellisense.Protocol
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -32,65 +33,61 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using JetBrains.Annotations;
 
     /// <summary>
-    /// The serializable execute result.
+    /// The serializable job.
     /// </summary>
-    internal class SerializableExecuteResult : IExecuteResult
+    internal class SerializableJob : IJob
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerializableExecuteResult"/> class.
+        /// Initializes a new instance of the <see cref="SerializableJob"/> class.
         /// </summary>
         [UsedImplicitly]
-        public SerializableExecuteResult()
+        public SerializableJob()
         {
         }
 
         /// <summary>
-        /// Gets or sets the jobs.
+        /// Initializes a new instance of the <see cref="SerializableJob"/> class.
         /// </summary>
-        public SerializableJob[] Jobs { get; set; }
+        /// <param name="job">
+        /// The job.
+        /// </param>
+        public SerializableJob(IJob job)
+        {
+            this.Name = job.Name;
+            this.Triggers = job.Triggers.Select(trigger => new SerializableJobTrigger(trigger)).ToArray();
+        }
 
         /// <summary>
-        /// Gets or sets the query results.
+        /// Gets or sets the name.
         /// </summary>
-        public SerializableQueryResult[] QueryResults { get; set; }
+        public string Name { get; [UsedImplicitly] set; }
 
         /// <summary>
-        /// Gets or sets the warnings.
+        /// Gets or sets the triggers.
         /// </summary>
-        public SerializableMessage[] Warnings { get; set; }
+        [UsedImplicitly]
+        public SerializableJobTrigger[] Triggers { get; set; }
 
         /// <summary>
-        /// Gets the jobs.
+        /// Gets the triggers.
         /// </summary>
-        IReadOnlyList<IJob> IExecuteResult.Jobs => this.Jobs;
+        IReadOnlyList<IJobTrigger> IJob.Triggers => this.Triggers;
 
         /// <summary>
-        /// Gets the query results.
+        /// Throws a <see cref="NotSupportedException"/>.
         /// </summary>
-        IReadOnlyList<IQueryResult> IExecuteResult.QueryResults => this.QueryResults;
-
-        /// <summary>
-        /// Gets the warnings.
-        /// </summary>
-        IReadOnlyList<IMessage> IExecuteResult.Warnings => this.Warnings;
-
-        /// <summary>
-        /// Creates an execute result from an existing execute result asynchronously.
-        /// </summary>
-        /// <param name="executeResult">
-        /// The existing execute result.
+        /// <param name="jobContext">
+        /// The job context.
         /// </param>
         /// <returns>
-        /// A <see cref="Task{T}"/> returning a serializable execute result.
+        /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<SerializableExecuteResult> CreateAync([NotNull] IExecuteResult executeResult)
+        /// <exception cref="NotSupportedException">
+        /// Always thrown.
+        /// </exception>
+        public Task<IExecuteResult> RunAsync(IJobContext jobContext)
         {
-            return new SerializableExecuteResult
-                       {
-                           Jobs = executeResult.Jobs.Select(job => new SerializableJob(job)).ToArray(),
-                           Warnings = executeResult.Warnings.Select(warning => new SerializableMessage(warning)).ToArray(),
-                           QueryResults = await Task.WhenAll(executeResult.QueryResults.Select(SerializableQueryResult.CreateAsync))
-                       };
+            throw new NotSupportedException();
         }
     }
 }
