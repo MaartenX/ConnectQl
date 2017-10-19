@@ -161,7 +161,7 @@ namespace ConnectQl.Tools.Interfaces
         /// <summary>
         /// Executes the query in the document.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The result of the execution.</returns>
         Task<IExecuteResult> ExecuteAsync();
     }
 }

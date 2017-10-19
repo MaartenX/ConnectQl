@@ -45,6 +45,9 @@ namespace ConnectQl.Tools.Mef
     /// </summary>
     internal class ConnectQlDocument : IDocument
     {
+        /// <summary>
+        /// The session.
+        /// </summary>
         private readonly IntellisenseSession session;
 
         /// <summary>
@@ -80,6 +83,9 @@ namespace ConnectQl.Tools.Mef
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectQlDocument"/> class.
         /// </summary>
+        /// <param name="session">
+        /// The session this document is part of.
+        /// </param>
         /// <param name="filename">
         /// The filename.
         /// </param>
@@ -189,8 +195,6 @@ namespace ConnectQl.Tools.Mef
         {
             return this.tokens.SkipWhile(t => t.End < point.Position).FirstOrDefault();
         }
-
-
 
         /// <summary>
         /// Updates the classifications for this document.

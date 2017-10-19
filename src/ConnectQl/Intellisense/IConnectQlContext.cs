@@ -24,7 +24,7 @@ namespace ConnectQl.Intellisense
 {
     using System.IO;
     using System.Threading.Tasks;
-    
+
     using JetBrains.Annotations;
 
     /// <summary>

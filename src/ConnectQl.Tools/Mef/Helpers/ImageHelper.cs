@@ -53,7 +53,9 @@ namespace ConnectQl.Tools.Mef.Helpers
         [CanBeNull]
         public static ImageSource GetIcon(ImageMoniker moniker, Color backColor = default(Color))
         {
+#pragma warning disable SA1119 // Statement must not use unnecessary parenthesis
             if (!(ServiceProvider.GlobalProvider.GetService(typeof(SVsImageService)) is IVsImageService2 iconService))
+#pragma warning restore SA1119 // Statement must not use unnecessary parenthesis
             {
                 return null;
             }

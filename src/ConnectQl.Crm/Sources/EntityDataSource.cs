@@ -135,16 +135,9 @@ namespace ConnectQl.Crm.Sources
         /// </returns>
         public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, IQuery query)
         {
-            GetQueryExpression(query.GetFilter(context));
+            this.GetQueryExpression(query.GetFilter(context));
 
             return context.CreateEmptyAsyncEnumerable<Row>();
-        }
-
-        private QueryExpression GetQueryExpression(Expression filter)
-        {
-            var f = new GenericVisitor() { (CompareExpression c) => { return c; } }.Visit(filter);
-
-            return null;
         }
 
         /// <summary>
@@ -215,6 +208,23 @@ namespace ConnectQl.Crm.Sources
                 case AttributeTypeCode.ManagedProperty: return typeof(BooleanManagedProperty);
                 default: return null;
             }
+        }
+
+        /// <summary>
+        /// Gets the query expression.
+        /// </summary>
+        /// <param name="filter">
+        /// The filter.
+        /// </param>
+        /// <returns>
+        /// The <see cref="QueryExpression"/>.
+        /// </returns>
+        [CanBeNull]
+        private QueryExpression GetQueryExpression(Expression filter)
+        {
+            var f = new GenericVisitor { (CompareExpression c) => c }.Visit(filter);
+
+            return null;
         }
 
         /// <summary>

@@ -134,7 +134,7 @@ namespace ConnectQl.Tools.Mef.Results.Controls
             get => (double)this.GetValue(ResultsPanel.PanelHeightProperty);
             set => this.SetValue(ResultsPanel.PanelHeightProperty, value);
         }
-        
+
         /// <summary>
         /// Gets the items.
         /// </summary>
@@ -148,7 +148,6 @@ namespace ConnectQl.Tools.Mef.Results.Controls
         /// </summary>
         [NotNull]
         FrameworkElement IWpfTextViewMargin.VisualElement => this;
-        
 
         /// <summary>
         /// Gets the size of the margin.

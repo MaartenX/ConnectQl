@@ -27,18 +27,20 @@ namespace ConnectQl.Tools.Mef.Results.Converters
     using System.Windows;
     using System.Windows.Data;
 
-    using JetBrains.Annotations;
-
     /// <summary>
-    /// The divide converter.
+    /// The bool to string converter.
     /// </summary>
-    [PublicAPI]
-    public class DivideConverter : IValueConverter
+    public class BoolToStringConverter : IValueConverter
     {
         /// <summary>
-        /// Gets or sets the value to divide by.
+        /// Gets or sets the value to convert to if the expression evaluates to <c>true</c>.
         /// </summary>
-        public double By { get; set; }
+        public string IfTrue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value to convert to if the expression evaluates to <c>false</c>.
+        /// </summary>
+        public string IfFalse { get; set; }
 
         /// <summary>Converts a value. </summary>
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
@@ -48,10 +50,9 @@ namespace ConnectQl.Tools.Mef.Results.Converters
         /// <param name="culture">The culture to use in the converter.</param>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is double doubleValue)
+            if (value is bool boolValue)
             {
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
-                return doubleValue / (this.By == 0 ? 1 : this.By);
+                return boolValue ? this.IfTrue : this.IfFalse;
             }
 
             return DependencyProperty.UnsetValue;

@@ -29,11 +29,12 @@ namespace ConnectQl.Tools.Mef.Results.Controls
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
 
+    using ConnectQl.Tools.Mef.Results.Converters;
+
     using JetBrains.Annotations;
-    
+
     using Microsoft.VisualStudio.PlatformUI;
     using Microsoft.VisualStudio.Text.Editor;
-    using ConnectQl.Tools.Mef.Results.Converters;
 
     /// <summary>
     /// Interaction logic for ResultsPanelScrollBar.xaml
@@ -41,7 +42,7 @@ namespace ConnectQl.Tools.Mef.Results.Controls
     internal partial class ResultsPanelScrollBar : UserControl, IWpfTextViewMargin
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectQl.Tools.Mef.Results.ResultsPanelScrollBar"/> class.
+        /// Initializes a new instance of the <see cref="ResultsPanelScrollBar"/> class.
         /// </summary>
         /// <param name="textView">The text view.</param>
         public ResultsPanelScrollBar([NotNull] IWpfTextView textView)
@@ -71,7 +72,7 @@ namespace ConnectQl.Tools.Mef.Results.Controls
                 this.ScrollBar.SetBinding(ScrollBar.ViewportSizeProperty, new Binding(nameof(ScrollViewer.ViewportHeight)) { Source = value.ScrollViewer, Mode = BindingMode.OneWay });
                 this.GridSplitter.SetBinding(UIElement.VisibilityProperty, new Binding(nameof(UIElement.Visibility)) { Source = value.Splitter, Mode = BindingMode.OneWay });
                 this.ResultsButton.SetBinding(UIElement.IsEnabledProperty, new Binding(nameof(value.Result)) { Source = value, Mode = BindingMode.OneWay, Converter = new NotNullConverter() });
-                this.TopRow.SetBinding(RowDefinition.HeightProperty, new Binding(nameof(value.PanelOffset)) { Source = value, Mode = BindingMode.OneWay, Converter = new DoubleToGridLengthConverter()});
+                this.TopRow.SetBinding(RowDefinition.HeightProperty, new Binding(nameof(value.PanelOffset)) { Source = value, Mode = BindingMode.OneWay, Converter = new DoubleToGridLengthConverter() });
 
                 this.ResultsButton.SetBinding(
                     FrameworkElement.ToolTipProperty,

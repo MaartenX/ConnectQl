@@ -56,10 +56,75 @@ namespace ConnectQl.Internal.Intellisense
             { Tuple.Create(TokenScope.Import, Parser.StringSymbol), TokenScope.Root },
         };
 
+        /// <summary>
+        /// The token scope.
+        /// </summary>
+        private enum TokenScope
+        {
+            /// <summary>
+            /// The root.
+            /// </summary>
+            Root,
+
+            /// <summary>
+            /// The select.
+            /// </summary>
+            Select,
+
+            /// <summary>
+            /// The from.
+            /// </summary>
+            From,
+
+            /// <summary>
+            /// The where.
+            /// </summary>
+            Where,
+
+            /// <summary>
+            /// The insert.
+            /// </summary>
+            Insert,
+
+            /// <summary>
+            /// The use.
+            /// </summary>
+            Use,
+
+            /// <summary>
+            /// The declare.
+            /// </summary>
+            Declare,
+
+            /// <summary>
+            /// The import.
+            /// </summary>
+            Import,
+
+            /// <summary>
+            /// The any.
+            /// </summary>
+            Any,
+        }
+
+        /// <summary>
+        /// The open parentheses.
+        /// </summary>
         private enum OpenParens
         {
+            /// <summary>
+            /// The none.
+            /// </summary>
             None,
+
+            /// <summary>
+            /// The function.
+            /// </summary>
             Function,
+
+            /// <summary>
+            /// The expression.
+            /// </summary>
             Expression
         }
 
@@ -192,19 +257,6 @@ namespace ConnectQl.Internal.Intellisense
             }
 
             return new AutoCompletions(AutoCompleteType.Literal, string.Empty);
-        }
-
-        private enum TokenScope
-        {
-            Root,
-            Select,
-            From,
-            Where,
-            Insert,
-            Use,
-            Declare,
-            Import,
-            Any,
         }
     }
 }

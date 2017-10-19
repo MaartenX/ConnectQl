@@ -64,7 +64,7 @@ namespace ConnectQl.Intellisense
         /// The filename.
         /// </param>
         void RemoveDocument(string filename);
-        
+
         /// <summary>
         /// Gets the document.
         /// </summary>

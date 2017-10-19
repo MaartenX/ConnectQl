@@ -22,18 +22,19 @@
 
 namespace ConnectQl.Tools.Mef
 {
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
-    using System.IO;
-    using Interfaces;
-    using Intellisense;
+
     using EnvDTE;
+
+    using Intellisense;
+
+    using Interfaces;
+
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Utilities;
-    using VSLangProj;
 
     /// <summary>
     /// The ConnectQl document provider.

@@ -115,7 +115,6 @@ namespace ConnectQl.Tools.Mef.Classification
             this.document = document;
             this.document.DocumentChanged += (o, e) =>
                 {
-
                     if (e.Change.HasFlag(DocumentChangeType.Tokens))
                     {
                         this.ClassificationChanged?.Invoke(this, new ClassificationChangedEventArgs(new SnapshotSpan(buffer.CurrentSnapshot, 0, buffer.CurrentSnapshot.Length)));

@@ -24,7 +24,6 @@ namespace ConnectQl.Tools.Mef.Intellisense
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -32,8 +31,10 @@ namespace ConnectQl.Tools.Mef.Intellisense
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
-    using Interfaces;
+
     using Errors;
+
+    using Interfaces;
 
     using JetBrains.Annotations;
 

@@ -64,28 +64,6 @@ namespace ConnectQl.Internal.Intellisense
             return result;
         }
 
-        private class TokenInfo
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="TokenInfo"/> class.
-            /// </summary>
-            /// <param name="token">The token.</param>
-            /// <param name="classification">The classification.</param>
-            /// <param name="completions">The completions.</param>
-            public TokenInfo(Token token, Classification classification, [CanBeNull] AutoCompletions completions = null)
-            {
-                this.Token = token;
-                this.Classification = classification;
-                this.AutoCompletions = completions;
-            }
-
-            public Token Token { get; }
-
-            public Classification Classification { get; }
-
-            public AutoCompletions AutoCompletions { get; }
-        }
-
         /// <summary>
         /// Gets the classifications from an enumerable of tokens.
         /// </summary>
@@ -243,6 +221,28 @@ namespace ConnectQl.Internal.Intellisense
             }
 
             return Classification.Unknown;
+        }
+
+        private class TokenInfo
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TokenInfo"/> class.
+            /// </summary>
+            /// <param name="token">The token.</param>
+            /// <param name="classification">The classification.</param>
+            /// <param name="completions">The completions.</param>
+            public TokenInfo(Token token, Classification classification, [CanBeNull] AutoCompletions completions = null)
+            {
+                this.Token = token;
+                this.Classification = classification;
+                this.AutoCompletions = completions;
+            }
+
+            public Token Token { get; }
+
+            public Classification Classification { get; }
+
+            public AutoCompletions AutoCompletions { get; }
         }
     }
 }

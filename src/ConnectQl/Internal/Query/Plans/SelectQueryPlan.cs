@@ -137,7 +137,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// The context.
         /// </param>
         /// <returns>
-        /// The <see cref="Result"/>.
+        /// The <see cref="ExecuteResult"/>.
         /// </returns>
         [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
