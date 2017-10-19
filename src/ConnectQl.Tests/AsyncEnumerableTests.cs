@@ -87,7 +87,7 @@ namespace ConnectQl.Tests
         {
             var enumerator = enumerable.GetAsyncEnumerator();
 
-            Assert.Equal(enumerator.Current, default(T));
+            Assert.Equal(default(T), enumerator.Current);
         }
 
         /// <summary>

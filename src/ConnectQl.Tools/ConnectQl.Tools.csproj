@@ -20,18 +20,17 @@
 
   <ItemGroup>
     <PackageReference Include="EnvDTE100" Version="10.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost" Version="14.0.25424" />
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="14.3.25407" />
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="14.3.25407" />
-    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="14.3.25407" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="14.3.25407" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="14.3.25407" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.14.0" Version="14.3.25407" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="14.3.25407" />
+    <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost" Version="[14.0.25424,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.14.0" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="[14.0.25023,14.1)" />
     <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.1.192" />
     <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
     <PackageReference Include="VSLangProj140" Version="14.0.25029" />
-    <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
   </ItemGroup>
 
   <ItemGroup>
