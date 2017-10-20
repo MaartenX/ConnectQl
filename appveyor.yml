@@ -64,8 +64,8 @@ after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
 
 test_script:
-  - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build --no-restore
-  - OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml"
+  - OpenCover.Console.exe -register:user -target:"c:\program files\dotnet\dotnet.exe" -targetargs:"%xunit20%\..\netcoreapp2.0\xunit.console.dll src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework '.NET Core 1.1'" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml"
+  - OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework '.NET v4.5.2'" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml" -mergeoutput -mergebyhash
   - codecov -f "artifacts\ConnectQl.Coverage.xml"
 
 artifacts:
