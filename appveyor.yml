@@ -21,7 +21,7 @@ branches:
     - development
 
 environment:
-  opencover: OpenConver\tools\OpenConver.Console.exe
+  opencover: OpenCover\tools\OpenCover.Console.exe
   xunitconsole: xunit.runner.console\tools\net452\xunit.console.exe
   xunitcore: xunit.runner.console\tools\netcoreapp2.0\xunit.console.dll
   BUILD_ALL_PLATFORMS: 1
@@ -68,8 +68,8 @@ after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
 
 test_script:
-  - OpenConver\tools\OpenConver.Console.exe -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework netcoreapp1.1" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml"
-  - OpenConver\tools\OpenConver.Console.exe -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework net452" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml"
+  - OpenCover\tools\OpenCover.Console.exe -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework netcoreapp1.1" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml"
+  - OpenCover\tools\OpenCover.Console.exe -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework net452" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml"
   - codecov -f "artifacts\ConnectQl.Coverage.xml"
 
 artifacts:
