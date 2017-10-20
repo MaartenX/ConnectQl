@@ -420,8 +420,8 @@ namespace ConnectQl.Internal.Query
             var query = new MultiPartQuery
                             {
                                 Fields = usedFields,
-                                FilterExpression = this.data.ConvertToLinqExpression(node.Where),
-                                OrderByExpressions = node.Orders.Select(o => new OrderByExpression(this.data.ConvertToLinqExpression(o.Expression), o.Ascending)),
+                                FilterExpression = this.data.ConvertToLinqExpression(node.Where, false),
+                                OrderByExpressions = node.Orders.Select(o => new OrderByExpression(this.data.ConvertToLinqExpression(o.Expression, false), o.Ascending)),
                                 WildcardAliases = wildcardAliases,
                             };
 

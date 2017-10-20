@@ -319,21 +319,21 @@ namespace ConnectQl.Internal.Query
                             typeof(InnerJoin).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second),
-                            Expression.Constant(this.data.ConvertToLinqExpression(node.Expression)));
+                            Expression.Constant(this.data.ConvertToLinqExpression(node.Expression, false)));
                         break;
                     case JoinType.Left:
                         factory = Evaluator.CreateJoin(
                             typeof(LeftJoin).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second),
-                            Expression.Constant(this.data.ConvertToLinqExpression(node.Expression)));
+                            Expression.Constant(this.data.ConvertToLinqExpression(node.Expression, false)));
                         break;
                     case JoinType.NearestInner:
                         factory = Evaluator.CreateJoin(
                             typeof(NearestJoinSource).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second),
-                            Expression.Constant(this.data.ConvertToLinqExpression(node.Expression)),
+                            Expression.Constant(this.data.ConvertToLinqExpression(node.Expression, false)),
                             Expression.Constant(true));
                         break;
                     case JoinType.NearestLeft:
@@ -341,7 +341,7 @@ namespace ConnectQl.Internal.Query
                             typeof(NearestJoinSource).GetTypeInfo().DeclaredConstructors.First(),
                             this.data.GetFactoryExpression(node.First),
                             this.data.GetFactoryExpression(node.Second),
-                            Expression.Constant(this.data.ConvertToLinqExpression(node.Expression)),
+                            Expression.Constant(this.data.ConvertToLinqExpression(node.Expression, false)),
                             Expression.Constant(false));
                         break;
                     case JoinType.SequentialInner:

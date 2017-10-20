@@ -93,7 +93,8 @@ namespace ConnectQl.Tests
         /// The <see cref="Task"/>.
         /// </returns>
         [Theory(DisplayName = "ExecuteAsync should return a joined set. ")]
-        [InlineData("SELECT a.Item FROM SPLIT('31,22,11', ',') a INNER JOIN SPLIT('31,22,11', ',') b ON INT(a.Item)=INT(b.Item)", new[] { "31", "22", "11" })]
+        [InlineData("SELECT a.Item FROM SPLIT('31,22,11', ',') a INNER JOIN SPLIT('22,11,11', ',') b ON INT(a.Item)=INT(b.Item) ORDER BY a.Item ASC", new[] { "11", "11", "22" })]
+        [InlineData("SELECT a.Item FROM SPLIT('31,22,11', ',') a LEFT JOIN SPLIT('22,11,11', ',') b ON INT(a.Item)=INT(b.Item) ORDER BY a.Item ASC", new[] { "11", "11", "22", "31" })]
         public async Task CurrentShouldBeDefault([NotNull] string query, object[] resultValues)
         {
             var context = new ConnectQlContext();

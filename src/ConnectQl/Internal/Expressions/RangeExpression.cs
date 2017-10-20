@@ -24,6 +24,7 @@ namespace ConnectQl.Internal.Expressions
 {
     using System;
     using System.Linq.Expressions;
+    using System.Reflection;
 
     using ConnectQl.Expressions;
 
@@ -49,8 +50,8 @@ namespace ConnectQl.Internal.Expressions
         protected internal RangeExpression(object min, object max, Type type)
             : base(type)
         {
-            this.Min = System.Convert.ChangeType(min, type);
-            this.Max = System.Convert.ChangeType(max, type);
+            this.Min = System.Convert.ChangeType(min, Nullable.GetUnderlyingType(type) ?? type);
+            this.Max = System.Convert.ChangeType(max, Nullable.GetUnderlyingType(type) ?? type);
         }
 
         /// <summary>
