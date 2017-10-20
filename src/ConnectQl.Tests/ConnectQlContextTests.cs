@@ -59,8 +59,8 @@ namespace ConnectQl.Tests
         [InlineData("SELECT * FROM SPLIT('1,2,3', ',') splitted ORDER BY splitted.item DESC", 1, 3, "3")]
         [InlineData("SELECT * FROM SPLIT('1,2,3', ',') splitted SELECT * FROM SPLIT('1,2,3', ',') splitted", 2, 3, "1")]
         [InlineData("SELECT splitted.item FROM SPLIT('1,2,3', ',') splitted GROUP BY splitted.Item", 1, 3, "1")]
-        [InlineData("SELECT COUNT(splitted.item) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1, 3)]
-        [InlineData("SELECT AVG(INT(splitted.item)) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1, 2)]
+        [InlineData("SELECT COUNT(splitted.item) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1, 3l)]
+        [InlineData("SELECT AVG(INT(splitted.item)) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1, 2d)]
         public async Task ExecuteAsyncShouldReturnResult([NotNull] string query, int numResults, int firstResultSetCount, object firstResultValue)
         {
             var context = new ConnectQlContext();
@@ -75,19 +75,13 @@ namespace ConnectQl.Tests
         }
 
         /// <summary>
-        /// Join.
+        /// ExecuteAsync should return a joined set.
         /// </summary>
         /// <param name="query">
         /// The query to execute.
         /// </param>
-        /// <param name="numResults">
-        /// The number of results that should be returned.
-        /// </param>
-        /// <param name="firstResultSetCount">
-        /// The number of results in the first result.
-        /// </param>
-        /// <param name="firstResultValue">
-        /// The first value in the result.
+        /// <param name="resultValues">
+        /// The results to compare with.
         /// </param>
         /// <returns>
         /// The <see cref="Task"/>.
@@ -95,7 +89,8 @@ namespace ConnectQl.Tests
         [Theory(DisplayName = "ExecuteAsync should return a joined set. ")]
         [InlineData("SELECT a.Item FROM SPLIT('31,22,11', ',') a INNER JOIN SPLIT('22,11,11', ',') b ON INT(a.Item)=INT(b.Item) ORDER BY a.Item ASC", new[] { "11", "11", "22" })]
         [InlineData("SELECT a.Item FROM SPLIT('31,22,11', ',') a LEFT JOIN SPLIT('22,11,11', ',') b ON INT(a.Item)=INT(b.Item) ORDER BY a.Item ASC", new[] { "11", "11", "22", "31" })]
-        public async Task CurrentShouldBeDefault([NotNull] string query, object[] resultValues)
+        [InlineData("SELECT a.Item FROM SPLIT('31,22,11', ',') a LEFT JOIN SPLIT('22,44', ',') b ON INT(a.Item)=INT(b.Item) ORDER BY a.Item ASC", new[] { "22" })]
+        public async Task ExecuteAsyncShouldReturnJoinedSet([NotNull] string query, object[] resultValues)
         {
             var context = new ConnectQlContext();
             var result = await context.ExecuteAsync(query);
