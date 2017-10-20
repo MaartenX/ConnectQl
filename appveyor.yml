@@ -42,6 +42,8 @@ install:
 
 before_build:
   - msbuild /t:restore /v:minimal src
+  - choco install opencover.portable
+  - choco install codecov
 
 build_script:
   - msbuild /t:build src
@@ -63,6 +65,8 @@ after_deploy:
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build --no-restore
+  - OpenCover.Console.exe -register:user -target:"dotnet" -targetargs:"test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build --no-restore -f net452" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:".\ConnectQl_coverage.xml"
+  - codecov -f "ConnectQl_coverage.xml"
 
 artifacts:
   - path: artifacts\**\*.*
