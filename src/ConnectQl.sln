@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl", "ConnectQl\ConnectQl.csproj", "{7A245E0E-267D-4115-9A4B-A08C651AFEA5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectQl Solution Items", "ConnectQl Solution Items", "{DD93BAB1-431A-42E3-9285-F0C44CC78783}"
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
+		..\codecov.yml = ..\codecov.yml
 		..\ConnectQl.png = ..\ConnectQl.png
 		..\ps\GetChangesSinceLastBuild.ps1 = ..\ps\GetChangesSinceLastBuild.ps1
 		..\ps\UpdatePackageReferences.ps1 = ..\ps\UpdatePackageReferences.ps1
