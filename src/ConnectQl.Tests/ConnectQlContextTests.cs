@@ -61,7 +61,7 @@ namespace ConnectQl.Tests
         [InlineData("SELECT splitted.item FROM SPLIT('1,2,3', ',') splitted GROUP BY splitted.Item", 1, 3, "1")]
         [InlineData("SELECT COUNT(splitted.item) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1, 3)]
         [InlineData("SELECT AVG(INT(splitted.item)) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1, 2)]
-        public async Task CurrentShouldBeDefault([NotNull] string query, int numResults, int firstResultSetCount, object firstResultValue)
+        public async Task ExecuteAsyncShouldReturnResult([NotNull] string query, int numResults, int firstResultSetCount, object firstResultValue)
         {
             var context = new ConnectQlContext();
             var result = await context.ExecuteAsync(query);
@@ -72,6 +72,38 @@ namespace ConnectQl.Tests
             var row = await result.QueryResults[0].Rows.FirstAsync();
 
             Assert.Equal(firstResultValue, row[row.ColumnNames[0]]);
+        }
+
+        /// <summary>
+        /// Join.
+        /// </summary>
+        /// <param name="query">
+        /// The query to execute.
+        /// </param>
+        /// <param name="numResults">
+        /// The number of results that should be returned.
+        /// </param>
+        /// <param name="firstResultSetCount">
+        /// The number of results in the first result.
+        /// </param>
+        /// <param name="firstResultValue">
+        /// The first value in the result.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [Theory(DisplayName = "ExecuteAsync should return a joined set. ")]
+        [InlineData("SELECT a.Item FROM SPLIT('31,22,11', ',') a INNER JOIN SPLIT('31,22,11', ',') b ON INT(a.Item)=INT(b.Item)", new[] { "31", "22", "11" })]
+        public async Task CurrentShouldBeDefault([NotNull] string query, object[] resultValues)
+        {
+            var context = new ConnectQlContext();
+            var result = await context.ExecuteAsync(query);
+
+            Assert.Equal(1, result.QueryResults.Count);
+
+            var array = await result.QueryResults[0].Rows.Select(r => r["Item"]).ToArrayAsync();
+
+            Assert.Equal(resultValues, array);
         }
     }
 }
