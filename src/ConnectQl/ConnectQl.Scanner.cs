@@ -6,8 +6,6 @@ using System.Collections.Generic;
 
 namespace ConnectQl.Internal
 {
-    using JetBrains.Annotations;
-
     /// <summary>
     /// The token.
     /// </summary>
@@ -84,7 +82,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// The maximum buffer length.
         /// </summary>
-        private const int MaxBufferLength = Buffer.MinBufferLength * 64; // 64KB
+        private const int MaxBufferLength = MinBufferLength * 64; // 64KB
 
         /// <summary>
         /// The input buffer.
@@ -138,7 +136,7 @@ namespace ConnectQl.Internal
             if (this.stream.CanSeek)
             {
                 this.inputStreamLength = (int)this.stream.Length;
-                this.bufferLength = Math.Min(this.inputStreamLength, Buffer.MaxBufferLength);
+                this.bufferLength = Math.Min(this.inputStreamLength, MaxBufferLength);
                 this.firstByte = int.MaxValue; // nothing in the Buffer so far
             }
             else
@@ -146,7 +144,7 @@ namespace ConnectQl.Internal
                 this.inputStreamLength = this.bufferLength = this.firstByte = 0;
             }
 
-            this.byteBuffer = new byte[(this.bufferLength > 0) ? this.bufferLength : Buffer.MinBufferLength];
+            this.byteBuffer = new byte[(this.bufferLength > 0) ? this.bufferLength : MinBufferLength];
             if (this.inputStreamLength > 0)
             {
                 this.Pos = 0; // setup Buffer to position 0 (start)
@@ -169,7 +167,7 @@ namespace ConnectQl.Internal
         /// <param name="b">
         /// The buffer to base this buffer on.
         /// </param>
-        protected Buffer([NotNull] Buffer b)
+        protected Buffer(Buffer b)
         {
             this.byteBuffer = b.byteBuffer;
             this.firstByte = b.firstByte;
@@ -222,7 +220,7 @@ namespace ConnectQl.Internal
             }
             else
             {
-                return Buffer.Eof;
+                return Eof;
             }
         }
 
@@ -251,7 +249,6 @@ namespace ConnectQl.Internal
         /// <returns>
         ///	The string.
         /// </returns>
-        [NotNull]
         public string GetString(int beg, int end)
         {
             var len = 0;
@@ -272,7 +269,10 @@ namespace ConnectQl.Internal
         /// </summary>
         public int Pos
         {
-            get => this.currentPosition + this.firstByte;
+            get
+            {
+                return this.currentPosition + this.firstByte;
+            }
 
             set
             {
@@ -372,8 +372,8 @@ namespace ConnectQl.Internal
             {
                 ch = base.Read();
                 // until we find a utf8 start (0xxxxxxx or 11xxxxxx)
-            } while ((ch >= 128) && ((ch & 0xC0) != 0xC0) && (ch != Buffer.Eof));
-            if (ch < 128 || ch == Buffer.Eof)
+            } while ((ch >= 128) && ((ch & 0xC0) != 0xC0) && (ch != Eof));
+            if (ch < 128 || ch == Eof)
             {
                 // nothing to do, first 127 chars are the same in ascii and utf8
                 // 0xxxxxxx or end of file character
@@ -504,28 +504,28 @@ namespace ConnectQl.Internal
         /// </summary>
         static Scanner()
         {
-            Scanner.Start = new Dictionary<int, int>(128);
-            for (int i = 48; i <= 57; ++i) Scanner.Start[i] = 3;
-            for (int i = 95; i <= 95; ++i) Scanner.Start[i] = 8;
-            for (int i = 97; i <= 122; ++i) Scanner.Start[i] = 8;
-            Scanner.Start[39] = 1;
-            Scanner.Start[91] = 6;
-            Scanner.Start[64] = 9;
-            Scanner.Start[61] = 13;
-            Scanner.Start[44] = 14;
-            Scanner.Start[40] = 15;
-            Scanner.Start[41] = 16;
-            Scanner.Start[62] = 28;
-            Scanner.Start[60] = 29;
-            Scanner.Start[43] = 20;
-            Scanner.Start[45] = 21;
-            Scanner.Start[42] = 22;
-            Scanner.Start[47] = 23;
-            Scanner.Start[37] = 24;
-            Scanner.Start[94] = 25;
-            Scanner.Start[33] = 26;
-            Scanner.Start[46] = 27;
-            Scanner.Start[Buffer.Eof] = -1;
+            Start = new Dictionary<int, int>(128);
+            for (int i = 48; i <= 57; ++i) Start[i] = 3;
+            for (int i = 95; i <= 95; ++i) Start[i] = 8;
+            for (int i = 97; i <= 122; ++i) Start[i] = 8;
+            Start[39] = 1;
+            Start[91] = 6;
+            Start[64] = 9;
+            Start[61] = 13;
+            Start[44] = 14;
+            Start[40] = 15;
+            Start[41] = 16;
+            Start[62] = 28;
+            Start[60] = 29;
+            Start[43] = 20;
+            Start[45] = 21;
+            Start[42] = 22;
+            Start[47] = 23;
+            Start[37] = 24;
+            Start[94] = 25;
+            Start[33] = 26;
+            Start[46] = 27;
+            Start[Buffer.Eof] = -1;
 
         }
 
@@ -538,7 +538,7 @@ namespace ConnectQl.Internal
         public Scanner(Stream s)
         {
             this.Buffer = new Buffer(s, true);
-            this.Init();
+            Init();
         }
 
         /// <summary>
@@ -554,37 +554,32 @@ namespace ConnectQl.Internal
         /// <summary>
         /// Gets the current token.
         /// </summary>
-        public Token Current => this.t;
+        public Token Current { get { return this.t; } }
 
         /// <summary>
         /// Initializes the scanner.
         /// </summary>
         void Init()
         {
-            this.pos = -1;
-            this.line = 1;
-            this.col = 0;
-            this.charPos = -1;
-            this.oldEols = 0;
-            this.NextCh();
-            if (this.ch == 0xEF)
+            pos = -1; line = 1; col = 0; charPos = -1;
+            oldEols = 0;
+            NextCh();
+            if (ch == 0xEF)
             { // check optional byte order mark for UTF-8
-                this.NextCh(); int ch1 = this.ch;
-                this.NextCh(); int ch2 = this.ch;
+                NextCh(); int ch1 = ch;
+                NextCh(); int ch2 = ch;
                 if (ch1 != 0xBB || ch2 != 0xBF)
                 {
                     throw new FatalError(String.Format("illegal byte order mark: EF {0,2:X} {1,2:X}", ch1, ch2));
                 }
-                this.Buffer = new UTF8Buffer(this.Buffer);
-                this.col = 0;
-                this.charPos = -1;
-                this.NextCh();
+                Buffer = new UTF8Buffer(Buffer); col = 0; charPos = -1;
+                NextCh();
             }
             else
             {
-                this.Buffer = new UTF8Buffer(this.Buffer);
+                Buffer = new UTF8Buffer(Buffer);
             }
-            this.pt = this.tokens = new Token();  // first token is a dummy
+            pt = tokens = new Token();  // first token is a dummy
         }
 
         /// <summary>
@@ -592,27 +587,21 @@ namespace ConnectQl.Internal
         /// </summary>
         void NextCh()
         {
-            if (this.oldEols > 0) {
-                this.ch = Scanner.EndOfLine;
-                this.oldEols--; }
+            if (oldEols > 0) { ch = EndOfLine; oldEols--; }
             else
             {
-                this.pos = this.Buffer.Pos;
+                pos = Buffer.Pos;
                 // Buffer reads unicode chars, if UTF8 has been detected
-                this.ch = this.Buffer.Read();
-                this.col++;
-                this.charPos++;
+                ch = Buffer.Read(); col++; charPos++;
                 // replace isolated '\r' by '\n' in order to make
                 // eol handling uniform across Windows, Unix and Mac
-                if (this.ch == '\r' && this.Buffer.Peek() != '\n') this.ch = Scanner.EndOfLine;
-                if (this.ch == Scanner.EndOfLine) {
-                    this.line++;
-                    this.col = 0; }
+                if (ch == '\r' && Buffer.Peek() != '\n') ch = EndOfLine;
+                if (ch == EndOfLine) { line++; col = 0; }
             }
-            if (this.ch != Buffer.Eof)
+            if (ch != Buffer.Eof)
             {
-                this.valCh = (char) this.ch;
-                this.ch = char.ToLower((char) this.ch);
+                valCh = (char)ch;
+                ch = char.ToLower((char)ch);
             }
 
         }
@@ -622,123 +611,96 @@ namespace ConnectQl.Internal
         /// </summary>
         void AddCh()
         {
-            if (this.tlen >= this.tval.Length)
+            if (tlen >= tval.Length)
             {
-                char[] newBuf = new char[2 * this.tval.Length];
-                Array.Copy(this.tval, 0, newBuf, 0, this.tval.Length);
-                this.tval = newBuf;
+                char[] newBuf = new char[2 * tval.Length];
+                Array.Copy(tval, 0, newBuf, 0, tval.Length);
+                tval = newBuf;
             }
-            if (this.ch != Buffer.Eof)
+            if (ch != Buffer.Eof)
             {
-                this.tval[this.tlen++] = this.valCh;
-                this.NextCh();
+                tval[tlen++] = valCh;
+                NextCh();
             }
         }
         bool Comment0()
         {
-            int level = 1, pos0 = this.pos, line0 = this.line, col0 = this.col, charPos0 = this.charPos;
-            this.AddCh();
-            if (this.ch == '-')
+            int level = 1, pos0 = pos, line0 = line, col0 = col, charPos0 = charPos;
+            AddCh();
+            if (ch == '-')
             {
-                this.AddCh();
+                AddCh();
                 for (; ; )
                 {
-                    if (this.ch == 10)
+                    if (ch == 10)
                     {
                         level--;
-                        if (level == 0) {
-                            this.oldEols = this.line - line0;
-                            this.AddCh(); if (this.EmitComments) {
-                                this.t.Val = new String(this.tval, 0, this.tlen);
-                                this.tlen = 0;
-                                this.t.Kind = 6; } return true; }
-                        this.AddCh();
+                        if (level == 0) { oldEols = line - line0; AddCh(); if (this.EmitComments) { t.Val = new String(tval, 0, tlen); tlen = 0; t.Kind = 6; } return true; }
+                        AddCh();
                     }
-                    else if (this.ch == Buffer.Eof) return false;
-                    else this.AddCh();
+                    else if (ch == Buffer.Eof) return false;
+                    else AddCh();
                 }
             }
             else
             {
-                this.Buffer.Pos = pos0;
-                this.AddCh();
-                this.line = line0;
-                this.col = col0;
-                this.charPos = charPos0;
+                this.Buffer.Pos = pos0; AddCh(); line = line0; col = col0; charPos = charPos0;
             }
             return false;
         }
 
         bool Comment1()
         {
-            int level = 1, pos0 = this.pos, line0 = this.line, col0 = this.col, charPos0 = this.charPos;
-            this.AddCh();
-            if (this.ch == '/')
+            int level = 1, pos0 = pos, line0 = line, col0 = col, charPos0 = charPos;
+            AddCh();
+            if (ch == '/')
             {
-                this.AddCh();
+                AddCh();
                 for (; ; )
                 {
-                    if (this.ch == 10)
+                    if (ch == 10)
                     {
                         level--;
-                        if (level == 0) {
-                            this.oldEols = this.line - line0;
-                            this.AddCh(); if (this.EmitComments) {
-                                this.t.Val = new String(this.tval, 0, this.tlen);
-                                this.tlen = 0;
-                                this.t.Kind = 7; } return true; }
-                        this.AddCh();
+                        if (level == 0) { oldEols = line - line0; AddCh(); if (this.EmitComments) { t.Val = new String(tval, 0, tlen); tlen = 0; t.Kind = 7; } return true; }
+                        AddCh();
                     }
-                    else if (this.ch == Buffer.Eof) return false;
-                    else this.AddCh();
+                    else if (ch == Buffer.Eof) return false;
+                    else AddCh();
                 }
             }
             else
             {
-                this.Buffer.Pos = pos0;
-                this.AddCh();
-                this.line = line0;
-                this.col = col0;
-                this.charPos = charPos0;
+                this.Buffer.Pos = pos0; AddCh(); line = line0; col = col0; charPos = charPos0;
             }
             return false;
         }
 
         bool Comment2()
         {
-            int level = 1, pos0 = this.pos, line0 = this.line, col0 = this.col, charPos0 = this.charPos;
-            this.AddCh();
-            if (this.ch == '*')
+            int level = 1, pos0 = pos, line0 = line, col0 = col, charPos0 = charPos;
+            AddCh();
+            if (ch == '*')
             {
-                this.AddCh();
+                AddCh();
                 for (; ; )
                 {
-                    if (this.ch == '*')
+                    if (ch == '*')
                     {
-                        this.AddCh();
-                        if (this.ch == '/')
+                        AddCh();
+                        if (ch == '/')
                         {
                             level--;
-                            if (level == 0) {
-                                this.oldEols = this.line - line0;
-                                this.AddCh(); if (this.EmitComments) {
-                                    this.t.Val = new String(this.tval, 0, this.tlen);
-                                    this.tlen = 0;
-                                    this.t.Kind = 8; } return true; }
-                            this.AddCh();
+                            if (level == 0) { oldEols = line - line0; AddCh(); if (this.EmitComments) { t.Val = new String(tval, 0, tlen); tlen = 0; t.Kind = 8; } return true; }
+                            AddCh();
                         }
                     }
-                    else if (this.ch == Buffer.Eof) return false;
-                    else this.AddCh();
+                    else if (ch == Buffer.Eof) return false;
+                    else AddCh();
                 }
             }
             else
             {
-                this.Buffer.Pos = pos0;
-                this.AddCh();
-                this.line = line0;
-                this.col = col0;
-                this.charPos = charPos0;
+                this.Buffer.Pos = pos0; AddCh(); line = line0; col = col0; charPos = charPos0;
             }
             return false;
         }
@@ -747,90 +709,49 @@ namespace ConnectQl.Internal
         /// </summary>
         void CheckLiteral()
         {
-            switch (this.t.Val.ToLower())
+            switch (t.Val.ToLower())
             {
-                case "use":
-                    this.t.Kind = 9; break;
-                case "default":
-                    this.t.Kind = 10; break;
-                case "for":
-                    this.t.Kind = 11; break;
-                case "declare":
-                    this.t.Kind = 13; break;
-                case "job":
-                    this.t.Kind = 15; break;
-                case "triggered":
-                    this.t.Kind = 16; break;
-                case "every":
-                    this.t.Kind = 17; break;
-                case "after":
-                    this.t.Kind = 18; break;
-                case "by":
-                    this.t.Kind = 19; break;
-                case "or":
-                    this.t.Kind = 20; break;
-                case "begin":
-                    this.t.Kind = 21; break;
-                case "end":
-                    this.t.Kind = 22; break;
-                case "trigger":
-                    this.t.Kind = 23; break;
-                case "import":
-                    this.t.Kind = 24; break;
-                case "plugin":
-                    this.t.Kind = 25; break;
-                case "insert":
-                    this.t.Kind = 26; break;
-                case "upsert":
-                    this.t.Kind = 27; break;
-                case "into":
-                    this.t.Kind = 28; break;
-                case "union":
-                    this.t.Kind = 29; break;
-                case "select":
-                    this.t.Kind = 32; break;
-                case "from":
-                    this.t.Kind = 33; break;
-                case "where":
-                    this.t.Kind = 34; break;
-                case "group":
-                    this.t.Kind = 35; break;
-                case "having":
-                    this.t.Kind = 36; break;
-                case "order":
-                    this.t.Kind = 37; break;
-                case "asc":
-                    this.t.Kind = 38; break;
-                case "desc":
-                    this.t.Kind = 39; break;
-                case "join":
-                    this.t.Kind = 40; break;
-                case "inner":
-                    this.t.Kind = 41; break;
-                case "left":
-                    this.t.Kind = 42; break;
-                case "on":
-                    this.t.Kind = 43; break;
-                case "cross":
-                    this.t.Kind = 44; break;
-                case "apply":
-                    this.t.Kind = 45; break;
-                case "outer":
-                    this.t.Kind = 46; break;
-                case "sequential":
-                    this.t.Kind = 47; break;
-                case "as":
-                    this.t.Kind = 48; break;
-                case "and":
-                    this.t.Kind = 49; break;
-                case "not":
-                    this.t.Kind = 50; break;
-                case "true":
-                    this.t.Kind = 63; break;
-                case "false":
-                    this.t.Kind = 64; break;
-                case "null":
-                    this.t.Kind = 65; break;
+                case "use": t.Kind = 9; break;
+                case "default": t.Kind = 10; break;
+                case "for": t.Kind = 11; break;
+                case "declare": t.Kind = 13; break;
+                case "job": t.Kind = 15; break;
+                case "triggered": t.Kind = 16; break;
+                case "every": t.Kind = 17; break;
+                case "after": t.Kind = 18; break;
+                case "by": t.Kind = 19; break;
+                case "or": t.Kind = 20; break;
+                case "begin": t.Kind = 21; break;
+                case "end": t.Kind = 22; break;
+                case "trigger": t.Kind = 23; break;
+                case "import": t.Kind = 24; break;
+                case "plugin": t.Kind = 25; break;
+                case "insert": t.Kind = 26; break;
+                case "upsert": t.Kind = 27; break;
+                case "into": t.Kind = 28; break;
+                case "union": t.Kind = 29; break;
+                case "select": t.Kind = 32; break;
+                case "from": t.Kind = 33; break;
+                case "where": t.Kind = 34; break;
+                case "group": t.Kind = 35; break;
+                case "having": t.Kind = 36; break;
+                case "order": t.Kind = 37; break;
+                case "asc": t.Kind = 38; break;
+                case "desc": t.Kind = 39; break;
+                case "join": t.Kind = 40; break;
+                case "inner": t.Kind = 41; break;
+                case "left": t.Kind = 42; break;
+                case "on": t.Kind = 43; break;
+                case "cross": t.Kind = 44; break;
+                case "apply": t.Kind = 45; break;
+                case "outer": t.Kind = 46; break;
+                case "sequential": t.Kind = 47; break;
+                case "as": t.Kind = 48; break;
+                case "and": t.Kind = 49; break;
+                case "not": t.Kind = 50; break;
+                case "true": t.Kind = 63; break;
+                case "false": t.Kind = 64; break;
+                case "null": t.Kind = 65; break;
                 default: break;
             }
         }
@@ -843,176 +764,123 @@ namespace ConnectQl.Internal
         /// </returns>
         Token NextToken()
         {
-            while (this.ch == ' ' || this.ch >= 9 && this.ch <= 10 || this.ch == 13 || this.ch == ' '
-            ) this.NextCh();
+            while (ch == ' ' ||
+                ch >= 9 && ch <= 10 || ch == 13 || ch == ' '
+            ) NextCh();
             if (this.EmitComments)
             {
-                this.t = new Token();
-                this.t.Pos = this.pos;
-                this.t.Col = this.col;
-                this.t.Line = this.line;
-                this.t.CharPos = this.charPos;
-                this.tlen = 0;
+                t = new Token();
+                t.Pos = pos; t.Col = col; t.Line = line; t.CharPos = charPos; tlen = 0;
             }
-            if (this.ch == '-' && this.Comment0() || this.ch == '/' && this.Comment1() || this.ch == '/' && this.Comment2()) return this.EmitComments ? this.t : this.NextToken();
-            int recKind = Scanner.NoSymbol;
-            int recEnd = this.pos;
-            this.t = new Token();
-            this.t.IsComment = false;
-            this.t.Pos = this.pos;
-            this.t.Col = this.col;
-            this.t.Line = this.line;
-            this.t.CharPos = this.charPos;
+            if (ch == '-' && Comment0() || ch == '/' && Comment1() || ch == '/' && Comment2()) return this.EmitComments ? t : NextToken();
+            int recKind = NoSymbol;
+            int recEnd = pos;
+            t = new Token();
+            t.IsComment = false; t.Pos = pos; t.Col = col; t.Line = line; t.CharPos = charPos;
             int state;
-            state = Scanner.Start.ContainsKey(this.ch) ? Scanner.Start[this.ch] : 0;
-            this.tlen = 0;
-            this.AddCh();
+            state = Start.ContainsKey(ch) ? Start[ch] : 0;
+            tlen = 0; AddCh();
 
             switch (state)
             {
-                case -1: {
-                    this.t.Kind = Scanner.EofSymbol; break; } // NextCh already done
+                case -1: { t.Kind = EofSymbol; break; } // NextCh already done
                 case 0:
                     {
-                        if (recKind != Scanner.NoSymbol)
+                        if (recKind != NoSymbol)
                         {
-                            this.tlen = recEnd - this.t.Pos;
-                            this.SetScannerBehindT();
+                            tlen = recEnd - t.Pos;
+                            SetScannerBehindT();
                         }
-                        this.t.Kind = recKind; break;
+                        t.Kind = recKind; break;
                     } // NextCh already done
                 case 1:
-                    if (this.ch <= 9 || this.ch >= 11 && this.ch <= 12 || this.ch >= 14 && this.ch <= '&' || this.ch >= '(' && this.ch <= 65535) {
-                        this.AddCh(); goto case 1; }
-                    else if (this.ch == 39) {
-                        this.AddCh(); goto case 11; }
+                    if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= '&' || ch >= '(' && ch <= 65535) { AddCh(); goto case 1; }
+                    else if (ch == 39) { AddCh(); goto case 11; }
                     else { goto case 0; }
                 case 2:
-                    if (this.ch <= 9 || this.ch >= 11 && this.ch <= 12 || this.ch >= 14 && this.ch <= '&' || this.ch >= '(' && this.ch <= 65535) {
-                        this.AddCh(); goto case 2; }
-                    else if (this.ch == 39) {
-                        this.AddCh(); goto case 12; }
+                    if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= '&' || ch >= '(' && ch <= 65535) { AddCh(); goto case 2; }
+                    else if (ch == 39) { AddCh(); goto case 12; }
                     else { goto case 0; }
                 case 3:
-                    recEnd = this.pos; recKind = 2;
-                    if (this.ch >= '0' && this.ch <= '9') {
-                        this.AddCh(); goto case 3; }
-                    else if (this.ch == '.') {
-                        this.AddCh(); goto case 4; }
-                    else {
-                        this.t.Kind = 2; break; }
+                    recEnd = pos; recKind = 2;
+                    if (ch >= '0' && ch <= '9') { AddCh(); goto case 3; }
+                    else if (ch == '.') { AddCh(); goto case 4; }
+                    else { t.Kind = 2; break; }
                 case 4:
-                    if (this.ch >= '0' && this.ch <= '9') {
-                        this.AddCh(); goto case 5; }
+                    if (ch >= '0' && ch <= '9') { AddCh(); goto case 5; }
                     else { goto case 0; }
                 case 5:
-                    recEnd = this.pos; recKind = 2;
-                    if (this.ch >= '0' && this.ch <= '9') {
-                        this.AddCh(); goto case 5; }
-                    else {
-                        this.t.Kind = 2; break; }
+                    recEnd = pos; recKind = 2;
+                    if (ch >= '0' && ch <= '9') { AddCh(); goto case 5; }
+                    else { t.Kind = 2; break; }
                 case 6:
-                    if (this.ch <= 9 || this.ch >= 11 && this.ch <= 12 || this.ch >= 14 && this.ch <= 92 || this.ch >= '^' && this.ch <= 65535) {
-                        this.AddCh(); goto case 6; }
-                    else if (this.ch == ']') {
-                        this.AddCh(); goto case 7; }
+                    if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 92 || ch >= '^' && ch <= 65535) { AddCh(); goto case 6; }
+                    else if (ch == ']') { AddCh(); goto case 7; }
                     else { goto case 0; }
                 case 7:
-                    {
-                        this.t.Kind = 3; break; }
+                    { t.Kind = 3; break; }
                 case 8:
-                    recEnd = this.pos; recKind = 4;
-                    if (this.ch >= '0' && this.ch <= '9' || this.ch == '_' || this.ch >= 'a' && this.ch <= 'z') {
-                        this.AddCh(); goto case 8; }
-                    else {
-                        this.t.Kind = 4;
-                        this.t.Val = new String(this.tval, 0, this.tlen);
-                        this.CheckLiteral(); return this.t; }
+                    recEnd = pos; recKind = 4;
+                    if (ch >= '0' && ch <= '9' || ch == '_' || ch >= 'a' && ch <= 'z') { AddCh(); goto case 8; }
+                    else { t.Kind = 4; t.Val = new String(tval, 0, tlen); CheckLiteral(); return t; }
                 case 9:
-                    if (this.ch == '_' || this.ch >= 'a' && this.ch <= 'z') {
-                        this.AddCh(); goto case 10; }
+                    if (ch == '_' || ch >= 'a' && ch <= 'z') { AddCh(); goto case 10; }
                     else { goto case 0; }
                 case 10:
-                    recEnd = this.pos; recKind = 5;
-                    if (this.ch >= '0' && this.ch <= '9' || this.ch == '_' || this.ch >= 'a' && this.ch <= 'z') {
-                        this.AddCh(); goto case 10; }
-                    else {
-                        this.t.Kind = 5; break; }
+                    recEnd = pos; recKind = 5;
+                    if (ch >= '0' && ch <= '9' || ch == '_' || ch >= 'a' && ch <= 'z') { AddCh(); goto case 10; }
+                    else { t.Kind = 5; break; }
                 case 11:
-                    recEnd = this.pos; recKind = 1;
-                    if (this.ch == 39) {
-                        this.AddCh(); goto case 2; }
-                    else {
-                        this.t.Kind = 1; break; }
+                    recEnd = pos; recKind = 1;
+                    if (ch == 39) { AddCh(); goto case 2; }
+                    else { t.Kind = 1; break; }
                 case 12:
-                    recEnd = this.pos; recKind = 1;
-                    if (this.ch == 39) {
-                        this.AddCh(); goto case 2; }
-                    else {
-                        this.t.Kind = 1; break; }
+                    recEnd = pos; recKind = 1;
+                    if (ch == 39) { AddCh(); goto case 2; }
+                    else { t.Kind = 1; break; }
                 case 13:
-                    {
-                        this.t.Kind = 12; break; }
+                    { t.Kind = 12; break; }
                 case 14:
-                    {
-                        this.t.Kind = 14; break; }
+                    { t.Kind = 14; break; }
                 case 15:
-                    {
-                        this.t.Kind = 30; break; }
+                    { t.Kind = 30; break; }
                 case 16:
-                    {
-                        this.t.Kind = 31; break; }
+                    { t.Kind = 31; break; }
                 case 17:
-                    {
-                        this.t.Kind = 52; break; }
+                    { t.Kind = 52; break; }
                 case 18:
-                    {
-                        this.t.Kind = 53; break; }
+                    { t.Kind = 53; break; }
                 case 19:
-                    {
-                        this.t.Kind = 55; break; }
+                    { t.Kind = 55; break; }
                 case 20:
-                    {
-                        this.t.Kind = 56; break; }
+                    { t.Kind = 56; break; }
                 case 21:
-                    {
-                        this.t.Kind = 57; break; }
+                    { t.Kind = 57; break; }
                 case 22:
-                    {
-                        this.t.Kind = 58; break; }
+                    { t.Kind = 58; break; }
                 case 23:
-                    {
-                        this.t.Kind = 59; break; }
+                    { t.Kind = 59; break; }
                 case 24:
-                    {
-                        this.t.Kind = 60; break; }
+                    { t.Kind = 60; break; }
                 case 25:
-                    {
-                        this.t.Kind = 61; break; }
+                    { t.Kind = 61; break; }
                 case 26:
-                    {
-                        this.t.Kind = 62; break; }
+                    { t.Kind = 62; break; }
                 case 27:
-                    {
-                        this.t.Kind = 66; break; }
+                    { t.Kind = 66; break; }
                 case 28:
-                    recEnd = this.pos; recKind = 51;
-                    if (this.ch == '=') {
-                        this.AddCh(); goto case 17; }
-                    else {
-                        this.t.Kind = 51; break; }
+                    recEnd = pos; recKind = 51;
+                    if (ch == '=') { AddCh(); goto case 17; }
+                    else { t.Kind = 51; break; }
                 case 29:
-                    recEnd = this.pos; recKind = 54;
-                    if (this.ch == '=') {
-                        this.AddCh(); goto case 18; }
-                    else if (this.ch == '>') {
-                        this.AddCh(); goto case 19; }
-                    else {
-                        this.t.Kind = 54; break; }
+                    recEnd = pos; recKind = 54;
+                    if (ch == '=') { AddCh(); goto case 18; }
+                    else if (ch == '>') { AddCh(); goto case 19; }
+                    else { t.Kind = 54; break; }
 
             }
-            this.t.Val = new String(this.tval, 0, this.tlen);
-            return this.t;
+            t.Val = new String(tval, 0, tlen);
+            return t;
         }
 
         /// <summary>
@@ -1020,12 +888,10 @@ namespace ConnectQl.Internal
         /// </summary>
         private void SetScannerBehindT()
         {
-            this.Buffer.Pos = this.t.Pos;
-            this.NextCh();
-            this.line = this.t.Line;
-            this.col = this.t.Col;
-            this.charPos = this.t.CharPos;
-            for (int i = 0; i < this.tlen; i++) this.NextCh();
+            Buffer.Pos = t.Pos;
+            NextCh();
+            line = t.Line; col = t.Col; charPos = t.CharPos;
+            for (int i = 0; i < tlen; i++) NextCh();
         }
 
         /// <summary>
@@ -1034,19 +900,18 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The token.
         /// </returns>
-        [NotNull]
         public Token Scan()
         {
             Token result;
-            if (this.tokens.Next == null)
+            if (tokens.Next == null)
             {
-                result = this.NextToken();
-                result.Index = ++this.index;
+                result = NextToken();
+                result.Index = ++index;
             }
             else
             {
-                this.pt = this.tokens = this.tokens.Next;
-                result = this.tokens;
+                pt = tokens = tokens.Next;
+                result = tokens;
             }
 
             return result;
@@ -1058,20 +923,19 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The next token.
         /// </returns>
-        [NotNull]
         public Token Peek()
         {
             do
             {
-                if (this.pt.Next == null)
+                if (pt.Next == null)
                 {
-                    this.pt.Next = this.NextToken();
+                    pt.Next = NextToken();
                 }
-                this.pt = this.pt.Next;
-            } while (this.pt.Kind > Scanner.MaxToken); // skip pragmas
+                pt = pt.Next;
+            } while (pt.Kind > MaxToken); // skip pragmas
 
-            this.pt.Index = ++this.index;
-            return this.pt;
+            pt.Index = ++index;
+            return pt;
         }
 
         /// <summary>
@@ -1079,7 +943,7 @@ namespace ConnectQl.Internal
         /// </summary>
         public void ResetPeek()
         {
-            this.pt = this.tokens;
+            pt = tokens;
         }
     }
 }
