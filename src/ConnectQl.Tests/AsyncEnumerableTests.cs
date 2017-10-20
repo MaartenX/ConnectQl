@@ -22,12 +22,14 @@
 
 namespace ConnectQl.Tests
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
+
+    using JetBrains.Annotations;
+
     using Xunit;
 
     /// <summary>
@@ -49,22 +51,23 @@ namespace ConnectQl.Tests
         /// The extra arguments.
         /// </param>
         /// <returns>
-        /// An array of arrays of enumerables.
+        /// An array of arrays of <see cref="IAsyncEnumerable{T}"/>s.
         /// </returns>
-        public static object[][] CreateEnumerables<T>(IEnumerable<T> items, params object[] extraArguments)
+        [NotNull]
+        public static object[][] CreateEnumerables<T>(IList<T> items, params object[] extraArguments)
         {
-            Func<IAsyncEnumerable<T>> enumerable = () => new InMemoryPolicy().CreateAsyncEnumerable(items);
+            IAsyncEnumerable<T> Enumerable() => new InMemoryPolicy().CreateAsyncEnumerable(items);
 
             var results = new[]
             {
-                enumerable().Select(i => i),
-                enumerable().Where(i => true),
-                enumerable().Skip(0),
-                enumerable().Take(5),
-                enumerable().Zip(enumerable(), (a, b) => a),
-                enumerable().GroupBy(e => e).Select(e => e.FirstAsync()),
-                enumerable().Batch(1).Select(b => b.FirstAsync()),
-                enumerable().Distinct()
+                Enumerable().Select(i => i),
+                Enumerable().Where(i => true),
+                Enumerable().Skip(0),
+                Enumerable().Take(5),
+                Enumerable().Zip(Enumerable(), (a, b) => a),
+                Enumerable().GroupBy(e => e).Select(e => e.FirstAsync()),
+                Enumerable().Batch(1).Select(b => b.FirstAsync()),
+                Enumerable().Distinct()
             };
 
             return results.Select(e => new[] { e }.Concat(extraArguments).ToArray()).ToArray();
@@ -80,10 +83,10 @@ namespace ConnectQl.Tests
         /// The enumerable to test.
         /// </param>
         [Theory(DisplayName = "IAsyncEnumerable<T>.Current should be default(T).")]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new int[] { 1, 2, 3, 4, 5 } })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d } })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new string[] { "1", "2", "3", "4", "5" } })]
-        public void CurrentShouldBeDefault<T>(IAsyncEnumerable<T> enumerable)
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new[] { 1, 2, 3, 4, 5 })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d } })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { new[] { "1", "2", "3", "4", "5" } })]
+        public void CurrentShouldBeDefault<T>([NotNull] IAsyncEnumerable<T> enumerable)
         {
             var enumerator = enumerable.GetAsyncEnumerator();
 
@@ -101,9 +104,9 @@ namespace ConnectQl.Tests
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory(DisplayName = "IAsyncEnumerable<T>.CountAsync() should be 5.")]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new int[] { 1, 2, 3, 4, 5 } })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d } })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new string[] { "1", "2", "3", "4", "5" } })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new[] { 1, 2, 3, 4, 5 })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d } })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { new[] { "1", "2", "3", "4", "5" } })]
         public async Task CountShouldBeFive<T>(IAsyncEnumerable<T> enumerable)
         {
             var count = await enumerable.CountAsync();
@@ -125,9 +128,9 @@ namespace ConnectQl.Tests
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory(DisplayName = "IAsyncEnumerable<T>.MaxAsync() should be specified max.")]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new int[] { 1, 2, 3, 4, 5 }, 5 })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d }, 5d })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new string[] { "1", "2", "3", "4", "5" }, "5" })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new[] { 1, 2, 3, 4, 5 }, 5)]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { 1, "2", null, 4.0f, 5d }, 5d)]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new[] { "1", "2", "3", "4", "5" }, "5")]
         public async Task MaxShouldBeSpecifiedMax<T>(IAsyncEnumerable<T> enumerable, T max)
         {
             var count = await enumerable.MaxAsync();
@@ -143,7 +146,7 @@ namespace ConnectQl.Tests
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory(DisplayName = "IAsyncEnumerable<int>.AverageAsync() should be 3.")]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new int[] { 1, 2, 3, 4, 5 } })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new[] { 1, 2, 3, 4, 5 })]
         public async Task IntAverageShouldBe3(IAsyncEnumerable<int> enumerable)
         {
             var average = await enumerable.AverageAsync();
@@ -159,15 +162,12 @@ namespace ConnectQl.Tests
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory(DisplayName = "IAsyncEnumerable<float>.AverageAsync() should be 3.")]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new float[] { 1, 2, 3, 4, 5 } })]
-        public async Task FloatAverageShouldBe3(IAsyncEnumerable<float> enumerable)
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new float[] { 1, 2, 3, 4, 5 })]
+        public async Task FloatAverageShouldBe3([NotNull] IAsyncEnumerable<float> enumerable)
         {
             var average = await enumerable.AverageAsync();
 
-            using (var enumerator = enumerable.GetAsyncEnumerator())
-            {
-                Assert.Equal(3, average);
-            }
+            Assert.Equal(3, average);
         }
 
         /// <summary>
@@ -180,10 +180,10 @@ namespace ConnectQl.Tests
         /// The enumerable to test.
         /// </param>
         [Theory(DisplayName = "IAsyncEnumerable<T>.MoveNext() should keep returning false.")]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new int[] { 1, 2, 3, 4, 5 } })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d } })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new string[] { "1", "2", "3", "4", "5" } })]
-        public void MoveNextShouldKeepReturningFalse<T>(IAsyncEnumerable<T> enumerable)
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new[] { 1, 2, 3, 4, 5 })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d } })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { new[] { "1", "2", "3", "4", "5" } })]
+        public void MoveNextShouldKeepReturningFalse<T>([NotNull] IAsyncEnumerable<T> enumerable)
         {
             var enumerator = enumerable.GetAsyncEnumerator();
 
@@ -209,10 +209,10 @@ namespace ConnectQl.Tests
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory(DisplayName = "Synchronous IAsyncEnumerable<T> should not return a next batch.")]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new int[] { 1, 2, 3, 4, 5 } })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d } })]
-        [GenericMemberData(nameof(CreateEnumerables), new object[] { new string[] { "1", "2", "3", "4", "5" } })]
-        public async Task SynchronousShouldNotReturnNextBatch<T>(IAsyncEnumerable<T> enumerable)
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new[] { 1, 2, 3, 4, 5 })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { new object[] { 1, "2", null, 4.0f, 5d } })]
+        [GenericMemberData(nameof(AsyncEnumerableTests.CreateEnumerables), new object[] { new[] { "1", "2", "3", "4", "5" } })]
+        public async Task SynchronousShouldNotReturnNextBatch<T>([NotNull] IAsyncEnumerable<T> enumerable)
         {
             var enumerator = enumerable.GetAsyncEnumerator();
 

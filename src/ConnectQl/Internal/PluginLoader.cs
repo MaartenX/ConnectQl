@@ -81,9 +81,12 @@ namespace ConnectQl.Internal
         /// <param name="pluginResolver">
         /// The plugin resolver to use.
         /// </param>
-        public static void LoadLogPlugins(Block script, LoggerCollection loggers, [NotNull] IPluginResolver pluginResolver)
+        public static void LoadLogPlugins(Block script, LoggerCollection loggers, [CanBeNull] IPluginResolver pluginResolver)
         {
-            new PluginLoader(pluginResolver.EnumerateAvailablePlugins().ToArray(), loggers).Visit(script);
+            if (pluginResolver != null)
+            {
+                new PluginLoader(pluginResolver.EnumerateAvailablePlugins().ToArray(), loggers).Visit(script);
+            }
         }
 
         /// <summary>
