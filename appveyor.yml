@@ -21,7 +21,9 @@ branches:
     - development
 
 environment:
-  OpenCover: OpenConver\tools\OpenConver.Console.exe
+  opencover: OpenConver\tools\OpenConver.Console.exe
+  xunitconsole: xunit.runner.console\tools\net452\xunit.console.exe
+  xunitcore: xunit.runner.console\tools\netcoreapp2.0\xunit.console.dll
   BUILD_ALL_PLATFORMS: 1
   MYGETAPITOKEN:
     secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
@@ -41,6 +43,7 @@ install:
         secure-file\tools\secure-file -decrypt key\Key.snk.enc -secret $env:KEYSECRET
       }
       nuget install OpenCover -ExcludeVersion;
+      nuget install xunit.runner.console -ExcludeVersion;
 
 before_build:
   - msbuild /t:restore /v:minimal src
@@ -65,10 +68,9 @@ after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
 
 test_script:
-  - %OpenCover% -register:user -target:"c:\program files\dotnet\dotnet.exe" -targetargs:"%xunit20%\..\netcoreapp2.0\xunit.console.dll src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework '.NET Core 1.1'" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml"
-  - %OpenCover% -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework '.NET v4.5.2'" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml" -mergeoutput -mergebyhash
+  - %OpenCover% -register:user -target:"c:\program files\dotnet\dotnet.exe" -targetargs:"%xunitcore% src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework '.NET Core 1.1'" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml"
+  - %OpenCover% -register:user -target:"%xunitconsole%" -targetargs:"src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework '.NET v4.5.2'" -filter:"+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash -output:"artifacts\ConnectQl.Coverage.xml"
   - codecov -f "artifacts\ConnectQl.Coverage.xml"
-
 
 artifacts:
   - path: artifacts\**\*.*
