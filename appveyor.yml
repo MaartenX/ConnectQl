@@ -65,7 +65,7 @@ after_deploy:
 
 test_script:
   - dotnet test "src\ConnectQl.Tests\ConnectQl.Tests.csproj" --no-build --no-restore
-  - OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"src\ConnectQl.Tests\bin\Debug\net452\ConnectQl.Tests -noshadow" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml"
+  - OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"src\ConnectQl.Tests\bin\Debug\net452\ConnectQl.Tests.dll -noshadow" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml"
   - codecov -f "artifacts\ConnectQl.Coverage.xml"
 
 artifacts:
