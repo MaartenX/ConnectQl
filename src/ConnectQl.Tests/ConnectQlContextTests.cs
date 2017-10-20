@@ -1,6 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// MIT License
+//
+// Copyright (c) 2017 Maarten van Sambeek.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 namespace ConnectQl.Tests
 {
@@ -12,6 +30,9 @@ namespace ConnectQl.Tests
 
     using Xunit;
 
+    /// <summary>
+    /// Tests for the <see cref="ConnectQlContext"/>.
+    /// </summary>
     [Trait("Category", "ConnectQlContext")]
     public class ConnectQlContextTests
     {
@@ -27,22 +48,30 @@ namespace ConnectQl.Tests
         /// <param name="firstResultSetCount">
         /// The number of results in the first result.
         /// </param>
+        /// <param name="firstResultValue">
+        /// The first value in the result.
+        /// </param>
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        [Theory(DisplayName = "ExecuteAsync should return a result set with the specified number of items")]
-        [InlineData("SELECT * FROM SPLIT('1,2,3', ',') splitted", 1, 3)]
-        [InlineData("SELECT * FROM SPLIT('1,2,3', ',') splitted SELECT * FROM SPLIT('1,2,3', ',') splitted", 2, 3)]
-        [InlineData("SELECT splitted.item FROM SPLIT('1,2,3', ',') splitted GROUP BY splitted.Item", 1, 3)]
-        [InlineData("SELECT COUNT(splitted.item) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1)]
-        [InlineData("SELECT AVG(INT(splitted.item)) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1)]
-        public async Task CurrentShouldBeDefault([NotNull] string query, int numResults, int firstResultSetCount)
+        [Theory(DisplayName = "ExecuteAsync should return a result set with the specified number of items. ")]
+        [InlineData("SELECT * FROM SPLIT('1,2,3', ',') splitted", 1, 3, "1")]
+        [InlineData("SELECT * FROM SPLIT('1,2,3', ',') splitted ORDER BY splitted.item DESC", 1, 3, "3")]
+        [InlineData("SELECT * FROM SPLIT('1,2,3', ',') splitted SELECT * FROM SPLIT('1,2,3', ',') splitted", 2, 3, "1")]
+        [InlineData("SELECT splitted.item FROM SPLIT('1,2,3', ',') splitted GROUP BY splitted.Item", 1, 3, "1")]
+        [InlineData("SELECT COUNT(splitted.item) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1, 3)]
+        [InlineData("SELECT AVG(INT(splitted.item)) FROM SPLIT('1,2,3', ',') splitted GROUP BY 0", 1, 1, 2)]
+        public async Task CurrentShouldBeDefault([NotNull] string query, int numResults, int firstResultSetCount, object firstResultValue)
         {
             var context = new ConnectQlContext();
             var result = await context.ExecuteAsync(query);
 
             Assert.Equal(numResults, result.QueryResults.Count);
             Assert.Equal(firstResultSetCount, await result.QueryResults[0].Rows.CountAsync());
+
+            var row = await result.QueryResults[0].Rows.FirstAsync();
+
+            Assert.Equal(firstResultValue, row[row.ColumnNames[0]]);
         }
     }
 }
