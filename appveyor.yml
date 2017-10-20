@@ -42,8 +42,8 @@ install:
         nuget install secure-file -ExcludeVersion;
         secure-file\tools\secure-file -decrypt key\Key.snk.enc -secret $env:KEYSECRET
       }
-      nuget install OpenCover -ExcludeVersion;
-      nuget install xunit.runner.console -ExcludeVersion;
+  - nuget install OpenCover -ExcludeVersion
+  - nuget install xunit.runner.console -ExcludeVersion
 
 before_build:
   - msbuild /t:restore /v:minimal src
@@ -68,8 +68,8 @@ after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
 
 test_script:
-  - %OpenCover% -register:user -target:"c:\program files\dotnet\dotnet.exe" -targetargs:"%xunitcore% src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework '.NET Core 1.1'" -filter:"+[ConnectQl*]* -[*Tests*]*" -output:"artifacts\ConnectQl.Coverage.xml"
-  - %OpenCover% -register:user -target:"%xunitconsole%" -targetargs:"src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework '.NET v4.5.2'" -filter:"+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash -output:"artifacts\ConnectQl.Coverage.xml"
+  - %OpenCover% -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework netcoreapp1.1" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml"
+  - %OpenCover% -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow -framework net452" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml"
   - codecov -f "artifacts\ConnectQl.Coverage.xml"
 
 artifacts:
