@@ -11,6 +11,7 @@ only_commits:
     - src/
     - tools/
     - appveyor.yml
+    - codecov.yml
 
 image: Visual Studio 2017
 
