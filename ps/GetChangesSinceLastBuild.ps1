@@ -6,7 +6,7 @@ param(
     [string] $ApiToken
 )
 
-$projects = ls *.csproj -r
+$projects = ls src\*.csproj -r
 
 # Files that will trigger a complete rebuild. All other files will check if they are in a project folder.
 $filesForRebuildAll = "appveyor.yml", "ConnectQl.Defaults.targets", "GetChangesSinceLastBuild.ps1"

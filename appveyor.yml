@@ -68,16 +68,16 @@ after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
 
 test_script:
-  - echo OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\netcoreapp1.1\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode > runtests.bat
-  - echo SET err1=%ERRORLEVEL% >> runtests.bat
-  - echo OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode >> runtests.bat
-  - echo SET err2=%ERRORLEVEL% >> runtests.bat
-  - echo codecov -f "artifacts\ConnectQl.Coverage.xml" >> runtests.bat
-  - echo SET err=0 >> runtests.bat
-  - echo IF "%err1%" NEQ "0" ( SET err=%err1% ) >> runtests.bat
-  - echo IF "%err2%" NEQ "0" ( SET err=%err2% ) >> runtests.bat
-  - echo cmd /c exit /b %err%
-  - runtests.bat
+  - echo OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\netcoreapp1.1\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode > runtests.cmd
+  - echo SET err1=%ERRORLEVEL% >> runtests.cmd
+  - echo OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode >> runtests.cmd
+  - echo SET err2=%ERRORLEVEL% >> runtests.cmd
+  - echo codecov -f "artifacts\ConnectQl.Coverage.xml" >> runtests.cmd
+  - echo SET err=0 >> runtests.cmd
+  - echo IF "%err1%" NEQ "0" ( SET err=%err1% ) >> runtests.cmd
+  - echo IF "%err2%" NEQ "0" ( SET err=%err2% ) >> runtests.cmd
+  - echo cmd /c exit /b %err% >> runtests.cmd
+  - call runtests.cmd
 
 artifacts:
   - path: artifacts\**\*.*
