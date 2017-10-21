@@ -69,9 +69,9 @@ after_deploy:
 
 test_script:
   - echo OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\netcoreapp1.1\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode > runtests.bat
-  - echo SET err1=%ERORLEVEL% >> runtests.bat
+  - echo SET err1=%ERRORLEVEL% >> runtests.bat
   - echo OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode >> runtests.bat
-  - echo SET err2=%ERORLEVEL% >> runtests.bat
+  - echo SET err2=%ERRORLEVEL% >> runtests.bat
   - echo codecov -f "artifacts\ConnectQl.Coverage.xml" >> runtests.bat
   - echo IF "%err1%" NEQ "0" ( exit /b %err1% ) >> runtests.bat
   - echo IF "%err2%" NEQ "0" ( exit /b %err2% ) >> runtests.bat
