@@ -73,9 +73,11 @@ test_script:
   - echo OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode >> runtests.bat
   - echo SET err2=%ERRORLEVEL% >> runtests.bat
   - echo codecov -f "artifacts\ConnectQl.Coverage.xml" >> runtests.bat
-  - echo IF "%err1%" NEQ "0" ( exit /b %err1% ) >> runtests.bat
-  - echo IF "%err2%" NEQ "0" ( exit /b %err2% ) >> runtests.bat
-  - call runtests.bat
+  - echo SET err=0 >> runtests.bat
+  - echo IF "%err1%" NEQ "0" ( SET err=%err1% ) >> runtests.bat
+  - echo IF "%err2%" NEQ "0" ( SET err=%err2% ) >> runtests.bat
+  - echo cmd /c exit /b %err%
+  - runtests.bat
 
 artifacts:
   - path: artifacts\**\*.*
