@@ -75,12 +75,6 @@ namespace ConnectQl.Tests
             Assert.Equal(firstResultValue, row[row.ColumnNames[0]]);
         }
 
-        [Fact(DisplayName = "Fails")]
-        public void FailingTest()
-        {
-            Assert.True(false);
-        }
-
         /// <summary>
         /// ExecuteAsync should return a joined set.
         /// </summary>
