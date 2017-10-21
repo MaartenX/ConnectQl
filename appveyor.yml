@@ -70,8 +70,8 @@ after_deploy:
 test_script:
   - >- 
     OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\netcoreapp1.1\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode &
-    OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode
-  - codecov -f "artifacts\ConnectQl.Coverage.xml"
+    OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode &
+    codecov -f "artifacts\ConnectQl.Coverage.xml"
 
 artifacts:
   - path: artifacts\**\*.*
