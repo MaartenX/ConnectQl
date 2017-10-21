@@ -68,8 +68,13 @@ after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
 
 test_script:
-  - OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\netcoreapp1.1\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode
-  - OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode
+  - >- 
+    OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\netcoreapp1.1\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode
+    SET ERR1=%ERRORLEVEL%
+    OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml" -returntargetcode
+    SET ERR2=%ERRORLEVEL%
+    IF "%ERR1" == "0" ( exit %ERR2% )
+    exit %ERR2
   - codecov -f "artifacts\ConnectQl.Coverage.xml"
 
 artifacts:
