@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectQl Solution Items", 
 		..\codecov.yml = ..\codecov.yml
 		..\ConnectQl.png = ..\ConnectQl.png
 		..\ps\GetChangesSinceLastBuild.ps1 = ..\ps\GetChangesSinceLastBuild.ps1
+		..\tools\runcoverage.bat = ..\tools\runcoverage.bat
+		..\tools\runtests.bat = ..\tools\runtests.bat
 		..\ps\UpdatePackageReferences.ps1 = ..\ps\UpdatePackageReferences.ps1
 	EndProjectSection
 EndProject
@@ -54,7 +56,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Logger.Console", 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ConnectQl.Shared", "ConnectQl.Shared\ConnectQl.Shared.shproj", "{B95C77E7-6B6E-4861-87A0-1B5BD8A52E0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectQl.Excel.Tests", "ConnectQl.Excel.Tests\ConnectQl.Excel.Tests.csproj", "{4877D676-F10E-4DA3-9D40-29593C728C83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Excel.Tests", "ConnectQl.Excel.Tests\ConnectQl.Excel.Tests.csproj", "{4877D676-F10E-4DA3-9D40-29593C728C83}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
