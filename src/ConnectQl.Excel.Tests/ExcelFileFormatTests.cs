@@ -85,7 +85,7 @@ namespace ConnectQl.Excel.Tests
         [Theory(DisplayName = "SELECT should return a record set.")]
         [InlineData("SELECT * FROM FILE('file.xlsx') f", 4)]
         [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.id < 3", 2)]
-        [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.value <> 13", 3)]
+        [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.value <> 4", 3)]
         [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.value = f.id", 1)]
         public async Task SelectShouldReturnRecords(string query, int expectedRecordCount)
         {
