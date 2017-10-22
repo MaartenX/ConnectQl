@@ -45,6 +45,9 @@ namespace ConnectQl.Internal.Query
     using ConnectQl.Internal.Query.Plans;
     using ConnectQl.Internal.Validation;
     using ConnectQl.Results;
+
+    using JetBrains.Annotations;
+
     using AsyncGroupValueFactory = System.Func<ConnectQl.Interfaces.IExecutionContext, ConnectQl.AsyncEnumerables.IAsyncReadOnlyCollection<ConnectQl.Results.Row>, System.Threading.Tasks.Task<System.Collections.Generic.KeyValuePair<string, object>[]>>;
     using AsyncValueFactory = System.Func<ConnectQl.Interfaces.IExecutionContext, ConnectQl.Results.Row, System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>>;
     using ValueFactory = System.Func<ConnectQl.Interfaces.IExecutionContext, ConnectQl.Results.Row, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>;
@@ -125,6 +128,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitBlock(Block node)
         {
             node = (Block)base.VisitBlock(node);
@@ -143,7 +147,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitDeclareJobStatement(DeclareJobStatement node)
+        protected internal override Node VisitDeclareJobStatement([NotNull] DeclareJobStatement node)
         {
             base.VisitDeclareJobStatement(node);
 
@@ -190,6 +194,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitDeclareStatement(DeclareStatement node)
         {
             node = (DeclareStatement)base.VisitDeclareStatement(node);
@@ -212,7 +217,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitFunctionSource(FunctionSource node)
+        protected internal override Node VisitFunctionSource([NotNull] FunctionSource node)
         {
             this.data.SetAlias(node.Function, node.Alias);
 
@@ -228,6 +233,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitInsertStatement(InsertStatement node)
         {
             node = (InsertStatement)base.VisitInsertStatement(node);
@@ -255,6 +261,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitSelectFromStatement(SelectFromStatement node)
         {
             node = (SelectFromStatement)base.VisitSelectFromStatement(node);
@@ -292,7 +299,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectSource(SelectSource node)
+        protected internal override Node VisitSelectSource([NotNull] SelectSource node)
         {
             this.data.SetAlias(node.Select, node.Alias);
 
@@ -308,6 +315,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitUseStatement(UseStatement node)
         {
             node = (UseStatement)base.VisitUseStatement(node);
@@ -334,6 +342,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitVariableDeclaration(VariableDeclaration node)
         {
             node = (VariableDeclaration)base.VisitVariableDeclaration(node);
@@ -358,15 +367,15 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        private static Expression<T> ConcatenateLambdas<T>(Expression<T> first, Expression<T> second)
+        private static Expression<T> ConcatenateLambdas<T>([NotNull] Expression<T> first, [NotNull] Expression<T> second)
         {
             return Expression.Lambda<T>(
-                Concatenate.Body
+                QueryPlanBuilder.Concatenate.Body
                     .ReplaceParameter(
-                        Concatenate.Parameters[0],
+                        QueryPlanBuilder.Concatenate.Parameters[0],
                         first.Body)
                     .ReplaceParameter(
-                        Concatenate.Parameters[1],
+                        QueryPlanBuilder.Concatenate.Parameters[1],
                         second.Body.ReplaceParameters(second.Parameters, first.Parameters)),
                 first.Parameters);
         }
@@ -383,7 +392,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        private static Expression<T> ToArrayInit<T>(IList<LambdaExpression> values)
+        private static Expression<T> ToArrayInit<T>([NotNull] IList<LambdaExpression> values)
         {
             var parameters = values.First().Parameters;
 
@@ -399,7 +408,8 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        private SelectQueryPlan CreateSelectQueryPlan(SelectFromStatement node)
+        [NotNull]
+        private SelectQueryPlan CreateSelectQueryPlan([NotNull] SelectFromStatement node)
         {
             var usedFields = new HashSet<IField>();
             var wildcardAliases = new HashSet<string>();
@@ -410,8 +420,8 @@ namespace ConnectQl.Internal.Query
             var query = new MultiPartQuery
                             {
                                 Fields = usedFields,
-                                FilterExpression = this.data.ConvertToLinqExpression(node.Where),
-                                OrderByExpressions = node.Orders.Select(o => new OrderByExpression(this.data.ConvertToLinqExpression(o.Expression), o.Ascending)),
+                                FilterExpression = this.data.ConvertToLinqExpression(node.Where, false),
+                                OrderByExpressions = node.Orders.Select(o => new OrderByExpression(this.data.ConvertToLinqExpression(o.Expression, false), o.Ascending)),
                                 WildcardAliases = wildcardAliases,
                             };
 
@@ -432,7 +442,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        private AsyncGroupValueFactory GetGroupValueFactory(IEnumerable<AliasedSqlExpression> expressions)
+        private AsyncGroupValueFactory GetGroupValueFactory([NotNull] IEnumerable<AliasedSqlExpression> expressions)
         {
             var rows = Expression.Parameter(typeof(IAsyncReadOnlyCollection<Row>), "rows");
             var context = Expression.Parameter(typeof(IExecutionContext));
@@ -447,7 +457,7 @@ namespace ConnectQl.Internal.Query
             var fields = expressions.Select(
                 expression =>
                     Expression.New(
-                        KeyValuePairConstructor,
+                        QueryPlanBuilder.KeyValuePairConstructor,
                         Expression.Constant(expression.Alias),
                         Expression.Convert(lambdaVisitor.Visit(this.data.ConvertToLinqExpression(expression.Expression)), typeof(object)))).ToArray();
 
@@ -514,7 +524,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// A delegate.
         /// </returns>
-        private Delegate GetValueFactory(IEnumerable<AliasedSqlExpression> expressions, ICollection<IField> fieldList, ICollection<string> wildCardAliasList, IEnumerable<string> allSourceAliases)
+        private Delegate GetValueFactory([NotNull] IEnumerable<AliasedSqlExpression> expressions, ICollection<IField> fieldList, ICollection<string> wildCardAliasList, IEnumerable<string> allSourceAliases)
         {
             var row = Expression.Parameter(typeof(Row), "row");
             var context = Expression.Parameter(typeof(IExecutionContext), "context");
@@ -536,7 +546,7 @@ namespace ConnectQl.Internal.Query
                 {
                     var lambda = lambdaVisitor.Visit(expression.EvaluateAsValue());
                     lambda = lambda.Type == typeof(object) ? lambda : Expression.Convert(lambda, typeof(object));
-                    return Expression.Lambda<Func<IExecutionContext, Row, KeyValuePair<string, object>>>(Expression.New(KeyValuePairConstructor, Expression.Constant(alias), lambda.CatchErrors()), context, row);
+                    return Expression.Lambda<Func<IExecutionContext, Row, KeyValuePair<string, object>>>(Expression.New(QueryPlanBuilder.KeyValuePairConstructor, Expression.Constant(alias), lambda.CatchErrors()), context, row);
                 };
 
             Expression<ValueFactory> result = null;
@@ -567,14 +577,14 @@ namespace ConnectQl.Internal.Query
 
                     if (fieldFactories.Count != 0)
                     {
-                        var fields = ToArrayInit<ValueFactory>(fieldFactories);
+                        var fields = QueryPlanBuilder.ToArrayInit<ValueFactory>(fieldFactories);
 
-                        result = result == null ? fields : ConcatenateLambdas(result, fields);
+                        result = result == null ? fields : QueryPlanBuilder.ConcatenateLambdas(result, fields);
 
                         fieldFactories.Clear();
                     }
 
-                    result = result == null ? lambda : ConcatenateLambdas(result, lambda);
+                    result = result == null ? lambda : QueryPlanBuilder.ConcatenateLambdas(result, lambda);
                 }
                 else
                 {
@@ -584,9 +594,9 @@ namespace ConnectQl.Internal.Query
 
             if (fieldFactories.Count != 0)
             {
-                var fields = ToArrayInit<ValueFactory>(fieldFactories);
+                var fields = QueryPlanBuilder.ToArrayInit<ValueFactory>(fieldFactories);
 
-                result = result == null ? fields : ConcatenateLambdas(result, fields);
+                result = result == null ? fields : QueryPlanBuilder.ConcatenateLambdas(result, fields);
             }
 
             if (hasGlobalAlias)

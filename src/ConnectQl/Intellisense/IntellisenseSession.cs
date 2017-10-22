@@ -24,16 +24,17 @@ namespace ConnectQl.Intellisense
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Intellisense;
     using ConnectQl.Internal.Intellisense.Protocol;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The <c>Intellisense</c> session.
     /// </summary>
-    public class IntellisenseSession
+    internal class IntellisenseSession : IIntellisenseSession
     {
         /// <summary>
         /// The documents.
@@ -43,25 +44,24 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// Initializes a new instance of the <see cref="IntellisenseSession"/> class.
         /// </summary>
-        /// <param name="pluginResolver">
-        /// The plugin resolver.
+        /// <param name="context">
+        /// The context to create the intellisense session for.
         /// </param>
-        public IntellisenseSession(IPluginResolver pluginResolver)
+        internal IntellisenseSession([NotNull] ConnectQlContext context)
         {
-            this.Plugins = pluginResolver?.EnumerateAvailablePlugins()?.ToArray() ?? new IConnectQlPlugin[0];
-
-            this.Context = new ConnectQlContext(pluginResolver);
+            this.Context = context;
         }
 
         /// <summary>
-        /// The classification changed.
+        /// Occurs when a document is updated.
         /// </summary>
-        public event EventHandler<Tuple<string, byte[]>> ClassificationChanged;
+        public event EventHandler<DocumentUpdatedEventArgs> DocumentUpdated;
 
         /// <summary>
-        /// Gets the plugins.
+        /// Occurs when a document is updated (used internally for cross-appdomain communication).
         /// </summary>
-        public IConnectQlPlugin[] Plugins { get; }
+        [UsedImplicitly]
+        public event EventHandler<byte[]> InternalDocumentUpdated;
 
         /// <summary>
         /// Gets the context.
@@ -83,17 +83,34 @@ namespace ConnectQl.Intellisense
         }
 
         /// <summary>
-        /// Gets the document by its path.
+        /// Gets the document as byte array.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <returns>
+        /// The byte array.
+        /// </returns>
+        [CanBeNull]
+        [UsedImplicitly]
+        public byte[] GetDocumentAsByteArray(string filename)
+        {
+            return this.documents.TryGetValue(filename, out var document)
+                ? ProtocolSerializer.Serialize(document.Descriptor)
+                : null;
+        }
+
+        /// <summary>
+        /// Gets a document from the session.
         /// </summary>
         /// <param name="filename">
-        /// The filename.
+        /// The filename of the document.
         /// </param>
         /// <returns>
-        /// The <see cref="int"/>.
+        /// The document, of <c>null</c> if it can't be found.
         /// </returns>
-        public string GetDocument(string filename)
+        [CanBeNull]
+        public IDocumentDescriptor GetDocument(string filename)
         {
-            return this.documents.ContainsKey(filename) ? filename : null;
+            return this.documents.TryGetValue(filename, out var result) ? result : null;
         }
 
         /// <summary>
@@ -116,16 +133,17 @@ namespace ConnectQl.Intellisense
         /// <param name="contents">
         /// The contents.
         /// </param>
-        public void UpdateDocument(string filename, string contents)
+        /// <param name="documentVersion">
+        /// The document version.
+        /// </param>
+        public void UpdateDocument(string filename, string contents, int documentVersion)
         {
-            if (this.documents.TryGetValue(filename, out Document doc))
+            if (!this.documents.TryGetValue(filename, out var doc))
             {
-                doc.Contents = contents;
+                doc = this.documents[filename] = new Document(this, filename);
             }
-            else
-            {
-                this.documents[filename] = new Document(this, filename, contents);
-            }
+
+            doc.Update(contents, documentVersion);
         }
 
         /// <summary>
@@ -143,30 +161,36 @@ namespace ConnectQl.Intellisense
         /// <param name="span">
         /// The span.
         /// </param>
-        public void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string span)
+        /// <param name="documentVersion">
+        /// The new version of the document.
+        /// </param>
+        public void UpdateDocumentSpan(string filename, int startIndex, int endIndex, string span, int documentVersion)
         {
-            if (!this.documents.TryGetValue(filename, out Document doc))
+            if (!this.documents.TryGetValue(filename, out var doc))
             {
                 return;
             }
 
-            var contents = doc.Contents;
+            doc.Update(doc.Contents.Substring(0, startIndex) + span + doc.Contents.Substring(endIndex), documentVersion);
+        }
 
-            doc.Contents = contents.Substring(0, startIndex) + span + contents.Substring(endIndex);
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
         }
 
         /// <summary>
         /// Sends the classification changed event.
         /// </summary>
-        /// <param name="filename">
-        /// The filename.
-        /// </param>
         /// <param name="document">
         /// The serialized document.
         /// </param>
-        internal void OnClassificationChanged(string filename, SerializableDocumentDescriptor document)
+        internal void OnDocumentChanged(SerializableDocumentDescriptor document)
         {
-            this.ClassificationChanged?.Invoke(this, Tuple.Create(filename, ProtocolSerializer.Serialize(document)));
+            this.DocumentUpdated?.Invoke(this, new DocumentUpdatedEventArgs(document));
+            this.InternalDocumentUpdated?.Invoke(this, ProtocolSerializer.Serialize(document));
         }
     }
 }

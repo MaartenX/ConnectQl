@@ -26,6 +26,8 @@ namespace ConnectQl.Internal
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The field.
     /// </summary>
@@ -91,6 +93,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString() => $"{this.SourceAlias}.{this.FieldName}";
     }
 }

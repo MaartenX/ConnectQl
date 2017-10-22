@@ -23,6 +23,8 @@ namespace ConnectQl.Results
 {
     using System.Diagnostics;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The position.
     /// </summary>
@@ -52,7 +54,7 @@ namespace ConnectQl.Results
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(Position first, Position second)
+        public static bool operator ==([CanBeNull] Position first, [CanBeNull] Position second)
         {
             return first?.Equals(second) ?? second?.Equals(null) ?? true;
         }
@@ -65,7 +67,7 @@ namespace ConnectQl.Results
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(Position first, Position second)
+        public static bool operator !=([CanBeNull] Position first, [CanBeNull] Position second)
         {
             return !(first == second);
         }

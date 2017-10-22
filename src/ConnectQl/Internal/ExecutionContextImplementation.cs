@@ -25,7 +25,6 @@ namespace ConnectQl.Internal
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
 
     using ConnectQl.AsyncEnumerablePolicies;
@@ -33,6 +32,8 @@ namespace ConnectQl.Internal
     using ConnectQl.DataSources;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Interfaces;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The execution context implementation.
@@ -42,7 +43,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// The defaults.
         /// </summary>
-        private readonly Dictionary<string, object> defaults = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> defaults = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// The file formats.
@@ -65,9 +66,14 @@ namespace ConnectQl.Internal
         private readonly Dictionary<string, object> values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
+        /// The loggers.
+        /// </summary>
+        private readonly LoggerCollection loggers;
+
+        /// <summary>
         /// The plugins.
         /// </summary>
-        private IConnectQlPlugin[] plugins;
+        private IPluginCollection plugins;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionContextImplementation"/> class.
@@ -78,12 +84,13 @@ namespace ConnectQl.Internal
         /// <param name="filename">
         /// The filename.
         /// </param>
-        public ExecutionContextImplementation(ConnectQlContext parentContext, string filename)
+        public ExecutionContextImplementation([NotNull] ConnectQlContext parentContext, string filename)
         {
             this.Filename = filename;
             this.ParentContext = parentContext;
             this.Messages = new MessageWriter(filename);
             this.fileFormats = new FileFormatsImplementation();
+            this.loggers = new LoggerCollection(parentContext.Loggers);
         }
 
         /// <summary>
@@ -102,9 +109,9 @@ namespace ConnectQl.Internal
         public long WriteProgressInterval => this.ParentContext.WriteProgressInterval;
 
         /// <summary>
-        /// Gets the log.
+        /// Gets the logger.
         /// </summary>
-        public ILog Log => this.ParentContext.Log;
+        public ILogger Logger => this.loggers;
 
         /// <summary>
         /// Gets the message writer.
@@ -125,6 +132,11 @@ namespace ConnectQl.Internal
         /// Gets the file formats.
         /// </summary>
         IFileFormats IValidationContext.FileFormats => this.fileFormats;
+
+        /// <summary>
+        /// Gets the loggers.
+        /// </summary>
+        public ICollection<ILogger> Loggers => this.loggers;
 
         /// <summary>
         /// Gets the file formats.
@@ -166,9 +178,10 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The value for the function for the specified source.
         /// </returns>
+        [CanBeNull]
         public object GetDefault(string setting, IDataAccess source, bool throwOnError)
         {
-            if (this.defaults.TryGetValue($"{setting}|{this.functionNames[source]}", out object result) && result != null)
+            if (this.defaults.TryGetValue($"{setting}|{this.functionNames[source]}", out var result) && result != null)
             {
                 return result;
             }
@@ -187,9 +200,10 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The plugin, or <c>null</c> if it wasn't found.
         /// </returns>
-        public IEnumerable<IConnectQlPlugin> GetPlugins()
+        [NotNull]
+        public IPluginCollection GetPlugins()
         {
-            return this.plugins ?? (this.plugins = this.ParentContext.PluginResolver?.EnumerateAvailablePlugins().ToArray()) ?? new IConnectQlPlugin[0];
+            return this.plugins ?? (this.plugins = new PluginCollection(this.ParentContext.PluginResolver));
         }
 
         /// <summary>
@@ -206,7 +220,7 @@ namespace ConnectQl.Internal
         /// </returns>
         public T GetVariable<T>(string variable)
         {
-            if (this.values.TryGetValue(variable, out object result))
+            if (this.values.TryGetValue(variable, out var result))
             {
                 if (typeof(T) == typeof(object))
                 {
@@ -238,7 +252,7 @@ namespace ConnectQl.Internal
                 throw new InvalidOperationException($"No URI resolver registered, cannot open '{uri}'.");
             }
 
-            return this.ParentContext.UriResolver(uri, mode);
+            return this.ParentContext.UriResolver.ResolveToStream(Path.IsPathRooted(uri) ? uri : Path.Combine(Path.GetDirectoryName(this.Filename), uri), mode);
         }
 
         /// <summary>

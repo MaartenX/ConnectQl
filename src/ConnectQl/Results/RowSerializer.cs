@@ -30,6 +30,8 @@ namespace ConnectQl.Results
     using ConnectQl.Internal.Comparers;
     using ConnectQl.Internal.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The row serializer.
     /// </summary>
@@ -59,6 +61,7 @@ namespace ConnectQl.Results
         /// <returns>
         ///     The context that will be disposed when the transformation is no longer needed.
         /// </returns>
+        [NotNull]
         public IDisposable CreateContext()
         {
             return new SerializerContext();
@@ -95,7 +98,8 @@ namespace ConnectQl.Results
         /// <returns>
         ///     A serializable version of the value.
         /// </returns>
-        public object Serialize(IDisposable context, Row value)
+        [NotNull]
+        public object Serialize(IDisposable context, [NotNull] Row value)
         {
             var serialized = value.Resolver.SerializeRow(value);
 

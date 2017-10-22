@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
+    <ProjectReference Include="..\ConnectQl.Excel\ConnectQl.Excel.csproj" />
+    <ProjectReference Include="..\ConnectQl.Platform\ConnectQl.Platform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Example.json" CopyToOutputDirectory="Always" />
+    <Content Include="Example.connectql" CopyToOutputDirectory="Always" />
+    <Content Include="Script3.connectql" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,5 @@
+mode: ContinuousDelivery
+branches:
+  dev(elop)?(ment)?$: {}
+ignore:
+  sha: []

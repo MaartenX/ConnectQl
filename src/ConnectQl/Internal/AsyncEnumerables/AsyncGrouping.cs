@@ -29,6 +29,8 @@ namespace ConnectQl.Internal.AsyncEnumerables
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Internal.AsyncEnumerables.Enumerators;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The async grouping.
     /// </summary>
@@ -110,6 +112,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
             /// <returns>
             /// The enumerator.
             /// </returns>
+            [NotNull]
             public IAsyncEnumerator<TSource> GetAsyncEnumerator()
             {
                 return new EnumeratorWrapper(this.inner.GetAsyncEnumerator());
@@ -124,6 +127,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
             /// <returns>
             /// The enumerator.
             /// </returns>
+            [NotNull]
             public IAsyncEnumerator<TSource> GetAsyncEnumerator(long offset)
             {
                 return new EnumeratorWrapper(this.inner.GetAsyncEnumerator(offset));

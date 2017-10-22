@@ -50,9 +50,9 @@ namespace ConnectQl.Interfaces
         Classification Classification { get; }
 
         /// <summary>
-        /// Gets the scope.
+        /// Gets the kind of token (internal representation).
         /// </summary>
-        ClassificationScope Scope { get; }
+        int Kind { get; }
 
         /// <summary>
         /// Gets the value.

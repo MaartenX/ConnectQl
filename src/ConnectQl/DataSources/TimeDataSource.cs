@@ -35,6 +35,8 @@ namespace ConnectQl.DataSources
     using ConnectQl.Internal;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The time query source.
     /// </summary>
@@ -155,7 +157,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// A task returning the data set.
         /// </returns>
-        public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, IQuery query)
+        public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, [NotNull] IQuery query)
         {
             var filter = query.GetFilter(context).GetRowFilter();
 

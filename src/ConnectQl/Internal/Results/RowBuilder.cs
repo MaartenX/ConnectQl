@@ -29,6 +29,8 @@ namespace ConnectQl.Internal.Results
 
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The row builder.
     /// </summary>
@@ -100,7 +102,7 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// The <paramref name="row"/> if it was already attached to the builder, or a copy otherwise.
         /// </returns>
-        public Row Attach(Row row)
+        public Row Attach([NotNull] Row row)
         {
             if (row == null)
             {
@@ -132,7 +134,7 @@ namespace ConnectQl.Internal.Results
         /// </summary>
         /// <param name="row">The row.</param>
         /// <returns>The id and values of the row.</returns>
-        Tuple<object, IDictionary<string, object>> IRowFieldResolver.SerializeRow(Row row)
+        Tuple<object, IDictionary<string, object>> IRowFieldResolver.SerializeRow([NotNull] Row row)
         {
             var values = row.ToDictionary();
 
@@ -156,7 +158,7 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// The combined rows or <c>null</c> if both rows were <c>null</c>.
         /// </returns>
-        public Row CombineRows(Row first, Row second)
+        public Row CombineRows([CanBeNull] Row first, [CanBeNull] Row second)
         {
             return first == null ? this.Attach(second) : (second == null ? this.Attach(first) : first.CombineWith(this, second));
         }
@@ -204,7 +206,8 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// A list of tuples, containing the index and the object at that index, the largest index first.
         /// </returns>
-        public IList<Tuple<int, object>> GetIndices(IEnumerable<KeyValuePair<string, object>> values)
+        [NotNull]
+        public IList<Tuple<int, object>> GetIndices([NotNull] IEnumerable<KeyValuePair<string, object>> values)
         {
             var result = new List<Tuple<int, object>>();
             var missing = new List<Tuple<string, int>>();

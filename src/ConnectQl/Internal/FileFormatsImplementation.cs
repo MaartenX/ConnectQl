@@ -27,6 +27,8 @@ namespace ConnectQl.Internal
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The file formats implementation.
     /// </summary>
@@ -46,6 +48,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IFileFormats"/>.
         /// </returns>
+        [NotNull]
         public IFileFormats AddFileAccess(IFileAccess access)
         {
             this.formats.Add(access);
@@ -59,6 +62,7 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="IEnumerator"/>.
         /// </returns>
+        [NotNull]
         public IEnumerator<IFileAccess> GetEnumerator()
         {
             return this.formats.GetEnumerator();

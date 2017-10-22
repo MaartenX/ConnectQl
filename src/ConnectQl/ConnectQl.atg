@@ -273,30 +273,17 @@ SourceBase<out SourceBase source>																(. string name, alias = null; s
 	=	Variable<out variable> ["AS"] Name<out alias>											(. source = CatchAll(() => this.SetContext(new VariableSource(variable, alias), ctx)) ; .)
 		|
 		Identifier<out name>	
-		[																						(. var args = new List<SqlExpressionBase>(); SqlExpressionBase e; .)
-			"(" 
-				[
-					Expression<out e>															(. args.Add(e); .)
-					{
-						"," Expression<out e>													(. args.Add(e); .)
-					}
-				]
-			")"																					(. function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx); .)
-			["AS"] Name<out alias>																(. source = CatchAll(() => this.SetContext(new FunctionSource(function, alias ), ctx)) ; .)
-		|
-																								(. 
-																									var args = new SqlExpressionBase[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-																									function = this.SetContext(new FunctionCallSqlExpression(this.DefaultProvider, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx); 
-																								.)
-			["AS"] Name<out alias>																
-		]														 								(. 
-																									if (source == null) 
-																								    {
-																										var args = new[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-																										function = function ?? this.SetContext(new FunctionCallSqlExpression(this.DefaultProvider, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx); 
-																										source = CatchAll(() => this.SetContext(new FunctionSource(function, alias ?? name), ctx)); 
-																									}
-																								.)
+																								(. var args = new List<SqlExpressionBase>(); SqlExpressionBase e; .)
+		"(" 
+			[
+				Expression<out e>																(. args.Add(e); .)
+				{
+					"," Expression<out e>														(. args.Add(e); .)
+				}
+			]
+		")"																						(. function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx); .)
+		["AS"] Name<out alias>																	(. source = CatchAll(() => this.SetContext(new FunctionSource(function, alias ), ctx)) ; .)
+		
 	.
 
 InsertTarget<out TargetBase target>																(. string name; target = null; var ctx = Mark(); string variable; .)

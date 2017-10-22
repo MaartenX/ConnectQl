@@ -36,17 +36,17 @@ namespace ConnectQl.Interfaces
         int? Count { get; }
 
         /// <summary>
-        /// Gets the filter expression.
+        /// Gets the expression that that will filter this query.
         /// </summary>
         Expression FilterExpression { get; }
 
         /// <summary>
-        /// Gets the fields.
+        /// Gets the fields that this query returns.
         /// </summary>
         IEnumerable<string> Fields { get; }
 
         /// <summary>
-        /// Gets a value indicating whether to retrieve all fields.
+        /// Gets a value indicating whether to retrieve all fields. When this is <c>true</c>, <see cref="Fields"/> is ignored.
         /// </summary>
         bool RetrieveAllFields { get; }
 
@@ -67,7 +67,7 @@ namespace ConnectQl.Interfaces
         Expression GetFilter(IExecutionContext context);
 
         /// <summary>
-        /// Retrieves the sort orders for the query.
+        /// Retrieves the sort orders for the query. All variables are evaluated and the query is simplified as much as possible.
         /// </summary>
         /// <param name="context">
         /// The execution context.

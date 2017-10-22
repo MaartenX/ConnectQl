@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator that enumerates the items of an asynchronously created <see cref="IAsyncEnumerable{T}"/>.
     /// </summary>
@@ -92,6 +94,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [CanBeNull]
         protected override IEnumerator<T> InitialBatch()
         {
             return null;

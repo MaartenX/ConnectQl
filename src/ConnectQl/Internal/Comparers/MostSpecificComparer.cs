@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Comparers
 
     using ConnectQl.Expressions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Uses to sort comparers to get the most specific comparer first.
     /// </summary>
@@ -51,7 +53,7 @@ namespace ConnectQl.Internal.Comparers
         /// </returns>
         public int Compare(CompareExpression x, CompareExpression y)
         {
-            return SortOrder(x) - SortOrder(y);
+            return MostSpecificComparer.SortOrder(x) - MostSpecificComparer.SortOrder(y);
         }
 
         /// <summary>
@@ -63,7 +65,7 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The sort order.
         /// </returns>
-        private static int SortOrder(CompareExpression x)
+        private static int SortOrder([NotNull] CompareExpression x)
         {
             switch (x.CompareType)
             {

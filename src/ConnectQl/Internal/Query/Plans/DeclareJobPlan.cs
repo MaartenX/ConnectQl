@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Query.Plans
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The declare job plan.
     /// </summary>
@@ -78,6 +80,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
+        [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
             return new ExecuteResult(new Job(context, this.name, this.plan, await this.triggersFactory(context)));

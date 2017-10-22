@@ -53,7 +53,7 @@ namespace ConnectQl.Internal
                                      typeInfo,
                                  }.Where(i => i.IsInterface);
 
-            this.Interfaces = interfaces.Where(ti => ti.Assembly.FullName == ThisAssemblyName).Select(t => t.AsType()).ToArray();
+            this.Interfaces = interfaces.Where(ti => ti.Assembly.FullName == TypeDescriptor.ThisAssemblyName).Select(t => t.AsType()).ToArray();
             this.SimplifiedType = type;
         }
 

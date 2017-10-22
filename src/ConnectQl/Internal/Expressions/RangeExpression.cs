@@ -24,8 +24,11 @@ namespace ConnectQl.Internal.Expressions
 {
     using System;
     using System.Linq.Expressions;
+    using System.Reflection;
 
     using ConnectQl.Expressions;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The range expression.
@@ -47,8 +50,8 @@ namespace ConnectQl.Internal.Expressions
         protected internal RangeExpression(object min, object max, Type type)
             : base(type)
         {
-            this.Min = System.Convert.ChangeType(min, type);
-            this.Max = System.Convert.ChangeType(max, type);
+            this.Min = System.Convert.ChangeType(min, Nullable.GetUnderlyingType(type) ?? type);
+            this.Max = System.Convert.ChangeType(max, Nullable.GetUnderlyingType(type) ?? type);
         }
 
         /// <summary>
@@ -59,7 +62,7 @@ namespace ConnectQl.Internal.Expressions
         /// <summary>
         /// Gets the maximum value as constant expression.
         /// </summary>
-        public ConstantExpression MaxExpression => Constant(this.Max, this.Type);
+        public ConstantExpression MaxExpression => Expression.Constant(this.Max, this.Type);
 
         /// <summary>
         /// Gets the min.
@@ -69,7 +72,7 @@ namespace ConnectQl.Internal.Expressions
         /// <summary>
         /// Gets the minimum value as constant expression.
         /// </summary>
-        public ConstantExpression MinExpression => Constant(this.Min, this.Type);
+        public ConstantExpression MinExpression => Expression.Constant(this.Min, this.Type);
 
         /// <summary>
         /// Returns a textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.
@@ -77,9 +80,10 @@ namespace ConnectQl.Internal.Expressions
         /// <returns>
         /// A textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.
         /// </returns>
+        [NotNull]
         public override string ToString()
         {
-            return $"RANGE({Quote(this.Min)}, {Quote(this.Max)})";
+            return $"RANGE({RangeExpression.Quote(this.Min)}, {RangeExpression.Quote(this.Max)})";
         }
 
         /// <summary>
@@ -92,6 +96,7 @@ namespace ConnectQl.Internal.Expressions
         /// <param name="visitor">
         /// An instance of <see cref="T:System.Func`2"/>.
         /// </param>
+        [NotNull]
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             return this;

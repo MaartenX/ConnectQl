@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Ast.Sources
 
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The apply source.
     /// </summary>
@@ -86,7 +88,7 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitApplySource(this);
         }
@@ -100,12 +102,13 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node VisitChildren(NodeVisitor visitor)
+        [NotNull]
+        protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
             var left = visitor.Visit(this.Left);
             var right = visitor.Visit(this.Right);
 
-            return ReferenceEquals(left, this.Left) && ReferenceEquals(right, this.Right)
+            return object.ReferenceEquals(left, this.Left) && object.ReferenceEquals(right, this.Right)
                        ? this
                        : new ApplySource(left, right, this.IsOuterApply);
         }

@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.AsyncEnumerables
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The async enumerator extensions.
     /// </summary>
@@ -47,7 +49,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
         /// <exception cref="InvalidOperationException">
         /// Thrown when the <paramref name="asyncEnumerator"/> was moved to another batch.
         /// </exception>
-        public static IEnumerable<T> CurrentBatchToEnumerable<T>(this IAsyncEnumerator<T> asyncEnumerator)
+        public static IEnumerable<T> CurrentBatchToEnumerable<T>([NotNull] this IAsyncEnumerator<T> asyncEnumerator)
         {
             while (asyncEnumerator.MoveNext())
             {
@@ -67,7 +69,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
         /// <returns>
         /// The array.
         /// </returns>
-        internal static T[] CurrentBatchToArray<T>(this IAsyncEnumerator<T> asyncEnumerator)
+        internal static T[] CurrentBatchToArray<T>([NotNull] this IAsyncEnumerator<T> asyncEnumerator)
         {
             var result = new T[4];
             var index = 0;
@@ -108,7 +110,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
         /// <returns>
         /// The <see cref="IEnumerator{T}"/>.
         /// </returns>
-        internal static IEnumerator<T> CurrentBatchToEnumerator<T>(this IAsyncEnumerator<T> asyncEnumerator)
+        internal static IEnumerator<T> CurrentBatchToEnumerator<T>([NotNull] this IAsyncEnumerator<T> asyncEnumerator)
         {
             while (asyncEnumerator.MoveNext())
             {

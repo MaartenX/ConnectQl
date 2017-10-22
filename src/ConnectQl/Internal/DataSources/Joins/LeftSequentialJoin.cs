@@ -33,6 +33,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The LEFT SEQUENTIAL JOIN.
     /// </summary>
@@ -57,7 +59,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <param name="right">
         /// The right data set.
         /// </param>
-        public LeftSequentialJoin(DataSource left, DataSource right)
+        public LeftSequentialJoin([NotNull] DataSource left, [NotNull] DataSource right)
             : base(new HashSet<string>(left.Aliases.Concat(right.Aliases)))
         {
             this.left = left;
@@ -76,7 +78,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IAsyncEnumerable{Row}"/>.
         /// </returns>
-        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, IMultiPartQuery multiPartQuery)
+        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, [NotNull] IMultiPartQuery multiPartQuery)
         {
             var rowBuilder = new RowBuilder();
 
@@ -96,7 +98,7 @@ namespace ConnectQl.Internal.DataSources.Joins
             return this.left.GetRows(context, leftQuery).ZipAll(this.right.GetRows(context, rightQuery), rowBuilder.CombineRows)
                 .Where(multiPartQuery.FilterExpression.GetRowFilter())
                 .OrderBy(multiPartQuery.OrderByExpressions)
-                .AfterLastElement(count => context.Log.Verbose($"{this.GetType().Name} returned {count} records."));
+                .AfterLastElement(count => context.Logger.Verbose($"{this.GetType().Name} returned {count} records."));
         }
 
         /// <summary>
@@ -108,6 +110,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// All data sources inside this data source.
         /// </returns>
+        [ItemNotNull]
         protected internal override async Task<IEnumerable<IDataSourceDescriptor>> GetDataSourceDescriptorsAsync(IExecutionContext context)
         {
             return (await this.left.GetDataSourceDescriptorsAsync(context).ConfigureAwait(false))

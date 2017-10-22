@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Ast.Statements
 
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The declare job statement.
     /// </summary>
@@ -94,7 +96,7 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitDeclareJobStatement(this);
         }
@@ -108,7 +110,8 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node VisitChildren(NodeVisitor visitor)
+        [NotNull]
+        protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
             var triggers = visitor.Visit(this.Triggers);
             var statements = visitor.Visit(this.Statements);

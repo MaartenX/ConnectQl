@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
+    <PackageTags>ConnectQl;SQL;querying;plugins;xlsx;Excel;Office</PackageTags>
+    <Description>ConnectQl plugin that supports the Excel file format (.xlsx).</Description>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
+    <PackageReference Include="EPPlus" Version="4.1.1" Condition="'$(TargetFramework)'=='net45'" />
+    <PackageReference Include="EPPlus.Core" Version="1.5.2" Condition="'$(TargetFramework)'=='netstandard1.3'" />
+  </ItemGroup>
+
+</Project>

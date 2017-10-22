@@ -43,6 +43,8 @@ namespace ConnectQl.Internal.Query
     using ConnectQl.Internal.Validation.Operators;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Adds an expression converter to the <see cref="INodeDataProvider"/>.
     /// </summary>
@@ -57,10 +59,12 @@ namespace ConnectQl.Internal.Query
         /// <param name="expression">
         /// The expression to convert.
         /// </param>
+        /// <param name="allowVariables">
+        /// <c>true</c> to allow blocks and variables in the expression, <c>false</c> to replace variables by their value (so they can be used in expressions).</param>
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression ConvertToLinqExpression(this INodeDataProvider dataProvider, SqlExpressionBase expression)
+        public static Expression ConvertToLinqExpression(this INodeDataProvider dataProvider, [CanBeNull] SqlExpressionBase expression, bool allowVariables = true)
         {
             if (expression == null)
             {
@@ -69,7 +73,34 @@ namespace ConnectQl.Internal.Query
 
             new Evaluator(dataProvider).Visit(expression);
 
-            return CleanExpression(dataProvider.GetExpression(expression));
+            var result = NodeDataProviderExpressionConverter.CleanExpression(dataProvider.GetExpression(expression));
+
+            if (allowVariables)
+            {
+                return result;
+            }
+
+            var vars = new Dictionary<ParameterExpression, Expression>();
+
+            GenericVisitor.Visit(
+                (BinaryExpression e) =>
+                    {
+                        if (e.NodeType == ExpressionType.Assign && e.Left is ParameterExpression parameter)
+                        {
+                            vars[parameter] = e.Right;
+                        }
+
+                        return null;
+                    },
+                result);
+
+            result = new GenericVisitor
+                         {
+                             (GenericVisitor v, BlockExpression e) => v.Visit(e.Expressions.First(b => b.NodeType != ExpressionType.Assign)),
+                             (ParameterExpression e) => vars.TryGetValue(e, out var value) ? value : e
+                         }.Visit(result);
+
+            return result;
         }
 
         /// <summary>
@@ -139,18 +170,18 @@ namespace ConnectQl.Internal.Query
                                    var left = v.Visit(e.Left);
                                    var right = v.Visit(e.Right);
 
-                                   if (!ReferenceEquals(left, e.Left) || !ReferenceEquals(right, e.Right))
+                                   if (!object.ReferenceEquals(left, e.Left) || !object.ReferenceEquals(right, e.Right))
                                    {
                                        e = Expression.MakeBinary(e.NodeType, left, right);
                                    }
 
-                                   return ReplaceBinaryCompares(e);
+                                   return NodeDataProviderExpressionConverter.ReplaceBinaryCompares(e);
                                },
                            (GenericVisitor v, UnaryExpression e) =>
                                {
                                    var operand = v.Visit(e.Operand);
 
-                                   if (!ReferenceEquals(operand, e.Operand))
+                                   if (!object.ReferenceEquals(operand, e.Operand))
                                    {
                                        e = Expression.MakeUnary(e.NodeType, e.Operand, e.Type);
                                    }
@@ -175,7 +206,7 @@ namespace ConnectQl.Internal.Query
         /// The <paramref name="expression"/> or a new <see cref="CompareExpression"/> when the binary expression was a
         ///     comparison.
         /// </returns>
-        private static Expression ReplaceBinaryCompares(BinaryExpression expression)
+        private static Expression ReplaceBinaryCompares([NotNull] BinaryExpression expression)
         {
             switch (expression.NodeType)
             {
@@ -199,7 +230,7 @@ namespace ConnectQl.Internal.Query
             /// <summary>
             /// The function that marks function results.
             /// </summary>
-            private static readonly MethodInfo MarkFunctionResultWithNameMethod = typeof(Evaluator).GetGenericMethod(nameof(MarkFunctionResultWithName), typeof(IExecutionContext), typeof(string), typeof(string), null);
+            private static readonly MethodInfo MarkFunctionResultWithNameMethod = typeof(Evaluator).GetGenericMethod(nameof(Evaluator.MarkFunctionResultWithName), typeof(IExecutionContext), typeof(string), typeof(string), null);
 
             /// <summary>
             /// The variable counter.
@@ -231,7 +262,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitBinarySqlExpression(BinarySqlExpression node)
+            protected internal override Node VisitBinarySqlExpression([NotNull] BinarySqlExpression node)
             {
                 var result = base.VisitBinarySqlExpression(node);
 
@@ -249,7 +280,8 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitConstSqlExpression(ConstSqlExpression node)
+            [NotNull]
+            protected internal override Node VisitConstSqlExpression([NotNull] ConstSqlExpression node)
             {
                 this.data.SetExpression(node, Expression.Constant(node.Value));
 
@@ -265,7 +297,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
+            protected internal override Node VisitFieldReferenceSqlExpression([NotNull] FieldReferenceSqlExpression node)
             {
                 var result = base.VisitFieldReferenceSqlExpression(node);
 
@@ -302,7 +334,7 @@ namespace ConnectQl.Internal.Query
                         expr = this.data.ConvertToRows(expr);
                     }
 
-                    variables[i] = Expression.Parameter(function.Parameters[i].Type, $"var{++varCounter}");
+                    variables[i] = Expression.Parameter(function.Parameters[i].Type, $"var{++Evaluator.varCounter}");
                     statements.Add(Expression.Assign(variables[i], Converter.Convert(expr, function.Parameters[i].Type)));
                     expression = expression.ReplaceParameter(function.Parameters[i], variables[i]);
                 }
@@ -314,7 +346,7 @@ namespace ConnectQl.Internal.Query
 
                     var displayName = getDisplayName.Body.ReplaceParameter(getDisplayName.Parameters[0], Expression.Constant(node.Name)).ReplaceParameter(getDisplayName.Parameters[1], Expression.NewArrayInit(typeof(object), variables.Select(v => Expression.Convert(v, typeof(object))).ToArray<Expression>()));
 
-                    expression = Expression.Call(MarkFunctionResultWithNameMethod.MakeGenericMethod(expression.Type), CustomExpression.ExecutionContext(), Expression.Constant(node.Name), displayName, expression);
+                    expression = Expression.Call(Evaluator.MarkFunctionResultWithNameMethod.MakeGenericMethod(expression.Type), CustomExpression.ExecutionContext(), Expression.Constant(node.Name), displayName, expression);
                 }
 
                 statements.Add(expression);
@@ -340,7 +372,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitUnarySqlExpression(UnarySqlExpression node)
+            protected internal override Node VisitUnarySqlExpression([NotNull] UnarySqlExpression node)
             {
                 var result = base.VisitUnarySqlExpression(node);
 
@@ -358,7 +390,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
+            protected internal override Node VisitVariableSqlExpression([NotNull] VariableSqlExpression node)
             {
                 var result = base.VisitVariableSqlExpression(node);
                 var getVariable = typeof(IExecutionContext).GetRuntimeMethod("GetVariable", new[] { typeof(string), }).MakeGenericMethod(this.data.GetType(node).SimplifiedType);
@@ -459,7 +491,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
+            protected internal override Node VisitVariableSqlExpression([NotNull] VariableSqlExpression node)
             {
                 this.HasSideEffects |= this.hasVariableSideEffects(node.Name);
 
@@ -475,7 +507,7 @@ namespace ConnectQl.Internal.Query
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitVariableSource(VariableSource node)
+            protected internal override Node VisitVariableSource([NotNull] VariableSource node)
             {
                 this.HasSideEffects |= this.hasVariableSideEffects(node.Variable);
 

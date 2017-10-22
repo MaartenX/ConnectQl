@@ -29,15 +29,17 @@ namespace ConnectQl.Intellisense
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Resolves plugins using the assembly list provided.
     /// </summary>
-    public class AssemblyPluginResolver : IPluginResolver
+    public class AssemblyPluginResolver : IDynamicPluginResolver
     {
         /// <summary>
         /// The assemblies.
         /// </summary>
-        private readonly IList<Assembly> assemblies;
+        private readonly Dictionary<string, Assembly> assemblies = new Dictionary<string, Assembly>();
 
         /// <summary>
         /// The plugins.
@@ -50,9 +52,42 @@ namespace ConnectQl.Intellisense
         /// <param name="assemblies">
         /// The assemblies.
         /// </param>
-        public AssemblyPluginResolver(IList<Assembly> assemblies)
+        public AssemblyPluginResolver([NotNull] IList<Assembly> assemblies)
         {
-            this.assemblies = assemblies;
+            foreach (var assembly in assemblies)
+            {
+                this.assemblies[assembly.GetName().ToString()] = assembly;
+            }
+
+            this.IsLoading = true;
+        }
+
+        /// <summary>
+        /// The available plugins changed.
+        /// </summary>
+        public event EventHandler AvailablePluginsChanged;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the resolver is currently loading plugins.
+        /// </summary>
+        public bool IsLoading { get; set; }
+
+        /// <summary>
+        /// Adds assemblies to the resolver.
+        /// </summary>
+        /// <param name="assembliesToAdd">
+        /// The assemblies to add.
+        /// </param>
+        public void AddAssemblies([NotNull] IEnumerable<Assembly> assembliesToAdd)
+        {
+            foreach (var assemblyToAdd in assembliesToAdd)
+            {
+                this.assemblies[assemblyToAdd.GetName().ToString()] = assemblyToAdd;
+            }
+
+            this.plugins = null;
+
+            this.AvailablePluginsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -61,24 +96,30 @@ namespace ConnectQl.Intellisense
         /// <returns>
         /// The available plugins.
         /// </returns>
+        [NotNull]
         public IEnumerable<IConnectQlPlugin> EnumerateAvailablePlugins()
         {
+            if (this.plugins != null)
+            {
+                return this.plugins;
+            }
+
             var typeName = typeof(IConnectQlPlugin).FullName;
 
-            return this.plugins ?? (this.plugins = this.assemblies
+            return this.plugins = this.assemblies.Values
                                         .SelectMany(a => a.ExportedTypes
                                             .Select(type => new
-                                                                {
-                                                                    Type = type,
-                                                                    TypeInfo = type.GetTypeInfo(),
-                                                                })
+                                            {
+                                                Type = type,
+                                                TypeInfo = type.GetTypeInfo(),
+                                            })
                                             .Where(
                                                 type =>
                                                     type.TypeInfo.IsPublic && !type.TypeInfo.IsAbstract && type.TypeInfo.IsClass
                                                     && type.TypeInfo.ImplementedInterfaces.Any(i => i.FullName == typeName))
                                             .Select(type => Activator.CreateInstance(type.Type))
                                             .Cast<IConnectQlPlugin>())
-                                        .ToArray());
+                                        .ToArray();
         }
     }
 }

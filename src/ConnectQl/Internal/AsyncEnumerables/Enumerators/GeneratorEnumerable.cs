@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator that creates items using a generator function.
     /// </summary>
@@ -114,6 +116,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [CanBeNull]
         protected override IEnumerator<TSource> InitialBatch()
         {
             return null;
@@ -126,6 +129,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// A task returning an <see cref="IEnumerator{T}"/> containing the next batch, of <c>null</c> when all data is
         ///     enumerated.
         /// </returns>
+        [ItemCanBeNull]
         protected override async Task<IEnumerator<TSource>> OnNextBatchAsync()
         {
             switch (this.state)

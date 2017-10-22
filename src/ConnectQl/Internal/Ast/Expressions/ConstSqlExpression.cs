@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Ast.Expressions
 
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The constant.
     /// </summary>
@@ -71,7 +73,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             var other = obj as ConstSqlExpression;
 
-            return other != null && Equals(other.Value, this.Value);
+            return other != null && object.Equals(other.Value, this.Value);
         }
 
         /// <summary>
@@ -102,7 +104,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitConstSqlExpression(this);
         }
@@ -116,6 +118,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitChildren(NodeVisitor visitor)
         {
             return this;

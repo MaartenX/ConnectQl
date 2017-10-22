@@ -27,6 +27,8 @@ namespace ConnectQl.Internal
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The column descriptor.
     /// </summary>
@@ -45,7 +47,7 @@ namespace ConnectQl.Internal
         /// <param name="description">
         /// The description.
         /// </param>
-        public ColumnDescriptor(Type type, string name, string description = null)
+        public ColumnDescriptor(Type type, string name, [CanBeNull] string description = null)
         {
             this.Type = new TypeDescriptor(type);
             this.Name = name;

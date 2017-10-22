@@ -33,6 +33,8 @@ namespace ConnectQl.DataSources
     using ConnectQl.Internal.Comparers;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The temp data source.
     /// </summary>
@@ -99,7 +101,7 @@ namespace ConnectQl.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public async Task<long> WriteRowsAsync(IExecutionContext context, IAsyncEnumerable<Row> rowsToWrite, bool upsert)
+        public async Task<long> WriteRowsAsync([NotNull] IExecutionContext context, IAsyncEnumerable<Row> rowsToWrite, bool upsert)
         {
             var builder = context.CreateBuilder<Row>();
 

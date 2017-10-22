@@ -40,6 +40,8 @@ namespace ConnectQl.Internal.Intellisense
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Query;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The interpreter.
     /// </summary>
@@ -48,7 +50,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <summary>
         /// The parsed script.
         /// </summary>
-        private ParsedScript parsedScript;
+        private ParsedDocument parsedScript;
 
         /// <summary>
         /// The statements.
@@ -77,7 +79,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The <see cref="EvaluationResult"/>.
         /// </returns>
-        internal static IEvaluationResult GetIntellisenseData(ParsedScript parsedScript, IReadOnlyList<IClassifiedToken> tokens)
+        internal static IEvaluationResult GetIntellisenseData([NotNull] ParsedDocument parsedScript, IReadOnlyList<IClassifiedToken> tokens)
         {
             var evaluator = new Evaluator
                                 {
@@ -126,7 +128,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitVariableDeclaration(VariableDeclaration node)
+        protected internal override Node VisitVariableDeclaration([NotNull] VariableDeclaration node)
         {
             this.statements.SetVariable(node.Name, this.Evaluate(node.Expression, out bool sideEffects), !sideEffects);
 
@@ -142,7 +144,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectFromStatement(SelectFromStatement node)
+        protected internal override Node VisitSelectFromStatement([NotNull] SelectFromStatement node)
         {
             var descriptors = this.Evaluate(node.Source, out bool hasSideEffects)?.GetDataSourceDescriptorsAsync(this.statements).Result.ToArray();
 

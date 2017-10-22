@@ -25,6 +25,8 @@ namespace ConnectQl.Interfaces
     using System.Collections.Generic;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The row builder extensions.
     /// </summary>
@@ -48,7 +50,7 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// The <see cref="Row"/>.
         /// </returns>
-        public static Row CreateRow<T>(this IRowBuilder rowBuilder, T uniqueId, params KeyValuePair<string, object>[] fields)
+        public static Row CreateRow<T>([NotNull] this IRowBuilder rowBuilder, T uniqueId, params KeyValuePair<string, object>[] fields)
         {
             return rowBuilder.CreateRow(uniqueId, fields);
         }

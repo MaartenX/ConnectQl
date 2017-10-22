@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
+    <PackageTags>ConnectQl;SQL;querying;plugins;logging;trace</PackageTags>
+    <Description>ConnectQl plugin that supports the Console logger.</Description>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
+    <PackageReference Include="System.Console" Version="4.3.0" Condition="'$(TargetFramework)' == 'netstandard1.3'" />
+  </ItemGroup>
+</Project>

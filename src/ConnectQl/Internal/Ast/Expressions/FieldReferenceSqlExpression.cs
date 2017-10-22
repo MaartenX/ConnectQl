@@ -27,6 +27,8 @@ namespace ConnectQl.Internal.Ast.Expressions
 
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The field reference.
     /// </summary>
@@ -115,6 +117,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [NotNull]
         public override string ToString() => this.Source == null ? $"[{this.Name}]" : $"[{this.Source}].[{this.Name}]";
 
         /// <summary>
@@ -126,7 +129,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitFieldReferenceSqlExpression(this);
         }
@@ -140,6 +143,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitChildren(NodeVisitor visitor)
         {
             return this;

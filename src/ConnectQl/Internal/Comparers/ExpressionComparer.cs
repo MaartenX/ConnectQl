@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.Comparers
     using ConnectQl.Expressions;
     using ConnectQl.Internal.Expressions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The expression comparer.
     /// </summary>
@@ -76,39 +78,39 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool Equals(Expression x, Expression y)
+        public bool Equals([CanBeNull] Expression x, [CanBeNull] Expression y)
         {
             return x == null && y == null || x != null && y != null && x.GetType() == y.GetType() &&
                    (
 
                        // Builtin expressions.
-                       Compare<BinaryExpression>(x, y, (first, second) => this.Equals(first.Left, second.Left) && this.Equals(first.Right, second.Right)) ||
-                       Compare<BlockExpression>(x, y, (first, second) => first.Expressions.SequenceEqual(second.Expressions, this) && this.Equals(first.Result, second.Result) && first.Variables.SequenceEqual(second.Variables, this)) ||
-                       Compare<ConditionalExpression>(x, y, (first, second) => this.Equals(first.Test, second.Test) && this.Equals(first.IfTrue, second.IfTrue) && this.Equals(first.IfFalse, second.IfFalse)) ||
-                       Compare<ConstantExpression>(x, y, (first, second) => Equals(first.Value, second.Value)) ||
-                       Compare<DefaultExpression>(x, y, (first, second) => true) ||
-                       Compare<GotoExpression>(x, y, (first, second) => Equals(first.Kind, second.Kind) && first.Target.Equals(second.Target) && this.Equals(first.Value, second.Value)) ||
-                       Compare<IndexExpression>(x, y, (first, second) => this.Equals(first.Object, second.Object) && first.Indexer.Equals(second.Indexer) && first.Arguments.SequenceEqual(second.Arguments, this)) ||
-                       Compare<InvocationExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression) && first.Arguments.SequenceEqual(second.Arguments, this)) ||
-                       Compare<LabelExpression>(x, y, (first, second) => this.Equals(first.DefaultValue, second.DefaultValue) && Equals(first.Target, second.Target)) ||
-                       Compare<LambdaExpression>(x, y, (first, second) => this.Equals(first.Body, second.Body) && Equals(first.Name, second.Name) && first.Parameters.SequenceEqual(second.Parameters, this) && Equals(first.TailCall, second.TailCall) && Equals(first.ReturnType, second.ReturnType)) ||
-                       Compare<ListInitExpression>(x, y, (first, second) => this.Equals(first.NewExpression, second.NewExpression) && first.Initializers.Cast<Expression>().SequenceEqual(second.Initializers.Cast<Expression>(), this)) ||
-                       Compare<LoopExpression>(x, y, (first, second) => this.Equals(first.Body, second.Body) && Equals(first.BreakLabel, second.BreakLabel) && Equals(first.ContinueLabel, second.ContinueLabel)) ||
-                       Compare<MemberExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression) && first.Member.Equals(second.Member)) ||
-                       Compare<MemberInitExpression>(x, y, (first, second) => this.Equals(first.NewExpression, second.NewExpression) && first.Bindings.SequenceEqual(second.Bindings)) ||
-                       Compare<MethodCallExpression>(x, y, (first, second) => this.Equals(first.Object, second.Object) && Equals(first.Method, second.Method) && first.Arguments.SequenceEqual(second.Arguments, this)) ||
-                       Compare<NewArrayExpression>(x, y, (first, second) => first.Expressions.SequenceEqual(second.Expressions, this)) ||
-                       Compare<ParameterExpression>(x, y, (first, second) => Equals(first.IsByRef, second.IsByRef) && first.Type == second.Type && (this.ignoreVariableNames || Equals(first.Name, second.Name))) ||
-                       Compare<RuntimeVariablesExpression>(x, y, (first, second) => first.Variables.SequenceEqual(second.Variables, this)) ||
-                       Compare<TypeBinaryExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression) && first.TypeOperand == second.TypeOperand) ||
-                       Compare<UnaryExpression>(x, y, (first, second) => this.Equals(first.Operand, second.Operand)) ||
+                       ExpressionComparer.Compare<BinaryExpression>(x, y, (first, second) => this.Equals(first.Left, second.Left) && this.Equals(first.Right, second.Right)) ||
+                       ExpressionComparer.Compare<BlockExpression>(x, y, (first, second) => first.Expressions.SequenceEqual(second.Expressions, this) && this.Equals(first.Result, second.Result) && first.Variables.SequenceEqual(second.Variables, this)) ||
+                       ExpressionComparer.Compare<ConditionalExpression>(x, y, (first, second) => this.Equals(first.Test, second.Test) && this.Equals(first.IfTrue, second.IfTrue) && this.Equals(first.IfFalse, second.IfFalse)) ||
+                       ExpressionComparer.Compare<ConstantExpression>(x, y, (first, second) => object.Equals(first.Value, second.Value)) ||
+                       ExpressionComparer.Compare<DefaultExpression>(x, y, (first, second) => true) ||
+                       ExpressionComparer.Compare<GotoExpression>(x, y, (first, second) => object.Equals(first.Kind, second.Kind) && first.Target.Equals(second.Target) && this.Equals(first.Value, second.Value)) ||
+                       ExpressionComparer.Compare<IndexExpression>(x, y, (first, second) => this.Equals(first.Object, second.Object) && first.Indexer.Equals(second.Indexer) && first.Arguments.SequenceEqual(second.Arguments, this)) ||
+                       ExpressionComparer.Compare<InvocationExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression) && first.Arguments.SequenceEqual(second.Arguments, this)) ||
+                       ExpressionComparer.Compare<LabelExpression>(x, y, (first, second) => this.Equals(first.DefaultValue, second.DefaultValue) && object.Equals(first.Target, second.Target)) ||
+                       ExpressionComparer.Compare<LambdaExpression>(x, y, (first, second) => this.Equals(first.Body, second.Body) && object.Equals(first.Name, second.Name) && first.Parameters.SequenceEqual(second.Parameters, this) && object.Equals(first.TailCall, second.TailCall) && object.Equals(first.ReturnType, second.ReturnType)) ||
+                       ExpressionComparer.Compare<ListInitExpression>(x, y, (first, second) => this.Equals(first.NewExpression, second.NewExpression) && first.Initializers.Cast<Expression>().SequenceEqual(second.Initializers.Cast<Expression>(), this)) ||
+                       ExpressionComparer.Compare<LoopExpression>(x, y, (first, second) => this.Equals(first.Body, second.Body) && object.Equals(first.BreakLabel, second.BreakLabel) && object.Equals(first.ContinueLabel, second.ContinueLabel)) ||
+                       ExpressionComparer.Compare<MemberExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression) && first.Member.Equals(second.Member)) ||
+                       ExpressionComparer.Compare<MemberInitExpression>(x, y, (first, second) => this.Equals(first.NewExpression, second.NewExpression) && first.Bindings.SequenceEqual(second.Bindings)) ||
+                       ExpressionComparer.Compare<MethodCallExpression>(x, y, (first, second) => this.Equals(first.Object, second.Object) && object.Equals(first.Method, second.Method) && first.Arguments.SequenceEqual(second.Arguments, this)) ||
+                       ExpressionComparer.Compare<NewArrayExpression>(x, y, (first, second) => first.Expressions.SequenceEqual(second.Expressions, this)) ||
+                       ExpressionComparer.Compare<ParameterExpression>(x, y, (first, second) => object.Equals(first.IsByRef, second.IsByRef) && first.Type == second.Type && (this.ignoreVariableNames || object.Equals(first.Name, second.Name))) ||
+                       ExpressionComparer.Compare<RuntimeVariablesExpression>(x, y, (first, second) => first.Variables.SequenceEqual(second.Variables, this)) ||
+                       ExpressionComparer.Compare<TypeBinaryExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression) && first.TypeOperand == second.TypeOperand) ||
+                       ExpressionComparer.Compare<UnaryExpression>(x, y, (first, second) => this.Equals(first.Operand, second.Operand)) ||
 
                        // Custom expressions.
-                       Compare<TaskExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression)) ||
-                       Compare<CompareExpression>(x, y, (first, second) => this.Equals(first.Left, second.Left) && this.Equals(first.Right, second.Right) && first.CompareType == second.CompareType) ||
-                       Compare<ExecutionContextExpression>(x, y, (first, second) => true) ||
-                       Compare<SourceFieldExpression>(x, y, (first, second) => Equals(first.FieldName, second.FieldName) && Equals(first.SourceName, second.SourceName)) ||
-                       Compare<RangeExpression>(x, y, (first, second) => Equals(first.Min, second.Min) & Equals(first.Max, second.Max)));
+                       ExpressionComparer.Compare<TaskExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression)) ||
+                       ExpressionComparer.Compare<CompareExpression>(x, y, (first, second) => this.Equals(first.Left, second.Left) && this.Equals(first.Right, second.Right) && first.CompareType == second.CompareType) ||
+                       ExpressionComparer.Compare<ExecutionContextExpression>(x, y, (first, second) => true) ||
+                       ExpressionComparer.Compare<SourceFieldExpression>(x, y, (first, second) => object.Equals(first.FieldName, second.FieldName) && object.Equals(first.SourceName, second.SourceName)) ||
+                       ExpressionComparer.Compare<RangeExpression>(x, y, (first, second) => object.Equals(first.Min, second.Min) & object.Equals(first.Max, second.Max)));
         }
 
         /// <summary>
@@ -120,7 +122,7 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public int GetHashCode(Expression obj)
+        public int GetHashCode([CanBeNull] Expression obj)
         {
             return obj?.GetType().GetHashCode() ?? 0;
         }

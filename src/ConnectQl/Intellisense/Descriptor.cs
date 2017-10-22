@@ -28,6 +28,9 @@ namespace ConnectQl.Intellisense
 
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
+    using ConnectQl.Internal.Intellisense.Protocol;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The descriptor.
@@ -43,6 +46,7 @@ namespace ConnectQl.Intellisense
         /// <returns>
         /// The <see cref="IDataSourceDescriptor"/>.
         /// </returns>
+        [NotNull]
         public static IDataSourceDescriptor DynamicDataSource(string alias) => new DataSourceDescriptor(alias, Enumerable.Empty<IColumnDescriptor>(), true);
 
         /// <summary>
@@ -60,7 +64,8 @@ namespace ConnectQl.Intellisense
         /// <returns>
         /// The <see cref="IColumnDescriptor"/>.
         /// </returns>
-        public static IColumnDescriptor ForColumn(string name, Type type, string description = null)
+        [NotNull]
+        public static IColumnDescriptor ForColumn(string name, Type type, [CanBeNull] string description = null)
         {
             return new ColumnDescriptor(type, name, description);
         }
@@ -80,9 +85,21 @@ namespace ConnectQl.Intellisense
         /// <returns>
         /// The <see cref="IDataSourceDescriptor"/>.
         /// </returns>
+        [NotNull]
         public static IDataSourceDescriptor ForDataSource(string alias, IEnumerable<IColumnDescriptor> columns, bool allowsAnyColumnName = false)
         {
             return new DataSourceDescriptor(alias, columns, allowsAnyColumnName);
+        }
+
+        /// <summary>
+        /// Creates a document descriptor from the specified byte array.
+        /// </summary>
+        /// <param name="bytes">The bytes array.</param>
+        /// <returns>The descriptor.</returns>
+        [CanBeNull]
+        public static IDocumentDescriptor Document([CanBeNull] byte[] bytes)
+        {
+            return bytes == null ? null : ProtocolSerializer.Deserialize<SerializableDocumentDescriptor>(bytes);
         }
     }
 }

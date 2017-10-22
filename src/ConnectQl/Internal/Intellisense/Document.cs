@@ -36,16 +36,13 @@ namespace ConnectQl.Internal.Intellisense
     using ConnectQl.Internal.Intellisense.Protocol;
     using ConnectQl.Internal.Validation;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The document.
     /// </summary>
-    internal class Document
+    internal class Document : IDocumentDescriptor
     {
-        /// <summary>
-        /// The document that was sent last.
-        /// </summary>
-        private readonly SerializableDocumentDescriptor document;
-
         /// <summary>
         /// The session.
         /// </summary>
@@ -55,11 +52,6 @@ namespace ConnectQl.Internal.Intellisense
         /// The queue lock.
         /// </summary>
         private readonly object updateLock = new object();
-
-        /// <summary>
-        /// The contents.
-        /// </summary>
-        private string contents;
 
         /// <summary>
         /// True if the document is currently updating.
@@ -75,54 +67,90 @@ namespace ConnectQl.Internal.Intellisense
         /// <param name="filename">
         /// The filename.
         /// </param>
-        /// <param name="contents">
-        /// The contents.
-        /// </param>
-        public Document(IntellisenseSession session, string filename, string contents)
+        public Document(IntellisenseSession session, string filename)
         {
             this.session = session;
-            this.Filename = filename;
-            this.Contents = contents;
-
-            this.document = new SerializableDocumentDescriptor();
+            this.Descriptor = new SerializableDocumentDescriptor { Filename = filename };
         }
 
         /// <summary>
-        /// Gets or sets the contents.
+        /// Gets the contents.
         /// </summary>
-        public string Contents
-        {
-            get
-            {
-                return this.contents;
-            }
+        public string Contents { get; private set; }
 
-            set
-            {
-                this.contents = value;
-
-                var shouldUpdate = false;
-
-                lock (this.updateLock)
-                {
-                    if (!this.updating)
-                    {
-                        this.updating = true;
-                        shouldUpdate = true;
-                    }
-                }
-
-                if (shouldUpdate)
-                {
-                    this.Update(this.contents);
-                }
-            }
-        }
+        /// <summary>
+        /// Gets the version of the document.
+        /// </summary>
+        public int Version { get; private set; }
 
         /// <summary>
         /// Gets the filename.
         /// </summary>
-        public string Filename { get; }
+        public string Filename => this.Descriptor.Filename;
+
+        /// <summary>
+        /// Gets the functions.
+        /// </summary>
+        public IReadOnlyList<IFunctionDescriptor> Functions => this.Descriptor.Functions;
+
+        /// <summary>
+        /// Gets the tokens.
+        /// </summary>
+        public IReadOnlyList<IClassifiedToken> Tokens => this.Descriptor.Tokens;
+
+        /// <summary>
+        /// Gets the messages.
+        /// </summary>
+        public IReadOnlyList<IMessage> Messages => this.Descriptor.Messages;
+
+        /// <summary>
+        /// Gets the variables.
+        /// </summary>
+        public IReadOnlyList<IVariableDescriptorRange> Variables => this.Descriptor.Variables;
+
+        /// <summary>
+        /// Gets the sources.
+        /// </summary>
+        public IReadOnlyList<IDataSourceDescriptorRange> Sources => this.Descriptor.Sources;
+
+        /// <summary>
+        /// Gets the plugins.
+        /// </summary>
+        public IReadOnlyList<string> Plugins => this.Descriptor.Plugins;
+
+        /// <summary>
+        /// Gets the descriptor.
+        /// </summary>
+        /// <value>
+        /// The descriptor.
+        /// </value>
+        internal SerializableDocumentDescriptor Descriptor { get; }
+
+        /// <summary>
+        /// Updates the document.
+        /// </summary>
+        /// <param name="contents">The new contents of the document.</param>
+        /// <param name="documentVersion">The new version of the document.</param>
+        public void Update(string contents, int documentVersion)
+        {
+            this.Contents = contents;
+            this.Version = documentVersion;
+            var shouldUpdate = false;
+
+            lock (this.updateLock)
+            {
+                if (!this.updating)
+                {
+                    this.updating = true;
+                    shouldUpdate = true;
+                }
+            }
+
+            if (shouldUpdate)
+            {
+                this.Update(this.Contents);
+            }
+        }
 
         /// <summary>
         /// Parses this document.
@@ -130,7 +158,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <param name="documentText">
         /// The document Text.
         /// </param>
-        public void Update(string documentText)
+        private void Update(string documentText)
         {
             Action updateIntellisenseData = null;
 
@@ -138,16 +166,30 @@ namespace ConnectQl.Internal.Intellisense
                 {
                     try
                     {
-                        var delta = this.GetChanges(this.ParseDocument(documentText, out ParsedScript parsedScript));
+                        var descriptor = new SerializableDocumentDescriptor();
+                        var parsedDocument = this.ParseContent(documentText, descriptor);
+                        var delta = this.GetChanges(descriptor);
 
                         if (delta != null)
                         {
-                            this.session.OnClassificationChanged(this.Filename, delta);
+                            this.session.OnDocumentChanged(delta);
                         }
 
-                        if (this.contents == documentText)
+                        if (this.Contents == documentText)
                         {
-                            var data = Evaluator.GetIntellisenseData(parsedScript, this.document.Tokens);
+                            this.ValidateDocument(parsedDocument, descriptor);
+
+                            delta = this.GetChanges(descriptor);
+
+                            if (delta != null)
+                            {
+                                this.session.OnDocumentChanged(delta);
+                            }
+                        }
+
+                        if (this.Contents == documentText)
+                        {
+                            var data = Evaluator.GetIntellisenseData(parsedDocument, descriptor.Tokens);
 
                             delta = this.GetChanges(new SerializableDocumentDescriptor
                                                         {
@@ -157,7 +199,7 @@ namespace ConnectQl.Internal.Intellisense
 
                             if (delta != null)
                             {
-                                this.session.OnClassificationChanged(this.Filename, delta);
+                                this.session.OnDocumentChanged(delta);
                             }
                         }
 
@@ -165,7 +207,7 @@ namespace ConnectQl.Internal.Intellisense
 
                         lock (this.updateLock)
                         {
-                            if (this.contents == documentText)
+                            if (this.Contents == documentText)
                             {
                                 this.updating = false;
                             }
@@ -177,7 +219,8 @@ namespace ConnectQl.Internal.Intellisense
 
                         if (shouldUpdate)
                         {
-                            documentText = this.contents;
+                            documentText = this.Contents;
+
                             Task.Run(updateIntellisenseData);
                         }
                     }
@@ -202,9 +245,10 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The <see cref="SerializableDocumentDescriptor"/>.
         /// </returns>
+        [CanBeNull]
         private SerializableDocumentDescriptor GetChanges(SerializableDocumentDescriptor currentDocument)
         {
-            var result = new SerializableDocumentDescriptor();
+            var result = new SerializableDocumentDescriptor { Filename = this.Filename, Version = this.Version };
 
             var updated = this.TryUpdate(currentDocument, result, d => d.Tokens) |
                           this.TryUpdate(currentDocument, result, d => d.Functions) |
@@ -217,41 +261,44 @@ namespace ConnectQl.Internal.Intellisense
         }
 
         /// <summary>
-        /// Parses the content to a SerializableDocument.
+        /// Parses the content into a document and stores the tokens into the descriptor.
         /// </summary>
-        /// <param name="content">
-        /// The content.
-        /// </param>
-        /// <param name="script">
-        /// The script.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SerializableDocumentDescriptor"/>.
-        /// </returns>
-        private SerializableDocumentDescriptor ParseDocument(string content, out ParsedScript script)
+        /// <param name="content">The content to parse.</param>
+        /// <param name="descriptorToUpdate">The document to update.</param>
+        /// <returns>The parsed document.</returns>
+        [NotNull]
+        private ParsedDocument ParseContent(string content, [NotNull] SerializableDocumentDescriptor descriptorToUpdate)
         {
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(content)))
             {
                 var tokens = new List<Token>();
                 var context = new ExecutionContextImplementation(this.session.Context, this.Filename);
-                var root = this.session.Context.Parse(stream, context.NodeData, context.Messages, true, tokens);
+                var root = ConnectQlContext.Parse(stream, context.NodeData, context.Messages, true, tokens);
 
-                root = Validator.Validate(context, root, out ILookup<string, IFunctionDescriptor> functionDefinitions);
+                descriptorToUpdate.Tokens = Classifier.Classify(tokens).Select(token => new SerializableToken(token)).ToArray();
 
-                var classifiedTokens = Classifier.Classify(context, root, tokens).Select(token => new SerializableToken(token)).ToArray();
-                var messages = context.Messages.Select(message => new SerializableMessage(message)).ToArray();
-                var functions = functionDefinitions.SelectMany(lookup => lookup.Select(function => new SerializableFunctionDescriptor(lookup.Key, function))).ToArray();
-
-                script = new ParsedScript(context, root);
-
-                return new SerializableDocumentDescriptor
-                           {
-                               Tokens = classifiedTokens,
-                               Messages = messages,
-                               Functions = functions,
-                               Plugins = new List<string>(context.GetPlugins().Select(p => p.Name)),
-                           };
+                return new ParsedDocument(context, root);
             }
+        }
+
+        /// <summary>
+        /// Validates the document and updates the descriptor.
+        /// </summary>
+        /// <param name="document">
+        /// The document.
+        /// </param>
+        /// <param name="descriptorToUpdate">
+        /// The descriptor to update.
+        /// </param>
+        private void ValidateDocument([NotNull] ParsedDocument document, [NotNull] SerializableDocumentDescriptor descriptorToUpdate)
+        {
+            document.Root = Validator.Validate(document.Context, document.Root, out var functionDefinitions);
+            var messages = document.Context.Messages.Select(message => new SerializableMessage(message)).ToArray();
+            var functions = functionDefinitions.SelectMany(lookup => lookup.Select(function => new SerializableFunctionDescriptor(lookup.Key, function))).ToArray();
+
+            descriptorToUpdate.Messages = messages;
+            descriptorToUpdate.Functions = functions;
+            descriptorToUpdate.Plugins = document.Context.GetPlugins().Select(p => p.Name).ToList();
         }
 
         /// <summary>
@@ -272,12 +319,12 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// True if the document was updated, false otherwise.
         /// </returns>
-        private bool TryUpdate<T>(SerializableDocumentDescriptor newDocument, SerializableDocumentDescriptor delta, Expression<Func<SerializableDocumentDescriptor, IReadOnlyList<T>>> selector)
+        private bool TryUpdate<T>(SerializableDocumentDescriptor newDocument, SerializableDocumentDescriptor delta, [NotNull] Expression<Func<SerializableDocumentDescriptor, IReadOnlyList<T>>> selector)
         {
             var propertyInfo = (PropertyInfo)((MemberExpression)selector.Body).Member;
             var getValue = selector.Compile();
             var newValue = getValue(newDocument);
-            var existingValue = getValue(this.document);
+            var existingValue = getValue(this.Descriptor);
 
             if (newValue == null || existingValue != null && EnumerableComparer.Equals(newValue, existingValue))
             {
@@ -285,7 +332,7 @@ namespace ConnectQl.Internal.Intellisense
             }
 
             propertyInfo.SetValue(delta, newValue);
-            propertyInfo.SetValue(this.document, newValue);
+            propertyInfo.SetValue(this.Descriptor, newValue);
 
             return true;
         }

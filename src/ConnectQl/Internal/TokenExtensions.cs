@@ -24,6 +24,8 @@ namespace ConnectQl.Internal
 {
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The token extensions.
     /// </summary>
@@ -38,7 +40,8 @@ namespace ConnectQl.Internal
         /// <returns>
         /// The <see cref="Position"/>.
         /// </returns>
-        public static Position ToPosition(this Token token)
+        [NotNull]
+        public static Position ToPosition([CanBeNull] this Token token)
         {
             return token == null
                        ? new Position

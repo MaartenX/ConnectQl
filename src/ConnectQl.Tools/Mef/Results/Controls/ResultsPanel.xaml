@@ -1,0 +1,416 @@
+﻿<UserControl x:Class="ConnectQl.Tools.Mef.Results.Controls.ResultsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:theming="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging" 
+             mc:Ignorable="d" 
+             xmlns:local="clr-namespace:ConnectQl.Tools.Mef.Results.Controls"
+             xmlns:viewModels="clr-namespace:ConnectQl.Tools.Mef.Results.ViewModels"
+             xmlns:attachedProperties="clr-namespace:ConnectQl.Tools.Mef.Results.AttachedProperties"
+             xmlns:converters="clr-namespace:ConnectQl.Tools.Mef.Results.Converters"
+             xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+             d:DesignHeight="300" 
+             d:DesignWidth="300"
+             VerticalAlignment="Stretch"
+             HorizontalAlignment="Stretch"
+             x:ClassModifier="internal">
+    <UserControl.Resources>
+        <converters:VisibilityConverter x:Key="VisibilityConverter" />
+        <converters:DataGridHeightConverter x:Key="DataGridHeightConverter" />
+        <converters:DataGridMaxHeightConverter x:Key="DataGridMaxHeightConverter" />
+        <converters:DivideConverter x:Key="DivideBy2" By="2" />
+        <converters:IntToVisibilityConverter x:Key="CollapsedIfOne" Value="1" IfEqual="Collapsed" IfNotEqual="Visible" />
+        <Style TargetType="{x:Type local:ScrollableTabControl}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type local:ScrollableTabControl}">
+                        <Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="0"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TabPanel 
+                                x:Name="headerPanel" 
+                                Background="Transparent" 
+                                Grid.Column="0" 
+                                IsItemsHost="true" 
+                                Margin="2,2,2,0" 
+                                Grid.Row="0" 
+                                KeyboardNavigation.TabIndex="1" 
+                                Panel.ZIndex="1"/>
+                            <Border 
+                                x:Name="contentPanel" 
+                                BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabBorderKey}}" 
+                                BorderThickness="1" 
+                                Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabSelectedTabKey}}" 
+                                Grid.Column="0" 
+                                KeyboardNavigation.DirectionalNavigation="Contained" 
+                                Grid.Row="1" 
+                                KeyboardNavigation.TabIndex="2" 
+                                KeyboardNavigation.TabNavigation="Local">
+                                <ScrollViewer 
+                                    x:Name="PART_ScrollViewer" 
+                                    HorizontalScrollBarVisibility="Disabled" 
+                                    VerticalScrollBarVisibility="Hidden" 
+                                    Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabSelectedTabKey}}" 
+                                    Margin="6">
+                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" SnapsToDevicePixels="true"/>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type TabItem}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabGradientKey}}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabBorderKey}}"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="6,2,6,2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
+                            <Border 
+                                x:Name="mainBorder" 
+                                BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabBorderKey}}" 
+                                BorderThickness="1,1,1,0" 
+                                Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabGradientKey}}" 
+                                Margin="0,0,0,-2">
+                                <Border 
+                                    x:Name="innerBorder" 
+                                    BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabBorderKey}}" 
+                                    BorderThickness="1,1,1,0" 
+                                    Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabSelectedTabKey}}" 
+                                    Margin="-1" 
+                                    Opacity="0"/>
+                            </Border>
+                            <ContentPresenter 
+                                x:Name="contentPresenter" 
+                                ContentSource="Header" 
+                                Focusable="False" 
+                                HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" 
+                                Margin="{TemplateBinding Padding}" 
+                                RecognizesAccessKey="True" 
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true">
+                                <Setter Property="Background" TargetName="mainBorder" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabMouseOverBackgroundGradientKey}}"/>
+                                <Setter Property="BorderBrush" TargetName="mainBorder" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabMouseOverBorderKey}}"/>
+                                <Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
+                                <Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false">
+                                <Setter Property="Opacity" TargetName="contentPresenter" Value="0.56"/>
+                                <Setter Property="Background" TargetName="mainBorder" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabGradientKey}}"/>
+                                <Setter Property="BorderBrush" TargetName="mainBorder" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabBorderKey}}"/>
+                                <Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
+                                <Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false">
+                                <Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
+                                <Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
+                                <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true">
+                                <Setter Property="Panel.ZIndex" Value="1"/>
+                                <Setter Property="Margin" Value="-2,-2,-2,0"/>
+                                <Setter Property="Opacity" TargetName="innerBorder" Value="1"/>
+                                <Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
+                                <Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
+                                <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabSelectedTextKey}}"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="DataGridTextColumn.Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.AccentBorderKey}}"/>
+            <Setter Property="BorderThickness" Value="0, 0, 1, 1"/>
+            <Setter Property="Padding" Value="4,4,4,4" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style TargetType="{x:Type DataGridRowHeader}">
+            <Setter Property="DataGridTextColumn.Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolboxHeadingGradientKey}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.AccentBorderKey}}"/>
+            <Setter Property="BorderThickness" Value="0, 0, 1, 1"/>
+            <Setter Property="Padding" Value="4,4,4,4" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right" />
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}">
+            <Setter Property="DataGridTextColumn.Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolboxHeadingBeginKey}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.AccentBorderKey}}"/>
+            <Setter Property="BorderThickness" Value="0, 0, 1, 1"/>
+        </Style>
+        <Style TargetType="{x:Type DataGridCell}" x:Key="DataGridCellStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Border Padding="4" Background="{TemplateBinding Background}" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.AccentBorderKey}}"  BorderThickness="0,0,1,1">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="False">
+                    <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ComboBoxBackgroundKey}}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ComboBoxGlyphKey}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type DataGrid}">
+            <Setter Property="AutoGenerateColumns" Value="true"/>
+            <Setter Property="CanUserResizeColumns" Value="true"/>
+            <Setter Property="CanUserResizeRows" Value="false"/>
+            <Setter Property="CanUserDeleteRows" Value="false"/>
+            <Setter Property="CanUserAddRows" Value="false"/>
+            <Setter Property="SelectionUnit" Value="CellOrRowHeader"/>
+            <Setter Property="SelectionMode" Value="Extended"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="RowBackground" Value="Transparent"/>
+            <Setter Property="HeadersVisibility" Value="All"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGrid}">
+                        <Border 
+                            BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.DropDownBorderKey}}" 
+                            BorderThickness="1" 
+                            Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" 
+                            Padding="{TemplateBinding Padding}" 
+                            SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
+                                <ScrollViewer.Template>
+                                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Button 
+                                                Command="{x:Static DataGrid.SelectAllCommand}" 
+                                                Focusable="false" 
+                                                Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" 
+                                                Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" 
+                                                Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                            <DataGridColumnHeadersPresenter 
+                                                x:Name="PART_ColumnHeadersPresenter" 
+                                                Grid.Column="1" 
+                                                Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                            <ScrollContentPresenter 
+                                                x:Name="PART_ScrollContentPresenter" 
+                                                CanContentScroll="true" 
+                                                Grid.ColumnSpan="2" 
+                                                Grid.Row="1"/>
+                                            <ScrollBar 
+                                                x:Name="PART_VerticalScrollBar" 
+                                                Grid.Column="2" 
+                                                Maximum="{TemplateBinding ScrollableHeight}" 
+                                                Orientation="Vertical" 
+                                                Grid.Row="0" 
+                                                Grid.RowSpan="2" 
+                                                Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" 
+                                                Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                                ViewportSize="{TemplateBinding ViewportHeight}" 
+                                                Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ScrollBarStyleKey}}"/>
+                                            <Grid Grid.Column="1" Grid.Row="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ScrollBar 
+                                                    x:Name="PART_HorizontalScrollBar" 
+                                                    Grid.Column="1" 
+                                                    Maximum="{TemplateBinding ScrollableWidth}" 
+                                                    Orientation="Horizontal" 
+                                                    Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" 
+                                                    Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                                    ViewportSize="{TemplateBinding ViewportWidth}" 
+                                                    Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ScrollBarStyleKey}}"/>
+                                            </Grid>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ScrollViewer.Template>
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="{DynamicResource {x:Static vsfx:VsBrushes.ScrollBarArrowBackgroundKey}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition attachedProperties:AnimatedRow.Multiplier="{Binding PanelHeight}">
+                <RowDefinition.Style>
+                    <Style TargetType="RowDefinition">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsExpanded}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(attachedProperties:AnimatedRow.Height)"  Duration="0:0:0.1" To="1">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CircleEase EasingMode="EaseInOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(attachedProperties:AnimatedRow.Height)"  Duration="0:0:0.100" To="0">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CircleEase EasingMode="EaseInOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RowDefinition.Style>
+            </RowDefinition>
+        </Grid.RowDefinitions>
+        <GridSplitter 
+            x:Name="Splitter"
+            Grid.Row="1"
+            ResizeDirection="Rows"
+            HorizontalAlignment="Stretch"
+            Focusable="false"
+            Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}" 
+            BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}" 
+            IsEnabled="{Binding IsExpanded, Delay=100}"
+            DragCompleted="GridSplitterDragCompleted"
+            Visibility="{Binding IsExpanded, Converter={StaticResource VisibilityConverter}, Delay=100}"
+            Height="5px" />
+        <Border 
+            x:Name="Border"
+            Grid.Row="2"
+            Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" 
+            BorderThickness="0"
+            Focusable="false">
+
+            <local:ScrollableTabControl x:Name="Tabs" Visibility="{Binding IsExpanded, Converter={StaticResource VisibilityConverter}}" Focusable="false">
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <imaging:CrispImage 
+                                Width="13" 
+                                Height="13" 
+                                Moniker="{x:Static catalog:KnownMonikers.Table}" 
+                                theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, ElementName=Border, Converter={StaticResource BrushToColorConverter}}" 
+                                Margin="0,0,8,0"
+                                />
+                            <TextBlock Text="Results"  />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <ItemsControl 
+                        x:Name="Rows"
+                        ItemsSource="{Binding Path=Results}" 
+                        HorizontalAlignment="Stretch" 
+                        HorizontalContentAlignment="Stretch">
+                        <ItemsControl.Resources>
+                            <DataTemplate DataType="{x:Type viewModels:RowsViewModel}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="5" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.Height>
+                                        <MultiBinding Converter="{StaticResource DataGridHeightConverter}">
+                                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ScrollViewer}}" Path="ActualHeight" />
+                                            <Binding ElementName="Rows" Path="ItemsSource.Count" />
+                                        </MultiBinding>
+                                    </Grid.Height>
+                                    <Grid.MaxHeight>
+                                        <MultiBinding Converter="{StaticResource DataGridMaxHeightConverter}">
+                                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ScrollViewer}}" Path="ActualHeight" />
+                                            <Binding ElementName="Rows" Path="ItemsSource.Count" />
+                                            <Binding ElementName="Thumb" Path="DragOffset" />
+                                        </MultiBinding>
+                                    </Grid.MaxHeight>
+                                    <DataGrid 
+                                        Grid.Row="0"
+                                        ItemsSource="{Binding Path=Rows}" 
+                                        attachedProperties:DataGridBehavior.DisplayRowNumber="true" 
+                                        CellStyle="{StaticResource DataGridCellStyle}">
+                                    </DataGrid>
+                                    <local:ResizeThumb
+                                        x:Name="Thumb"
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Stretch"
+                                        Height="5"
+                                        MinValue="40"
+                                        Opacity="0"
+                                        Visibility="{Binding ElementName=Rows, Path=ItemsSource.Count, Converter={StaticResource CollapsedIfOne}}"
+                                        InitialHeight="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ActualHeight, Converter={StaticResource DivideBy2}}"
+                                        Cursor="SizeNS" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.Resources>
+                    </ItemsControl>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <imaging:CrispImage 
+                                Width="13" 
+                                Height="13" 
+                                Moniker="{x:Static catalog:KnownMonikers.CrashDumpFile}" 
+                                theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, ElementName=Border, Converter={StaticResource BrushToColorConverter}}" 
+                                Margin="0,0,8,0"
+                            />
+                            <TextBlock Text="Messages" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <Border Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabSelectedTabKey}}" />
+                </TabItem>
+            </local:ScrollableTabControl>
+        </Border>
+    </Grid>
+</UserControl>

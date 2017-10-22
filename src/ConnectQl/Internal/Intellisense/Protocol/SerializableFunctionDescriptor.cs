@@ -29,10 +29,12 @@ namespace ConnectQl.Internal.Intellisense.Protocol
 
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The serializable function descriptor.
     /// </summary>
-    [DebuggerDisplay("{" + nameof(DisplayName) + ",nq}")]
+    [DebuggerDisplay("{" + nameof(SerializableFunctionDescriptor.DisplayName) + ",nq}")]
     internal class SerializableFunctionDescriptor : IFunctionDescriptor
     {
         /// <summary>
@@ -51,7 +53,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="function">
         /// The function.
         /// </param>
-        public SerializableFunctionDescriptor(string name, IFunctionDescriptor function)
+        public SerializableFunctionDescriptor(string name, [NotNull] IFunctionDescriptor function)
         {
             this.Name = name;
             this.Description = function.Description;
@@ -94,6 +96,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <summary>
         /// Gets the arguments.
         /// </summary>
+        [NotNull]
         IReadOnlyList<IArgumentDescriptor> IFunctionDescriptor.Arguments => this.Arguments ?? new IArgumentDescriptor[0];
 
         /// <summary>
@@ -104,6 +107,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <summary>
         /// Gets the display name.
         /// </summary>
+        [NotNull]
         private string DisplayName => $"{this.Name}({string.Join(", ", (this.Arguments ?? Enumerable.Empty<IArgumentDescriptor>()).Select(a => a.Name))})";
 
         /// <summary>
@@ -123,7 +127,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
                    this.IsAggregateFunction == other.IsAggregateFunction &&
                    string.Equals(this.Name, other.Name) &&
                    string.Equals(this.Description, other.Description) &&
-                   Equals(this.ReturnType, other.ReturnType) &&
+                   object.Equals(this.ReturnType, other.ReturnType) &&
                    EnumerableComparer.Equals(this.Arguments, other.Arguments);
         }
 
@@ -152,6 +156,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <returns>
         /// The lambda expression, or <c>null</c> if it's not supported.
         /// </returns>
+        [CanBeNull]
         LambdaExpression IFunctionDescriptor.GetExpression() => null;
 
         /// <summary>
@@ -163,9 +168,9 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        protected bool Equals(SerializableFunctionDescriptor other)
+        protected bool Equals([NotNull] SerializableFunctionDescriptor other)
         {
-            return Equals(this.Arguments, other.Arguments) && string.Equals(this.Description, other.Description) && this.IsAggregateFunction == other.IsAggregateFunction && string.Equals(this.Name, other.Name) && Equals(this.ReturnType, other.ReturnType);
+            return object.Equals(this.Arguments, other.Arguments) && string.Equals(this.Description, other.Description) && this.IsAggregateFunction == other.IsAggregateFunction && string.Equals(this.Name, other.Name) && object.Equals(this.ReturnType, other.ReturnType);
         }
     }
 }

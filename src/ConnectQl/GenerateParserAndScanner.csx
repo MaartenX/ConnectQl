@@ -15,7 +15,6 @@ try
             file
         };
 
-        var log = Context.Output[Path.GetFileNameWithoutExtension(file) + ".log"];
         var deps = CocoBuilder.GetDependencies(args);
 
         var lastInputWritten = deps.Inputs.Concat(new[] { @"..\..\tools\Coco.exe" }).Select(o => File.GetLastWriteTime(o)).Max();
@@ -23,9 +22,9 @@ try
 
         var line = $"Processing {Path.GetFileName(file)}.";
 
-        log.WriteLine(line);
-        log.WriteLine(new string('-', line.Length));
-        log.WriteLine($"Last input written: {lastInputWritten}, last output written: {lastOutputWritten}.");
+        Context.Log.Info(line);
+        Context.Log.Info(new string('-', line.Length));
+        Context.Log.Info($"Last input written: {lastInputWritten}, last output written: {lastOutputWritten}.");
 
         if (lastInputWritten > lastOutputWritten)
         { 
@@ -35,17 +34,15 @@ try
             {
                 return Context.Output[fname]; 
             },
-            (f, a) => log.Write(f, a));
+            (f, a) => Context.Log.Info(string.Format(f, a)));
         }
         else
         {
-            log.WriteLine("Skipping generation.");
+            Context.Log.Info("Skipping generation.");
         }
-
-        log.WriteLine(" ");
     }
 }
 catch (Exception e)
 {
-    Context.Output["GenerateParserAndScanner.log"].WriteLine($"{e.Message}\n{e.StackTrace} ".Replace("\n", $"{Environment.NewLine}"));
+    Context.Log.Error($"{e.Message}\n{e.StackTrace} ".Replace("\n", $"{Environment.NewLine}"));
 }

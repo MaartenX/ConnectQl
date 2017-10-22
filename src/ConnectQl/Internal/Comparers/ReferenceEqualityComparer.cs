@@ -54,7 +54,7 @@ namespace ConnectQl.Internal.Comparers
         /// </returns>
         public bool Equals(T x, T y)
         {
-            return ReferenceEquals(x, y);
+            return object.ReferenceEquals(x, y);
         }
 
         /// <summary>

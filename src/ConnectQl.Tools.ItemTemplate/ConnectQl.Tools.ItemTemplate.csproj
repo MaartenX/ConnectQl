@@ -1,0 +1,36 @@
+﻿<Project>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+
+  <PropertyGroup>
+    <TargetFramework>net452</TargetFramework>
+    <GeneratePkgDefFile>False</GeneratePkgDefFile>
+    <IsPackable>False</IsPackable>
+    <IncludeAssemblyInVSIXContainer>False</IncludeAssemblyInVSIXContainer>
+    <IncludeDebugSymbolsInVSIXContainer>False</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>False</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <CreateVsixContainer>False</CreateVsixContainer>
+    <DeployExtension>False</DeployExtension>
+    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
+    <DeployVSTemplates>False</DeployVSTemplates>
+    <CopyVsixManifestToOutput>False</CopyVsixManifestToOutput>
+    <CopyBuildOutputToOutputDirectory>False</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>False</CopyOutputSymbolsToOutputDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="source.extension.ico" />
+    <SourceVsixManifest Include="..\ConnectQl.Tools\source.extensions.vsixmanifest">
+      <Link>source.extensions.vsixmanifest</Link>
+    </SourceVsixManifest>
+    <VSTemplate Include="ConnectQl.Tools.ItemTemplate.CSharp.vstemplate" OutputSubPath="ConnectQl" SubType="Designer" />
+  </ItemGroup>
+  
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(VsSDKInstall)\Microsoft.VsSDK.targets" Condition="'$(vsSDKInstall)' != '' And Exists('$(VsSDKInstall)\Microsoft.VsSDK.targets')" />
+
+  <Target Name="PkgdefProjectOutputGroup" />
+  <Target Name="TemplateProjectOutputGroup" />
+</Project>

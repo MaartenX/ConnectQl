@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Ast.Statements
 
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The import statement.
     /// </summary>
@@ -67,7 +69,7 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitImportStatement(this);
         }
@@ -81,6 +83,7 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
+        [NotNull]
         protected internal override Node VisitChildren(NodeVisitor visitor)
         {
             return this;

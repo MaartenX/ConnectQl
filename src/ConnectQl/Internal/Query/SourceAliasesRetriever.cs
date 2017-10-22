@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Query
     using ConnectQl.Internal.Ast.Sources;
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Retrieves all source aliases in a node.
     /// </summary>
@@ -72,7 +74,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitFunctionSource(FunctionSource node)
+        protected internal override Node VisitFunctionSource([NotNull] FunctionSource node)
         {
             this.aliases.Add(node.Alias);
 
@@ -88,7 +90,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectSource(SelectSource node)
+        protected internal override Node VisitSelectSource([NotNull] SelectSource node)
         {
             this.aliases.Add(node.Alias);
 

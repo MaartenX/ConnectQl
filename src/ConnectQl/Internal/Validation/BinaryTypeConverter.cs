@@ -25,6 +25,8 @@ namespace ConnectQl.Internal.Validation
     using System;
     using System.Collections.Generic;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The dictionary extensions.
     /// </summary>
@@ -65,9 +67,10 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The result type or <c>null</c> if no type conversion was possible.
         /// </returns>
+        [CanBeNull]
         public static Type GetResultType(Type first, Type second)
         {
-            return first == second ? first : Mappings.TryGetValue(Tuple.Create(first, second), out Type result) ? result : null;
+            return first == second ? first : BinaryTypeConverter.Mappings.TryGetValue(Tuple.Create(first, second), out Type result) ? result : null;
         }
 
         /// <summary>
@@ -91,7 +94,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <paramref name="dictionary"/>.
         /// </returns>
-        private static Dictionary<Tuple<Type, Type>, Type> Add<TOperand1, TOperand2, TResult>(this Dictionary<Tuple<Type, Type>, Type> dictionary)
+        [NotNull]
+        private static Dictionary<Tuple<Type, Type>, Type> Add<TOperand1, TOperand2, TResult>([NotNull] this Dictionary<Tuple<Type, Type>, Type> dictionary)
         {
             dictionary.Add(Tuple.Create(typeof(TOperand1), typeof(TOperand2)), typeof(TResult));
             dictionary.Add(Tuple.Create(typeof(TOperand2), typeof(TOperand1)), typeof(TResult));

@@ -34,6 +34,8 @@ namespace ConnectQl.Internal.Extensions
     using ConnectQl.Internal.Expressions;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Internal extensions for expressions.
     /// </summary>
@@ -51,6 +53,7 @@ namespace ConnectQl.Internal.Extensions
         /// <returns>
         /// An enumerable of fields that were used.
         /// </returns>
+        [NotNull]
         public static IEnumerable<IField> GetDataSourceFields(this Expression expression, DataSource dataSource)
         {
             return expression.GetFields().Where(field => dataSource.Aliases.Contains(field.SourceAlias));
@@ -68,7 +71,7 @@ namespace ConnectQl.Internal.Extensions
         /// <returns>
         /// A function that takes two rows and returns true if the rows should be joined.
         /// </returns>
-        public static Func<Row, Row, bool> GetJoinFunction(this Expression expression, DataSource leftSource)
+        public static Func<Row, Row, bool> GetJoinFunction([CanBeNull] this Expression expression, DataSource leftSource)
         {
             if (expression == null)
             {
@@ -133,7 +136,8 @@ namespace ConnectQl.Internal.Extensions
         /// <returns>
         /// A new <see cref="Expression"/> without the parts containing fields that are not in the source.
         /// </returns>
-        public static Expression RemoveAllPartsThatAreNotInSource(this Expression expression, DataSource source)
+        [CanBeNull]
+        public static Expression RemoveAllPartsThatAreNotInSource(this Expression expression, [NotNull] DataSource source)
         {
             var hasNonSourceFields = false;
             var aliases = source.Aliases;

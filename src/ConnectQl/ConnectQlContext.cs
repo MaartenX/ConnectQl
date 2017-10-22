@@ -27,24 +27,28 @@ namespace ConnectQl
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-
     using ConnectQl.AsyncEnumerablePolicies;
+    using ConnectQl.AsyncEnumerables;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
     using ConnectQl.Internal.Ast.Statements;
+    using ConnectQl.Internal.Intellisense.Protocol;
     using ConnectQl.Internal.Interfaces;
-    using ConnectQl.Internal.Loggers;
     using ConnectQl.Internal.Query;
+    using ConnectQl.Internal.Results;
     using ConnectQl.Internal.Validation;
     using ConnectQl.Results;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     ///     The ConnectQl context.
     /// </summary>
-    public class ConnectQlContext : IPluginContext
+    public class ConnectQlContext : IDisposable, IConnectQlContext
     {
         /// <summary>
         /// The default plugin resolver.
@@ -59,9 +63,14 @@ namespace ConnectQl
         private readonly Dictionary<string, IFunctionDescriptor> functions = new Dictionary<string, IFunctionDescriptor>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        ///     Stores the logger.
+        /// Stores the loggers.
         /// </summary>
-        private ILog log = new NullLogger();
+        private readonly LoggerCollection loggers = new LoggerCollection();
+
+        /// <summary>
+        /// <c>true</c> if we are disposed.
+        /// </summary>
+        private bool disposed;
 
         /// <summary>
         ///     Stores the materialization policy.
@@ -73,13 +82,13 @@ namespace ConnectQl
         /// The URI resolver.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Func<string, UriResolveMode, Task<Stream>> uriResolver;
+        private IUriResolver uriResolver;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConnectQlContext" /> class.
         /// </summary>
         public ConnectQlContext()
-            : this(DefaultPluginResolver)
+            : this(ConnectQlContext.DefaultPluginResolver)
         {
         }
 
@@ -92,92 +101,60 @@ namespace ConnectQl
         public ConnectQlContext(IPluginResolver resolver)
         {
             this.PluginResolver = resolver;
-            this.Functions = new ConnectQlFunctions(this.functions, () => this.Log);
-            this.FileFormats = new FileFormatsImplementation();
         }
 
         /// <summary>
         /// Gets or sets the default plugin resolver.
         /// </summary>
+        [PublicAPI]
         public static IPluginResolver DefaultPluginResolver
         {
-            get
-            {
-                return defaultPluginResolver ?? ReflectionLoader.PluginResolver.Value;
-            }
-
-            set
-            {
-                defaultPluginResolver = value;
-            }
+            get => ConnectQlContext.defaultPluginResolver ?? ReflectionLoader.PluginResolver.Value;
+            set => ConnectQlContext.defaultPluginResolver = value;
         }
-
-        /// <summary>
-        ///     Gets or sets the default resolver name.
-        /// </summary>
-        public string DefaultProviderName { get; set; }
-
-        /// <summary>
-        ///     Gets the file formats.
-        /// </summary>
-        public IFileFormats FileFormats { get; }
-
-        /// <summary>
-        ///     Gets the registered functions.
-        /// </summary>
-        public IConnectQlFunctions Functions { get; }
 
         /// <summary>
         ///     Gets or sets the job runner.
         /// </summary>
+        [PublicAPI]
         public IJobRunner JobRunner { get; set; }
 
         /// <summary>
-        ///     Gets or sets the logger.
+        /// Gets the loggers for the context.
         /// </summary>
-        public ILog Log
-        {
-            get
-            {
-                return this.log;
-            }
+        [PublicAPI]
+        public ICollection<ILogger> Loggers => this.loggers;
 
-            set
-            {
-                if (this.log is NullLogger logger && value != null)
-                {
-                    logger.ForwardMessages(value);
-                }
-
-                this.log = value;
-            }
-        }
+        /// <summary>
+        ///     Gets the logger.
+        /// </summary>
+        [PublicAPI]
+        public ILogger Logger => this.loggers;
 
         /// <summary>
         ///     Gets or sets the materialization policy.
         /// </summary>
+        [NotNull]
+        [PublicAPI]
         public IMaterializationPolicy MaterializationPolicy
         {
-            get
-            {
-                return this.materializationPolicy ?? (this.materializationPolicy = new InMemoryPolicy());
-            }
+            get => this.materializationPolicy ?? (this.materializationPolicy = new InMemoryPolicy());
 
-            set
-            {
-                this.materializationPolicy = value;
-            }
+            set => this.materializationPolicy = value;
         }
 
         /// <summary>
-        ///     Gets or sets the plugin resolver.
+        ///     Gets the plugin resolver.
         /// </summary>
-        public IPluginResolver PluginResolver { get; set; }
+        [PublicAPI]
+        public IPluginResolver PluginResolver { get; }
 
         /// <summary>
         ///     Gets or sets a lambda that opens the file at the specified path and returns the stream.
         /// </summary>
-        public Func<string, UriResolveMode, Task<Stream>> UriResolver
+        [PublicAPI]
+        [CanBeNull]
+        public IUriResolver UriResolver
         {
             get
             {
@@ -185,89 +162,136 @@ namespace ConnectQl
 
                 if (result == null)
                 {
-                    this.Log.Verbose("No uri resolver could be created, please specify one directly.");
+                    this.Logger.Verbose("No uri resolver could be created, please specify one directly.");
                 }
 
                 return result;
             }
 
-            set
-            {
-                this.uriResolver = value;
-            }
+            set => this.uriResolver = value;
         }
 
         /// <summary>
         ///     Gets or sets the write progress interval. When this value is anything other than 0, progress is reported after this
         ///     number of records.
         /// </summary>
+        [PublicAPI]
         public long WriteProgressInterval { get; set; }
 
         /// <summary>
-        ///     Executes the query.
+        ///     Executes the queries in the stream.
         /// </summary>
-        /// <param name="query">
-        ///     The query.
+        /// <param name="filename">
+        ///     The filename.
+        /// </param>
+        /// <param name="stream">
+        ///     The stream.
         /// </param>
         /// <returns>
         ///     The execute result.
         /// </returns>
-        public Task<IExecuteResult> ExecuteAsync(string query)
+        [PublicAPI]
+        public async Task<IExecuteResult> ExecuteAsync(string filename, [CanBeNull] Stream stream)
+        {
+            if (this.disposed)
+            {
+                throw new ObjectDisposedException(this.GetType().Name);
+            }
+
+            var script = this.GetParsedScript(filename, stream ?? await this.ResolveStream(filename), false);
+
+            if (script == null)
+            {
+                return null;
+            }
+
+            var context = script.Context;
+            var plan = QueryPlanBuilder.Build(context.Messages, context.NodeData, script.Root);
+
+            if (!this.HandleErrors(context, script.Root))
+            {
+                return null;
+            }
+
+            var result = await plan.ExecuteAsync(context);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Executes the query.
+        /// </summary>
+        /// <param name="query">
+        /// The query.
+        /// </param>
+        /// <returns>
+        /// The execute result.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public async Task<IExecuteResult> ExecuteAsync([NotNull] string query)
         {
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(query)))
             {
-                return this.ExecuteAsync("inline query", ms);
+                return await this.ExecuteAsync("inline query", ms);
             }
         }
 
         /// <summary>
-        ///     Executes the queries in the stream.
+        /// Executes the queries in the stream.
         /// </summary>
         /// <param name="stream">
-        ///     The stream.
+        /// The stream.
         /// </param>
         /// <returns>
-        ///     The execute result.
+        /// The execute result.
         /// </returns>
-        public Task<IExecuteResult> ExecuteAsync(Stream stream)
+        [NotNull]
+        [PublicAPI]
+        public Task<IExecuteResult> ExecuteAsync([NotNull] Stream stream)
         {
-            return this.ExecuteInternalAsync("inline query", stream);
+            return this.ExecuteAsync("inline query", stream);
         }
 
         /// <summary>
-        ///     Executes the queries in the stream.
+        /// Executes the queries in the stream.
         /// </summary>
         /// <param name="filename">
-        ///     The filename.
-        /// </param>
-        /// <param name="stream">
-        ///     The stream.
+        /// The filename.
         /// </param>
         /// <returns>
-        ///     The execute result.
+        /// The execute result.
         /// </returns>
-        public Task<IExecuteResult> ExecuteAsync(string filename, Stream stream)
+        [NotNull]
+        [PublicAPI]
+        public Task<IExecuteResult> ExecuteFileAsync([NotNull] string filename)
         {
-            return this.ExecuteInternalAsync(filename, stream);
+            return this.ExecuteAsync(filename, null);
         }
 
         /// <summary>
-        ///     Executes the queries in the stream.
+        /// Executes the queries in the stream and serializes the result to a byte array.
         /// </summary>
         /// <param name="filename">
-        ///     The filename.
+        /// The file name.
+        /// </param>
+        /// <param name="stream">
+        /// The stream.
         /// </param>
         /// <returns>
-        ///     The execute result.
+        /// The result, serialized as a byte array.
         /// </returns>
-        public async Task<IExecuteResult> ExecuteFileAsync(string filename)
+        async Task<byte[]> IConnectQlContext.ExecuteToByteArrayAsync(string filename, Stream stream)
         {
-            if (this.UriResolver == null)
-            {
-                throw new InvalidOperationException("No URI resolver registered.");
-            }
+            return ProtocolSerializer.Serialize(await SerializableExecuteResult.CreateAync(await this.ExecuteAsync(filename, stream)));
+        }
 
-            return await this.ExecuteInternalAsync(filename, await this.UriResolver(filename, UriResolveMode.Read));
+        /// <summary>
+        /// Disposes the context.
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            this.Dispose(true);
         }
 
         /// <summary>
@@ -291,17 +315,14 @@ namespace ConnectQl
         /// <returns>
         ///     The <see cref="Block" />.
         /// </returns>
-        internal Block Parse(Stream content, INodeDataProvider data, IMessageWriter messages, bool parseForIntellisense, List<Token> tokens = null)
+        internal static Block Parse(Stream content, INodeDataProvider data, IMessageWriter messages, bool parseForIntellisense, [CanBeNull] List<Token> tokens = null)
         {
             var scanner = new Scanner(content)
                               {
                                   EmitComments = parseForIntellisense,
                               };
 
-            var parser = new Parser(scanner, data, messages)
-                             {
-                                 DefaultProvider = this.DefaultProviderName,
-                             };
+            var parser = new Parser(scanner, data, messages);
 
             var ctx = parser.Mark();
 
@@ -320,37 +341,40 @@ namespace ConnectQl
         }
 
         /// <summary>
-        ///     Implementation of the execute.
+        /// Resolves a filename to a stream.
         /// </summary>
-        /// <param name="filename">
-        ///     The filename.
-        /// </param>
-        /// <param name="content">
-        ///     The content.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="Task" />.
-        /// </returns>
-        private async Task<IExecuteResult> ExecuteInternalAsync(string filename, Stream content)
+        /// <param name="filename">The filename to resolve.</param>
+        /// <returns>The stream.</returns>
+        private async Task<Stream> ResolveStream(string filename)
         {
-            var script = this.GetParsedScript(filename, content, false);
-
-            if (script == null)
+            if (this.UriResolver == null)
             {
-                return null;
+                throw new InvalidOperationException("No URI resolver registered.");
             }
 
-            var context = script.Context;
-            var plan = QueryPlanBuilder.Build(context.Messages, context.NodeData, script.Root);
+            filename = this.UriResolver.GetFullPath(filename);
 
-            if (!this.HandleErrors(context))
+            return await this.UriResolver.ResolveToStream(filename, UriResolveMode.Read);
+        }
+
+        /// <summary>
+        /// Disposes the context.
+        /// </summary>
+        /// <param name="disposing">
+        /// <c>true</c> if we were called from <see cref="Dispose" />.
+        /// </param>
+        private void Dispose(bool disposing)
+        {
+            if (!this.disposed)
             {
-                return null;
+                if (disposing)
+                {
+                    this.functions.Clear();
+                    this.loggers.Dispose();
+                }
+
+                this.disposed = true;
             }
-
-            var result = await plan.ExecuteAsync(context);
-
-            return result;
         }
 
         /// <summary>
@@ -368,19 +392,20 @@ namespace ConnectQl
         /// <returns>
         ///     The parsed script, or <c>null</c> if errors occurred.
         /// </returns>
-        private ParsedScript GetParsedScript(string filename, Stream content, bool emitComments)
+        [CanBeNull]
+        private ParsedDocument GetParsedScript(string filename, Stream content, bool emitComments)
         {
             var context = new ExecutionContextImplementation(this, filename);
-            var script = this.Parse(content, context.NodeData, context.Messages, emitComments);
+            var script = ConnectQlContext.Parse(content, context.NodeData, context.Messages, emitComments);
 
-            if (!this.HandleErrors(context))
+            if (!this.HandleErrors(context, script))
             {
                 return null;
             }
 
             script = Validator.Validate(context, script);
 
-            return this.HandleErrors(context) ? new ParsedScript(context, script) : null;
+            return this.HandleErrors(context, script) ? new ParsedDocument(context, script) : null;
         }
 
         /// <summary>
@@ -389,13 +414,16 @@ namespace ConnectQl
         /// <param name="context">
         ///     The context.
         /// </param>
+        /// <param name="script">
+        /// The script to handle errors for.
+        /// </param>
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
         /// <exception cref="Exception">
         ///     Thrown when an error was found.
         /// </exception>
-        private bool HandleErrors(ExecutionContextImplementation context)
+        private bool HandleErrors([NotNull] ExecutionContextImplementation context, Block script)
         {
             if (context.Messages.HasErrors)
             {
@@ -404,18 +432,23 @@ namespace ConnectQl
                     switch (message.Type)
                     {
                         case ResultMessageType.Error:
-                            this.Log.Error(message.ToString());
+                            this.Logger.Error(message.ToString());
                             break;
                         case ResultMessageType.Warning:
-                            this.Log.Warning(message.ToString());
+                            this.Logger.Warning(message.ToString());
                             break;
                         case ResultMessageType.Information:
-                            this.Log.Information(message.ToString());
+                            this.Logger.Information(message.ToString());
                             break;
                     }
                 }
 
-                throw new Exception("Error");
+                var errorMessage = (context.Messages.Count(e => e.Type == ResultMessageType.Error) == 1 ? "An error occurred" : "Errors occurred") + " while parsing:\n";
+
+                // Load the log plugins before we exit, this allows displaying the log messages using imported log plugins.
+                PluginLoader.LoadLogPlugins(script, this.loggers, this.PluginResolver);
+
+                throw new ExecutionException(errorMessage, context.Messages);
             }
 
             return true;
@@ -455,9 +488,9 @@ namespace ConnectQl
             }
 
             /// <summary>
-            ///     Gets or sets the classification.
+            ///     Gets the classification.
             /// </summary>
-            public Classification Classification { get; set; }
+            public Classification Classification { get; }
 
             /// <summary>
             ///     Gets the end.
@@ -473,11 +506,6 @@ namespace ConnectQl
             ///     Gets the length.
             /// </summary>
             public int Length { get; }
-
-            /// <summary>
-            ///     Gets or sets the scope.
-            /// </summary>
-            public ClassificationScope Scope { get; set; }
 
             /// <summary>
             ///     Gets the start.

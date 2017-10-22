@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The serializable message.
     /// </summary>
@@ -44,7 +46,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="message">
         /// The message.
         /// </param>
-        public SerializableMessage(Message message)
+        public SerializableMessage([NotNull] IMessage message)
         {
             this.Start = message.Start;
             this.End = message.End;
@@ -77,6 +79,17 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// Gets or sets the type.
         /// </summary>
         public ResultMessageType Type { get; set; }
+
+        /// <summary>Returns a string that represents the current object.</summary>
+        /// <returns>A string that represents the current object.</returns>
+        /// <filterpriority>2</filterpriority>
+        [NotNull]
+        public override string ToString()
+        {
+            return this.Start.Column == this.End.Column && this.Start.Line == this.End.Line
+                ? $"{this.File}({this.Start.Line}, {this.Start.Column}): {this.Type}: {this.Text}"
+                : $"{this.File}({this.Start.Line}, {this.Start.Column}, {this.End.Line}, {this.End.Column}): {this.Type}: {this.Text}";
+        }
 
         /// <summary>
         /// The equals.

@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Ast.Targets
     using ConnectQl.Internal.Ast.Expressions;
     using ConnectQl.Internal.Ast.Visitors;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The target.
     /// </summary>
@@ -70,7 +72,7 @@ namespace ConnectQl.Internal.Ast.Targets
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node Accept(NodeVisitor visitor)
+        protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
             return visitor.VisitFunctionTarget(this);
         }
@@ -84,11 +86,12 @@ namespace ConnectQl.Internal.Ast.Targets
         /// <returns>
         /// The <see cref="Node"/>.
         /// </returns>
-        protected internal override Node VisitChildren(NodeVisitor visitor)
+        [NotNull]
+        protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
             var function = visitor.Visit(this.Function);
 
-            return ReferenceEquals(function, this.Function) ? this : new FunctionTarget(function);
+            return object.ReferenceEquals(function, this.Function) ? this : new FunctionTarget(function);
         }
     }
 }

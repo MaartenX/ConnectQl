@@ -30,6 +30,16 @@ namespace ConnectQl.Interfaces
     public interface IDocumentDescriptor
     {
         /// <summary>
+        /// Gets the filename.
+        /// </summary>
+        string Filename { get; }
+
+        /// <summary>
+        /// Gets the document version number.
+        /// </summary>
+        int Version { get; }
+
+        /// <summary>
         /// Gets the functions.
         /// </summary>
         IReadOnlyList<IFunctionDescriptor> Functions { get; }

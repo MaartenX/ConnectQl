@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The join enumerator.
     /// </summary>
@@ -194,6 +196,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [CanBeNull]
         protected override IEnumerator<TResult> InitialBatch() => null;
 
         /// <summary>
@@ -230,7 +233,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
                     {
                         if (this.isLeftJoin && this.itemsReturned != 0)
                         {
-                            return EnumerateItem(this.resultSelector(this.leftEnumerator.Current, default(TRight)));
+                            return UnequalJoinEnumerator<TLeft, TRight, TKey, TResult>.EnumerateItem(this.resultSelector(this.leftEnumerator.Current, default(TRight)));
                         }
 
                         this.ResetRight();

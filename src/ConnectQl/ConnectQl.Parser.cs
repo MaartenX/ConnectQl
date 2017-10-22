@@ -11,6 +11,7 @@ namespace ConnectQl.Internal
     using ConnectQl.Internal.Ast.Statements;
     using ConnectQl.Internal.Ast.Targets;
     using ConnectQl.Internal.Interfaces;
+    using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
     /// <summary>
@@ -83,6 +84,65 @@ namespace ConnectQl.Internal
         /// The Comment2 symbol.
         /// </summary>
         public const int Comment2Symbol = 8;
+        public const int UseLiteral = 9; //"use"
+        public const int DefaultLiteral = 10; //"default"
+        public const int ForLiteral = 11; //"for"
+        public const int EqualsLiteral = 12; //"="
+        public const int DeclareLiteral = 13; //"declare"
+        public const int CommaLiteral = 14; //","
+        public const int JobLiteral = 15; //"job"
+        public const int TriggeredLiteral = 16; //"triggered"
+        public const int EveryLiteral = 17; //"every"
+        public const int AfterLiteral = 18; //"after"
+        public const int ByLiteral = 19; //"by"
+        public const int OrLiteral = 20; //"or"
+        public const int BeginLiteral = 21; //"begin"
+        public const int EndLiteral = 22; //"end"
+        public const int TriggerLiteral = 23; //"trigger"
+        public const int ImportLiteral = 24; //"import"
+        public const int PluginLiteral = 25; //"plugin"
+        public const int InsertLiteral = 26; //"insert"
+        public const int UpsertLiteral = 27; //"upsert"
+        public const int IntoLiteral = 28; //"into"
+        public const int UnionLiteral = 29; //"union"
+        public const int LeftParenLiteral = 30; //"("
+        public const int RightParenLiteral = 31; //")"
+        public const int SelectLiteral = 32; //"select"
+        public const int FromLiteral = 33; //"from"
+        public const int WhereLiteral = 34; //"where"
+        public const int GroupLiteral = 35; //"group"
+        public const int HavingLiteral = 36; //"having"
+        public const int OrderLiteral = 37; //"order"
+        public const int AscLiteral = 38; //"asc"
+        public const int DescLiteral = 39; //"desc"
+        public const int JoinLiteral = 40; //"join"
+        public const int InnerLiteral = 41; //"inner"
+        public const int LeftLiteral = 42; //"left"
+        public const int OnLiteral = 43; //"on"
+        public const int CrossLiteral = 44; //"cross"
+        public const int ApplyLiteral = 45; //"apply"
+        public const int OuterLiteral = 46; //"outer"
+        public const int SequentialLiteral = 47; //"sequential"
+        public const int AsLiteral = 48; //"as"
+        public const int AndLiteral = 49; //"and"
+        public const int NotLiteral = 50; //"not"
+        public const int GreaterThanLiteral = 51; //">"
+        public const int GreaterThanEqualsLiteral = 52; //">="
+        public const int LessThanEqualsLiteral = 53; //"<="
+        public const int LessThanLiteral = 54; //"<"
+        public const int LessThanGreaterThanLiteral = 55; //"<>"
+        public const int PlusLiteral = 56; //"+"
+        public const int MinusLiteral = 57; //"-"
+        public const int MulLiteral = 58; //"*"
+        public const int DivLiteral = 59; //"/"
+        public const int ModLiteral = 60; //"%"
+        public const int CircumflexLiteral = 61; //"^"
+        public const int ExclamationMarkLiteral = 62; //"!"
+        public const int TrueLiteral = 63; //"true"
+        public const int FalseLiteral = 64; //"false"
+        public const int NullLiteral = 65; //"null"
+        public const int DotLiteral = 66; //"."
+        public const int UnknownIdentifierLiteral = 67; //???
 
         /// <summary>
         /// The maximum token.
@@ -950,51 +1010,27 @@ namespace ConnectQl.Internal
             else if (this.LookAhead.Kind == 4)
             {
                 Identifier(out name);
-                if (StartOf(10))
+                var args = new List<SqlExpressionBase>(); SqlExpressionBase e;
+                Expect(30);
+                if (StartOf(3))
                 {
-                    if (this.LookAhead.Kind == 30)
+                    Expression(out e);
+                    args.Add(e);
+                    while (this.LookAhead.Kind == 14)
                     {
-                        var args = new List<SqlExpressionBase>(); SqlExpressionBase e;
                         Get();
-                        if (StartOf(3))
-                        {
-                            Expression(out e);
-                            args.Add(e);
-                            while (this.LookAhead.Kind == 14)
-                            {
-                                Get();
-                                Expression(out e);
-                                args.Add(e);
-                            }
-                        }
-                        Expect(31);
-                        function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
-                        if (this.LookAhead.Kind == 48)
-                        {
-                            Get();
-                        }
-                        Name(out alias);
-                        source = CatchAll(() => this.SetContext(new FunctionSource(function, alias), ctx));
-                    }
-                    else
-                    {
-                        var args = new SqlExpressionBase[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-                        function = this.SetContext(new FunctionCallSqlExpression(this.DefaultProvider, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
-
-                        if (this.LookAhead.Kind == 48)
-                        {
-                            Get();
-                        }
-                        Name(out alias);
+                        Expression(out e);
+                        args.Add(e);
                     }
                 }
-                if (source == null)
+                Expect(31);
+                function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
+                if (this.LookAhead.Kind == 48)
                 {
-                    var args = new[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-                    function = function ?? this.SetContext(new FunctionCallSqlExpression(this.DefaultProvider, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
-                    source = CatchAll(() => this.SetContext(new FunctionSource(function, alias ?? name), ctx));
+                    Get();
                 }
-
+                Name(out alias);
+                source = CatchAll(() => this.SetContext(new FunctionSource(function, alias), ctx));
             }
             else SynErr(85);
         }
@@ -1030,7 +1066,7 @@ namespace ConnectQl.Internal
             SqlExpressionBase expr; string op; var ctx = Mark();
             AddExpression(out expr);
             expression = expr;
-            while (StartOf(11))
+            while (StartOf(10))
             {
                 switch (this.LookAhead.Kind)
                 {
@@ -1097,7 +1133,7 @@ namespace ConnectQl.Internal
             SqlExpressionBase expr; string op; var ctx = Mark();
             Unary(out expr);
             expression = expr;
-            while (StartOf(12))
+            while (StartOf(11))
             {
                 if (this.LookAhead.Kind == 58)
                 {
@@ -1216,7 +1252,7 @@ namespace ConnectQl.Internal
             if (this.LookAhead.Kind == 4)
             {
                 Identifier(out first);
-                if (StartOf(13))
+                if (StartOf(12))
                 {
                     if (this.LookAhead.Kind == 66)
                     {
@@ -1324,7 +1360,6 @@ namespace ConnectQl.Internal
         {true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,true,true,false,true,true,false,true,false,true,true,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,true,true,false,true,true,false,true,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,true,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
-        {false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false},
         {true,false,false,false,false,false,false,false,false,true,false,false,true,true,true,false,false,false,false,false,true,false,true,true,true,false,true,true,false,true,false,true,true,true,true,true,true,true,true,true,true,true,true,false,true,false,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,true,false,false}

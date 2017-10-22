@@ -31,6 +31,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The in memory policy.
     /// </summary>
@@ -50,6 +52,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         ///     The <see cref="IAsyncEnumerableBuilder{T}" />.
         /// </returns>
+        [NotNull]
         public IAsyncEnumerableBuilder<T> CreateBuilder<T>()
         {
             return new InMemoryAsyncEnumerableBuilder<T>(this);
@@ -71,6 +74,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         ///     The sorted <see cref="IAsyncReadOnlyCollection{T}" />.
         /// </returns>
+        [ItemNotNull]
         public async Task<IAsyncReadOnlyCollection<T>> SortAsync<T>(IAsyncEnumerable<T> source, Comparison<T> comparison)
         {
             T[] items;
@@ -111,7 +115,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <summary>
             ///     The array.
             /// </summary>
-            private T[] array = new T[MinimumBufferSize];
+            private T[] array = new T[InMemoryAsyncEnumerableBuilder<T>.MinimumBufferSize];
 
             /// <summary>
             ///     The number of items in the builder.
@@ -136,7 +140,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             /// This builder.
             /// </returns>
-            ISynchronousAsyncEnumerableBuilder<T> ISynchronousAsyncEnumerableBuilder<T>.Add(IEnumerable<T> items)
+            [NotNull]
+            ISynchronousAsyncEnumerableBuilder<T> ISynchronousAsyncEnumerableBuilder<T>.Add([NotNull] IEnumerable<T> items)
             {
                 if (this.numItems == -1)
                 {
@@ -188,11 +193,9 @@ namespace ConnectQl.AsyncEnumerablePolicies
                     Array.Resize(ref this.array, this.numItems);
                 }
 
-                Debug.WriteLine($"{this.GetType()}: Created collection with {this.numItems} items.");
-
                 var result = Task.FromResult<IAsyncReadOnlyCollection<T>>(new InMemoryAsyncReadOnlyCollection<T>(this.policy, this.array ?? new T[0]));
 
-                this.array = new T[MinimumBufferSize];
+                this.array = new T[InMemoryAsyncEnumerableBuilder<T>.MinimumBufferSize];
                 this.numItems = -1;
 
                 return result;
@@ -256,6 +259,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             ///     The enumerator.
             /// </returns>
+            [NotNull]
             public IAsyncEnumerator<T> GetAsyncEnumerator()
             {
                 if (this.Items == null)
@@ -275,6 +279,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             /// <returns>
             ///     The <see cref="IAsyncEnumerator{T}" />.
             /// </returns>
+            [NotNull]
             public IAsyncEnumerator<T> GetAsyncEnumerator(long offset)
             {
                 if (this.Items == null)

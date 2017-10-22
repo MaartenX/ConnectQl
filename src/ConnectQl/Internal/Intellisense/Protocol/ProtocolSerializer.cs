@@ -32,6 +32,8 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     using System.Text;
     using ConnectQl.Internal.Extensions;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The protocol serializer.
     /// </summary>
@@ -138,7 +140,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             return Expression.Block(
                 new[] { bytes },
                 Expression.Assign(bytes, Expression.NewArrayBounds(typeof(byte), length)),
-                Expression.Call(stream, StreamReadMethod, bytes, Expression.Constant(0), Expression.Property(bytes, nameof(Array.Length))),
+                Expression.Call(stream, ProtocolSerializer.StreamReadMethod, bytes, Expression.Constant(0), Expression.Property(bytes, nameof(Array.Length))),
                 bytes);
         }
 
@@ -156,13 +158,13 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             var bytes = Expression.Parameter(typeof(byte[]));
 
             var r = Expression.Condition(
-                ReadValue(stream, typeof(bool)),
+                ProtocolSerializer.ReadValue(stream, typeof(bool)),
                 Expression.Block(
                     new[] { bytes },
-                    Expression.Assign(bytes, ReadBytes(stream, ReadValue(stream, typeof(int)))),
+                    Expression.Assign(bytes, ProtocolSerializer.ReadBytes(stream, ProtocolSerializer.ReadValue(stream, typeof(int)))),
                     Expression.Call(
                         Expression.Constant(Encoding.UTF8),
-                        EncodingGetStringMethod,
+                        ProtocolSerializer.EncodingGetStringMethod,
                         bytes,
                         Expression.Constant(0),
                         Expression.Property(bytes, nameof(Array.Length)))),
@@ -191,13 +193,13 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             return Expression.Block(
                 Expression.IfThenElse(
                     Expression.Equal(value, Expression.Constant(null, typeof(string))),
-                    WriteValue(stream, Expression.Constant(false)),
+                    ProtocolSerializer.WriteValue(stream, Expression.Constant(false)),
                     Expression.Block(
                         new[] { bytes },
-                        WriteValue(stream, Expression.Constant(true)),
-                        WriteValue(stream, Expression.Property(value, nameof(string.Length))),
-                        Expression.Assign(bytes, Expression.Call(Expression.Constant(Encoding.UTF8), EncodingGetBytesMethod, value)),
-                        Expression.Call(stream, StreamWriteMethod, bytes, Expression.Constant(0), Expression.Property(bytes, nameof(Array.Length))))));
+                        ProtocolSerializer.WriteValue(stream, Expression.Constant(true)),
+                        ProtocolSerializer.WriteValue(stream, Expression.Property(value, nameof(string.Length))),
+                        Expression.Assign(bytes, Expression.Call(Expression.Constant(Encoding.UTF8), ProtocolSerializer.EncodingGetBytesMethod, value)),
+                        Expression.Call(stream, ProtocolSerializer.StreamWriteMethod, bytes, Expression.Constant(0), Expression.Property(bytes, nameof(Array.Length))))));
         }
 
         /// <summary>
@@ -214,7 +216,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// </returns>
         private static Expression ReadAndCallBitConverter<T>(Func<byte[], int, T> bitConverter, ParameterExpression stream, int sizeInBytes)
         {
-            return Expression.Call(bitConverter.GetMethodInfo(), ReadBytes(stream, Expression.Constant(sizeInBytes)), Expression.Constant(0));
+            return Expression.Call(bitConverter.GetMethodInfo(), ProtocolSerializer.ReadBytes(stream, Expression.Constant(sizeInBytes)), Expression.Constant(0));
         }
 
         /// <summary>
@@ -236,7 +238,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             return Expression.Block(
                 new[] { bytes },
                 Expression.Assign(bytes, Expression.Call(bitConverter.GetMethodInfo(), value)),
-                Expression.Call(stream, StreamWriteMethod, bytes, Expression.Constant(0), Expression.Property(bytes, nameof(Array.Length))));
+                Expression.Call(stream, ProtocolSerializer.StreamWriteMethod, bytes, Expression.Constant(0), Expression.Property(bytes, nameof(Array.Length))));
         }
 
         /// <summary>
@@ -260,11 +262,11 @@ namespace ConnectQl.Internal.Intellisense.Protocol
                 Expression.Assign(obj, Expression.New(type))
             };
 
-            reader.AddRange(properties.Select(p => Expression.Assign(Expression.Property(obj, p), ReadValue(stream, p.PropertyType))));
+            reader.AddRange(properties.Select(p => Expression.Assign(Expression.Property(obj, p), ProtocolSerializer.ReadValue(stream, p.PropertyType))));
             reader.Add(obj);
 
             return Expression.Condition(
-                    ReadValue(stream, typeof(bool)),
+                    ProtocolSerializer.ReadValue(stream, typeof(bool)),
                     Expression.Block(new[] { obj }, reader),
                     Expression.Constant(null, type));
         }
@@ -277,7 +279,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <returns>
         /// The expression.
         /// </returns>
-        private static Expression WriteObject(ParameterExpression stream, Expression value)
+        private static Expression WriteObject(ParameterExpression stream, [NotNull] Expression value)
         {
             var obj = Expression.Parameter(value.Type);
             var valueIsNotNull = Expression.Parameter(typeof(bool));
@@ -286,16 +288,16 @@ namespace ConnectQl.Internal.Intellisense.Protocol
                 .Where(prop => prop.GetMethod?.IsStatic == false && prop.GetMethod?.IsPublic == true && prop.SetMethod?.IsPublic == true && prop.GetCustomAttribute<NotInProtocolAttribute>() == null)
                 .OrderBy(p => p.Name);
 
-            var writes = properties.Select(p => WriteValue(stream, Expression.Property(obj, p))).ToList();
+            var writes = properties.Select(p => ProtocolSerializer.WriteValue(stream, Expression.Property(obj, p))).ToList();
 
-            writes.Insert(0, WriteValue(stream, Expression.Constant(true)));
+            writes.Insert(0, ProtocolSerializer.WriteValue(stream, Expression.Constant(true)));
 
             return Expression.Block(
                 new[] { obj },
                 Expression.Assign(obj, value),
                 Expression.IfThenElse(
                     Expression.Equal(obj, Expression.Constant(null, value.Type)),
-                    WriteValue(stream, Expression.Constant(false)),
+                    ProtocolSerializer.WriteValue(stream, Expression.Constant(false)),
                     Expression.Block(writes)));
         }
 
@@ -307,83 +309,83 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <returns>
         /// The expression.
         /// </returns>
-        private static Expression WriteValue(ParameterExpression stream, Expression value)
+        private static Expression WriteValue(ParameterExpression stream, [NotNull] Expression value)
         {
             if (value.Type == typeof(string))
             {
-                return WriteString(stream, value);
+                return ProtocolSerializer.WriteString(stream, value);
             }
 
             var enumerable = value.Type.GetInterface(typeof(IEnumerable<>));
 
             if (enumerable != null)
             {
-                return WriteEnumerable(stream, value);
+                return ProtocolSerializer.WriteEnumerable(stream, value);
             }
 
             if (value.Type.GetTypeInfo().IsEnum)
             {
-                return WriteValue(stream, Expression.Convert(value, Enum.GetUnderlyingType(value.Type)));
+                return ProtocolSerializer.WriteValue(stream, Expression.Convert(value, Enum.GetUnderlyingType(value.Type)));
             }
 
             if (value.Type == typeof(ushort))
             {
-                return WriteBytes((Func<ushort, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<ushort, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(uint))
             {
-                return WriteBytes((Func<uint, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<uint, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(ulong))
             {
-                return WriteBytes((Func<ulong, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<ulong, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(char))
             {
-                return WriteBytes((Func<char, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<char, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(long))
             {
-                return WriteBytes((Func<long, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<long, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(int))
             {
-                return WriteBytes((Func<int, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<int, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(float))
             {
-                return WriteBytes((Func<float, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<float, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(double))
             {
-                return WriteBytes((Func<double, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<double, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(short))
             {
-                return WriteBytes((Func<short, byte[]>)BitConverter.GetBytes, stream, value);
+                return ProtocolSerializer.WriteBytes((Func<short, byte[]>)BitConverter.GetBytes, stream, value);
             }
 
             if (value.Type == typeof(byte))
             {
-                return Expression.Call(stream, StreamWriteByteMethod, value);
+                return Expression.Call(stream, ProtocolSerializer.StreamWriteByteMethod, value);
             }
 
             if (value.Type == typeof(bool))
             {
                 return value is ConstantExpression constant
-                    ? Expression.Call(stream, StreamWriteByteMethod, (bool)constant.Value == true ? Expression.Constant((byte)1) : Expression.Constant((byte)0))
-                    : Expression.Call(stream, StreamWriteByteMethod, Expression.Condition(value, Expression.Constant((byte)1), Expression.Constant((byte)0)));
+                    ? Expression.Call(stream, ProtocolSerializer.StreamWriteByteMethod, (bool)constant.Value == true ? Expression.Constant((byte)1) : Expression.Constant((byte)0))
+                    : Expression.Call(stream, ProtocolSerializer.StreamWriteByteMethod, Expression.Condition(value, Expression.Constant((byte)1), Expression.Constant((byte)0)));
             }
 
-            return WriteObject(stream, value);
+            return ProtocolSerializer.WriteObject(stream, value);
         }
 
         /// <summary>
@@ -392,7 +394,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         /// <param name="stream">The stream.</param>
         /// <param name="value">The value.</param>
         /// <returns>The expression.</returns>
-        private static Expression WriteEnumerable(ParameterExpression stream, Expression value)
+        private static Expression WriteEnumerable(ParameterExpression stream, [NotNull] Expression value)
         {
             var collection = value.Type.GetInterface(typeof(ICollection<>));
 
@@ -408,16 +410,16 @@ namespace ConnectQl.Internal.Intellisense.Protocol
 
                 return Expression.IfThenElse(
                     Expression.Equal(value, Expression.Constant(null, value.Type)),
-                    WriteValue(stream, Expression.Constant(false)),
+                    ProtocolSerializer.WriteValue(stream, Expression.Constant(false)),
                     Expression.Block(
                         new[] { enumerator },
-                        WriteValue(stream, Expression.Constant(true)),
-                        WriteValue(stream, Expression.Property(Expression.Convert(value, collection), nameof(ICollection<int>.Count))),
+                        ProtocolSerializer.WriteValue(stream, Expression.Constant(true)),
+                        ProtocolSerializer.WriteValue(stream, Expression.Property(Expression.Convert(value, collection), nameof(ICollection<int>.Count))),
                         Expression.Assign(enumerator, Expression.Call(Expression.Convert(value, collection), collectionGetEnumeratorMethod)),
                         Expression.Loop(
                                 Expression.IfThenElse(
                                     Expression.Call(enumerator, enumeratorMoveNextMethod),
-                                    WriteValue(stream, Expression.Property(enumerator, nameof(IEnumerator<object>.Current))),
+                                    ProtocolSerializer.WriteValue(stream, Expression.Property(enumerator, nameof(IEnumerator<object>.Current))),
                                     Expression.Break(breakTarget)),
                             breakTarget)));
             }
@@ -441,77 +443,77 @@ namespace ConnectQl.Internal.Intellisense.Protocol
         {
             if (type == typeof(string))
             {
-                return ReadString(stream);
+                return ProtocolSerializer.ReadString(stream);
             }
 
             var enumerable = type.GetInterface(typeof(IEnumerable<>));
 
             if (enumerable != null)
             {
-                return ReadEnumerable(stream, type, enumerable);
+                return ProtocolSerializer.ReadEnumerable(stream, type, enumerable);
             }
 
             if (type.GetTypeInfo().IsEnum)
             {
-                return Expression.Convert(ReadValue(stream, Enum.GetUnderlyingType(type)), type);
+                return Expression.Convert(ProtocolSerializer.ReadValue(stream, Enum.GetUnderlyingType(type)), type);
             }
 
             if (type == typeof(char))
             {
-                return ReadAndCallBitConverter(BitConverter.ToChar, stream, 2);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToChar, stream, 2);
             }
 
             if (type == typeof(ulong))
             {
-                return ReadAndCallBitConverter(BitConverter.ToUInt64, stream, 8);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToUInt64, stream, 8);
             }
 
             if (type == typeof(uint))
             {
-                return ReadAndCallBitConverter(BitConverter.ToUInt32, stream, 8);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToUInt32, stream, 8);
             }
 
             if (type == typeof(ushort))
             {
-                return ReadAndCallBitConverter(BitConverter.ToUInt16, stream, 8);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToUInt16, stream, 8);
             }
 
             if (type == typeof(long))
             {
-                return ReadAndCallBitConverter(BitConverter.ToInt64, stream, 8);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToInt64, stream, 8);
             }
 
             if (type == typeof(int))
             {
-                return ReadAndCallBitConverter(BitConverter.ToInt32, stream, 4);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToInt32, stream, 4);
             }
 
             if (type == typeof(float))
             {
-                return ReadAndCallBitConverter(BitConverter.ToSingle, stream, 4);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToSingle, stream, 4);
             }
 
             if (type == typeof(double))
             {
-                return ReadAndCallBitConverter(BitConverter.ToDouble, stream, 8);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToDouble, stream, 8);
             }
 
             if (type == typeof(short))
             {
-                return ReadAndCallBitConverter(BitConverter.ToInt16, stream, 2);
+                return ProtocolSerializer.ReadAndCallBitConverter(BitConverter.ToInt16, stream, 2);
             }
 
             if (type == typeof(byte))
             {
-                return Expression.Call(stream, StreamReadByteMethod);
+                return Expression.Call(stream, ProtocolSerializer.StreamReadByteMethod);
             }
 
             if (type == typeof(bool))
             {
-                return Expression.NotEqual(Expression.Call(stream, StreamReadByteMethod), Expression.Constant(0));
+                return Expression.NotEqual(Expression.Call(stream, ProtocolSerializer.StreamReadByteMethod), Expression.Constant(0));
             }
 
-            return ReadObject(stream, type);
+            return ProtocolSerializer.ReadObject(stream, type);
         }
 
         /// <summary>
@@ -555,12 +557,12 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             var addMethod = typeof(ICollection<>).MakeGenericType(elementType).GetMethod("Add", elementType);
 
             var addToList = isArray
-                          ? (Expression)Expression.Assign(Expression.MakeIndex(list, list.Type.GetRuntimeProperty("Item"), new[] { i }), ReadValue(stream, elementType))
-                          : Expression.Call(list, addMethod, ReadValue(stream, elementType));
+                          ? (Expression)Expression.Assign(Expression.MakeIndex(list, list.Type.GetRuntimeProperty("Item"), new[] { i }), ProtocolSerializer.ReadValue(stream, elementType))
+                          : Expression.Call(list, addMethod, ProtocolSerializer.ReadValue(stream, elementType));
 
             var result = Expression.Parameter(createList.Type);
             return Expression.Condition(
-                ReadValue(stream, typeof(bool)),
+                ProtocolSerializer.ReadValue(stream, typeof(bool)),
                 Expression.Block(
                     new ParameterExpression[]
                     {
@@ -570,7 +572,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
                                 result
                     },
                     Expression.Assign(i, Expression.Constant(0)),
-                    Expression.Assign(length, ReadValue(stream, typeof(int))),
+                    Expression.Assign(length, ProtocolSerializer.ReadValue(stream, typeof(int))),
                     Expression.Assign(list, Expression.Assign(result, createList)),
                     Expression.Loop(
                         Expression.Block(
@@ -613,12 +615,12 @@ namespace ConnectQl.Internal.Intellisense.Protocol
                     var stream = Expression.Parameter(typeof(Stream));
                     var obj = Expression.Parameter(typeof(T));
 
-                    Read = Expression.Lambda<Func<Stream, T>>(ReadValue(stream, typeof(T)), stream).Compile();
-                    Write = Expression.Lambda<Action<Stream, T>>(WriteValue(stream, obj), stream, obj).Compile();
+                    ProtocolSerializerImplementation<T>.Read = Expression.Lambda<Func<Stream, T>>(ProtocolSerializer.ReadValue(stream, typeof(T)), stream).Compile();
+                    ProtocolSerializerImplementation<T>.Write = Expression.Lambda<Action<Stream, T>>(ProtocolSerializer.WriteValue(stream, obj), stream, obj).Compile();
                 }
                 catch (Exception e)
                 {
-                    InitializeError = e;
+                    ProtocolSerializerImplementation<T>.InitializeError = e;
                 }
             }
         }

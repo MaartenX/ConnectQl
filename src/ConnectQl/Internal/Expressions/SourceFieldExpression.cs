@@ -31,6 +31,8 @@ namespace ConnectQl.Internal.Expressions
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Represents an expression that is a reference to a field.
     /// </summary>
@@ -101,8 +103,8 @@ namespace ConnectQl.Internal.Expressions
         /// <returns>
         /// The <see cref="MethodCallExpression"/>.
         /// </returns>
-        public MethodCallExpression CreateGetter(ParameterExpression row, Type type = null)
-            => Call(row, (this.UseInternalName ? RowGetByInternalNameMethod : RowGetMethod).MakeGenericMethod(type ?? this.Type), Constant(this.SourceName == null ? this.FieldName : $"{this.SourceName}.{this.FieldName}"));
+        public MethodCallExpression CreateGetter(ParameterExpression row, [CanBeNull] Type type = null)
+            => Expression.Call(row, (this.UseInternalName ? SourceFieldExpression.RowGetByInternalNameMethod : SourceFieldExpression.RowGetMethod).MakeGenericMethod(type ?? this.Type), Expression.Constant(this.SourceName == null ? this.FieldName : $"{this.SourceName}.{this.FieldName}"));
 
         /// <summary>
         /// Creates a method call that gets the values from the specified parameter for grouping.
@@ -115,12 +117,12 @@ namespace ConnectQl.Internal.Expressions
         /// </returns>
         public MethodCallExpression CreateGroupGetter(ParameterExpression rows)
         {
-            var row = Parameter(typeof(Row), "row");
-            var getField = Lambda<Func<Row, object>>(
-                Call(row, (this.UseInternalName ? RowGetByInternalNameMethod : RowGetMethod).MakeGenericMethod(typeof(object)), Constant(this.SourceName == null ? this.FieldName : $"{this.SourceName}.{this.FieldName}")),
+            var row = Expression.Parameter(typeof(Row), "row");
+            var getField = Expression.Lambda<Func<Row, object>>(
+                Expression.Call(row, (this.UseInternalName ? SourceFieldExpression.RowGetByInternalNameMethod : SourceFieldExpression.RowGetMethod).MakeGenericMethod(typeof(object)), Expression.Constant(this.SourceName == null ? this.FieldName : $"{this.SourceName}.{this.FieldName}")),
                 row);
 
-            return Call(SelectMethod, rows, getField);
+            return Expression.Call(SourceFieldExpression.SelectMethod, rows, getField);
         }
 
         /// <summary>
@@ -129,6 +131,7 @@ namespace ConnectQl.Internal.Expressions
         /// <returns>
         /// A textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.
         /// </returns>
+        [NotNull]
         public override string ToString()
         {
             return $"[{this.SourceName}].[{this.FieldName}]";
@@ -144,6 +147,7 @@ namespace ConnectQl.Internal.Expressions
         /// <param name="visitor">
         /// An instance of <see cref="T:System.Func`2"/>.
         /// </param>
+        [NotNull]
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             return this;

@@ -22,12 +22,16 @@
 
 namespace ConnectQl.Internal.DataSources
 {
+    using System;
     using System.Threading.Tasks;
 
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Interfaces;
+    using ConnectQl.Internal.Results;
     using ConnectQl.Results;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The data target.
@@ -65,9 +69,11 @@ namespace ConnectQl.Internal.DataSources
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public async Task<long> WriteRowsAsync(IInternalExecutionContext context, IAsyncEnumerable<Row> rows, bool upsert)
+        public async Task<long> WriteRowsAsync([NotNull] IInternalExecutionContext context, IAsyncEnumerable<Row> rows, bool upsert)
         {
-            context.Log.Verbose($"Writing to {context.GetDisplayName(this.target)}...");
+            var targetName = context.GetDisplayName(this.target);
+
+            context.Logger.Verbose($"Writing to {targetName}...");
 
             if (context.WriteProgressInterval != 0)
             {
@@ -79,18 +85,27 @@ namespace ConnectQl.Internal.DataSources
 
                             if (i % context.WriteProgressInterval == 0)
                             {
-                                context.Log.Information($"Wrote {i} items.");
+                                context.Logger.Information($"Wrote {i} items.");
                             }
 
                             return a;
                         });
             }
 
-            var result = await this.target.WriteRowsAsync(context, rows, upsert);
+            try
+            {
+                var result = await this.target.WriteRowsAsync(context, rows, upsert);
 
-            context.Log.Verbose($"Wrote {result} rows to {context.GetDisplayName(this.target)}");
+                context.Logger.Verbose($"Wrote {result} rows to {context.GetDisplayName(this.target)}");
 
-            return result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                context.Logger.Error($"An error occurred while writing to {targetName}: {e.Message}.");
+
+                return 0;
+            }
         }
     }
 }

@@ -25,6 +25,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerates an <see cref="IEnumerable{T}"/> as an <see cref="ConnectQl.AsyncEnumerables.IAsyncEnumerable{T}"/>.
     /// </summary>
@@ -44,7 +46,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="enumerable">
         /// The enumerable.
         /// </param>
-        public EnumerableEnumerator(IEnumerable<T> enumerable)
+        public EnumerableEnumerator([NotNull] IEnumerable<T> enumerable)
         {
             this.enumerator = enumerable.GetEnumerator();
         }

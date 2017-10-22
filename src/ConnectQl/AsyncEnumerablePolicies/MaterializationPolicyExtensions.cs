@@ -33,6 +33,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
     using ConnectQl.Internal.AsyncEnumerables.Enumerators;
     using ConnectQl.Internal.AsyncEnumerables.Visualizers;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The materialization policy extensions.
     /// </summary>
@@ -62,7 +64,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<TState> initialize, Func<TState, Task<IEnumerable<T>>> generateItems, Action<TState> dispose = null)
+        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<TState> initialize, Func<TState, Task<IEnumerable<T>>> generateItems, [CanBeNull] Action<TState> dispose = null)
             => policy.CreateAsyncEnumerable(() => Task.Run(initialize), generateItems, dispose);
 
         /// <summary>
@@ -104,7 +106,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<TState, Task<IEnumerable<T>>> generateItems, Action<TState> dispose = null)
+        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<TState, Task<IEnumerable<T>>> generateItems, [CanBeNull] Action<TState> dispose = null)
             where TState : new()
             => policy.CreateAsyncEnumerable(() => Task.FromResult(new TState()), generateItems, dispose);
 
@@ -132,9 +134,9 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<Task<TState>> initialize, Func<TState, Task<T>> generateItem, Action<TState> dispose = null)
+        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<Task<TState>> initialize, Func<TState, Task<T>> generateItem, [CanBeNull] Action<TState> dispose = null)
             where T : class
-            => policy.CreateAsyncEnumerable(initialize, context => ToEnumerableAsync(generateItem(context)), dispose);
+            => policy.CreateAsyncEnumerable(initialize, context => MaterializationPolicyExtensions.ToEnumerableAsync(generateItem(context)), dispose);
 
         /// <summary>
         /// Creates an <see cref="IAsyncEnumerable{T}"/> from a generator.
@@ -160,9 +162,9 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<TState> initialize, Func<TState, Task<T>> generateItem, Action<TState> dispose = null)
+        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<TState> initialize, Func<TState, Task<T>> generateItem, [CanBeNull] Action<TState> dispose = null)
             where T : class
-            => policy.CreateAsyncEnumerable(() => Task.FromResult(initialize()), context => ToEnumerableAsync(generateItem(context)), dispose);
+            => policy.CreateAsyncEnumerable(() => Task.FromResult(initialize()), context => MaterializationPolicyExtensions.ToEnumerableAsync(generateItem(context)), dispose);
 
         /// <summary>
         /// Creates an <see cref="IAsyncEnumerable{T}"/> from a generator.
@@ -185,10 +187,10 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<TState, Task<T>> generateItem, Action<TState> dispose = null)
+        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<TState, Task<T>> generateItem, [CanBeNull] Action<TState> dispose = null)
             where TState : new()
             where T : class
-            => policy.CreateAsyncEnumerable(() => new GeneratorEnumerable<T, TState>(() => Task.FromResult(new TState()), context => ToEnumerableAsync(generateItem(context)), dispose));
+            => policy.CreateAsyncEnumerable(() => new GeneratorEnumerable<T, TState>(() => Task.FromResult(new TState()), context => MaterializationPolicyExtensions.ToEnumerableAsync(generateItem(context)), dispose));
 
         /// <summary>
         /// Creates an <see cref="IAsyncEnumerable{T}"/> from a generator.
@@ -214,7 +216,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<Task<TState>> initialize, Func<TState, Task<IEnumerable<T>>> generateItems, Action<TState> dispose = null)
+        public static IAsyncEnumerable<T> CreateAsyncEnumerable<T, TState>(this IMaterializationPolicy policy, Func<Task<TState>> initialize, Func<TState, Task<IEnumerable<T>>> generateItems, [CanBeNull] Action<TState> dispose = null)
             => policy.CreateAsyncEnumerable(() => new GeneratorEnumerable<T, TState>(initialize, generateItems, dispose));
 
         /// <summary>
@@ -375,7 +377,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
         ///     otherwise a new
         ///     <see cref="IAsyncReadOnlyCollection{T}"/> containing the elements in the sequence.
         /// </returns>
-        public static async Task<IAsyncReadOnlyCollection<T>> MaterializeAsync<T>(this IMaterializationPolicy policy, IAsyncEnumerable<T> source)
+        public static async Task<IAsyncReadOnlyCollection<T>> MaterializeAsync<T>(this IMaterializationPolicy policy, [NotNull] IAsyncEnumerable<T> source)
         {
             if (source.Policy == policy && source is IAsyncReadOnlyCollection<T>)
             {
@@ -442,7 +444,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        internal static IAsyncEnumerable<T> CreateAsyncEnumerable<T>(this IMaterializationPolicy policy, Expression<Func<IAsyncEnumerator<T>>> factory)
+        [NotNull]
+        internal static IAsyncEnumerable<T> CreateAsyncEnumerable<T>(this IMaterializationPolicy policy, [NotNull] Expression<Func<IAsyncEnumerator<T>>> factory)
         {
             return new FactoryEnumerable<T>(policy, factory.Compile(), factory.Body.Type.Name);
         }
@@ -476,12 +479,13 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="IEnumerable{T}"/> or <c>null</c> if the item returns <c>null</c>.
         /// </returns>
-        private static async Task<IEnumerable<T>> ToEnumerableAsync<T>(Task<T> item)
+        [ItemCanBeNull]
+        private static async Task<IEnumerable<T>> ToEnumerableAsync<T>([NotNull] Task<T> item)
             where T : class
         {
             var result = await item.ConfigureAwait(false);
 
-            return result == null ? null : ToEnumerable(result);
+            return result == null ? null : MaterializationPolicyExtensions.ToEnumerable(result);
         }
 
         /// <summary>

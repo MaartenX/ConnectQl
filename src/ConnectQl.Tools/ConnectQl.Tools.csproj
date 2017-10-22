@@ -1,0 +1,124 @@
+﻿<Project>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+
+  <PropertyGroup>
+    <UICulture>en</UICulture>
+    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFramework>net452</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+
+    <!-- 
+      WPF generates a temporary project file with a .tmp_proj extension. The Microsoft.NET.Sdk cannot handle this, because it derives the 
+      $(LanguageTargets) from the project file extension. Let's help the project system a bit. 
+    -->
+    <LanguageTargets Condition="'$(MSBuildProjectExtension)' != '.csproj' and Exists('$(MSBuildProjectDirectory)\$(AssemblyName).csproj')">$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EnvDTE100" Version="10.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost" Version="[14.0.25424,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.14.0" Version="[14.0.23205,14.1)" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="[14.0.25023,14.1)" />
+    <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.1.192" />
+    <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
+    <PackageReference Include="VSLangProj140" Version="14.0.25029" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\ConnectQl.png" Link="Resources\ConnectQl.png" CopyToOutputDirectory="Always" IncludeInVSIX="true" />
+    <Content Include="Icons\Monikers.imagemanifest" IncludeInVSIX="true" />
+    <Content Include="Icons.pkgdef" IncludeInVSIX="true" />
+    <Content Include="Resources\source.extension.ico" DependentUpon="source.extension.en.resx" />
+    
+    <Page Include="Mef\Results\Controls\ResultsPanel.xaml" Generator="MSBuild:Compile" />
+    <Page Include="Mef\Results\Controls\ResultsPanelScrollBar.xaml" Generator="MSBuild:Compile" />
+    
+    <Compile Update="Mef\Results\Controls\ResultsPanel.xaml.cs" DependentUpon="Mef\Results\ResultsPanel.xaml" SubType="Code" />
+    <Compile Update="Mef\Results\Controls\ResultsPanelScrollBar.xaml.cs" DependentUpon="Mef\Results\ResultsPanelScrollBar.xaml" SubType="Code" />
+    
+    <EmbeddedResource Include="Resources\source.extension.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <MergeWithCTO>true</MergeWithCTO>
+      <LogicalName>VSPackage.en.Resources</LogicalName>
+    </EmbeddedResource>
+
+    <EmbeddedResource Include="Resources\source.extension.nl.resx">
+      <DependentUpon>Resources\source.extension.en.resx</DependentUpon>
+      <MergeWithCTO>true</MergeWithCTO>
+      <LogicalName>VSPackage.nl.Resources</LogicalName>
+    </EmbeddedResource>
+
+    <Resource Include="Icons\connectql.*.png">
+      <Localizable>False</Localizable>
+    </Resource>
+
+    <VSCTCompile Include="Vsct\ConnectQl.Tools.en.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />
+    <VSCTCompile Include="Vsct\ConnectQl.Tools.nl.vsct" Generator="VsctGenerator" ResourceName="Menus.ctmenu" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="System.ComponentModel.Composition" />
+    
+    <ProjectReference Include="..\ConnectQl.Tools.AssemblyLoader\ConnectQl.Tools.AssemblyLoader.csproj" AdditionalProperties="TargetFramework=net452" />
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" AdditionalProperties="TargetFramework=portable-net45+win8+wpa81+wp8" />
+    <ProjectReference Include="..\ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj" AdditionalProperties="TargetFramework=net452">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+    </ProjectReference>
+    
+    <!-- Helps to resolve the project references, name is missing when building using the new csproj. -->
+    <ProjectReference Update="@(ProjectReference)" Name="%(FileName)" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(VsSDKInstall)\Microsoft.VsSDK.targets" Condition="'$(vsSDKInstall)' != '' And Exists('$(VsSDKInstall)\Microsoft.VsSDK.targets')" />
+
+  <PropertyGroup>
+    <UseCodebase>true</UseCodebase>
+    <DeployExtension Condition="'$(APPVEYOR)'==''">True</DeployExtension>
+    <DeployExtension Condition="'$(APPVEYOR)'!=''">False</DeployExtension>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(APPVEYOR)'!=''">
+    <ArtifactsFolder>..\..\artifacts\</ArtifactsFolder>
+    <TargetVsixContainer Condition="'$(VersionSuffix)'==''">$(ArtifactsFolder)$(TargetName)-$(VersionPrefix).0.vsix</TargetVsixContainer>
+    <TargetVsixContainer Condition="'$(VersionSuffix)'!=''">$(ArtifactsFolder)$(TargetName)-$(VersionPrefix).0-$(VersionSuffix).vsix</TargetVsixContainer>
+  </PropertyGroup>
+
+  <Target Name="UpdateVsixVersion" BeforeTargets="PrepareForBuild" Condition="'$(APPVEYOR)'!='' AND '$(MSBuildProjectExtension)' == '.csproj'">
+    <MakeDir Directories="$(ArtifactsFolder)" ContinueOnError="true" />
+    <XmlUpdate Prefix="n" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" XPath="//n:PackageManifest/n:Metadata/n:Identity/@Version" XmlFileName="source.extension.vsixmanifest" Value="$(VersionPrefix).0" />
+  </Target>
+
+  <!-- Embeds the design time interop types instead of linking them. See also https://www.nuget.org/packages/Microsoft.VisualStudio.SDK.EmbedInteropTypes -->
+  <Target Name="LinkVSSDKEmbeddableAssemblies" AfterTargets="ResolveReferences" BeforeTargets="FindReferenceAssembliesForReferences">
+    <ItemGroup>
+      <ReferencePath Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(FileName)', 'Interop.\d+.\d+.DesignTime$'))">
+        <EmbedInteropTypes>true</EmbedInteropTypes>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+
+  <!-- Creates Intellisense information for the xaml files. See also https://github.com/dotnet/project-system/issues/2488 -->
+  <Target Name="WorkaroundForXAMLIntellisenseBuildIssue" AfterTargets="_CheckCompileDesignTimePrerequisite">
+    <PropertyGroup>
+      <BuildingProject>false</BuildingProject>
+    </PropertyGroup>
+  </Target>
+
+</Project>

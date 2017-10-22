@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The sequential left join source.
     /// </summary>
@@ -71,7 +73,8 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="JoinSourceBase.JoinQuery"/>.
         /// </returns>
-        protected override JoinQuery CreateJoinQuery(IExecutionContext context, IMultiPartQuery query)
+        [NotNull]
+        protected override JoinQuery CreateJoinQuery(IExecutionContext context, [NotNull] IMultiPartQuery query)
         {
             var resultFilter = query.GetFilter(context);
 
@@ -99,7 +102,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// A task returning the rows.
         /// </returns>
-        protected override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, JoinQuery query)
+        protected override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, [NotNull] JoinQuery query)
         {
             var rowBuilder = new RowBuilder();
             var leftRows = this.Left.GetRows(context, query.LeftQuery);

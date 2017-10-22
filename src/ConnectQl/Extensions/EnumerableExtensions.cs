@@ -26,6 +26,8 @@ namespace System.Collections.Generic
     using System;
     using System.Threading.Tasks;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The enumerable extensions.
     /// </summary>
@@ -46,7 +48,7 @@ namespace System.Collections.Generic
         /// <returns>
         /// An enumerable with the same elements as <paramref name="source"/>.
         /// </returns>
-        public static IEnumerable<T> ActionIfEmpty<T>(this IEnumerable<T> source, Action isEmpty)
+        public static IEnumerable<T> ActionIfEmpty<T>([NotNull] this IEnumerable<T> source, Action isEmpty)
         {
             using (var enumerator = source.GetEnumerator())
             {
@@ -85,7 +87,7 @@ namespace System.Collections.Generic
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<TResult> AggregateAsync<TElement, TResult>(this IEnumerable<TElement> source, TResult start, Func<TResult, TElement, Task<TResult>> aggregate)
+        public static async Task<TResult> AggregateAsync<TElement, TResult>([NotNull] this IEnumerable<TElement> source, TResult start, Func<TResult, TElement, Task<TResult>> aggregate)
         {
             foreach (var element in source)
             {

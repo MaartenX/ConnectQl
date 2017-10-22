@@ -86,5 +86,10 @@ namespace ConnectQl.Intellisense
         /// The source.
         /// </summary>
         Source,
+
+        /// <summary>
+        /// The source reference.
+        /// </summary>
+        SourceReference,
     }
 }

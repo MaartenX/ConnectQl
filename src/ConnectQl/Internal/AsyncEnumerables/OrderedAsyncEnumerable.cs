@@ -29,6 +29,8 @@ namespace ConnectQl.Internal.AsyncEnumerables
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Internal.AsyncEnumerables.Enumerators;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The ordered async enumerable.
     /// </summary>
@@ -85,6 +87,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
         /// <returns>
         /// An <see cref="IOrderedAsyncEnumerable{TElement}"/> whose elements are sorted according to a key.
         /// </returns>
+        [NotNull]
         public IOrderedAsyncEnumerable<T> CreateOrderedAsyncEnumerable<TKey>(Func<T, TKey> keySelector, IComparer<TKey> comparer, bool descending)
         {
             Comparison<T> newComparer = (first, second) =>
@@ -105,6 +108,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [NotNull]
         public IAsyncEnumerator<T> GetAsyncEnumerator()
         {
             return new OrderedEnumerator<T>(this.source, this.comparison);

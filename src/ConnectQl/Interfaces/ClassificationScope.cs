@@ -40,7 +40,7 @@ namespace ConnectQl.Interfaces
         /// <summary>
         /// Inside a select expression
         /// </summary>
-        SelectExpression,
+        Select,
 
         /// <summary>
         /// Inside an expression.
@@ -61,5 +61,20 @@ namespace ConnectQl.Interfaces
         /// The source.
         /// </summary>
         Source,
+
+        /// <summary>
+        /// Inside a USE-statement.
+        /// </summary>
+        Use,
+
+        /// <summary>
+        /// Inside an INSERT-statement.
+        /// </summary>
+        Insert,
+
+        /// <summary>
+        /// Inside an UNION-block.
+        /// </summary>
+        Union,
     }
 }

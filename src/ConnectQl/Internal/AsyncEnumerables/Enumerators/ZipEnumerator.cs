@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator used by the <see cref="AsyncEnumerableExtensions.Zip{TLeft,TRight,TResult}"/> method.
     /// </summary>
@@ -82,7 +84,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="isZipAll">
         /// The is Zip All.
         /// </param>
-        public ZipEnumerator(IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TRight, TResult> resultSelector, bool isZipAll)
+        public ZipEnumerator([NotNull] IAsyncEnumerable<TLeft> left, [NotNull] IAsyncEnumerable<TRight> right, Func<TLeft, TRight, TResult> resultSelector, bool isZipAll)
         {
             this.leftEnumerator = left.GetAsyncEnumerator();
             this.rightEnumerator = right.GetAsyncEnumerator();

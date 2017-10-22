@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Validation.Operators
     using System.Linq.Expressions;
     using System.Reflection;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Contains methods used in binary and unary operators.
     /// </summary>
@@ -51,7 +53,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         public static Expression ToObject(Expression expression)
         {
-            return ToType(expression, typeof(object));
+            return Operator.ToType(expression, typeof(object));
         }
 
         /// <summary>
@@ -63,7 +65,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The expression, or a new one if conversion is needed.
         /// </returns>
-        protected static Expression ToString(Expression expression)
+        protected static Expression ToString([NotNull] Expression expression)
         {
             if (expression.Type == typeof(string))
             {
@@ -89,7 +91,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The expression, or a new one if conversion is needed.
         /// </returns>
-        protected static Expression ToType(Expression expression, Type type)
+        protected static Expression ToType([NotNull] Expression expression, Type type)
         {
             return expression.Type == type ? expression : Expression.Convert(expression, type);
         }

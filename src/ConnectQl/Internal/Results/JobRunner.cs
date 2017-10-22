@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.Results
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The job runner.
     /// </summary>
@@ -39,9 +41,9 @@ namespace ConnectQl.Internal.Results
         private readonly IList<TriggerContext> triggerContexts = new List<TriggerContext>();
 
         /// <summary>
-        /// Gets or sets the log.
+        /// Gets or sets the logger.
         /// </summary>
-        public ILog Log { get; set; }
+        public ILogger Logger { get; set; }
 
         /// <summary>
         /// The start.
@@ -52,7 +54,8 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// The <see cref="IDisposable"/>.
         /// </returns>
-        public IDisposable Start(IEnumerable<IJob> jobs)
+        [NotNull]
+        public IDisposable Start([NotNull] IEnumerable<IJob> jobs)
         {
             var contexts = new List<TriggerContext>();
 
@@ -82,6 +85,7 @@ namespace ConnectQl.Internal.Results
         /// <returns>
         /// The <see cref="IJobContext"/>.
         /// </returns>
+        [CanBeNull]
         private IJobContext CreateJobContext(IJob job)
         {
             return null;
@@ -93,7 +97,7 @@ namespace ConnectQl.Internal.Results
         /// <param name="contexts">
         /// The contexts.
         /// </param>
-        private void Stop(IEnumerable<TriggerContext> contexts)
+        private void Stop([NotNull] IEnumerable<TriggerContext> contexts)
         {
             foreach (var context in contexts)
             {
@@ -133,9 +137,9 @@ namespace ConnectQl.Internal.Results
             /// <param name="trigger">
             /// The trigger.
             /// </param>
-            public TriggerContext(JobRunner jobRunner, IJob job, IJobTrigger trigger)
+            public TriggerContext([NotNull] JobRunner jobRunner, IJob job, IJobTrigger trigger)
             {
-                this.Log = jobRunner.Log;
+                this.Logger = jobRunner.Logger;
                 this.jobRunner = jobRunner;
                 this.trigger = trigger;
                 this.Job = job;
@@ -154,14 +158,14 @@ namespace ConnectQl.Internal.Results
             /// <summary>
             /// Gets the logger.
             /// </summary>
-            public ILog Log { get; }
+            public ILogger Logger { get; }
 
             /// <summary>
             /// Activates the trigger.
             /// </summary>
             public async void Activate()
             {
-                this.jobRunner.Log.Verbose($"Start execute Job {this.Job.Name} triggered by trigger {this.trigger.Name}.");
+                this.jobRunner.Logger.Verbose($"Start execute Job {this.Job.Name} triggered by trigger {this.trigger.Name}.");
 
                 var start = DateTime.Now;
 
@@ -169,7 +173,7 @@ namespace ConnectQl.Internal.Results
 
                 var end = DateTime.Now;
 
-                this.jobRunner.Log.Verbose($"Done executing Job {this.Job.Name} triggered by trigger {this.trigger.Name}.");
+                this.jobRunner.Logger.Verbose($"Done executing Job {this.Job.Name} triggered by trigger {this.trigger.Name}.");
 
                 var args = new JobExecutedArgs(this.Job.Name, start, end);
 

@@ -33,6 +33,8 @@ namespace ConnectQl.Internal.Query.Plans
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The declare variable query plan.
     /// </summary>
@@ -63,7 +65,7 @@ namespace ConnectQl.Internal.Query.Plans
 
             expression = GenericVisitor.Visit(
                 (ExecutionContextExpression e) => context,
-                Expression.Call(context, SetVariable.MakeGenericMethod(expression.Type), Expression.Constant(name), expression).RewriteTasksToAsyncExpression());
+                Expression.Call(context, DeclareVariableQueryPlan.SetVariable.MakeGenericMethod(expression.Type), Expression.Constant(name), expression).RewriteTasksToAsyncExpression());
 
             if (!expression.Type.IsConstructedGenericType || expression.Type.GetGenericTypeDefinition() != typeof(Task<>))
             {
@@ -90,6 +92,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
+        [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
             await this.evaluateVariable(context);

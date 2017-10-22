@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' != ''">netstandard1.1;portable-net45+win8+wpa81+wp8</TargetFrameworks>
+    <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' == ''">netstandard1.1</TargetFrameworks>
+    <PackageTags>ConnectQl;SQL;querying;Azure;Table;Blob</PackageTags>
+    <Description>ConnectQl plugin for querying Azure Tables and Blobs.</Description>
+  </PropertyGroup>
+
+  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
+    <PackageReference Include="WindowsAzure.Storage" Version="8.5.0" />
+  </ItemGroup>
+  
+</Project>

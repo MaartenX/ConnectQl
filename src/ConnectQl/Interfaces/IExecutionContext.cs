@@ -47,7 +47,7 @@ namespace ConnectQl.Interfaces
         /// <summary>
         /// Gets the logger.
         /// </summary>
-        ILog Log { get; }
+        ILogger Logger { get; }
 
         /// <summary>
         /// Gets the available file formats.

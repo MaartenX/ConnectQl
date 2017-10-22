@@ -29,6 +29,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Joins two sets of items together.
     /// </summary>
@@ -159,7 +161,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="keyComparer">
         /// The key comparer.
         /// </param>
-        public JoinEnumerator(bool isLeftJoin, bool isPreSorted, IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TKey> leftKey, ExpressionType joinOperator, Func<TRight, TKey> rightKey, Func<TLeft, TRight, bool> resultFilter, Func<TLeft, TRight, TResult> resultSelector, IComparer<TKey> keyComparer)
+        public JoinEnumerator(bool isLeftJoin, bool isPreSorted, IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TKey> leftKey, ExpressionType joinOperator, Func<TRight, TKey> rightKey, Func<TLeft, TRight, bool> resultFilter, Func<TLeft, TRight, TResult> resultSelector, [NotNull] IComparer<TKey> keyComparer)
         {
             this.left = left;
             this.right = right;
@@ -233,6 +235,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [CanBeNull]
         protected override IEnumerator<TResult> InitialBatch()
         {
             return this.leftEnumerator == null ? null : this.EnumerateItems();
@@ -272,7 +275,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
                     {
                         if (this.isLeftJoin && this.itemsReturned == 0)
                         {
-                            return EnumerateItem(this.resultSelector(this.leftEnumerator.Current, default(TRight)));
+                            return JoinEnumerator<TLeft, TRight, TKey, TResult>.EnumerateItem(this.resultSelector(this.leftEnumerator.Current, default(TRight)));
                         }
 
                         this.ResetRight();

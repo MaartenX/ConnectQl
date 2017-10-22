@@ -41,8 +41,8 @@ namespace ConnectQl.Results
         IReadOnlyList<IQueryResult> QueryResults { get; }
 
         /// <summary>
-        ///     Gets or sets the warnings.
+        ///     Gets the warnings.
         /// </summary>
-        IReadOnlyList<IMessage> Warnings { get; set; }
+        IReadOnlyList<IMessage> Warnings { get; }
     }
 }

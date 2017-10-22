@@ -29,6 +29,8 @@ namespace ConnectQl.Internal.Results
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     ///     The execute result.
     /// </summary>
@@ -96,7 +98,7 @@ namespace ConnectQl.Internal.Results
         /// <param name="messages">
         ///     The messages.
         /// </param>
-        internal ExecuteResult(ICollection<ExecuteResult> combinedResults, MessageWriter messages)
+        internal ExecuteResult([NotNull] ICollection<ExecuteResult> combinedResults, [CanBeNull] MessageWriter messages)
         {
             this.QueryResults = combinedResults.SelectMany(c => c.QueryResults).ToArray();
             this.Jobs = combinedResults.SelectMany(c => c.Jobs).ToArray();

@@ -30,6 +30,8 @@ namespace ConnectQl.Internal.AsyncEnumerables
     using ConnectQl.Internal.AsyncEnumerables.Enumerators;
     using ConnectQl.Internal.AsyncEnumerables.Visualizers;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The batch.
     /// </summary>
@@ -86,6 +88,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [NotNull]
         IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator()
         {
             return new TakeEnumerator<T>(this.materialized.GetAsyncEnumerator(this.start), this.Count);
@@ -100,6 +103,7 @@ namespace ConnectQl.Internal.AsyncEnumerables
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [NotNull]
         IAsyncEnumerator<T> IAsyncReadOnlyCollection<T>.GetAsyncEnumerator(long offset)
         {
             return offset >= this.Count

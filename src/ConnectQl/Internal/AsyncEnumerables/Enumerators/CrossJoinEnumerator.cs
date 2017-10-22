@@ -28,6 +28,8 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Enumerator used by the <see cref="AsyncEnumerableExtensions.Skip{T}"/> method.
     /// </summary>
@@ -89,7 +91,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <param name="resultSelector">
         /// The result Selector.
         /// </param>
-        public CrossJoinEnumerator(IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TRight, TResult> resultSelector)
+        public CrossJoinEnumerator([NotNull] IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TRight, TResult> resultSelector)
         {
             this.resultSelector = resultSelector;
             this.leftEnumerator = left.GetAsyncEnumerator();
@@ -138,6 +140,7 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
         /// <returns>
         /// The enumerator.
         /// </returns>
+        [CanBeNull]
         protected override IEnumerator<TResult> InitialBatch()
         {
             return this.rightEnumerator == null ? null : this.EnumerateItems();

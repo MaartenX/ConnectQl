@@ -30,6 +30,8 @@ namespace ConnectQl.Internal
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The message writer.
     /// </summary>
@@ -59,12 +61,17 @@ namespace ConnectQl.Internal
         /// <summary>
         /// Gets the errors.
         /// </summary>
+        [NotNull]
         public IEnumerable<Message> Errors => this.messages.Where(msg => msg.Type == ResultMessageType.Error).OrderBy(msg => msg.Start.Line).ThenBy(msg => msg.Start.Column);
 
         /// <summary>
         /// Gets a value indicating whether the message writer has any errors.
         /// </summary>
         public bool HasErrors => this.messages.Any(msg => msg.Type == ResultMessageType.Error);
+
+        /// <summary>Gets the number of elements in the collection.</summary>
+        /// <returns>The number of elements in the collection. </returns>
+        public int Count => this.messages.Count;
 
         /// <summary>
         /// The get enumerator.

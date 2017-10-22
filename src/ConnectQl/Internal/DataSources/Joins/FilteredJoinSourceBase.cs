@@ -37,6 +37,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Query;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Base class for a filtered join.
     /// </summary>
@@ -109,7 +111,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                 return result;
             }
 
-            context.Log.Verbose($"Expression contains or, splitting in {expressions.Length} parts.");
+            context.Logger.Verbose($"Expression contains or, splitting in {expressions.Length} parts.");
 
             return result.OrderBy(multiPartQuery.OrderByExpressions);
         }
@@ -130,7 +132,8 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="JoinQuery"/>.
         /// </returns>
-        protected virtual JoinQuery CreateJoinQuery(IExecutionContext context, IMultiPartQuery query, Expression joinFilter)
+        [NotNull]
+        protected virtual JoinQuery CreateJoinQuery(IExecutionContext context, [NotNull] IMultiPartQuery query, Expression joinFilter)
         {
             var filterParts = (query.FilterExpression == null ? joinFilter : Expression.AndAlso(query.GetFilter(context), joinFilter)).SplitByAndExpressions();
 
@@ -244,7 +247,7 @@ namespace ConnectQl.Internal.DataSources.Joins
             /// <param name="resultFilter">
             /// The filter.
             /// </param>
-            public JoinQuery(IMultiPartQuery leftQuery, IMultiPartQuery rightQuery, Func<Row, object> leftKey, ExpressionType joinType, Func<Row, object> rightKey, Expression joinExpression, Func<Row, Row, bool> joinFilter, IEnumerable<IOrderByExpression> orderBy, Expression resultFilter)
+            public JoinQuery(IMultiPartQuery leftQuery, IMultiPartQuery rightQuery, Func<Row, object> leftKey, ExpressionType joinType, Func<Row, object> rightKey, Expression joinExpression, Func<Row, Row, bool> joinFilter, [NotNull] IEnumerable<IOrderByExpression> orderBy, Expression resultFilter)
             {
                 this.LeftQuery = leftQuery;
                 this.RightQuery = rightQuery;

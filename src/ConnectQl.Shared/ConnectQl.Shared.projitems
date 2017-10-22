@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="ConnectQl.Defaults.targets" />
+  
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>b95c77e7-6b6e-4861-87a0-1b5bd8a52e0c</SharedGUID>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)JetBrains.Annotations.cs" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
+    <None Include="$(MSBuildThisFileDirectory)ConnectQl.Defaults.targets" />
+  </ItemGroup>
+</Project>

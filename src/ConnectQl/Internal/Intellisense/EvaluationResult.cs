@@ -25,15 +25,16 @@ namespace ConnectQl.Internal.Intellisense
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
-
     using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
-    using ConnectQl.DataSources;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Ast.Statements;
     using ConnectQl.Internal.Intellisense.Protocol;
     using ConnectQl.Internal.Interfaces;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     ///     The statement info.
@@ -118,7 +119,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <summary>
         ///     Gets the logger.
         /// </summary>
-        ILog IExecutionContext.Log => this.context.Log;
+        ILogger IExecutionContext.Logger => this.context.Logger;
 
         /// <summary>
         ///     Gets the display name for the specified access.
@@ -251,7 +252,9 @@ namespace ConnectQl.Internal.Intellisense
             {
                 if (this.variablesValues.TryGetValue(variable, out object value))
                 {
-                    return typeof(T) == typeof(object) ? (T)value : (T)Convert.ChangeType(value, typeof(T));
+                    return typeof(T) == typeof(object) || typeof(T).GetTypeInfo().IsAssignableFrom(value.GetType().GetTypeInfo())
+                        ? (T)value
+                        : (T)Convert.ChangeType(value, typeof(T));
                 }
             }
             catch
@@ -360,7 +363,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <param name="wasEvaluated">
         ///     <c>true</c> if the variable was evaluated, <c>false</c> if it had side effects.
         /// </param>
-        internal void SetVariable(string variable, object value, bool wasEvaluated)
+        internal void SetVariable(string variable, [CanBeNull] object value, bool wasEvaluated)
         {
             this.variablesValues[variable] = value;
 

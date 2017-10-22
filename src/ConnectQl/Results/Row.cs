@@ -32,6 +32,8 @@ namespace ConnectQl.Results
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Internal.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The row.
     /// </summary>
@@ -41,7 +43,7 @@ namespace ConnectQl.Results
         /// The <see cref="Create{T}"/> method.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private static readonly MethodInfo RowCreateMethod = typeof(Row).GetGenericMethod(nameof(Create), typeof(IRowFieldResolver), null, typeof(IEnumerable<KeyValuePair<string, object>>));
+        private static readonly MethodInfo RowCreateMethod = typeof(Row).GetGenericMethod(nameof(Row.Create), typeof(IRowFieldResolver), null, typeof(IEnumerable<KeyValuePair<string, object>>));
 
         /// <summary>
         /// The values.
@@ -129,6 +131,7 @@ namespace ConnectQl.Results
         /// <returns>
         /// The value for the field, or null if the field is not in the row.
         /// </returns>
+        [CanBeNull]
         public object this[string field]
         {
             get
@@ -145,6 +148,7 @@ namespace ConnectQl.Results
         /// <returns>
         /// A dictionary containing all fields and their values.
         /// </returns>
+        [NotNull]
         public IDictionary<string, object> ToDictionary()
         {
             return this.ColumnNames.ToDictionary(cn => cn, cn => this[cn], StringComparer.OrdinalIgnoreCase);
@@ -199,7 +203,7 @@ namespace ConnectQl.Results
                                          values,
                                      };
 
-                return (Row)RowCreateMethod.MakeGenericMethod(uniqueId.GetType()).Invoke(null, parameters);
+                return (Row)Row.RowCreateMethod.MakeGenericMethod(uniqueId.GetType()).Invoke(null, parameters);
             }
 
             var rowValues = fieldResolver.GetIndices(values);
@@ -356,7 +360,7 @@ namespace ConnectQl.Results
         /// <typeparam name="T">
         /// The type of the unique id.
         /// </typeparam>
-        [DebuggerDisplay("{" + nameof(ValuesAsString) + ",nq}")]
+        [DebuggerDisplay("{" + nameof(RowImplementation<T>.ValuesAsString) + ",nq}")]
         protected class RowImplementation<T> : Row
         {
             /// <summary>
@@ -411,7 +415,7 @@ namespace ConnectQl.Results
             /// <returns>
             /// The cloned row.
             /// </returns>
-            internal override Row Clone(IRowBuilder rowBuilder)
+            internal override Row Clone([NotNull] IRowBuilder rowBuilder)
             {
                 return rowBuilder.CreateRow(this.Id, this.ToDictionary());
             }
@@ -467,7 +471,7 @@ namespace ConnectQl.Results
                 /// <summary>
                 /// The combine.
                 /// </summary>
-                public static readonly Func<IRowBuilder, RowImplementation<TFirst>, RowImplementation<TSecond>, Row> Combine = CreateCombine();
+                public static readonly Func<IRowBuilder, RowImplementation<TFirst>, RowImplementation<TSecond>, Row> Combine = RowImplementation<T>.IdCombiner<TFirst, TSecond>.CreateCombine();
 
                 /// <summary>
                 /// Creates the function that combines two rows into the new <see cref="IRowBuilder"/> for the combination of types.
@@ -482,9 +486,9 @@ namespace ConnectQl.Results
                     var second = Expression.Parameter(typeof(RowImplementation<TSecond>), "second");
                     var firstId = Expression.Property(first, typeof(RowImplementation<TFirst>).GetRuntimeProperty(nameof(RowImplementation<object>.Id)).GetMethod);
                     var secondId = Expression.Property(second, typeof(RowImplementation<TSecond>).GetRuntimeProperty(nameof(RowImplementation<object>.Id)).GetMethod);
-                    var tuple = NewTuple(GetTupleArguments(firstId).Concat(GetTupleArguments(secondId)).ToList());
+                    var tuple = RowImplementation<T>.IdCombiner<TFirst, TSecond>.NewTuple(RowImplementation<T>.IdCombiner<TFirst, TSecond>.GetTupleArguments(firstId).Concat(RowImplementation<T>.IdCombiner<TFirst, TSecond>.GetTupleArguments(secondId)).ToList());
                     var createRow = typeof(IRowBuilder).GetGenericMethod(nameof(IRowBuilder.CreateRow), null, typeof(IEnumerable<KeyValuePair<string, object>>)).MakeGenericMethod(tuple.Type);
-                    var toDictionary = typeof(Row).GetRuntimeMethod(nameof(ToDictionary), new Type[0]);
+                    var toDictionary = typeof(Row).GetRuntimeMethod(nameof(Row.ToDictionary), new Type[0]);
                     var concat = typeof(Enumerable).GetGenericMethod(nameof(Enumerable.Concat), typeof(IEnumerable<>), typeof(IEnumerable<>)).MakeGenericMethod(typeof(KeyValuePair<string, object>));
 
                     var values = Expression.Call(
@@ -510,7 +514,7 @@ namespace ConnectQl.Results
                 /// <returns>
                 /// The <see cref="IEnumerable{T}"/>.
                 /// </returns>
-                private static IEnumerable<Expression> GetTupleArguments(Expression parameter)
+                private static IEnumerable<Expression> GetTupleArguments([NotNull] Expression parameter)
                 {
                     var type = parameter.Type;
 
@@ -518,7 +522,7 @@ namespace ConnectQl.Results
                     {
                         foreach (var runtimeProperty in type.GetRuntimeProperties().Where(p => p.GetMethod.IsPublic))
                         {
-                            foreach (var argument in GetTupleArguments(Expression.Property(parameter, runtimeProperty)))
+                            foreach (var argument in RowImplementation<T>.IdCombiner<TFirst, TSecond>.GetTupleArguments(Expression.Property(parameter, runtimeProperty)))
                             {
                                 yield return argument;
                             }
@@ -539,7 +543,7 @@ namespace ConnectQl.Results
                 /// <returns>
                 /// The <see cref="Expression"/>.
                 /// </returns>
-                private static NewExpression NewTuple(ICollection<Expression> expressions)
+                private static NewExpression NewTuple([NotNull] ICollection<Expression> expressions)
                 {
                     if (expressions.Count <= 7)
                     {
@@ -550,7 +554,7 @@ namespace ConnectQl.Results
 
                     var arguments = expressions.Take(7).ToList();
 
-                    arguments.Add(NewTuple(expressions.Skip(7).ToList()));
+                    arguments.Add(RowImplementation<T>.IdCombiner<TFirst, TSecond>.NewTuple(expressions.Skip(7).ToList()));
 
                     return Expression.New(
                         Type.GetType("System.Tuple`8").MakeGenericType(arguments.Select(a => a.Type).ToArray()).GetTypeInfo().DeclaredConstructors.First(),

@@ -26,6 +26,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
 
     using ConnectQl.AsyncEnumerables;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The async enumerable builder extensions.
     /// </summary>
@@ -46,7 +48,8 @@ namespace ConnectQl.AsyncEnumerablePolicies
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<IAsyncEnumerableBuilder<T>> AddAsync<T>(this IAsyncEnumerableBuilder<T> builder, IAsyncEnumerable<T> items)
+        [ItemNotNull]
+        public static async Task<IAsyncEnumerableBuilder<T>> AddAsync<T>([NotNull] this IAsyncEnumerableBuilder<T> builder, IAsyncEnumerable<T> items)
         {
             await items.ForEachBatchAsync(builder.AddAsync);
 

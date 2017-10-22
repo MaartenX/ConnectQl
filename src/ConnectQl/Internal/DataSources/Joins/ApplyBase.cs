@@ -39,6 +39,8 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The base class for CROSS APPLY and OUTER APPLY.
     /// </summary>
@@ -71,7 +73,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <param name="rightFactory">
         /// The right Factory.
         /// </param>
-        protected ApplyBase(DataSource left, DataSource right, Expression rightFactory)
+        protected ApplyBase([NotNull] DataSource left, [NotNull] DataSource right, [CanBeNull] Expression rightFactory)
             : base(new HashSet<string>(left.Aliases.Concat(right.Aliases)))
         {
             this.left = left;
@@ -111,7 +113,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IAsyncEnumerable{Row}"/>.
         /// </returns>
-        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, IMultiPartQuery multiPartQuery)
+        internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, [NotNull] IMultiPartQuery multiPartQuery)
         {
             var rowBuilder = new RowBuilder();
 
@@ -133,7 +135,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                             var rightQuery = new MultiPartQuery
                                                  {
                                                      Fields = multiPartQuery.Fields.Where(f => this.right.Aliases.Contains(f.SourceAlias)),
-                                                     FilterExpression = RangesToJoinFilter(await this.FindRangesAsync(context, multiPartQuery.FilterExpression, leftData)),
+                                                     FilterExpression = ApplyBase.RangesToJoinFilter(await this.FindRangesAsync(context, multiPartQuery.FilterExpression, leftData)),
                                                      WildcardAliases = multiPartQuery.WildcardAliases.Intersect(this.right.Aliases),
                                                  };
 
@@ -152,7 +154,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                         })
                 .Where(multiPartQuery.FilterExpression.GetRowFilter())
                 .OrderBy(multiPartQuery.OrderByExpressions)
-                .AfterLastElement(count => context.Log.Verbose($"{this.GetType().Name} returned {count} records."));
+                .AfterLastElement(count => context.Logger.Verbose($"{this.GetType().Name} returned {count} records."));
         }
 
         /// <summary>
@@ -164,6 +166,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// All data sources inside this data source.
         /// </returns>
+        [ItemNotNull]
         protected internal override async Task<IEnumerable<IDataSourceDescriptor>> GetDataSourceDescriptorsAsync(IExecutionContext context)
         {
             return (await this.left.GetDataSourceDescriptorsAsync(context).ConfigureAwait(false))
@@ -298,7 +301,7 @@ namespace ConnectQl.Internal.DataSources.Joins
 
             return ranges
                 .Select(r => r.SimplifyExpression(context))
-                .Where(r => !Equals((r as ConstantExpression)?.Value, false))
+                .Where(r => !object.Equals((r as ConstantExpression)?.Value, false))
                 .DefaultIfEmpty().Aggregate(Expression.OrElse).SimplifyRanges();
         }
     }

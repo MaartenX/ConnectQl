@@ -32,6 +32,16 @@ namespace ConnectQl.Internal.Intellisense.Protocol
     internal class SerializableDocumentDescriptor : IDocumentDescriptor
     {
         /// <summary>
+        /// Gets or sets the filename.
+        /// </summary>
+        public string Filename { get; set; }
+
+        /// <summary>
+        /// Gets or sets the document version number.
+        /// </summary>
+        public int Version { get; set; }
+
+        /// <summary>
         /// Gets or sets the functions.
         /// </summary>
         public SerializableFunctionDescriptor[] Functions { get; set; }

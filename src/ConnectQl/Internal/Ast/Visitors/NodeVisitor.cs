@@ -32,6 +32,8 @@ namespace ConnectQl.Internal.Ast.Visitors
     using ConnectQl.Internal.Ast.Statements;
     using ConnectQl.Internal.Ast.Targets;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The node visitor.
     /// </summary>
@@ -50,8 +52,9 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The <typeparamref name="T"/>.
         /// </returns>
+        [CanBeNull]
         [DebuggerHidden]
-        protected internal virtual T Visit<T>(T node)
+        protected internal virtual T Visit<T>([CanBeNull] T node)
             where T : Node
         {
             if (node == null)
@@ -84,7 +87,8 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <exception cref="InvalidOperationException">
         /// Thrown when a visitor doesn't return the correct type.
         /// </exception>
-        protected internal virtual ReadOnlyCollection<T> Visit<T>(ReadOnlyCollection<T> list)
+        [NotNull]
+        protected internal virtual ReadOnlyCollection<T> Visit<T>([NotNull] ReadOnlyCollection<T> list)
             where T : Node
         {
             List<T> result = null;
@@ -123,7 +127,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitAliasedSqlExpression(AliasedSqlExpression node)
+        protected internal virtual Node VisitAliasedSqlExpression([NotNull] AliasedSqlExpression node)
         {
             return node.VisitChildren(this);
         }
@@ -137,7 +141,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitApplySource(ApplySource node)
+        protected internal virtual Node VisitApplySource([NotNull] ApplySource node)
         {
             return node.VisitChildren(this);
         }
@@ -151,7 +155,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitBinarySqlExpression(BinarySqlExpression node)
+        protected internal virtual Node VisitBinarySqlExpression([NotNull] BinarySqlExpression node)
         {
             return node.VisitChildren(this);
         }
@@ -165,7 +169,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitBlock(Block node)
+        protected internal virtual Node VisitBlock([NotNull] Block node)
         {
             return node.VisitChildren(this);
         }
@@ -179,7 +183,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitConstSqlExpression(ConstSqlExpression node)
+        protected internal virtual Node VisitConstSqlExpression([NotNull] ConstSqlExpression node)
         {
             return node.VisitChildren(this);
         }
@@ -193,7 +197,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitDeclareJobStatement(DeclareJobStatement node)
+        protected internal virtual Node VisitDeclareJobStatement([NotNull] DeclareJobStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -207,7 +211,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitDeclareStatement(DeclareStatement node)
+        protected internal virtual Node VisitDeclareStatement([NotNull] DeclareStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -221,7 +225,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
+        protected internal virtual Node VisitFieldReferenceSqlExpression([NotNull] FieldReferenceSqlExpression node)
         {
             return node.VisitChildren(this);
         }
@@ -235,7 +239,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitFunctionCallSqlExpression(FunctionCallSqlExpression node)
+        protected internal virtual Node VisitFunctionCallSqlExpression([NotNull] FunctionCallSqlExpression node)
         {
             return node.VisitChildren(this);
         }
@@ -249,7 +253,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitFunctionSource(FunctionSource node)
+        protected internal virtual Node VisitFunctionSource([NotNull] FunctionSource node)
         {
             return node.VisitChildren(this);
         }
@@ -263,7 +267,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitFunctionTarget(FunctionTarget node)
+        protected internal virtual Node VisitFunctionTarget([NotNull] FunctionTarget node)
         {
             return node.VisitChildren(this);
         }
@@ -277,7 +281,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitImportPluginStatement(ImportPluginStatement node)
+        protected internal virtual Node VisitImportPluginStatement([NotNull] ImportPluginStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -291,7 +295,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitImportStatement(ImportStatement node)
+        protected internal virtual Node VisitImportStatement([NotNull] ImportStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -305,7 +309,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitInsertStatement(InsertStatement node)
+        protected internal virtual Node VisitInsertStatement([NotNull] InsertStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -319,7 +323,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitJoinSource(JoinSource node)
+        protected internal virtual Node VisitJoinSource([NotNull] JoinSource node)
         {
             return node.VisitChildren(this);
         }
@@ -333,7 +337,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitOrderBySqlExpression(OrderBySqlExpression node)
+        protected internal virtual Node VisitOrderBySqlExpression([NotNull] OrderBySqlExpression node)
         {
             return node.VisitChildren(this);
         }
@@ -347,7 +351,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitSelectFromStatement(SelectFromStatement node)
+        protected internal virtual Node VisitSelectFromStatement([NotNull] SelectFromStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -361,7 +365,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitSelectSource(SelectSource node)
+        protected internal virtual Node VisitSelectSource([NotNull] SelectSource node)
         {
             return node.VisitChildren(this);
         }
@@ -375,7 +379,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitSelectUnionStatement(SelectUnionStatement node)
+        protected internal virtual Node VisitSelectUnionStatement([NotNull] SelectUnionStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -389,7 +393,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitTrigger(Trigger node)
+        protected internal virtual Node VisitTrigger([NotNull] Trigger node)
         {
             return node.VisitChildren(this);
         }
@@ -403,7 +407,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitTriggerStatement(TriggerStatement node)
+        protected internal virtual Node VisitTriggerStatement([NotNull] TriggerStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -417,7 +421,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitUnarySqlExpression(UnarySqlExpression node)
+        protected internal virtual Node VisitUnarySqlExpression([NotNull] UnarySqlExpression node)
         {
             return node.VisitChildren(this);
         }
@@ -431,7 +435,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitUseStatement(UseStatement node)
+        protected internal virtual Node VisitUseStatement([NotNull] UseStatement node)
         {
             return node.VisitChildren(this);
         }
@@ -445,7 +449,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitVariableDeclaration(VariableDeclaration node)
+        protected internal virtual Node VisitVariableDeclaration([NotNull] VariableDeclaration node)
         {
             return node.VisitChildren(this);
         }
@@ -459,7 +463,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitVariableSource(VariableSource node)
+        protected internal virtual Node VisitVariableSource([NotNull] VariableSource node)
         {
             return node.VisitChildren(this);
         }
@@ -473,7 +477,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitVariableSqlExpression(VariableSqlExpression node)
+        protected internal virtual Node VisitVariableSqlExpression([NotNull] VariableSqlExpression node)
         {
             return node.VisitChildren(this);
         }
@@ -487,7 +491,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitVariableTarget(VariableTarget node)
+        protected internal virtual Node VisitVariableTarget([NotNull] VariableTarget node)
         {
             return node.VisitChildren(this);
         }
@@ -501,7 +505,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal virtual Node VisitWildCardSqlExpression(WildcardSqlExpression node)
+        protected internal virtual Node VisitWildCardSqlExpression([NotNull] WildcardSqlExpression node)
         {
             return node.VisitChildren(this);
         }
