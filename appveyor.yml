@@ -31,8 +31,6 @@ environment:
 init:
   - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0");
 
-version: %GitVersion_SemVer%
-      
 install:
   - ps: >-
       if ("$Env:APPVEYOR_PULL_REQUEST_NUMBER" -eq "") 
