@@ -51,7 +51,7 @@ build_script:
   - msbuild /t:build src "/p:Version=%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%"
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
-      $packProjects | % { msbuild /t:pack "$_" "/p:Version=%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%" /p:PackageOutputPath=..\..\artifacts };
+      $packProjects | % { msbuild /t:pack "$_" "/p:Version=$env:GitVersion_NuGetVersion" "/p:AssemblyVersion=$env:GitVersion_AssemblySemVer" "/p:FileVersion=$env:GitVersion_MajorMinorPatch.0" "/p:InformationalVersion=$env:GitVersion_InformationalVersion" /p:PackageOutputPath=..\..\artifacts };
       .\ps\UpdatePackageReferences.ps1 -PackProjects $packProjects
 
 deploy:
