@@ -48,10 +48,10 @@ before_build:
   - ps: gitversion /l console /output buildserver
 
 build_script:
-  - msbuild /t:build src "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_AssemblySemFileVer%"
+  - msbuild /t:build src "/p:Version="%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%"
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
-      $packProjects | % { msbuild /t:pack "$_" /p:Version="%GitVersion_NuGetVersion%" /p:PackageOutputPath=..\..\artifacts };
+      $packProjects | % { msbuild /t:pack "$_" "/p:Version="%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%" /p:PackageOutputPath=..\..\artifacts };
       .\ps\UpdatePackageReferences.ps1 -PackProjects $packProjects
 
 deploy:
