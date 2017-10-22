@@ -21,9 +21,6 @@ branches:
     - development
 
 environment:
-  opencover: OpenCover\tools\OpenCover.Console.exe
-  xunitconsole: xunit.runner.console\tools\net452\xunit.console.exe
-  xunitcore: xunit.runner.console\tools\netcoreapp2.0\xunit.console.dll
   BUILD_ALL_PLATFORMS: 1
   MYGETAPITOKEN:
     secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
