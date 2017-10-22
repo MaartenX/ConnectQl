@@ -8,7 +8,7 @@ The plugin NuGet packages support the lowests versions that their dependencies s
 Pre-releases are available in a MyGet feed (https://www.myget.org/F/connectql/api/v3/index.json). See the table below for the current versions:
 
 |Package|Type|Pre-release version|
-|-------|-|------:|-----------------:|
+|-------|------:|-----------------:|
 |ConnectQl|Main library|[![ConnectQl](https://img.shields.io/myget/connectql/vpre/ConnectQl.svg?label=myget)](https://www.myget.org/feed/connectql/package/nuget/ConnectQl)|
 |ConnectQl.Platform|Plugin (file formats)|[![ConnectQl.Platform](https://img.shields.io/myget/connectql/vpre/ConnectQl.Platform.svg?label=myget)](https://www.myget.org/feed/connectql/package/nuget/ConnectQl.Platform)|
 |ConnectQl.Excel|Plugin (file formats)|[![ConnectQl.Excel](https://img.shields.io/myget/connectql/vpre/ConnectQl.Excel.svg?label=myget)](https://www.myget.org/feed/connectql/package/nuget/ConnectQl.Excel)|
