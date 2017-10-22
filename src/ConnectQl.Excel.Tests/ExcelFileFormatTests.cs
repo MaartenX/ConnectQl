@@ -87,6 +87,7 @@ namespace ConnectQl.Excel.Tests
         [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.id < 3", 2)]
         [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.value <> 4", 3)]
         [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.value = f.id", 1)]
+        [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.value <> f.id", 3)]
         public async Task SelectShouldReturnRecords(string query, int expectedRecordCount)
         {
             var resolver = new Mock<IPluginResolver>();
