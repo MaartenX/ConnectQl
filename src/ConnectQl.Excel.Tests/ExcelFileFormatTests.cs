@@ -24,6 +24,8 @@ namespace ConnectQl.Excel.Tests
 {
     using System.IO;
     using System.Threading.Tasks;
+
+    using ConnectQl.AsyncEnumerables;
     using ConnectQl.Interfaces;
     using Moq;
     using OfficeOpenXml;
@@ -65,6 +67,59 @@ namespace ConnectQl.Excel.Tests
                     Assert.Equal("file", sheets[1].Cells[2, 1].Value);
                     Assert.Equal("xlsx", sheets[1].Cells[3, 1].Value);
                 }
+            }
+        }
+
+        /// <summary>
+        /// TheSELECT should return a record set.
+        /// </summary>
+        /// <param name="query">
+        /// The query.
+        /// </param>
+        /// <param name="expectedRecordCount">
+        /// The expected record count.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [Theory(DisplayName = "SELECT should return a record set.")]
+        [InlineData("SELECT * FROM FILE('file.xlsx') f", 4)]
+        [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.id < 3", 2)]
+        [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.value <> 13", 3)]
+        [InlineData("SELECT * FROM FILE('file.xlsx') f WHERE f.value = f.id", 1)]
+        public async Task SelectShouldReturnRecords(string query, int expectedRecordCount)
+        {
+            var resolver = new Mock<IPluginResolver>();
+            var uriResolver = new Mock<IUriResolver>();
+
+            using (var target = new MemoryStream())
+            {
+                var package = new ExcelPackage();
+                var sheet = package.Workbook.Worksheets.Add("Data");
+
+                sheet.Cells[1, 1].Value = "Id";
+                sheet.Cells[2, 1].Value = "1";
+                sheet.Cells[3, 1].Value = "2";
+                sheet.Cells[4, 1].Value = "3";
+                sheet.Cells[5, 1].Value = "4";
+
+                sheet.Cells[1, 2].Value = "Value";
+                sheet.Cells[2, 2].Value = "Test";
+                sheet.Cells[3, 2].Value = "A";
+                sheet.Cells[4, 2].Value = null;
+                sheet.Cells[5, 2].Value = "4";
+
+                package.SaveAs(target);
+
+                target.Seek(0, SeekOrigin.Begin);
+
+                resolver.Setup(pr => pr.EnumerateAvailablePlugins()).Returns(new[] { new Plugin() });
+                uriResolver.Setup(ur => ur.ResolveToStream("file.xlsx", UriResolveMode.Read)).Returns(Task.FromResult<Stream>(target));
+
+                var context = new ConnectQlContext(resolver.Object) { UriResolver = uriResolver.Object };
+                var executeResult = await context.ExecuteAsync($"IMPORT PLUGIN 'Excel' {query}");
+
+                Assert.Equal(expectedRecordCount, await executeResult.QueryResults[0].Rows.CountAsync());
             }
         }
     }
