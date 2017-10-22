@@ -49,8 +49,7 @@ before_build:
 
 build_script:
   - echo msbuild /t:build src "/p:Version=%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%"
-  - msbuild /t:build src "/p:Version="%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%"
-  - copy src\ConnectQl.Utilities\obj\Release\portable-net451+win81+wpa81\ConnectQl.Utilities.AssemblyInfo.cs artifacts
+  - msbuild /t:build src "/p:Version=%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%" & copy src\ConnectQl.Utilities\obj\Release\portable-net451+win81+wpa81\ConnectQl.Utilities.AssemblyInfo.cs artifacts
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
       $packProjects | % { msbuild /t:pack "$_" "/p:Version=%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%" /p:PackageOutputPath=..\..\artifacts };
