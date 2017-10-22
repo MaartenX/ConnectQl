@@ -1,4 +1,3 @@
-version: '0.1.{build}'
 
 nuget:
   project_feed: true
@@ -31,6 +30,8 @@ environment:
 
 init:
   - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0");
+
+version: %GitVersion_SemVer%
       
 install:
   - ps: >-
@@ -41,16 +42,18 @@ install:
       }
   - nuget install OpenCover -ExcludeVersion
   - nuget install xunit.runner.console -ExcludeVersion
-
+  - choco install gitversion.portable -pre -y
+  - choco install codecov
+  
 before_build:
   - msbuild /t:restore /v:minimal src
-  - choco install codecov
+  - ps: gitversion /l console /output buildserver
 
 build_script:
-  - msbuild /t:build src
+  - msbuild /t:build src "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_AssemblySemFileVer%"
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
-      $packProjects | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts };
+      $packProjects | % { msbuild /t:pack "$_" /p:Version="%GitVersion_NuGetVersion%" /p:PackageOutputPath=..\..\artifacts };
       .\ps\UpdatePackageReferences.ps1 -PackProjects $packProjects
 
 deploy:
