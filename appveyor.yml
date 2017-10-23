@@ -47,10 +47,17 @@ before_build:
   - ps: gitversion /l console /output buildserver
 
 build_script:
-  - msbuild /t:build src "/p:Version=%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%"
+  - SET Version=%GitVersion_NuGetVersion%
+  - SET AssemblyVersion=%GitVersion_AssemblySemVer%
+  - SET FileVersion=%GitVersion_MajorMinorPatch%.0
+  - SET InformationalVersion=%GitVersion_InformationalVersion%
+  - SET VsixVersion=%GitVersion_MajorMinorPatch%
+  - SET VsixPreReleaseVersion=%GitVersion_PreReleaseNumber% 
+  - SET PackageOutputPath=..\..\artifacts
+  - msbuild /t:build src 
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
-      $packProjects | % { msbuild /t:pack "$_" "/p:Version=$env:GitVersion_NuGetVersion" "/p:AssemblyVersion=$env:GitVersion_AssemblySemVer" "/p:FileVersion=$env:GitVersion_MajorMinorPatch.0" "/p:InformationalVersion=$env:GitVersion_InformationalVersion" /p:PackageOutputPath=..\..\artifacts };
+      $packProjects | % { msbuild /t:pack "$_" };
       .\ps\UpdatePackageReferences.ps1 -PackProjects $packProjects
 
 deploy:
