@@ -66,16 +66,15 @@ deploy:
 
 after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
-  
+  - ps: 7z a logs.zip logs\*.binlog
+  - appveyor PushArtifact logs.zip
+
 test_script:
   - tools\runcoverage.bat
 
 artifacts:
   - path: artifacts\**\*.*
-  - path: logs\*.binlog
-    name: logs
-    type: zip
-
+  
 on_failure:
   - ps: 7z a logs.zip logs\*.binlog
   - appveyor PushArtifact logs.zip
