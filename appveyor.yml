@@ -80,4 +80,4 @@ artifacts:
   - path: artifacts\**\*.*
 
 on_failure:
-  - appveyor PushArtifact npmartifacts\*.binlog
+  - appveyor PushArtifact artifacts\build.binlog
