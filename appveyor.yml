@@ -54,7 +54,8 @@ build_script:
   - SET VsixVersion=%GitVersion_MajorMinorPatch%
   - SET VsixPreReleaseVersion=%GitVersion_PreReleaseNumber% 
   - SET PackageOutputPath=..\..\artifacts
-  - msbuild /t:build src 
+  - SET
+  - msbuild /t:build src /v:diag
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
       $packProjects | % { msbuild /t:pack "$_" };
