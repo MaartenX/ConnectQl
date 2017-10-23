@@ -55,10 +55,10 @@ build_script:
   - SET VsixPreReleaseVersion=%GitVersion_PreReleaseNumber% 
   - SET PackageOutputPath=..\..\artifacts
   - SET
-  - msbuild /t:build src /bl:..\..\artifacts\build.binlog
+  - msbuild /t:build src /bl:artifacts\build.binlog
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
-      $packProjects | % { msbuild /t:pack "$_" "/bl:..\..\artifacts\$_.binlog" };
+      $packProjects | % { msbuild /t:pack "$_" "/bl:artifacts\$($_.Name).binlog" };
       .\ps\UpdatePackageReferences.ps1 -PackProjects $packProjects
 
 deploy:
