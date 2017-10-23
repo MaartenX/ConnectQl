@@ -20,7 +20,7 @@ CHARACTERS
 
 TOKENS   
 	string = "'" { stringChar } { "''" { stringChar } } "'". 
-	number = digit {digit} ["." digit {digit}].
+	number = ["-"] digit {digit} ["." digit {digit}].
 	bracketedidentifier = '[' {bracketedChar} ']'. 
 	identifier = letter {letter|digit}. 
 	variable = "@" letter {letter|digit}. 

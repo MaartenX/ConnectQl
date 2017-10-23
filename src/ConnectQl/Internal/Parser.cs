@@ -24,6 +24,7 @@ namespace ConnectQl.Internal
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Text.RegularExpressions;
     using ConnectQl.Internal.Ast;
     using ConnectQl.Internal.Interfaces;
@@ -152,10 +153,10 @@ namespace ConnectQl.Internal
         {
             if (value.Contains("."))
             {
-                return double.Parse(value);
+                return double.Parse(value, CultureInfo.InvariantCulture);
             }
 
-            if (!long.TryParse(value, out long longValue))
+            if (!long.TryParse(value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out long longValue))
             {
                 this.SemErr("Invalid number (too long).");
                 return 0;

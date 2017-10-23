@@ -509,6 +509,7 @@ namespace ConnectQl.Internal
             for (int i = 95; i <= 95; ++i) Start[i] = 8;
             for (int i = 97; i <= 122; ++i) Start[i] = 8;
             Start[39] = 1;
+            Start[45] = 27;
             Start[91] = 6;
             Start[64] = 9;
             Start[61] = 13;
@@ -518,13 +519,12 @@ namespace ConnectQl.Internal
             Start[62] = 28;
             Start[60] = 29;
             Start[43] = 20;
-            Start[45] = 21;
-            Start[42] = 22;
-            Start[47] = 23;
-            Start[37] = 24;
-            Start[94] = 25;
-            Start[33] = 26;
-            Start[46] = 27;
+            Start[42] = 21;
+            Start[47] = 22;
+            Start[37] = 23;
+            Start[94] = 24;
+            Start[33] = 25;
+            Start[46] = 26;
             Start[Buffer.Eof] = -1;
 
         }
@@ -855,19 +855,21 @@ namespace ConnectQl.Internal
                 case 20:
                     { t.Kind = 56; break; }
                 case 21:
-                    { t.Kind = 57; break; }
-                case 22:
                     { t.Kind = 58; break; }
-                case 23:
+                case 22:
                     { t.Kind = 59; break; }
-                case 24:
+                case 23:
                     { t.Kind = 60; break; }
-                case 25:
+                case 24:
                     { t.Kind = 61; break; }
-                case 26:
+                case 25:
                     { t.Kind = 62; break; }
-                case 27:
+                case 26:
                     { t.Kind = 66; break; }
+                case 27:
+                    recEnd = pos; recKind = 57;
+                    if (ch >= '0' && ch <= '9') { AddCh(); goto case 3; }
+                    else { t.Kind = 57; break; }
                 case 28:
                     recEnd = pos; recKind = 51;
                     if (ch == '=') { AddCh(); goto case 17; }
