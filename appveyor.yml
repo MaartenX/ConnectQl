@@ -47,6 +47,7 @@ before_build:
   - ps: gitversion /l console /output buildserver
 
 build_script:
+  - md artifacts
   - SET Version=%GitVersion_NuGetVersion%
   - SET AssemblyVersion=%GitVersion_AssemblySemVer%
   - SET FileVersion=%GitVersion_MajorMinorPatch%.0
