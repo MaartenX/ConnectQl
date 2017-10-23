@@ -48,7 +48,7 @@ before_build:
 
 build_script:
   - md logs
-  - msbuild /t:build src /bl:logs\build.binlog /p:Version=%GitVersion_NuGetVersion% /p:AssemblyVersion=%GitVersion_AssemblySemVer% /p:FileVersion=%GitVersion_MajorMinorPatch%.0 /p:InformationalVersion=%GitVersion_InformationalVersion% /p:VsixVersion=%GitVersion_MajorMinorPatch% /p:VsixPreReleaseVersion=%GitVersion_PreReleaseNumber%
+  - msbuild /t:build src /bl:logs\Solution.binlog /p:Version=%GitVersion_NuGetVersion% /p:AssemblyVersion=%GitVersion_AssemblySemVer% /p:FileVersion=%GitVersion_MajorMinorPatch%.0 /p:InformationalVersion=%GitVersion_InformationalVersion% /p:VsixVersion=%GitVersion_MajorMinorPatch% /p:VsixPreReleaseVersion=%GitVersion_PreReleaseNumber%
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
       $packProjects | % { 
@@ -66,13 +66,16 @@ deploy:
 
 after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
-  - blablabla
-
+  
 test_script:
   - tools\runcoverage.bat
 
 artifacts:
   - path: artifacts\**\*.*
+  - path: logs\*.binlog
+    name: logs
+    type: zip
 
 on_failure:
-  - ps: Get-ChildItem .\logs\*.binlog | % { Push-AppveyorArtifact $_.FullName -FileName logs\$_.Name }
+  - ps: 7z a logs.zip logs\*.binlog
+  - appveyor PushArtifact logs.zip
