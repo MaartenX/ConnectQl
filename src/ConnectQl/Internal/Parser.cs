@@ -40,6 +40,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// Gets the pos.
         /// </summary>
+        [NotNull]
         private Position Pos
         {
             get
