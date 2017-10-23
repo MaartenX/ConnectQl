@@ -78,3 +78,6 @@ test_script:
 
 artifacts:
   - path: artifacts\**\*.*
+
+on_failure:
+  - appveyor PushArtifact npmartifacts\*.binlog
