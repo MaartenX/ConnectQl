@@ -1,15 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl", "ConnectQl\ConnectQl.csproj", "{7A245E0E-267D-4115-9A4B-A08C651AFEA5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectQl Solution Items", "ConnectQl Solution Items", "{DD93BAB1-431A-42E3-9285-F0C44CC78783}"
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
+		..\codecov.yml = ..\codecov.yml
 		..\ConnectQl.png = ..\ConnectQl.png
 		..\ps\GetChangesSinceLastBuild.ps1 = ..\ps\GetChangesSinceLastBuild.ps1
+		..\tools\runcoverage.bat = ..\tools\runcoverage.bat
+		..\tools\runtests.bat = ..\tools\runtests.bat
 		..\ps\UpdatePackageReferences.ps1 = ..\ps\UpdatePackageReferences.ps1
 	EndProjectSection
 EndProject
@@ -52,6 +55,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Logger.Console", "ConnectQl.Logger.Console\ConnectQl.Logger.Console.csproj", "{5C12E592-A82F-4B63-9793-B38886241231}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ConnectQl.Shared", "ConnectQl.Shared\ConnectQl.Shared.shproj", "{B95C77E7-6B6E-4861-87A0-1B5BD8A52E0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl.Excel.Tests", "ConnectQl.Excel.Tests\ConnectQl.Excel.Tests.csproj", "{4877D676-F10E-4DA3-9D40-29593C728C83}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -118,6 +123,10 @@ Global
 		{5C12E592-A82F-4B63-9793-B38886241231}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C12E592-A82F-4B63-9793-B38886241231}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C12E592-A82F-4B63-9793-B38886241231}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4877D676-F10E-4DA3-9D40-29593C728C83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4877D676-F10E-4DA3-9D40-29593C728C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4877D676-F10E-4DA3-9D40-29593C728C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4877D676-F10E-4DA3-9D40-29593C728C83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +147,7 @@ Global
 		{272200B7-E76E-4D82-9C21-EF174C9F4A88} = {99F0D03C-293D-466B-A4AA-A6586ED7CE49}
 		{5C12E592-A82F-4B63-9793-B38886241231} = {99F0D03C-293D-466B-A4AA-A6586ED7CE49}
 		{B95C77E7-6B6E-4861-87A0-1B5BD8A52E0C} = {FD0DC86B-D190-4632-BCB8-749437D7B48C}
+		{4877D676-F10E-4DA3-9D40-29593C728C83} = {9886DE0E-C3F7-46E6-A335-A56C95AAE0E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {96CB5CB7-2BD6-4A82-80BE-43958461705E}

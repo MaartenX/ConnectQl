@@ -1,5 +1,3 @@
-version: '0.1.{build}'
-
 nuget:
   project_feed: true
 
@@ -21,9 +19,6 @@ branches:
     - development
 
 environment:
-  opencover: OpenCover\tools\OpenCover.Console.exe
-  xunitconsole: xunit.runner.console\tools\net452\xunit.console.exe
-  xunitcore: xunit.runner.console\tools\netcoreapp2.0\xunit.console.dll
   BUILD_ALL_PLATFORMS: 1
   MYGETAPITOKEN:
     secure: sAyhaazWBYVsEH2NC2YAFSxBM447yIouEYsXuoCqP2n7q/OzzMsjcpAuovZzjvff
@@ -34,7 +29,7 @@ environment:
 
 init:
   - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0");
-      
+
 install:
   - ps: >-
       if ("$Env:APPVEYOR_PULL_REQUEST_NUMBER" -eq "") 
@@ -44,16 +39,18 @@ install:
       }
   - nuget install OpenCover -ExcludeVersion
   - nuget install xunit.runner.console -ExcludeVersion
-
+  - choco install gitversion.portable -pre -y
+  - choco install codecov
+  
 before_build:
   - msbuild /t:restore /v:minimal src
-  - choco install codecov
+  - ps: gitversion /l console /output buildserver
 
 build_script:
-  - msbuild /t:build src
+  - msbuild /t:build src "/p:Version=%GitVersion_NuGetVersion%" "/p:AssemblyVersion=%GitVersion_AssemblySemVer%" "/p:FileVersion=%GitVersion_MajorMinorPatch%.0" "/p:InformationalVersion=%GitVersion_InformationalVersion%"
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
-      $packProjects | % { msbuild /t:pack "$_" /p:PackageOutputPath=..\..\artifacts };
+      $packProjects | % { msbuild /t:pack "$_" "/p:Version=$env:GitVersion_NuGetVersion" "/p:AssemblyVersion=$env:GitVersion_AssemblySemVer" "/p:FileVersion=$env:GitVersion_MajorMinorPatch.0" "/p:InformationalVersion=$env:GitVersion_InformationalVersion" /p:PackageOutputPath=..\..\artifacts };
       .\ps\UpdatePackageReferences.ps1 -PackProjects $packProjects
 
 deploy:
@@ -68,9 +65,7 @@ after_deploy:
   - ps: ls artifacts\*.vsix | % { Invoke-RestMethod -Uri https://www.myget.org/F/connectql/vsix/upload -Method Post -InFile $_.FullName -Headers @{ "X-NuGet-ApiKey" = $env:MYGETAPITOKEN } }
 
 test_script:
-  - OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user "-target:c:\program files\dotnet\dotnet.exe" "-targetargs:%xunitcore% src\ConnectQl.Tests\bin\%configuration%\netcoreapp1.1\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" "-output:artifacts\ConnectQl.Coverage.xml"
-  - OpenCover\tools\OpenCover.Console.exe -oldStyle -register:user -target:%xunitconsole% "-targetargs:src\ConnectQl.Tests\bin\%configuration%\net452\ConnectQl.Tests.dll -noshadow" "-filter:+[ConnectQl*]* -[*Tests*]*" -mergeoutput -mergebyhash "-output:artifacts\ConnectQl.Coverage.xml"
-  - codecov -f "artifacts\ConnectQl.Coverage.xml"
+  - tools\runcoverage.bat
 
 artifacts:
   - path: artifacts\**\*.*

@@ -59,10 +59,12 @@ namespace ConnectQl.Internal.Query
         /// <param name="expression">
         /// The expression to convert.
         /// </param>
+        /// <param name="allowVariables">
+        /// <c>true</c> to allow blocks and variables in the expression, <c>false</c> to replace variables by their value (so they can be used in expressions).</param>
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression ConvertToLinqExpression(this INodeDataProvider dataProvider, [CanBeNull] SqlExpressionBase expression)
+        public static Expression ConvertToLinqExpression(this INodeDataProvider dataProvider, [CanBeNull] SqlExpressionBase expression, bool allowVariables = true)
         {
             if (expression == null)
             {
@@ -71,7 +73,34 @@ namespace ConnectQl.Internal.Query
 
             new Evaluator(dataProvider).Visit(expression);
 
-            return NodeDataProviderExpressionConverter.CleanExpression(dataProvider.GetExpression(expression));
+            var result = NodeDataProviderExpressionConverter.CleanExpression(dataProvider.GetExpression(expression));
+
+            if (allowVariables)
+            {
+                return result;
+            }
+
+            var vars = new Dictionary<ParameterExpression, Expression>();
+
+            GenericVisitor.Visit(
+                (BinaryExpression e) =>
+                    {
+                        if (e.NodeType == ExpressionType.Assign && e.Left is ParameterExpression parameter)
+                        {
+                            vars[parameter] = e.Right;
+                        }
+
+                        return null;
+                    },
+                result);
+
+            result = new GenericVisitor
+                         {
+                             (GenericVisitor v, BlockExpression e) => v.Visit(e.Expressions.First(b => b.NodeType != ExpressionType.Assign)),
+                             (ParameterExpression e) => vars.TryGetValue(e, out var value) ? value : e
+                         }.Visit(result);
+
+            return result;
         }
 
         /// <summary>
