@@ -24,6 +24,8 @@ namespace ConnectQl.Results
 {
     using System;
 
+    using ConnectQl.Internal.Resources;
+
     using JetBrains.Annotations;
 
     /// <summary>
@@ -61,6 +63,6 @@ namespace ConnectQl.Results
         /// The <see cref="string"/>.
         /// </returns>
         [NotNull]
-        public override string ToString() => "#ERROR#";
+        public override string ToString() => string.Format(Messages.Error, this.Message);
     }
 }

@@ -782,7 +782,7 @@ namespace ConnectQl.Internal
         void SelectStatement(out SelectStatement query)
         {
             query = null;
-            SourceBase source, join = null;
+            SourceBase source = null, join = null;
             AliasedSqlExpression aliasedExpression;
             SqlExpressionBase expression, where = null, having = null;
             OrderBySqlExpression orderBy = null;
@@ -798,12 +798,15 @@ namespace ConnectQl.Internal
                 ExpressionAlias(out aliasedExpression);
                 expressions.Add(aliasedExpression);
             }
-            Expect(33);
-            Join(out source);
-            while (WeakSeparator(14, 5, 6))
+            if (this.LookAhead.Kind == 33)
             {
-                Join(out join);
-                source = new JoinSource(JoinType.Cross, source, join);
+                Get();
+                Join(out source);
+                while (WeakSeparator(14, 5, 6))
+                {
+                    Join(out join);
+                    source = new JoinSource(JoinType.Cross, source, join);
+                }
             }
             if (this.LookAhead.Kind == 34)
             {
@@ -1354,7 +1357,7 @@ namespace ConnectQl.Internal
         {true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,false,true,true,false,true,true,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,false,true,true,false,true,true,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,true,true,true,false,false,false,true,true,true,true,false,false,false},
-        {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
+        {true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,true,true,false,true,true,false,true,false,true,true,true,true,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,true,true,false,true,true,false,true,false,true,true,false,true,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},
         {true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,true,true,false,true,true,false,true,false,true,true,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false},

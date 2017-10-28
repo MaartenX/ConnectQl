@@ -14,12 +14,28 @@
     <Compile Update="$(AtgChildren)">
       <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
     </Compile>
+    <Compile Update="Internal\Resources\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <None Update="$(AtgChildren)">
       <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
     </None>
     <PackageReference Include="Scripty.MsBuild" Version="0.7.4.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Internal\Resources\Messages.nl.resx">
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Internal\Resources\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   
 </Project>

@@ -22,6 +22,8 @@
 
 namespace ConnectQl.Interfaces
 {
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Implement this interface to create a plugin.
     /// </summary>
@@ -30,6 +32,7 @@ namespace ConnectQl.Interfaces
         /// <summary>
         /// Gets the name.
         /// </summary>
+        [NotNull]
         string Name { get; }
 
         /// <summary>
@@ -38,6 +41,6 @@ namespace ConnectQl.Interfaces
         /// <param name="context">
         /// The context to register the plugin on.
         /// </param>
-        void RegisterPlugin(IPluginContext context);
+        void RegisterPlugin([NotNull]IPluginContext context);
     }
 }

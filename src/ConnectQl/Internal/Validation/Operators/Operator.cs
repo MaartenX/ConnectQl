@@ -34,12 +34,17 @@ namespace ConnectQl.Internal.Validation.Operators
     internal abstract class Operator
     {
         /// <summary>
+        /// The string comparision mode that will be used in operators.
+        /// </summary>
+        protected static readonly StringComparison StringComparisionMode = StringComparison.Ordinal;
+
+        /// <summary>
         /// When two expressions do not have the same type, one of the two has to be cast to the other type. This array holds
         ///     the most important type to the least important one.
         /// </summary>
         protected static readonly Type[] CommonTypeOrder =
             {
-                typeof(double), typeof(decimal), typeof(float), typeof(ulong), typeof(long), typeof(uint), typeof(int), typeof(ushort), typeof(short), typeof(char), typeof(byte),
+                typeof(double), typeof(decimal), typeof(float), typeof(ulong), typeof(long), typeof(uint), typeof(int), typeof(ushort), typeof(short), typeof(char), typeof(byte)
             };
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The expression, or a new one if conversion is needed.
         /// </returns>
-        public static Expression ToObject(Expression expression)
+        public static Expression ToObject([NotNull] Expression expression)
         {
             return Operator.ToType(expression, typeof(object));
         }

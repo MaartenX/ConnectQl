@@ -22,11 +22,19 @@
 
 namespace ConnectQl.Tests
 {
+    using System;
+    using System.Globalization;
+    using System.IO;
+    using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.Interfaces;
 
     using JetBrains.Annotations;
+
+    using Moq;
 
     using Xunit;
 
@@ -102,6 +110,70 @@ namespace ConnectQl.Tests
             var array = await result.QueryResults[0].Rows.Select(r => r["Item"]).ToArrayAsync();
 
             Assert.Equal(resultValues, array);
+        }
+
+        /// <summary>
+        /// Disposed context should throw on all public methods.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [Fact(DisplayName = "Disposed context should throw on all public methods.")]
+        public async Task DisposedContextShouldThrow()
+        {
+            var context = new ConnectQlContext();
+
+            ((IDisposable)context).Dispose();
+
+            await Assert.ThrowsAsync<ObjectDisposedException>(() => context.ExecuteAsync("SELECT NULL"));
+
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes("SELECT NULL")))
+            {
+                await Assert.ThrowsAsync<ObjectDisposedException>(() => context.ExecuteAsync("file.connectql", stream));
+            }
+
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes("SELECT NULL")))
+            {
+                await Assert.ThrowsAsync<ObjectDisposedException>(() => context.ExecuteAsync(stream));
+            }
+
+            await Assert.ThrowsAsync<ObjectDisposedException>(() => context.ExecuteFileAsync("filename"));
+        }
+
+        /// <summary>
+        /// Operators should return the correct type.
+        /// </summary>
+        /// <param name="query">
+        /// The query.
+        /// </param>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [Theory(DisplayName = "Operators should return the correct type. ")]
+        [InlineData("SELECT 'a' + 'b'", "ab")]
+        [InlineData("SELECT 'a' + OBJECT('b')", "ab")]
+        [InlineData("SELECT OBJECT('a') + 'b'", "ab")]
+        [InlineData("SELECT OBJECT('a') + OBJECT('b')", "ab")]
+        [InlineData("SELECT OBJECT('a') + OBJECT(1)", "a1")]
+        [InlineData("SELECT OBJECT(1) + OBJECT('a')", "1a")]
+        [InlineData("SELECT OBJECT(1) * OBJECT(1.0) + 'ábc' SELECT OBJECT(1) * OBJECT(1.0) + 'ábc' SELECT OBJECT(1) + OBJECT(1.0) + 'ábc' SELECT OBJECT(1) * OBJECT(1.0) + 'ábc' SELECT OBJECT(1) + OBJECT(1.0) + 'ábc' FROM SPLIT('1,1,1,1,1,1,1,1,1,1,1,1,1,1,1', ',') s", "1ábc")]
+        [InlineData("SELECT '12' > 111", true)]
+        [InlineData("SELECT OBJECT('12') > OBJECT(111)", true)]
+        public async Task OperatorsShouldReturnCorrectType(string query, object value)
+        {
+            Thread.CurrentThread.CurrentCulture = Thread.CurrentThread.CurrentUICulture = new CultureInfo("nl");
+
+            using (var context = new ConnectQlContext())
+            {
+                var executeResult = await context.ExecuteAsync(query);
+
+                var row = await executeResult.QueryResults[0].Rows.FirstAsync();
+
+                Assert.Equal(value, row[row.ColumnNames[0]]);
+            }
         }
     }
 }

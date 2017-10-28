@@ -172,6 +172,8 @@ namespace ConnectQl.Internal.Plugins
                 .SetDescription("Returns the largest integer less than or equal to the value.", "The value.")
                 .AddWithoutSideEffects("string", (object value) => (value ?? string.Empty).ToString())
                 .SetDescription("Converts a value to a string.", "The value to convert.")
+                .AddWithoutSideEffects("object", (object value) => value)
+                .SetDescription("Converts a value to an object.", "The value to convert.")
                 .AddWithoutSideEffects("datetime", (string value) => DefaultFunctions.Parse(value))
                 .SetDescription("Converts a string to a date/time.", "The value to convert.")
                 .AddWithoutSideEffects("datetime", (int year, int month, int day) => new DateTime(year, month, day))

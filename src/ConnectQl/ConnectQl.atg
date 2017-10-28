@@ -142,7 +142,7 @@ UnionOrSelectStatement<out SelectStatement statement>											(. SelectStateme
 
 
 SelectStatement<out SelectStatement query>														(. query = null; 
-																								   SourceBase source, join = null; 
+																								   SourceBase source = null, join = null; 
 																								   AliasedSqlExpression aliasedExpression;
 																								   SqlExpressionBase expression, where = null, having = null; 
 																								   OrderBySqlExpression orderBy = null;
@@ -155,11 +155,13 @@ SelectStatement<out SelectStatement query>														(. query = null;
 		{
 			WEAK "," ExpressionAlias<out aliasedExpression>										(. expressions.Add(aliasedExpression); .)
 		} 
-		"FROM"   
-		Join<out source>																		
-		{ 
-			WEAK "," Join<out join> 															(. source = new JoinSource(JoinType.Cross, source, join); .)
-		}
+		[
+			"FROM"   
+			Join<out source>																		
+			{ 
+				WEAK "," Join<out join> 														(. source = new JoinSource(JoinType.Cross, source, join); .)
+			}
+		]
 		[
 			"WHERE" Expression<out where>
 		]
@@ -178,6 +180,7 @@ SelectStatement<out SelectStatement query>														(. query = null;
 				WEAK "," OrderBySqlExpression<out orderBy>										(. orders.Add(orderBy); .)
 			}
 		]
+		
 																								(. query = this.SetContext(new SelectFromStatement(
 																												new ReadOnlyCollection<AliasedSqlExpression>(expressions),
 																												source, 

@@ -20,7 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.CompilerServices;
+using System.Resources;
+
+[assembly: NeutralResourcesLanguage("en")]
 
 namespace ConnectQl
 {
@@ -33,7 +35,6 @@ namespace ConnectQl
     using System.Text;
     using System.Threading.Tasks;
     using ConnectQl.AsyncEnumerablePolicies;
-    using ConnectQl.AsyncEnumerables;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
@@ -41,7 +42,6 @@ namespace ConnectQl
     using ConnectQl.Internal.Intellisense.Protocol;
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Query;
-    using ConnectQl.Internal.Results;
     using ConnectQl.Internal.Validation;
     using ConnectQl.Results;
 
@@ -141,7 +141,6 @@ namespace ConnectQl
         public IMaterializationPolicy MaterializationPolicy
         {
             get => this.materializationPolicy ?? (this.materializationPolicy = new InMemoryPolicy());
-
             set => this.materializationPolicy = value;
         }
 

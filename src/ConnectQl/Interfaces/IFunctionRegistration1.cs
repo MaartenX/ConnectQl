@@ -22,9 +22,12 @@
 
 namespace ConnectQl.Interfaces
 {
+    using JetBrains.Annotations;
+
     /// <summary>
     /// A function registration with 1 arguments.
     /// </summary>
+    [LocalizationRequired]
     public interface IFunctionRegistration1 : IConnectQlFunctions
     {
         /// <summary>

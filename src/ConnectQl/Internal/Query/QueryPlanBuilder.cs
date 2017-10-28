@@ -29,6 +29,7 @@ namespace ConnectQl.Internal.Query
     using System.Reflection;
     using System.Threading.Tasks;
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.DataSources;
     using ConnectQl.Expressions;
     using ConnectQl.Expressions.Visitors;
     using ConnectQl.Interfaces;
@@ -484,6 +485,11 @@ namespace ConnectQl.Internal.Query
         /// </returns>
         private Func<IExecutionContext, Task<DataSource>> GetSourceFactory(SourceBase source)
         {
+            if (source == null)
+            {
+                return e => Task.FromResult<DataSource>(new NoDataSource());
+            }
+
             var context = Expression.Parameter(typeof(IExecutionContext), "context");
             var row = Expression.Parameter(typeof(Row), "row");
             var replaceContext = new GenericVisitor

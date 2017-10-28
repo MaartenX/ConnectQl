@@ -65,7 +65,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="context">
         /// The context.
         /// </param>
-        protected Validator(IValidationContext context)
+        private Validator([NotNull] IValidationContext context)
         {
             this.context = context;
             this.Scope = new ValidationScope(context);
@@ -75,12 +75,12 @@ namespace ConnectQl.Internal.Validation
         /// <summary>
         /// Gets the data.
         /// </summary>
-        protected INodeDataProvider Data => this.context.NodeData;
+        private INodeDataProvider Data => this.context.NodeData;
 
         /// <summary>
-        /// Gets the scope.
+        /// Gets or sets the scope.
         /// </summary>
-        protected ValidationScope Scope { get; private set; }
+        private ValidationScope Scope { get; set; }
 
         /// <summary>
         /// Validates the specified <see cref="Node"/>.
@@ -97,7 +97,8 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="ValidationContext"/>.
         /// </returns>
-        public static T Validate<T>(IValidationContext context, T node)
+        [CanBeNull]
+        public static T Validate<T>([NotNull] IValidationContext context, T node)
             where T : Node
         {
             var validator = new Validator(context);
@@ -123,11 +124,11 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="ValidationContext"/>.
         /// </returns>
-        internal static T Validate<T>(IValidationContext context, T node, [NotNull] out ILookup<string, IFunctionDescriptor> functions)
+        [CanBeNull]
+        internal static T Validate<T>([NotNull] IValidationContext context, T node, [NotNull] out ILookup<string, IFunctionDescriptor> functions)
             where T : Node
         {
             var validator = new Validator(context);
-
             var result = validator.Visit(node);
 
             functions = ((IFunctionDictionary)validator.Scope.Functions).Dictionary.ToLookup(d => d.Key.Split('\'')[0].ToLowerInvariant(), d => d.Value);
@@ -137,6 +138,7 @@ namespace ConnectQl.Internal.Validation
 
         /// <summary>
         /// Visits a <see cref="AliasedSqlExpression"/>.
+        /// Adds the alias to the current scope (or a default alias if none exists). Returns a new node if an alias was created.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -163,6 +165,8 @@ namespace ConnectQl.Internal.Validation
 
         /// <summary>
         /// Visits a <see cref="BinarySqlExpression"/> expression.
+        /// Infers the type of the binary expression and stores it in the node data. Checks if children are in a grouping,
+        /// if so, marks this node as a group too.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -195,7 +199,7 @@ namespace ConnectQl.Internal.Validation
         /// The node, or a new version of the node.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitConstSqlExpression([NotNull] ConstSqlExpression node)
+        protected internal override Node VisitConstSqlExpression(ConstSqlExpression node)
         {
             this.Data.SetType(node, new TypeDescriptor(node.Value?.GetType() ?? typeof(object)));
             this.Data.SetScope(node, this.Scope.IsGroupByExpression(node) ? NodeScope.Group : NodeScope.Constant);
@@ -212,6 +216,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
+        [CanBeNull]
         protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
         {
             var replacer = this.Data.GetFieldReplacer(node);
@@ -252,7 +257,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        protected internal override Node VisitFunctionCallSqlExpression([NotNull] FunctionCallSqlExpression node)
+        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallSqlExpression node)
         {
             var function = this.Scope.GetFunction(node.Name, node.Arguments);
 
@@ -266,10 +271,6 @@ namespace ConnectQl.Internal.Validation
 
                 return node;
             }
-
-            var returnType = function.ReturnType.SimplifiedType.IsConstructedGenericType && function.ReturnType.SimplifiedType.GetGenericTypeDefinition() == typeof(Task<>)
-                                 ? function.ReturnType.SimplifiedType.GenericTypeArguments[0]
-                                 : function.ReturnType.SimplifiedType;
 
             this.Data.SetType(node, function.ReturnType);
             this.Data.SetFunction(node, this.Scope.GetFunction(node.Name, node.Arguments));

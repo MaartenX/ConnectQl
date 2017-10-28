@@ -102,7 +102,7 @@ namespace ConnectQl.Internal.DataSources
         }
 
         /// <summary>
-        /// The get data async.
+        /// Gets the rows of this datasource that conform to the query..
         /// </summary>
         /// <param name="context">
         /// The context.
@@ -111,7 +111,7 @@ namespace ConnectQl.Internal.DataSources
         /// The query.
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        /// An <see cref="IAsyncEnumerable{Row}"/> containing all returned rows.
         /// </returns>
         internal abstract IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, IMultiPartQuery query);
 
