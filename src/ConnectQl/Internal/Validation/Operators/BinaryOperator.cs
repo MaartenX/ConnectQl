@@ -201,7 +201,7 @@ namespace ConnectQl.Internal.Validation.Operators
                 case ">":
                     return first.Type == typeof(string) || second.Type == typeof(string)
                                ? Expression.GreaterThan(Operator.ToString(first), Operator.ToString(second), false, ((Func<string, string, bool>)BinaryOperator.StringGreaterThan).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.GreaterThan(parts.Item1, parts.Item2, IsLifted(parts), parts.Item3));
+                               : DoConversion(op, first, second, parts => Expression.GreaterThan(parts.Item1, parts.Item2, false, parts.Item3));
                 case ">=":
                     return first.Type == typeof(string) || second.Type == typeof(string)
                                ? Expression.GreaterThanOrEqual(
@@ -209,19 +209,19 @@ namespace ConnectQl.Internal.Validation.Operators
                                    Operator.ToString(second),
                                    false,
                                    ((Func<string, string, bool>)BinaryOperator.StringGreaterThanOrEqual).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.GreaterThanOrEqual(parts.Item1, parts.Item2, IsLifted(parts), parts.Item3));
+                               : DoConversion(op, first, second, parts => Expression.GreaterThanOrEqual(parts.Item1, parts.Item2, false, parts.Item3));
                 case "=":
                     return first.Type == typeof(string) || second.Type == typeof(string)
                                ? Expression.Equal(Operator.ToString(first), Operator.ToString(second), false, ((Func<string, string, bool>)BinaryOperator.StringEqual).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.Equal(parts.Item1, parts.Item2, IsLifted(parts), parts.Item3));
+                               : DoConversion(op, first, second, parts => Expression.Equal(parts.Item1, parts.Item2, false, parts.Item3));
                 case "<>":
                     return first.Type == typeof(string) || second.Type == typeof(string)
                                ? Expression.NotEqual(Operator.ToString(first), Operator.ToString(second), false, ((Func<string, string, bool>)BinaryOperator.StringNotEqual).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.NotEqual(parts.Item1, parts.Item2, IsLifted(parts), parts.Item3));
+                               : DoConversion(op, first, second, parts => Expression.NotEqual(parts.Item1, parts.Item2, false, parts.Item3));
                 case "<":
                     return first.Type == typeof(string) || second.Type == typeof(string)
                                ? Expression.LessThan(Operator.ToString(first), Operator.ToString(second), false, ((Func<string, string, bool>)BinaryOperator.StringLessThan).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.LessThan(parts.Item1, parts.Item2, IsLifted(parts), parts.Item3));
+                               : DoConversion(op, first, second, parts => Expression.LessThan(parts.Item1, parts.Item2, false, parts.Item3));
                 case "<=":
                     return first.Type == typeof(string) || second.Type == typeof(string)
                                ? Expression.LessThanOrEqual(
@@ -229,7 +229,7 @@ namespace ConnectQl.Internal.Validation.Operators
                                    Operator.ToString(second),
                                    false,
                                    ((Func<string, string, bool>)BinaryOperator.StringLessThanOrEqual).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.LessThanOrEqual(parts.Item1, parts.Item2, IsLifted(parts), parts.Item3));
+                               : DoConversion(op, first, second, parts => Expression.LessThanOrEqual(parts.Item1, parts.Item2, false, parts.Item3));
                 case "AND":
                     return DoConversion(op, first, second, parts => Expression.And(parts.Item1, parts.Item2, parts.Item3));
                 case "OR":
@@ -640,18 +640,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
         private static bool DynamicOr([CanBeNull] object first, [CanBeNull] object second) => (bool)BinaryOperator.Evaluate("OR", first, second, p => Expression.Or(p.Item1, p.Item2, p.Item3));
-
-        /// <summary>
-        /// Returns a value indicating whether the expression with the specified arguments is lifted for <see cref="Nullable{T}"/>.
-        /// </summary>
-        /// <param name="parts">
-        /// The parts.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if the expression is lifted, <c>false</c> otherwise.
-        /// </returns>
-        private static bool IsLifted([NotNull] Tuple<Expression, Expression, MethodInfo> parts) => Nullable.GetUnderlyingType(parts.Item1.Type) != null || Nullable.GetUnderlyingType(parts.Item2.Type) != null;
-
+        
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is greater than <paramref name="second"/>.
         /// </summary>
@@ -712,7 +701,7 @@ namespace ConnectQl.Internal.Validation.Operators
         {
             if (!(first is string || second is string))
             {
-                return (bool)(Evaluate(op, first, second, p => expression(p.Item1, p.Item2, BinaryOperator.IsLifted(p), p.Item3)) ?? false);
+                return (bool)(Evaluate(op, first, second, p => expression(p.Item1, p.Item2, false, p.Item3)) ?? false);
             }
 
             switch (op)

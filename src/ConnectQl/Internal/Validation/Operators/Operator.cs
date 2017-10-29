@@ -36,7 +36,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <summary>
         /// The string comparision mode that will be used in operators.
         /// </summary>
-        protected static readonly StringComparison StringComparisionMode = StringComparison.Ordinal;
+        protected const StringComparison StringComparisionMode = StringComparison.Ordinal;
 
         /// <summary>
         /// When two expressions do not have the same type, one of the two has to be cast to the other type. This array holds
@@ -56,7 +56,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The expression, or a new one if conversion is needed.
         /// </returns>
-        public static Expression ToObject([NotNull] Expression expression)
+        protected static Expression ToObject([NotNull] Expression expression)
         {
             return Operator.ToType(expression, typeof(object));
         }

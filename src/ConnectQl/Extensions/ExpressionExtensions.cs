@@ -348,15 +348,6 @@ namespace System.Linq.Expressions
                                                },
                                            (SourceFieldExpression node) => node.CreateGetter(row),
                                            (FieldExpression node) => node.CreateGetter(row),
-                                           (GenericVisitor visitor, BinaryExpression node) =>
-                                               {
-                                                   if (node.NodeType == ExpressionType.Equal && node.Left.Type == typeof(object) && node.Right.Type == typeof(object))
-                                                   {
-                                                       return Expression.Call(null, ExpressionExtensions.EqualsMethod, visitor.Visit(node.Left), visitor.Visit(node.Right));
-                                                   }
-
-                                                   return null;
-                                               },
                                        }.Visit(expression);
 
             var result = Expression.Lambda<Func<Row, bool>>(filterExpression, row);

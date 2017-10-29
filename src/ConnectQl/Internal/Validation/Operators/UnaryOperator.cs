@@ -23,35 +23,17 @@
 namespace ConnectQl.Internal.Validation.Operators
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq.Expressions;
+
+    using ConnectQl.Internal.Resources;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The unary operator.
     /// </summary>
-    internal class UnaryOperator : Operator
+    internal abstract class UnaryOperator : Operator
     {
-        /// <summary>
-        /// The operators.
-        /// </summary>
-        private static readonly Dictionary<string, Func<Expression, Expression>> Operators
-            = new Dictionary<string, Func<Expression, Expression>>(
-                  StringComparer.OrdinalIgnoreCase)
-                  {
-                      {
-                          "+", UnaryOperator.GeneratePlus
-                      },
-                      {
-                          "-", UnaryOperator.GenerateMinus
-                      },
-                      {
-                          "!", UnaryOperator.GenerateNot
-                      },
-                      {
-                          "NOT", UnaryOperator.GenerateNot
-                      },
-                  };
-
         /// <summary>
         /// Generates an <see cref="Expression"/> for the unary  operator.
         /// </summary>
@@ -64,20 +46,15 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression GenerateExpression(string op, Expression operand)
+        public static Expression GenerateExpression([NotNull] string op, Expression operand)
         {
-            if (!UnaryOperator.Operators.TryGetValue(op, out Func<Expression, Expression> generator))
+            switch (op.ToUpperInvariant())
             {
-                throw new InvalidOperationException($"Unknown operator '{op}' with type '{operand}'.");
-            }
-
-            try
-            {
-                return generator(operand);
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException($"Operator '{op}' is not supported for type '{operand}'.", e);
+                case "+": return Expression.UnaryPlus(operand);
+                case "-": return Expression.Negate(operand);
+                case "!":
+                case "NOT": return Expression.Not(operand);
+                default: throw new InvalidOperationException(string.Format(Messages.OperatorNotSupported, op));
             }
         }
 
@@ -96,49 +73,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         public static Type InferType(string op, Type operand)
         {
-            return UnaryOperator.GenerateExpression(op, Expression.Parameter(operand)).Type;
-        }
-
-        /// <summary>
-        /// Generates an expression for the '-' operator.
-        /// </summary>
-        /// <param name="operand">
-        /// The argument.
-        /// </param>
-        /// <returns>
-        /// The generated expression.
-        /// </returns>
-        private static Expression GenerateMinus(Expression operand)
-        {
-            return Expression.Negate(operand);
-        }
-
-        /// <summary>
-        /// Generates an expression for the '!' and 'NOT' operator.
-        /// </summary>
-        /// <param name="operand">
-        /// The argument.
-        /// </param>
-        /// <returns>
-        /// The generated expression.
-        /// </returns>
-        private static Expression GenerateNot(Expression operand)
-        {
-            return Expression.Not(operand);
-        }
-
-        /// <summary>
-        /// Generates an expression for the '+' operator.
-        /// </summary>
-        /// <param name="operand">
-        /// The argument.
-        /// </param>
-        /// <returns>
-        /// The generated expression.
-        /// </returns>
-        private static Expression GeneratePlus(Expression operand)
-        {
-            return Expression.UnaryPlus(operand);
+            return GenerateExpression(op, Expression.Parameter(operand)).Type;
         }
     }
 }
