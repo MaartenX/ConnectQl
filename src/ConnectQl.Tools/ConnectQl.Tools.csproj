@@ -103,7 +103,7 @@
 
   <Target Name="UpdateVsixVersion" BeforeTargets="PrepareForBuild" Condition="'$(APPVEYOR)'!='' AND '$(MSBuildProjectExtension)' == '.csproj'">
     <MakeDir Directories="$(ArtifactsFolder)" ContinueOnError="true" />
-    <XmlUpdate Prefix="n" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" XPath="//n:PackageManifest/n:Metadata/n:Identity/@Version" XmlFileName="source.extension.vsixmanifest" Value="$(VsixPreReleaseVersion)" />
+    <XmlUpdate Prefix="n" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" XPath="//n:PackageManifest/n:Metadata/n:Identity/@Version" XmlFileName="source.extension.vsixmanifest" Value="$(VsixVersion)" />
   </Target>
 
   <!-- Embeds the design time interop types instead of linking them. See also https://www.nuget.org/packages/Microsoft.VisualStudio.SDK.EmbedInteropTypes -->
