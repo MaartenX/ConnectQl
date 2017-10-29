@@ -108,7 +108,7 @@ namespace ConnectQl.Internal.DataSources
             var expressionSupport = this.dataSource as IDataSourceFilterSupport;
             if (expressionSupport != null)
             {
-                var parts = query.FilterExpression.SplitByAndExpressions().Cast<CompareExpression>().ToArray();
+                var parts = query.FilterExpression.SplitByAndExpressions().Cast<BinaryExpression>().Where(b => b.IsComparison()).ToArray();
                 var filters = parts.ToLookup(p => expressionSupport.SupportsExpression(p), e => (Expression)e);
                 var supportedFilter = filters[true].DefaultIfEmpty().Aggregate(Expression.AndAlso);
 

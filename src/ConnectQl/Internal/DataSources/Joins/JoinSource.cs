@@ -32,6 +32,7 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Expressions;
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Results;
+    using ConnectQl.Internal.Validation.Operators;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
@@ -107,8 +108,13 @@ namespace ConnectQl.Internal.DataSources.Joins
         private static Expression RangesToJoinFilter(Expression filter)
         {
             return GenericVisitor.Visit(
-                (CompareExpression node) =>
+                (BinaryExpression node) =>
                     {
+                        if (node.IsComparison())
+                        {
+                            return null;
+                        }
+
                         var field = node.Left as SourceFieldExpression;
                         var range = node.Right as RangeExpression;
 
@@ -117,23 +123,23 @@ namespace ConnectQl.Internal.DataSources.Joins
                             return null;
                         }
 
-                        switch (node.CompareType)
+                        switch (node.NodeType)
                         {
                             case ExpressionType.Equal:
 
                                 return Expression.AndAlso(
-                                    CustomExpression.MakeCompare(ExpressionType.GreaterThanOrEqual, field, Expression.Constant(range.Min, range.Type)),
-                                    CustomExpression.MakeCompare(ExpressionType.LessThanOrEqual, field, Expression.Constant(range.Max, range.Type)));
+                                    BinaryOperator.GenerateExpression(ExpressionType.GreaterThanOrEqual, field, Expression.Constant(range.Min, range.Type)),
+                                    BinaryOperator.GenerateExpression(ExpressionType.LessThanOrEqual, field, Expression.Constant(range.Max, range.Type)));
 
                             case ExpressionType.GreaterThan:
                             case ExpressionType.GreaterThanOrEqual:
 
-                                return CustomExpression.MakeCompare(node.CompareType, field, Expression.Constant(range.Min, range.Type));
+                                return BinaryOperator.GenerateExpression(node.NodeType, field, Expression.Constant(range.Min, range.Type));
 
                             case ExpressionType.LessThan:
                             case ExpressionType.LessThanOrEqual:
 
-                                return CustomExpression.MakeCompare(node.CompareType, field, Expression.Constant(range.Max, range.Type));
+                                return BinaryOperator.GenerateExpression(node.NodeType, field, Expression.Constant(range.Max, range.Type));
 
                             case ExpressionType.NotEqual:
 

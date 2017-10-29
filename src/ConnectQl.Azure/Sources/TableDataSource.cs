@@ -254,7 +254,7 @@ namespace ConnectQl.Azure.Sources
         /// <returns>
         /// <c>true</c> if the expression is supported, false otherwise.
         /// </returns>
-        public bool SupportsExpression(CompareExpression expression)
+        public bool SupportsExpression(BinaryExpression expression)
         {
             var field = (expression.Left as FieldExpression)?.FieldName;
 
@@ -546,20 +546,6 @@ namespace ConnectQl.Azure.Sources
                                 visitor.Visit(node.Left);
 
                                 sb.Append($" {ExpressionTypeToString[node.NodeType]} ");
-
-                                visitor.Visit(node.Right);
-
-                                sb.Append(")");
-
-                                return node;
-                            },
-                        (GenericVisitor visitor, CompareExpression node) =>
-                            {
-                                sb.Append("(");
-
-                                visitor.Visit(node.Left);
-
-                                sb.Append($" {ExpressionTypeToString[node.CompareType]} ");
 
                                 visitor.Visit(node.Right);
 

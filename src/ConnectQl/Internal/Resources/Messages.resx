@@ -120,6 +120,9 @@
   <data name="Error" xml:space="preserve">
     <value>#ERROR: {0}#</value>
   </data>
+  <data name="NodeTypeNotSupported" xml:space="preserve">
+    <value>Node type {0} is not supported.</value>
+  </data>
   <data name="OperatorNotSupported" xml:space="preserve">
     <value>Operator {0} is not supported for types {1} and {2}.</value>
   </data>

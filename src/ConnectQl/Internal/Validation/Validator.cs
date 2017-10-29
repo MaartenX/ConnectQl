@@ -179,7 +179,7 @@ namespace ConnectQl.Internal.Validation
         {
             node = this.ValidateChildren(node);
 
-            this.Data.SetType(node, new TypeDescriptor(BinaryOperator.InferType(this.Data.GetType(node.First).SimplifiedType, node.Op, this.Data.GetType(node.Second).SimplifiedType, error => this.AddError(node, error))));
+            this.Data.SetType(node, new TypeDescriptor(BinaryOperator.InferType(node.Op, this.Data.GetType(node.First).SimplifiedType, this.Data.GetType(node.Second).SimplifiedType, error => this.AddError(node, error))));
 
             if (this.Scope.IsGroupByExpression(node))
             {

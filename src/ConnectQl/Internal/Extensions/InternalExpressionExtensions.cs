@@ -110,17 +110,7 @@ namespace ConnectQl.Internal.Extensions
         {
             return (T)new GenericVisitor
                           {
-                              (CompareExpression node) =>
-                                  {
-                                      if (!node.Right.ContainsField(source))
-                                      {
-                                          return null;
-                                      }
-
-                                      var opposite = ExpressionExtensions.InvertComparison(node.CompareType);
-
-                                      return opposite != null ? CustomExpression.MakeCompare(opposite.Value, node.Right, node.Left) : null;
-                                  },
+                              (BinaryExpression node) => !node.Right.ContainsField(source) ? null : node.SwapOperandsForComparison(),
                           }.Visit(expression);
         }
 

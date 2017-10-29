@@ -32,7 +32,7 @@ namespace ConnectQl.Internal.Comparers
     /// <summary>
     /// Uses to sort comparers to get the most specific comparer first.
     /// </summary>
-    internal class MostSpecificComparer : IComparer<CompareExpression>
+    internal class MostSpecificComparer : IComparer<BinaryExpression>
     {
         /// <summary>
         /// The default.
@@ -51,7 +51,7 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public int Compare(CompareExpression x, CompareExpression y)
+        public int Compare(BinaryExpression x, BinaryExpression y)
         {
             return MostSpecificComparer.SortOrder(x) - MostSpecificComparer.SortOrder(y);
         }
@@ -65,9 +65,9 @@ namespace ConnectQl.Internal.Comparers
         /// <returns>
         /// The sort order.
         /// </returns>
-        private static int SortOrder([NotNull] CompareExpression x)
+        private static int SortOrder([NotNull] BinaryExpression x)
         {
-            switch (x.CompareType)
+            switch (x.NodeType)
             {
                 case ExpressionType.Equal:
                     return 0;

@@ -107,7 +107,6 @@ namespace ConnectQl.Internal.Comparers
 
                        // Custom expressions.
                        ExpressionComparer.Compare<TaskExpression>(x, y, (first, second) => this.Equals(first.Expression, second.Expression)) ||
-                       ExpressionComparer.Compare<CompareExpression>(x, y, (first, second) => this.Equals(first.Left, second.Left) && this.Equals(first.Right, second.Right) && first.CompareType == second.CompareType) ||
                        ExpressionComparer.Compare<ExecutionContextExpression>(x, y, (first, second) => true) ||
                        ExpressionComparer.Compare<SourceFieldExpression>(x, y, (first, second) => object.Equals(first.FieldName, second.FieldName) && object.Equals(first.SourceName, second.SourceName)) ||
                        ExpressionComparer.Compare<RangeExpression>(x, y, (first, second) => object.Equals(first.Min, second.Min) & object.Equals(first.Max, second.Max)));

@@ -174,13 +174,13 @@ namespace ConnectQl.Internal.AsyncEnumerables.Enumerators
             this.resultFilter = resultFilter;
 
             if (this.joinOperator == ExpressionType.GreaterThan)
-            { // Invert the comparison order and do a less than or equal join instead.
+            { // SwapOperands the comparison order and do a less than or equal join instead.
                 this.joinOperator = ExpressionType.LessThanOrEqual;
                 this.keyComparison = (x, y) => -keyComparer.Compare(x, y);
             }
 
             if (this.joinOperator == ExpressionType.GreaterThanOrEqual)
-            { // Invert the comparison order and do a less than join instead.
+            { // SwapOperands the comparison order and do a less than join instead.
                 this.joinOperator = ExpressionType.LessThan;
                 this.keyComparison = (x, y) => -keyComparer.Compare(x, y);
             }

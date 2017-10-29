@@ -69,44 +69,7 @@ namespace ConnectQl.Expressions
         {
             return new ExecutionContextExpression();
         }
-
-        /// <summary>
-        /// Creates a compare expression.
-        /// </summary>
-        /// <param name="compareType">
-        /// The compare type.
-        /// </param>
-        /// <param name="left">
-        /// The left expression.
-        /// </param>
-        /// <param name="right">
-        /// The right expression.
-        /// </param>
-        /// <returns>
-        /// The <see cref="CompareExpression"/>.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when an invalid <see cref="ExpressionType"/> is passed in.
-        /// </exception>
-        [NotNull]
-        public static CompareExpression MakeCompare(ExpressionType compareType, Expression left, Expression right)
-        {
-            switch (compareType)
-            {
-                case ExpressionType.Equal:
-                case ExpressionType.NotEqual:
-                case ExpressionType.GreaterThan:
-                case ExpressionType.GreaterThanOrEqual:
-                case ExpressionType.LessThan:
-                case ExpressionType.LessThanOrEqual:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(compareType), "Compare type must be an expression type that compares two values.");
-            }
-
-            return new CompareExpression(compareType, left, right);
-        }
-
+        
         /// <summary>
         /// Creates a <see cref="FieldExpression"/>.
         /// </summary>

@@ -22,7 +22,11 @@
 
 namespace ConnectQl.Interfaces
 {
+    using System.Linq.Expressions;
+
     using ConnectQl.Expressions;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The DataSourceFilterSupport interface.
@@ -38,6 +42,6 @@ namespace ConnectQl.Interfaces
         /// <returns>
         /// <c>true</c> if the expression is supported, false otherwise.
         /// </returns>
-        bool SupportsExpression(CompareExpression expression);
+        bool SupportsExpression([NotNull] BinaryExpression expression);
     }
 }

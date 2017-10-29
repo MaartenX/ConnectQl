@@ -36,12 +36,12 @@ namespace ConnectQl.Internal.Validation.Operators
     /// <summary>
     /// The binary operator.
     /// </summary>
-    internal class BinaryOperator : Operator
+    internal abstract class BinaryOperator : Operator
     {
         /// <summary>
         /// The <see cref="string.Concat(string, string)"/> method.
         /// </summary>
-        private static readonly MethodInfo StringConcatMethod = typeof(string).GetRuntimeMethod("Concat", new[] { typeof(string), typeof(string) });
+        private static readonly MethodInfo StringConcatMethod = typeof(string).GetRuntimeMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) });
 
         /// <summary>
         /// Caches dynamic expressions.
@@ -140,6 +140,29 @@ namespace ConnectQl.Internal.Validation.Operators
                                                                                     };
 
         /// <summary>
+        /// Generates an <see cref="Expression"/> for the binary <see cref="ExpressionType"/>.
+        /// </summary>
+        /// <param name="type">
+        ///     The expression type.
+        /// </param>
+        /// <param name="first">
+        ///     The first operand of the binary expression.
+        /// </param>
+        /// <param name="second">
+        ///     The second operand of the binary expression.
+        /// </param>
+        /// <param name="onError">
+        ///     Called when errors occur.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Expression"/>.
+        /// </returns>
+        public static Expression GenerateExpression(ExpressionType type, [NotNull] Expression first, [NotNull] Expression second, [CanBeNull] Action<string> onError = null)
+        {
+            return GenerateExpression(GetOperator(type), first, second, onError);
+        }
+
+        /// <summary>
         /// Generates an <see cref="Expression"/> for the binary operator.
         /// </summary>
         /// <param name="op">
@@ -157,7 +180,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression GenerateExpression([NotNull] string op, Expression first, Expression second, [CanBeNull] Action<string> onError = null)
+        public static Expression GenerateExpression([NotNull] string op, [NotNull] Expression first, [NotNull] Expression second, [CanBeNull] Action<string> onError = null)
         {
             switch (op.ToUpperInvariant())
             {
@@ -211,19 +234,19 @@ namespace ConnectQl.Internal.Validation.Operators
                     return DoConversion(op, first, second, parts => Expression.And(parts.Item1, parts.Item2, parts.Item3));
                 case "OR":
                     return DoConversion(op, first, second, parts => Expression.Or(parts.Item1, parts.Item2, parts.Item3));
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(op), string.Format(Messages.UnknownOperator, op));
             }
-
-            throw new ArgumentOutOfRangeException(nameof(op), string.Format(Messages.UnknownOperator, op));
         }
 
         /// <summary>
         /// Infers the type of the binary expression.
         /// </summary>
-        /// <param name="first">
-        /// The first operand of the binary expression.
-        /// </param>
         /// <param name="op">
         /// The operator.
+        /// </param>
+        /// <param name="first">
+        /// The first operand of the binary expression.
         /// </param>
         /// <param name="second">
         /// The second operand of the binary expression.
@@ -234,72 +257,56 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The <see cref="Type"/>.
         /// </returns>
-        public static Type InferType(Type first, string op, Type second, Action<string> errorCallback)
+        public static Type InferType([NotNull] string op, Type first, Type second, Action<string> errorCallback)
         {
             return GenerateExpression(op, Expression.Parameter(first), Expression.Parameter(second), errorCallback).Type;
         }
 
         /// <summary>
-        /// Returns a value indicating whether the expression with the specified arguments is lifted for <see cref="Nullable{T}"/>.
+        /// Gets the operator for the specified <see cref="ExpressionType"/>.
         /// </summary>
-        /// <param name="parts">
-        /// The parts.
+        /// <param name="type">
+        /// The type.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the expression is lifted, <c>false</c> otherwise.
+        /// The <see cref="string"/>.
         /// </returns>
-        private static bool IsLifted(Tuple<Expression, Expression, MethodInfo> parts)
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Throw when <paramref name="type"/> cannot be mapped to an operator.
+        /// </exception>
+        [NotNull]
+        private static string GetOperator(ExpressionType type)
         {
-            return false;
+            switch (type)
+            {
+                case ExpressionType.Add:
+                    return "+";
+                case ExpressionType.Subtract:
+                    return "-";
+                case ExpressionType.Divide:
+                    return "/";
+                case ExpressionType.Multiply:
+                    return "*";
+                case ExpressionType.Modulo:
+                    return "%";
+                case ExpressionType.Power:
+                    return "^";
+                case ExpressionType.GreaterThan:
+                    return ">";
+                case ExpressionType.GreaterThanOrEqual:
+                    return ">=";
+                case ExpressionType.Equal:
+                    return "=";
+                case ExpressionType.NotEqual:
+                    return "<>";
+                case ExpressionType.LessThan:
+                    return "<";
+                case ExpressionType.LessThanOrEqual:
+                    return "<=";
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(type), string.Format(Messages.NodeTypeNotSupported, type));
         }
-
-        /// <summary>
-        /// Compares two strings, and returns true if <paramref name="first"/> is greater than <paramref name="second"/>.
-        /// </summary>
-        /// <param name="first">The first string.</param>
-        /// <param name="second">The second string.</param>
-        /// <returns><c>true</c> if <paramref name="first"/> is greater than <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringGreaterThan(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) > 0;
-
-        /// <summary>
-        /// Compares two strings, and returns true if <paramref name="first"/> is greater than or equal to <paramref name="second"/>.
-        /// </summary>
-        /// <param name="first">The first string.</param>
-        /// <param name="second">The second string.</param>
-        /// <returns><c>true</c> if <paramref name="first"/> is greater than or equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringGreaterThanOrEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) >= 0;
-
-        /// <summary>
-        /// Compares two strings, and returns true if <paramref name="first"/> is less than <paramref name="second"/>.
-        /// </summary>
-        /// <param name="first">The first string.</param>
-        /// <param name="second">The second string.</param>
-        /// <returns><c>true</c> if <paramref name="first"/> is less than <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringLessThan(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) < 0;
-
-        /// <summary>
-        /// Compares two strings, and returns true if <paramref name="first"/> is less than or equal to <paramref name="second"/>.
-        /// </summary>
-        /// <param name="first">The first string.</param>
-        /// <param name="second">The second string.</param>
-        /// <returns><c>true</c> if <paramref name="first"/> is less than or equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringLessThanOrEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) <= 0;
-
-        /// <summary>
-        /// Compares two strings, and returns true if <paramref name="first"/> is equal to <paramref name="second"/>.
-        /// </summary>
-        /// <param name="first">The first string.</param>
-        /// <param name="second">The second string.</param>
-        /// <returns><c>true</c> if <paramref name="first"/> is equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) == 0;
-
-        /// <summary>
-        /// Compares two strings, and returns true if <paramref name="first"/> is not equal to <paramref name="second"/>.
-        /// </summary>
-        /// <param name="first">The first string.</param>
-        /// <param name="second">The second string.</param>
-        /// <returns><c>true</c> if <paramref name="first"/> is not equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringNotEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) != 0;
 
         /// <summary>
         /// Applies the expression function to the arguments after converting to a common type.
@@ -376,13 +383,15 @@ namespace ConnectQl.Internal.Validation.Operators
                 // Try to cast the arguments to a common type, starting with the highest precision.
                 foreach (var type in Operator.CommonTypeOrder)
                 {
-                    if (first.Type == type || second.Type == type)
+                    if (first.Type != type && second.Type != type)
                     {
-                        first = Operator.ToType(first, type);
-                        second = Operator.ToType(second, type);
-
-                        return Tuple.Create(first, second, (MethodInfo)null);
+                        continue;
                     }
+
+                    first = Operator.ToType(first, type);
+                    second = Operator.ToType(second, type);
+
+                    return Tuple.Create(first, second, (MethodInfo)null);
                 }
             }
 
@@ -456,11 +465,25 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>
         /// The result of the evaluation.
         /// </returns>
-        private static object Evaluate(string op, object first, object second, Func<Tuple<Expression, Expression, MethodInfo>, Expression> createExpression)
+        private static object Evaluate(string op, [CanBeNull] object first, [CanBeNull] object second, Func<Tuple<Expression, Expression, MethodInfo>, Expression> createExpression)
         {
             if (first == null || second == null)
             {
-                return null;
+                switch (op)
+                {
+                    case "<>": return !Equals(first, second);
+                    case "=": return Equals(first, second);
+                    case ">":
+                        return first != null;
+                    case ">=":
+                        return first != null || second == null;
+                    case "<":
+                        return second != null;
+                    case "<=":
+                        return second != null || first == null;
+                    default:
+                        return null;
+                }
             }
 
             var firstType = first.GetType();
@@ -506,7 +529,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
         [CanBeNull]
-        private static object DynamicModulo([CanBeNull] object first, [CanBeNull] object second) => BinaryOperator.Evaluate("%", first, second, p => Expression.Modulo(p.Item1, p.Item2, p.Item3));
+        private static object DynamicModulo([CanBeNull] object first, [CanBeNull] object second) => Evaluate("%", first, second, p => Expression.Modulo(p.Item1, p.Item2, p.Item3));
 
         /// <summary>
         /// Divides two objects and returns the result.
@@ -515,7 +538,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
         [CanBeNull]
-        private static object DynamicDivide([CanBeNull] object first, [CanBeNull] object second) => BinaryOperator.Evaluate("*", first, second, p => Expression.Divide(p.Item1, p.Item2, p.Item3));
+        private static object DynamicDivide([CanBeNull] object first, [CanBeNull] object second) => Evaluate("*", first, second, p => Expression.Divide(p.Item1, p.Item2, p.Item3));
 
         /// <summary>
         /// Multiplies two objects and returns the result.
@@ -524,7 +547,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
         [CanBeNull]
-        private static object DynamicMultiply([CanBeNull] object first, [CanBeNull] object second) => BinaryOperator.Evaluate("*", first, second, p => Expression.Multiply(p.Item1, p.Item2, p.Item3));
+        private static object DynamicMultiply([CanBeNull] object first, [CanBeNull] object second) => Evaluate("*", first, second, p => Expression.Multiply(p.Item1, p.Item2, p.Item3));
 
         /// <summary>
         /// Calculates the firt object to the power of the second and returns the result.
@@ -533,7 +556,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
         [CanBeNull]
-        private static object DynamicPower([CanBeNull] object first, [CanBeNull] object second) => BinaryOperator.Evaluate("^", first, second, p => Expression.Power(p.Item1, p.Item2, p.Item3));
+        private static object DynamicPower([CanBeNull] object first, [CanBeNull] object second) => Evaluate("^", first, second, p => Expression.Power(p.Item1, p.Item2, p.Item3));
 
         /// <summary>
         /// Subtracts two objects and returns the result.
@@ -542,7 +565,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
         [CanBeNull]
-        private static object DynamicSubtract([CanBeNull] object first, [CanBeNull] object second) => BinaryOperator.Evaluate("-", first, second, p => Expression.Subtract(p.Item1, p.Item2, p.Item3));
+        private static object DynamicSubtract([CanBeNull] object first, [CanBeNull] object second) => Evaluate("-", first, second, p => Expression.Subtract(p.Item1, p.Item2, p.Item3));
 
         /// <summary>
         /// Adds two objects and returns the result.
@@ -560,12 +583,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first object.</param>
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
-        private static bool DynamicGreaterThan([CanBeNull] object first, [CanBeNull] object second)
-        {
-            return first is string || second is string
-                       ? BinaryOperator.StringGreaterThan(first?.ToString(), second?.ToString())
-                       : (bool)BinaryOperator.Evaluate(">", first, second, p => Expression.GreaterThan(p.Item1, p.Item2, BinaryOperator.IsLifted(p), p.Item3));
-        }
+        private static bool DynamicGreaterThan([CanBeNull] object first, [CanBeNull] object second) => DynamicComparison(">", first, second, Expression.GreaterThan);
 
         /// <summary>
         /// Checks if <paramref name="first"/> is greater than or equal to <paramref name="second"/> and returns the result.
@@ -573,10 +591,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first object.</param>
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
-        private static bool DynamicGreaterThanOrEqual([CanBeNull] object first, [CanBeNull] object second) =>
-            first is string || second is string
-                ? StringGreaterThanOrEqual(first?.ToString(), second?.ToString())
-                : (bool)BinaryOperator.Evaluate(">=", first, second, p => Expression.GreaterThanOrEqual(p.Item1, p.Item2, IsLifted(p), p.Item3));
+        private static bool DynamicGreaterThanOrEqual([CanBeNull] object first, [CanBeNull] object second) => DynamicComparison(">=", first, second, Expression.GreaterThanOrEqual);
 
         /// <summary>
         /// Checks if <paramref name="first"/> is equal to <paramref name="second"/> and returns the result.
@@ -584,13 +599,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first object.</param>
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
-        private static bool DynamicEqual([CanBeNull] object first, [CanBeNull] object second) => first is string || second is string
-                                                                                                     ? StringEqual(first?.ToString(), second?.ToString())
-                                                                                                     : (bool)BinaryOperator.Evaluate(
-                                                                                                         ">=",
-                                                                                                         first,
-                                                                                                         second,
-                                                                                                         p => Expression.Equal(p.Item1, p.Item2, IsLifted(p), p.Item3));
+        private static bool DynamicEqual([CanBeNull] object first, [CanBeNull] object second) => DynamicComparison("=", first, second, Expression.Equal);
 
         /// <summary>
         /// Checks if <paramref name="first"/> is not equal to <paramref name="second"/> and returns the result.
@@ -598,13 +607,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first object.</param>
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
-        private static bool DynamicNotEqual([CanBeNull] object first, [CanBeNull] object second) => first is string || second is string
-                                                                                                        ? StringNotEqual(first?.ToString(), second?.ToString())
-                                                                                                        : (bool)BinaryOperator.Evaluate(
-                                                                                                            "<>",
-                                                                                                            first,
-                                                                                                            second,
-                                                                                                            p => Expression.NotEqual(p.Item1, p.Item2, IsLifted(p), p.Item3));
+        private static bool DynamicNotEqual([CanBeNull] object first, [CanBeNull] object second) => DynamicComparison("<>", first, second, Expression.NotEqual);
 
         /// <summary>
         /// Checks if <paramref name="first"/> is less than <paramref name="second"/> and returns the result.
@@ -612,13 +615,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first object.</param>
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
-        private static bool DynamicLessThan([CanBeNull] object first, [CanBeNull] object second) => first is string || second is string
-                                                                                                        ? StringLessThan(first?.ToString(), second?.ToString())
-                                                                                                        : (bool)BinaryOperator.Evaluate(
-                                                                                                            "<",
-                                                                                                            first,
-                                                                                                            second,
-                                                                                                            p => Expression.LessThan(p.Item1, p.Item2, IsLifted(p), p.Item3));
+        private static bool DynamicLessThan([CanBeNull] object first, [CanBeNull] object second) => DynamicComparison("<", first, second, Expression.LessThan);
 
         /// <summary>
         /// Checks if <paramref name="first"/> is less than or equal to <paramref name="second"/> and returns the result.
@@ -626,10 +623,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first object.</param>
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
-        private static bool DynamicLessThanOrEqual([CanBeNull] object first, [CanBeNull] object second) =>
-            first is string || second is string
-                ? StringLessThanOrEqual(first?.ToString(), second?.ToString())
-                : (bool)BinaryOperator.Evaluate("<=", first, second, p => Expression.LessThanOrEqual(p.Item1, p.Item2, IsLifted(p), p.Item3));
+        private static bool DynamicLessThanOrEqual([CanBeNull] object first, [CanBeNull] object second) => DynamicComparison("<=", first, second, Expression.LessThanOrEqual);
 
         /// <summary>
         /// Gets the logical AND of <paramref name="first"/> and <paramref name="second"/> and returns the result.
@@ -646,5 +640,98 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
         private static bool DynamicOr([CanBeNull] object first, [CanBeNull] object second) => (bool)BinaryOperator.Evaluate("OR", first, second, p => Expression.Or(p.Item1, p.Item2, p.Item3));
+
+        /// <summary>
+        /// Returns a value indicating whether the expression with the specified arguments is lifted for <see cref="Nullable{T}"/>.
+        /// </summary>
+        /// <param name="parts">
+        /// The parts.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the expression is lifted, <c>false</c> otherwise.
+        /// </returns>
+        private static bool IsLifted([NotNull] Tuple<Expression, Expression, MethodInfo> parts) => Nullable.GetUnderlyingType(parts.Item1.Type) != null || Nullable.GetUnderlyingType(parts.Item2.Type) != null;
+
+        /// <summary>
+        /// Compares two strings, and returns true if <paramref name="first"/> is greater than <paramref name="second"/>.
+        /// </summary>
+        /// <param name="first">The first string.</param>
+        /// <param name="second">The second string.</param>
+        /// <returns><c>true</c> if <paramref name="first"/> is greater than <paramref name="second"/>, <c>false</c> otherwise.</returns>
+        private static bool StringGreaterThan(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) > 0;
+
+        /// <summary>
+        /// Compares two strings, and returns true if <paramref name="first"/> is greater than or equal to <paramref name="second"/>.
+        /// </summary>
+        /// <param name="first">The first string.</param>
+        /// <param name="second">The second string.</param>
+        /// <returns><c>true</c> if <paramref name="first"/> is greater than or equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
+        private static bool StringGreaterThanOrEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) >= 0;
+
+        /// <summary>
+        /// Compares two strings, and returns true if <paramref name="first"/> is less than <paramref name="second"/>.
+        /// </summary>
+        /// <param name="first">The first string.</param>
+        /// <param name="second">The second string.</param>
+        /// <returns><c>true</c> if <paramref name="first"/> is less than <paramref name="second"/>, <c>false</c> otherwise.</returns>
+        private static bool StringLessThan(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) < 0;
+
+        /// <summary>
+        /// Compares two strings, and returns true if <paramref name="first"/> is less than or equal to <paramref name="second"/>.
+        /// </summary>
+        /// <param name="first">The first string.</param>
+        /// <param name="second">The second string.</param>
+        /// <returns><c>true</c> if <paramref name="first"/> is less than or equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
+        private static bool StringLessThanOrEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) <= 0;
+
+        /// <summary>
+        /// Compares two strings, and returns true if <paramref name="first"/> is equal to <paramref name="second"/>.
+        /// </summary>
+        /// <param name="first">The first string.</param>
+        /// <param name="second">The second string.</param>
+        /// <returns><c>true</c> if <paramref name="first"/> is equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
+        private static bool StringEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) == 0;
+
+        /// <summary>
+        /// Compares two strings, and returns true if <paramref name="first"/> is not equal to <paramref name="second"/>.
+        /// </summary>
+        /// <param name="first">The first string.</param>
+        /// <param name="second">The second string.</param>
+        /// <returns><c>true</c> if <paramref name="first"/> is not equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
+        private static bool StringNotEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) != 0;
+
+        /// <summary>
+        /// Compares the two object using the specified operator and expression and returns the result.
+        /// </summary>
+        /// <param name="op">The operator.</param>
+        /// <param name="first">he first object.</param>
+        /// <param name="second">The second object.</param>
+        /// <param name="expression">Factory for <see cref="Expression"/>.</param>
+        /// <returns>The result.</returns>
+        private static bool DynamicComparison(string op, [CanBeNull] object first, [CanBeNull] object second, Func<Expression, Expression, bool, MethodInfo, Expression> expression)
+        {
+            if (!(first is string || second is string))
+            {
+                return (bool)(Evaluate(op, first, second, p => expression(p.Item1, p.Item2, BinaryOperator.IsLifted(p), p.Item3)) ?? false);
+            }
+
+            switch (op)
+            {
+                case ">":
+                    return StringGreaterThan(first?.ToString(), second?.ToString());
+                case ">=":
+                    return StringGreaterThanOrEqual(first?.ToString(), second?.ToString());
+                case "=":
+                    return StringEqual(first?.ToString(), second?.ToString());
+                case "<>":
+                    return StringNotEqual(first?.ToString(), second?.ToString());
+                case "<":
+                    return StringLessThan(first?.ToString(), second?.ToString());
+                case "<=":
+                    return StringLessThanOrEqual(first?.ToString(), second?.ToString());
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(op), string.Format(Messages.OperatorNotSupported, op));
+            }
+        }
     }
 }

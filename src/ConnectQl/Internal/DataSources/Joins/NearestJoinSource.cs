@@ -34,6 +34,7 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Expressions;
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Query;
+    using ConnectQl.Internal.Validation.Operators;
     using ConnectQl.Results;
 
     /// <summary>
@@ -162,8 +163,13 @@ namespace ConnectQl.Internal.DataSources.Joins
                                node.Type == typeof(bool) && object.Equals(node.Min, false) && object.Equals(node.Max, true)
                                    ? (Expression)Expression.Constant(true)
                                    : node,
-                           (CompareExpression node) =>
+                           (BinaryExpression node) =>
                                {
+                                   if (!node.IsComparison())
+                                   {
+                                       return null;
+                                   }
+
                                    var field = node.Left as SourceFieldExpression;
                                    var range = node.Right as RangeExpression;
 
@@ -172,7 +178,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                                        return null;
                                    }
 
-                                   switch (node.CompareType)
+                                   switch (node.NodeType)
                                    {
                                        case ExpressionType.GreaterThan:
                                        case ExpressionType.GreaterThanOrEqual:
@@ -181,13 +187,13 @@ namespace ConnectQl.Internal.DataSources.Joins
                                            sortOrders.Add(
                                                new OrderByExpression(
                                                    CustomExpression.MakeSourceField(field.SourceName, field.FieldName),
-                                                   node.CompareType == ExpressionType.GreaterThan || node.CompareType == ExpressionType.GreaterThanOrEqual));
+                                                   node.NodeType == ExpressionType.GreaterThan || node.NodeType == ExpressionType.GreaterThanOrEqual));
                                            break;
                                    }
 
                                    return Expression.AndAlso(
-                                       CustomExpression.MakeCompare(ExpressionType.GreaterThanOrEqual, field, Expression.Constant(range.Min, range.Type)),
-                                       CustomExpression.MakeCompare(ExpressionType.LessThanOrEqual, field, Expression.Constant(range.Max, range.Type)));
+                                       BinaryOperator.GenerateExpression(ExpressionType.GreaterThanOrEqual, field, Expression.Constant(range.Min, range.Type)),
+                                       BinaryOperator.GenerateExpression(ExpressionType.LessThanOrEqual, field, Expression.Constant(range.Max, range.Type)));
                                },
                        }.Visit(filter));
         }

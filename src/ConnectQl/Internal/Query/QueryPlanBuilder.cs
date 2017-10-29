@@ -243,7 +243,6 @@ namespace ConnectQl.Internal.Query
             var replaceContext = new GenericVisitor
                                      {
                                          (ExecutionContextExpression e) => context,
-                                         (CompareExpression e) => e.CreateComparer(),
                                      };
 
             var targetFactory = Expression.Lambda<Func<IExecutionContext, DataTarget>>(replaceContext.Visit(this.data.ConvertToDataTarget(node.Target)), context).Compile();
@@ -325,7 +324,6 @@ namespace ConnectQl.Internal.Query
             var getValue = Expression.Lambda<Func<IExecutionContext, object>>(
                 GenericVisitor.Visit(
                     (ExecutionContextExpression e) => context,
-                    (CompareExpression e) => e.CreateComparer(),
                     this.data.ConvertToLinqExpression(node.SettingFunction)),
                 context).Compile();
 
@@ -496,7 +494,6 @@ namespace ConnectQl.Internal.Query
                                      {
                                          (ExecutionContextExpression e) => context,
                                          (SourceFieldExpression e) => e.CreateGetter(row),
-                                         (GenericVisitor visitor, CompareExpression e) => e.CreateComparer(),
                                          (UnaryExpression e) => e.NodeType == ExpressionType.Convert && e.Operand is SourceFieldExpression
                                                                     ? ((SourceFieldExpression)e.Operand).CreateGetter(row, e.Type)
                                                                     : null,

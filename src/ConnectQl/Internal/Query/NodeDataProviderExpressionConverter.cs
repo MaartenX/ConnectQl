@@ -165,18 +165,6 @@ namespace ConnectQl.Internal.Query
         {
             return new GenericVisitor
                        {
-                           (GenericVisitor v, BinaryExpression e) =>
-                               {
-                                   var left = v.Visit(e.Left);
-                                   var right = v.Visit(e.Right);
-
-                                   if (!object.ReferenceEquals(left, e.Left) || !object.ReferenceEquals(right, e.Right))
-                                   {
-                                       e = Expression.MakeBinary(e.NodeType, left, right);
-                                   }
-
-                                   return NodeDataProviderExpressionConverter.ReplaceBinaryCompares(e);
-                               },
                            (GenericVisitor v, UnaryExpression e) =>
                                {
                                    var operand = v.Visit(e.Operand);
@@ -194,32 +182,6 @@ namespace ConnectQl.Internal.Query
                                    return e;
                                },
                        }.Visit(expression);
-        }
-
-        /// <summary>
-        /// Replaces a binary compare-expression with a <see cref="CompareExpression"/>.
-        /// </summary>
-        /// <param name="expression">
-        /// The expression to check.
-        /// </param>
-        /// <returns>
-        /// The <paramref name="expression"/> or a new <see cref="CompareExpression"/> when the binary expression was a
-        ///     comparison.
-        /// </returns>
-        private static Expression ReplaceBinaryCompares([NotNull] BinaryExpression expression)
-        {
-            switch (expression.NodeType)
-            {
-                case ExpressionType.Equal:
-                case ExpressionType.NotEqual:
-                case ExpressionType.LessThan:
-                case ExpressionType.LessThanOrEqual:
-                case ExpressionType.GreaterThan:
-                case ExpressionType.GreaterThanOrEqual:
-                    return CustomExpression.MakeCompare(expression.NodeType, expression.Left, expression.Right);
-            }
-
-            return expression;
         }
 
         /// <summary>

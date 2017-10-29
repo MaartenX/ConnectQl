@@ -160,8 +160,8 @@ namespace ConnectQl.Tests
         [InlineData("SELECT OBJECT('a') + OBJECT(1)", "a1")]
         [InlineData("SELECT OBJECT(1) + OBJECT('a')", "1a")]
         [InlineData("SELECT OBJECT(1) * OBJECT(1.0) + 'ábc' SELECT OBJECT(1) * OBJECT(1.0) + 'ábc' SELECT OBJECT(1) + OBJECT(1.0) + 'ábc' SELECT OBJECT(1) * OBJECT(1.0) + 'ábc' SELECT OBJECT(1) + OBJECT(1.0) + 'ábc' FROM SPLIT('1,1,1,1,1,1,1,1,1,1,1,1,1,1,1', ',') s", "1ábc")]
-        [InlineData("SELECT '12' > 111", true)]
-        [InlineData("SELECT OBJECT('12') > OBJECT(111)", true)]
+        [InlineData("SELECT 111 > NULL", true)]
+        [InlineData("SELECT INT('12') > INT(111)", false)]
         public async Task OperatorsShouldReturnCorrectType(string query, object value)
         {
             Thread.CurrentThread.CurrentCulture = Thread.CurrentThread.CurrentUICulture = new CultureInfo("nl");

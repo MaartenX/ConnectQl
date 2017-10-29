@@ -71,6 +71,15 @@ namespace ConnectQl.Internal.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Node type {0} is not supported..
+        /// </summary>
+        internal static string NodeTypeNotSupported {
+            get {
+                return ResourceManager.GetString("NodeTypeNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Operator {0} is not supported for types {1} and {2}..
         /// </summary>
         internal static string OperatorNotSupported {

@@ -74,18 +74,17 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IAsyncEnumerable{Row}"/>.
         /// </returns>
-        protected override IAsyncEnumerable<Row> CombineResults([NotNull] CompareExpression[][] joinsParts, RowBuilder rowBuilder, IAsyncReadOnlyCollection<Row> leftData, IAsyncReadOnlyCollection<Row> rightData)
+        protected override IAsyncEnumerable<Row> CombineResults([NotNull] BinaryExpression[][] joinsParts, RowBuilder rowBuilder, IAsyncReadOnlyCollection<Row> leftData, IAsyncReadOnlyCollection<Row> rightData)
         {
             return joinsParts
                 .Select(joinPart =>
                     leftData.LeftJoin(
                         rightData,
                         joinPart[0].Left.GetRowExpression<Row>(),
-                        joinPart[0].CompareType,
+                        joinPart[0].NodeType,
                         joinPart[0].Right.GetRowExpression<Row>(),
                         joinPart.Skip(1).DefaultIfEmpty().Aggregate<Expression>(Expression.AndAlso).GetJoinFunction(this.Left),
-                        rowBuilder.CombineRows,
-                        joinPart[0].Comparer))
+                        rowBuilder.CombineRows))
                 .Aggregate((result, joinResult) => result.Union(joinResult, RowIdComparer.Default));
         }
     }

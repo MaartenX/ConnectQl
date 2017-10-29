@@ -138,7 +138,8 @@ namespace ConnectQl.Internal.DataSources.Joins
             var filterParts = (query.FilterExpression == null ? joinFilter : Expression.AndAlso(query.GetFilter(context), joinFilter)).SplitByAndExpressions();
 
             // Get all parts of the query that contain fields from both sources.
-            var joinParts = filterParts.OfType<CompareExpression>()
+            var joinParts = filterParts.OfType<BinaryExpression>()
+                .Where(b => b.IsComparison())
                 .Where(comparison =>
                     {
                         var fields = comparison.GetFields().Select(f => f.SourceAlias).ToArray();
@@ -152,7 +153,7 @@ namespace ConnectQl.Internal.DataSources.Joins
             var rightFilter = filter.RemoveAllPartsThatAreNotInSource(this.Right);
             var resultFilter = filter.Except(leftFilter, rightFilter);
             var joinExpression = joinParts.OrderBy(p => p, new MostSpecificComparer()).First().MoveFieldsToTheLeft(this.Left);
-            var ascending = joinExpression.CompareType != ExpressionType.GreaterThan && joinExpression.CompareType != ExpressionType.GreaterThanOrEqual;
+            var ascending = joinExpression.NodeType != ExpressionType.GreaterThan && joinExpression.NodeType != ExpressionType.GreaterThanOrEqual;
 
             var leftQuery = new MultiPartQuery
                                 {
@@ -190,7 +191,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                 leftQuery,
                 rightQuery,
                 joinExpression.Left.GetRowExpression<Row>(),
-                joinExpression.CompareType,
+                joinExpression.NodeType,
                 joinExpression.Right.GetRowExpression<Row>(),
                 joinParts.DefaultIfEmpty<Expression>().Aggregate(Expression.AndAlso),
                 exraJoinFilter.GetJoinFunction(this.Left),

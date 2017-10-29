@@ -37,6 +37,7 @@ namespace ConnectQl.Internal.DataSources.Joins
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Results;
+    using ConnectQl.Internal.Validation.Operators;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
@@ -116,7 +117,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                             var joinsParts = this.Filter.SplitByOrExpressions()
 
                                 //// Then, re-order AND expressions, so the most specific comparer is in front.
-                                .Select(part => part.Simplify(context).SplitByAndExpressions().Cast<CompareExpression>()
+                                .Select(part => part.Simplify(context).SplitByAndExpressions().Cast<BinaryExpression>()
                                     .Select(c => c.MoveFieldsToTheLeft(this.Left))
                                     .OrderBy(p => p, MostSpecificComparer.Default)
                                     .ToArray())
@@ -184,7 +185,7 @@ namespace ConnectQl.Internal.DataSources.Joins
         /// <returns>
         /// The <see cref="IAsyncEnumerable{Row}"/>.
         /// </returns>
-        protected abstract IAsyncEnumerable<Row> CombineResults(CompareExpression[][] joinsParts, RowBuilder rowBuilder, IAsyncReadOnlyCollection<Row> leftData, IAsyncReadOnlyCollection<Row> rightData);
+        protected abstract IAsyncEnumerable<Row> CombineResults(BinaryExpression[][] joinsParts, RowBuilder rowBuilder, IAsyncReadOnlyCollection<Row> leftData, IAsyncReadOnlyCollection<Row> rightData);
 
         /// <summary>
         /// The ranges to join filter.
@@ -198,8 +199,13 @@ namespace ConnectQl.Internal.DataSources.Joins
         private static Expression RangesToJoinFilter(Expression filter)
         {
             return GenericVisitor.Visit(
-                (CompareExpression node) =>
+                (BinaryExpression node) =>
                     {
+                        if (!node.IsComparison())
+                        {
+                            return null;
+                        }
+
                         var rightRange = node.Right as RangeExpression;
 
                         if (rightRange == null)
@@ -211,23 +217,23 @@ namespace ConnectQl.Internal.DataSources.Joins
                                 return null;
                             }
 
-                            switch (node.CompareType)
+                            switch (node.NodeType)
                             {
                                 case ExpressionType.Equal:
 
                                     return Expression.AndAlso(
-                                        CustomExpression.MakeCompare(ExpressionType.GreaterThanOrEqual, leftRange.MinExpression, node.Right),
-                                        CustomExpression.MakeCompare(ExpressionType.LessThanOrEqual, leftRange.MaxExpression, node.Right));
+                                        BinaryOperator.GenerateExpression(ExpressionType.GreaterThanOrEqual, leftRange.MinExpression, node.Right),
+                                        BinaryOperator.GenerateExpression(ExpressionType.LessThanOrEqual, leftRange.MaxExpression, node.Right));
 
                                 case ExpressionType.GreaterThan:
                                 case ExpressionType.GreaterThanOrEqual:
 
-                                    return CustomExpression.MakeCompare(node.CompareType, leftRange.MinExpression, node.Right);
+                                    return BinaryOperator.GenerateExpression(node.NodeType, leftRange.MinExpression, node.Right);
 
                                 case ExpressionType.LessThan:
                                 case ExpressionType.LessThanOrEqual:
 
-                                    return CustomExpression.MakeCompare(node.CompareType, leftRange.MaxExpression, node.Right);
+                                    return BinaryOperator.GenerateExpression(node.NodeType, leftRange.MaxExpression, node.Right);
 
                                 case ExpressionType.NotEqual:
 
@@ -238,23 +244,23 @@ namespace ConnectQl.Internal.DataSources.Joins
                             }
                         }
 
-                        switch (node.CompareType)
+                        switch (node.NodeType)
                         {
                             case ExpressionType.Equal:
 
                                 return Expression.AndAlso(
-                                    CustomExpression.MakeCompare(ExpressionType.GreaterThanOrEqual, node.Left, rightRange.MinExpression),
-                                    CustomExpression.MakeCompare(ExpressionType.LessThanOrEqual, node.Left, rightRange.MaxExpression));
+                                    BinaryOperator.GenerateExpression(ExpressionType.GreaterThanOrEqual, node.Left, rightRange.MinExpression),
+                                    BinaryOperator.GenerateExpression(ExpressionType.LessThanOrEqual, node.Left, rightRange.MaxExpression));
 
                             case ExpressionType.GreaterThan:
                             case ExpressionType.GreaterThanOrEqual:
 
-                                return CustomExpression.MakeCompare(node.CompareType, node.Left, rightRange.MinExpression);
+                                return BinaryOperator.GenerateExpression(node.NodeType, node.Left, rightRange.MinExpression);
 
                             case ExpressionType.LessThan:
                             case ExpressionType.LessThanOrEqual:
 
-                                return CustomExpression.MakeCompare(node.CompareType, node.Left, rightRange.MaxExpression);
+                                return BinaryOperator.GenerateExpression(node.NodeType, node.Left, rightRange.MaxExpression);
 
                             case ExpressionType.NotEqual:
 

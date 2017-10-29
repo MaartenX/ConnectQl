@@ -38,6 +38,7 @@ namespace System.Linq.Expressions
     using ConnectQl.Internal.Expressions;
     using ConnectQl.Internal.Expressions.Visitors;
     using ConnectQl.Internal.Extensions;
+    using ConnectQl.Internal.Validation.Operators;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
@@ -278,18 +279,6 @@ namespace System.Linq.Expressions
 
             var filterExpression = new GenericVisitor
                                        {
-                                           (GenericVisitor visitor, CompareExpression node) =>
-                                               {
-                                                   var left = visitor.Visit(node.Left);
-                                                   var right = visitor.Visit(node.Right);
-
-                                                   if (!object.ReferenceEquals(node.Left, left) || !object.ReferenceEquals(node.Right, right))
-                                                   {
-                                                       node = CustomExpression.MakeCompare(node.CompareType, left, right);
-                                                   }
-
-                                                   return node.CreateComparer();
-                                               },
                                            (SourceFieldExpression node) => node.CreateGetter(row),
                                            (FieldExpression node) => node.CreateGetter(row),
                                            (UnaryExpression e) => e.NodeType == ExpressionType.Convert ? (e.Operand as SourceFieldExpression)?.CreateGetter(row, e.Type) : null,
@@ -344,8 +333,6 @@ namespace System.Linq.Expressions
 
             var filterExpression = new GenericVisitor
                                        {
-                                           (GenericVisitor visitor, CompareExpression node) =>
-                                               visitor.Visit(CustomExpression.MakeCompare(node.CompareType, visitor.Visit(node.Left), visitor.Visit(node.Right)).CreateComparer()),
                                            (GenericVisitor visitor, UnaryExpression node) =>
                                                {
                                                    var operand = visitor.Visit(node.Operand);
@@ -522,23 +509,6 @@ namespace System.Linq.Expressions
             return new GenericVisitor
                        {
                            (ExecutionContextExpression e) => Expression.Constant(context),
-                           (GenericVisitor v, CompareExpression e) =>
-                               {
-                                   var left = v.Visit(e.Left);
-                                   var right = v.Visit(e.Right);
-
-                                   if (!object.ReferenceEquals(left, e.Left) || !object.ReferenceEquals(right, e.Right))
-                                   {
-                                       e = CustomExpression.MakeCompare(e.CompareType, left, right);
-                                   }
-
-                                   if (e.Left is ConstantExpression && e.Right is ConstantExpression)
-                                   {
-                                       return e.EvalExpression();
-                                   }
-
-                                   return e;
-                               },
                            (GenericVisitor v, UnaryExpression e) =>
                                {
                                    var operand = e.Operand;
@@ -787,7 +757,6 @@ namespace System.Linq.Expressions
                                           (NewExpression node) => node,
                                           (MethodCallExpression node) => node,
                                           (ConditionalExpression node) => node,
-                                          (CompareExpression node) => node,
                                           (MemberExpression node) => node,
                                           (InvocationExpression node) => node,
                                           (GenericVisitor v, BinaryExpression node) =>
@@ -1068,12 +1037,6 @@ namespace System.Linq.Expressions
                 values = subExpressionPermutations.Select(s => Expression.MakeBinary(binary.NodeType, s[0], s[1]).Eval()).ToArray();
             }
 
-            if (expression is CompareExpression compare)
-            {
-                // TODO: Actual comparison.
-                values = subExpressionPermutations.Select(s => CustomExpression.MakeCompare(compare.CompareType, s[0], s[1]).Eval()).ToArray();
-            }
-
             if (expression is MemberExpression member)
             {
                 values = subExpressionPermutations.Select(s => Expression.MakeMemberAccess(s[0], member.Member).Eval()).ToArray();
@@ -1123,6 +1086,27 @@ namespace System.Linq.Expressions
             return result;
         }
 
+        public static Expression SwapOperandsForComparison(this BinaryExpression expression)
+        {
+            switch (expression.NodeType)
+            {
+                case ExpressionType.LessThan:
+                    return BinaryOperator.GenerateExpression(">=", expression.Right, expression.Left);
+                case ExpressionType.LessThanOrEqual:
+                    return BinaryOperator.GenerateExpression(">", expression.Right, expression.Left);
+                case ExpressionType.GreaterThanOrEqual:
+                    return BinaryOperator.GenerateExpression("<", expression.Right, expression.Left);
+                case ExpressionType.GreaterThan:
+                    return BinaryOperator.GenerateExpression("<=", expression.Right, expression.Left);
+                case ExpressionType.Equal:
+                    return BinaryOperator.GenerateExpression("=", expression.Right, expression.Left);
+                case ExpressionType.NotEqual:
+                    return BinaryOperator.GenerateExpression("<>", expression.Right, expression.Left);
+            }
+
+            return expression;
+        }
+
         /// <summary>
         /// Moves field expressions in comparisons to the left.
         /// </summary>
@@ -1136,18 +1120,29 @@ namespace System.Linq.Expressions
         {
             return new GenericVisitor
                        {
-                           (CompareExpression node) =>
+                           (BinaryExpression node) =>
                                {
                                    if (!node.Right.ContainsField() || node.Left.ContainsField())
                                    {
                                        return null;
                                    }
 
-                                   var opposite = ExpressionExtensions.InvertComparison(node.CompareType);
-
-                                   return opposite != null ? CustomExpression.MakeCompare(opposite.Value, node.Right, node.Left) : null;
+                                   return node.SwapOperandsForComparison();
                                },
                        }.Visit(expression);
+        }
+
+        /// <summary>
+        /// Checks if the <see cref="BinaryExpression"/> is a comparison.
+        /// </summary>
+        /// <param name="expression">The expresion to check.</param>
+        /// <returns><c>true</c> if the <paramref name="expression"/> is a comparison, <c>false</c> otherwise.</returns>
+        public static bool IsComparison([NotNull] this BinaryExpression expression)
+        {
+            var nodeType = expression.NodeType;
+
+            return nodeType == ExpressionType.Equal || nodeType == ExpressionType.NotEqual || nodeType == ExpressionType.LessThan || nodeType == ExpressionType.LessThanOrEqual
+                   || nodeType == ExpressionType.GreaterThan || nodeType == ExpressionType.GreaterThanOrEqual;
         }
 
         /// <summary>
@@ -1171,7 +1166,6 @@ namespace System.Linq.Expressions
                               {
                                   (ConditionalExpression node) => ExpressionExtensions.MoveUpRange(node, node.Test, node.IfTrue, node.IfFalse),
                                   (BinaryExpression node) => ExpressionExtensions.MoveUpRange(node, node.Left, node.Right),
-                                  (CompareExpression node) => ExpressionExtensions.MoveUpRange(node, node.Left, node.Right),
                                   (UnaryExpression node) => ExpressionExtensions.MoveUpRange(node, node.Operand),
                                   (MemberExpression node) => node.Expression == null ? null : ExpressionExtensions.MoveUpRange(node, node.Expression),
                                   (MethodCallExpression node) =>
