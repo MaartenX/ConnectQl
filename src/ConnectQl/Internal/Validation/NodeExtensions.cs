@@ -31,7 +31,6 @@ namespace ConnectQl.Internal.Validation
     using ConnectQl.Internal.Ast.Statements;
     using ConnectQl.Internal.Ast.Targets;
     using ConnectQl.Internal.Ast.Visitors;
-    using ConnectQl.Internal.Interfaces;
 
     using JetBrains.Annotations;
 
@@ -54,31 +53,7 @@ namespace ConnectQl.Internal.Validation
         /// </returns>
         public static string GetDisplay(this Node node, int indentSize = 4)
         {
-            var converter = new NodeToStringConverter(indentSize, null);
-
-            converter.Visit(node);
-
-            return converter.Builder.ToString();
-        }
-
-        /// <summary>
-        /// The get display.
-        /// </summary>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <param name="data">
-        /// The node data provider.
-        /// </param>
-        /// <param name="indentSize">
-        /// The indent size.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string GetDisplay(this Node node, INodeDataProvider data, int indentSize = 4)
-        {
-            var converter = new NodeToStringConverter(indentSize, data);
+            var converter = new NodeToStringConverter(indentSize);
 
             converter.Visit(node);
 
@@ -96,11 +71,6 @@ namespace ConnectQl.Internal.Validation
             private readonly int indentSize;
 
             /// <summary>
-            /// The node data provider.
-            /// </summary>
-            private readonly INodeDataProvider data;
-
-            /// <summary>
             /// The indent.
             /// </summary>
             private int indent;
@@ -111,13 +81,9 @@ namespace ConnectQl.Internal.Validation
             /// <param name="indentSize">
             /// The indent size.
             /// </param>
-            /// <param name="data">
-            /// The node data provider.
-            /// </param>
-            public NodeToStringConverter(int indentSize, [CanBeNull] INodeDataProvider data = null)
+            public NodeToStringConverter(int indentSize)
             {
                 this.indentSize = indentSize;
-                this.data = data;
             }
 
             /// <summary>
@@ -135,7 +101,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitAliasedSqlExpression([NotNull] AliasedSqlExpression node)
+            protected internal override Node VisitAliasedSqlExpression(AliasedSqlExpression node)
             {
                 this.Visit(node.Expression);
 
@@ -157,7 +123,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitApplySource([NotNull] ApplySource node)
+            protected internal override Node VisitApplySource(ApplySource node)
             {
                 this.Visit(node.Left);
 
@@ -178,7 +144,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitBinarySqlExpression([NotNull] BinarySqlExpression node)
+            protected internal override Node VisitBinarySqlExpression(BinarySqlExpression node)
             {
                 this.Builder.Append("(");
 
@@ -203,7 +169,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitBlock([NotNull] Block node)
+            protected internal override Node VisitBlock(Block node)
             {
                 foreach (var statement in node.Statements)
                 {
@@ -225,7 +191,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitConstSqlExpression([NotNull] ConstSqlExpression node)
+            protected internal override Node VisitConstSqlExpression(ConstSqlExpression node)
             {
                 this.Builder.Append(node.Value == null ? "NULL" : node.Value is string ? $"'{node.Value}'" : node.Value);
 
@@ -242,7 +208,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitDeclareJobStatement([NotNull] DeclareJobStatement node)
+            protected internal override Node VisitDeclareJobStatement(DeclareJobStatement node)
             {
                 this.Builder.Append($"DECLARE JOB {node.Name}");
 
@@ -259,7 +225,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitDeclareStatement([NotNull] DeclareStatement node)
+            protected internal override Node VisitDeclareStatement(DeclareStatement node)
             {
                 this.Builder.Append("DECLARE ");
 
@@ -286,7 +252,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitFieldReferenceSqlExpression([NotNull] FieldReferenceSqlExpression node)
+            protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
             {
                 this.Builder.Append(node.Source == null ? $"[{node.Name}]" : $"[{node.Source}].[{node.Name}]");
 
@@ -303,7 +269,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitFunctionCallSqlExpression([NotNull] FunctionCallSqlExpression node)
+            protected internal override Node VisitFunctionCallSqlExpression(FunctionCallSqlExpression node)
             {
                 this.Builder.Append($"{node.Name?.ToUpperInvariant()}(");
 
@@ -336,7 +302,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitFunctionSource([NotNull] FunctionSource node)
+            protected internal override Node VisitFunctionSource(FunctionSource node)
             {
                 this.Visit(node.Function);
 
@@ -355,7 +321,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitFunctionTarget([NotNull] FunctionTarget node)
+            protected internal override Node VisitFunctionTarget(FunctionTarget node)
             {
                 this.Visit(node.Function);
 
@@ -372,7 +338,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitImportStatement([NotNull] ImportStatement node)
+            protected internal override Node VisitImportStatement(ImportStatement node)
             {
                 this.Builder.Append($"IMPORT '{node.Uri}'");
 
@@ -389,7 +355,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitInsertStatement([NotNull] InsertStatement node)
+            protected internal override Node VisitInsertStatement(InsertStatement node)
             {
                 this.Builder.Append((node.Upsert ? "UPSERT" : "INSERT") + $" INTO{this.NewLine()}{this.Indent()}");
 
@@ -412,7 +378,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitJoinSource([NotNull] JoinSource node)
+            protected internal override Node VisitJoinSource(JoinSource node)
             {
                 this.Visit(node.First);
 
@@ -473,7 +439,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitOrderBySqlExpression([NotNull] OrderBySqlExpression node)
+            protected internal override Node VisitOrderBySqlExpression(OrderBySqlExpression node)
             {
                 this.Visit(node.Expression);
 
@@ -492,7 +458,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitSelectFromStatement([NotNull] SelectFromStatement node)
+            protected internal override Node VisitSelectFromStatement(SelectFromStatement node)
             {
                 this.Builder.Append($"SELECT{this.NewLine()}{this.Indent()}");
 
@@ -578,7 +544,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitSelectSource([NotNull] SelectSource node)
+            protected internal override Node VisitSelectSource(SelectSource node)
             {
                 this.Builder.Append($"({this.NewLine()}{this.Indent()}");
 
@@ -599,7 +565,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitSelectUnionStatement([NotNull] SelectUnionStatement node)
+            protected internal override Node VisitSelectUnionStatement(SelectUnionStatement node)
             {
                 this.Visit(node.First);
                 this.Builder.Append($"UNION{this.NewLine()}");
@@ -616,7 +582,7 @@ namespace ConnectQl.Internal.Validation
             /// <returns>
             /// The node, or a new version of the node.
             /// </returns>
-            protected internal override Node VisitTriggerStatement([NotNull] TriggerStatement node)
+            protected internal override Node VisitTriggerStatement(TriggerStatement node)
             {
                 this.Builder.Append("TRIGGER " + node.JobName);
 
@@ -633,7 +599,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitUnarySqlExpression([NotNull] UnarySqlExpression node)
+            protected internal override Node VisitUnarySqlExpression(UnarySqlExpression node)
             {
                 this.Builder.Append($"{node.Op}(");
 
@@ -654,7 +620,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitUseStatement([NotNull] UseStatement node)
+            protected internal override Node VisitUseStatement(UseStatement node)
             {
                 this.Builder.Append("USE DEFAULT ");
 
@@ -675,7 +641,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitVariableDeclaration([NotNull] VariableDeclaration node)
+            protected internal override Node VisitVariableDeclaration(VariableDeclaration node)
             {
                 this.Builder.Append($"{node.Name} = ");
 
@@ -694,7 +660,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitVariableSqlExpression([NotNull] VariableSqlExpression node)
+            protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
             {
                 this.Builder.Append(node.Name);
 
@@ -711,7 +677,7 @@ namespace ConnectQl.Internal.Validation
             /// The node, or a new version of the node.
             /// </returns>
             [NotNull]
-            protected internal override Node VisitWildCardSqlExpression([NotNull] WildcardSqlExpression node)
+            protected internal override Node VisitWildCardSqlExpression(WildcardSqlExpression node)
             {
                 this.Builder.Append((node.Source == null ? string.Empty : node.Source + ".") + "*");
 

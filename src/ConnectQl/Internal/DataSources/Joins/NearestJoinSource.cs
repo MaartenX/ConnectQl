@@ -192,8 +192,8 @@ namespace ConnectQl.Internal.DataSources.Joins
                                    }
 
                                    return Expression.AndAlso(
-                                       BinaryOperator.GenerateExpression(ExpressionType.GreaterThanOrEqual, field, Expression.Constant(range.Min, range.Type)),
-                                       BinaryOperator.GenerateExpression(ExpressionType.LessThanOrEqual, field, Expression.Constant(range.Max, range.Type)));
+                                       Operator.GenerateExpression(ExpressionType.GreaterThanOrEqual, field, Expression.Constant(range.Min, range.Type)),
+                                       Operator.GenerateExpression(ExpressionType.LessThanOrEqual, field, Expression.Constant(range.Max, range.Type)));
                                },
                        }.Visit(filter));
         }

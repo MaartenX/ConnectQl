@@ -116,14 +116,14 @@ namespace ConnectQl.Internal.Validation
         public IConnectQlFunctions Functions { get; }
 
         /// <summary>
-        /// Gets the parent validation scope.
-        /// </summary>
-        public ValidationScope Parent { get; }
-
-        /// <summary>
         /// Gets a value indicating whether the plugins are still loading.
         /// </summary>
         public bool IsLoadingPlugins => this.context.GetPlugins().IsLoading;
+
+        /// <summary>
+        /// Gets the parent validation scope.
+        /// </summary>
+        private ValidationScope Parent { get; }
 
         /// <summary>
         /// Adds an alias for a field to the scope. When an alias already exists in the current scope, it is appended by a
@@ -276,7 +276,7 @@ namespace ConnectQl.Internal.Validation
 
             while (scope != null)
             {
-                if (scope.functions.TryGetValue($"{name}'{arguments.Count}", out IFunctionDescriptor function))
+                if (scope.functions.TryGetValue($"{name}'{arguments.Count}", out var function))
                 {
                     return function;
                 }
@@ -304,7 +304,7 @@ namespace ConnectQl.Internal.Validation
             var scope = this;
             while (scope != null && alias != null)
             {
-                if (scope.sources.TryGetValue(alias, out SourceBase source))
+                if (scope.sources.TryGetValue(alias, out var source))
                 {
                     return source;
                 }
@@ -329,7 +329,7 @@ namespace ConnectQl.Internal.Validation
             var scope = this;
             while (scope != null)
             {
-                if (scope.variables.TryGetValue(variable, out ITypeDescriptor type))
+                if (scope.variables.TryGetValue(variable, out var type))
                 {
                     return type;
                 }

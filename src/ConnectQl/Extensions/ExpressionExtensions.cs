@@ -924,6 +924,32 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
+        /// Swaps the operands and creates a new comparison.
+        /// </summary>
+        /// <param name="expression">The expression to swap operands for.</param>
+        /// <returns>The new expression, with swapped operands, or <paramref name="expression"/> if they could not be swapped.</returns>
+        public static Expression SwapOperandsForComparison([NotNull] this BinaryExpression expression)
+        {
+            switch (expression.NodeType)
+            {
+                case ExpressionType.LessThan:
+                    return Operator.GenerateExpression(">=", expression.Right, expression.Left);
+                case ExpressionType.LessThanOrEqual:
+                    return Operator.GenerateExpression(">", expression.Right, expression.Left);
+                case ExpressionType.GreaterThanOrEqual:
+                    return Operator.GenerateExpression("<", expression.Right, expression.Left);
+                case ExpressionType.GreaterThan:
+                    return Operator.GenerateExpression("<=", expression.Right, expression.Left);
+                case ExpressionType.Equal:
+                    return Operator.GenerateExpression("=", expression.Right, expression.Left);
+                case ExpressionType.NotEqual:
+                    return Operator.GenerateExpression("<>", expression.Right, expression.Left);
+            }
+
+            return expression;
+        }
+
+        /// <summary>
         /// Replaces fields with the specified values.
         /// </summary>
         /// <param name="expression">
@@ -1075,27 +1101,6 @@ namespace System.Linq.Expressions
             }
 
             return result;
-        }
-
-        public static Expression SwapOperandsForComparison(this BinaryExpression expression)
-        {
-            switch (expression.NodeType)
-            {
-                case ExpressionType.LessThan:
-                    return BinaryOperator.GenerateExpression(">=", expression.Right, expression.Left);
-                case ExpressionType.LessThanOrEqual:
-                    return BinaryOperator.GenerateExpression(">", expression.Right, expression.Left);
-                case ExpressionType.GreaterThanOrEqual:
-                    return BinaryOperator.GenerateExpression("<", expression.Right, expression.Left);
-                case ExpressionType.GreaterThan:
-                    return BinaryOperator.GenerateExpression("<=", expression.Right, expression.Left);
-                case ExpressionType.Equal:
-                    return BinaryOperator.GenerateExpression("=", expression.Right, expression.Left);
-                case ExpressionType.NotEqual:
-                    return BinaryOperator.GenerateExpression("<>", expression.Right, expression.Left);
-            }
-
-            return expression;
         }
 
         /// <summary>

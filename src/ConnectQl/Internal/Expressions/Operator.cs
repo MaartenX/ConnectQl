@@ -36,8 +36,23 @@ namespace ConnectQl.Internal.Validation.Operators
     /// <summary>
     /// The binary operator.
     /// </summary>
-    internal abstract class BinaryOperator : Operator
+    internal static class Operator
     {
+
+        /// <summary>
+        /// The string comparision mode that will be used in operators.
+        /// </summary>
+        private const StringComparison StringComparisionMode = StringComparison.Ordinal;
+
+        /// <summary>
+        /// When two expressions do not have the same type, one of the two has to be cast to the other type. This array holds
+        ///     the most important type to the least important one.
+        /// </summary>
+        private static readonly Type[] CommonTypeOrder =
+            {
+                typeof(double), typeof(decimal), typeof(float), typeof(ulong), typeof(long), typeof(uint), typeof(int), typeof(ushort), typeof(short), typeof(char), typeof(byte)
+            };
+
         /// <summary>
         /// The <see cref="string.Concat(string, string)"/> method.
         /// </summary>
@@ -56,88 +71,88 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <summary>
         /// The names that overloaded methods for the specified expressions have.
         /// </summary>
-        private static readonly Dictionary<string, string> OverloadNames = new Dictionary<string, string>
-                                                                               {
-                                                                                   { "+", "op_Addition" },
-                                                                                   { "-", "op_Subtraction" },
-                                                                                   { "*", "op_Multiply" },
-                                                                                   { "/", "op_Division" },
-                                                                                   { "%", "op_Modulus" },
-                                                                                   { "^", "op_Power" },
-                                                                                   { ">", "op_GreaterThan" },
-                                                                                   { ">=", "op_GreaterThanOrEqual" },
-                                                                                   { "=", "op_Equality" },
-                                                                                   { "<=", "op_LessThanOrEqual" },
-                                                                                   { "<", "op_LessThan" },
-                                                                                   { "<>", "op_inequality" },
-                                                                                   { "AND", "op_LogicalAnd" },
-                                                                                   { "OR", "op_LogicalOr" }
-                                                                               };
+        private static readonly Dictionary<string, string> OverloadNames =
+            new Dictionary<string, string>
+            {
+                { "+", "op_Addition" },
+                { "-", "op_Subtraction" },
+                { "*", "op_Multiply" },
+                { "/", "op_Division" },
+                { "%", "op_Modulus" },
+                { "^", "op_Power" },
+                { ">", "op_GreaterThan" },
+                { ">=", "op_GreaterThanOrEqual" },
+                { "=", "op_Equality" },
+                { "<=", "op_LessThanOrEqual" },
+                { "<", "op_LessThan" },
+                { "<>", "op_inequality" },
+                { "AND", "op_LogicalAnd" },
+                { "OR", "op_LogicalOr" }
+            };
 
         /// <summary>
         /// Maps an expression to a dynamic method which can be used in the expression.
         /// </summary>
-        private static readonly Dictionary<string, MethodInfo> DynamicMethods = new Dictionary<string, MethodInfo>
-                                                                                    {
-                                                                                        {
-                                                                                            "+",
-                                                                                            ((Func<object, object, object>)BinaryOperator.DynamicAdd).GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "-",
-                                                                                            ((Func<object, object, object>)BinaryOperator.DynamicSubtract)
-                                                                                            .GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "*",
-                                                                                            ((Func<object, object, object>)BinaryOperator.DynamicMultiply)
-                                                                                            .GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "/",
-                                                                                            ((Func<object, object, object>)BinaryOperator.DynamicDivide).GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "%",
-                                                                                            ((Func<object, object, object>)BinaryOperator.DynamicModulo).GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "^",
-                                                                                            ((Func<object, object, object>)BinaryOperator.DynamicPower).GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            ">",
-                                                                                            ((Func<object, object, bool>)BinaryOperator.DynamicGreaterThan)
-                                                                                            .GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            ">=",
-                                                                                            ((Func<object, object, bool>)BinaryOperator.DynamicGreaterThanOrEqual)
-                                                                                            .GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "=",
-                                                                                            ((Func<object, object, bool>)BinaryOperator.DynamicEqual).GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "<=",
-                                                                                            ((Func<object, object, bool>)BinaryOperator.DynamicLessThanOrEqual)
-                                                                                            .GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "<",
-                                                                                            ((Func<object, object, bool>)BinaryOperator.DynamicLessThan).GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "<>",
-                                                                                            ((Func<object, object, bool>)BinaryOperator.DynamicNotEqual).GetMethodInfo()
-                                                                                        },
-                                                                                        {
-                                                                                            "AND",
-                                                                                            ((Func<object, object, bool>)BinaryOperator.DynamicAnd).GetMethodInfo()
-                                                                                        },
-                                                                                        { "OR", ((Func<object, object, bool>)BinaryOperator.DynamicOr).GetMethodInfo() }
-                                                                                    };
+        private static readonly Dictionary<string, MethodInfo> DynamicMethods =
+            new Dictionary<string, MethodInfo>
+            {
+                {
+                    "+",
+                    ((Func<object, object, object>)DynamicAdd).GetMethodInfo()
+                },
+                {
+                    "-",
+                    ((Func<object, object, object>)DynamicSubtract).GetMethodInfo()
+                },
+                {
+                    "*",
+                    ((Func<object, object, object>)DynamicMultiply).GetMethodInfo()
+                },
+                {
+                    "/",
+                    ((Func<object, object, object>)DynamicDivide).GetMethodInfo()
+                },
+                {
+                    "%",
+                    ((Func<object, object, object>)DynamicModulo).GetMethodInfo()
+                },
+                {
+                    "^",
+                    ((Func<object, object, object>)DynamicPower).GetMethodInfo()
+                },
+                {
+                    ">",
+                    ((Func<object, object, bool>)DynamicGreaterThan).GetMethodInfo()
+                },
+                {
+                    ">=",
+                    ((Func<object, object, bool>)DynamicGreaterThanOrEqual).GetMethodInfo()
+                },
+                {
+                    "=",
+                    ((Func<object, object, bool>)DynamicEqual).GetMethodInfo()
+                },
+                {
+                    "<=",
+                    ((Func<object, object, bool>)DynamicLessThanOrEqual).GetMethodInfo()
+                },
+                {
+                    "<",
+                    ((Func<object, object, bool>)DynamicLessThan).GetMethodInfo()
+                },
+                {
+                    "<>",
+                    ((Func<object, object, bool>)DynamicNotEqual).GetMethodInfo()
+                },
+                {
+                    "AND",
+                    ((Func<object, object, bool>)DynamicAnd).GetMethodInfo()
+                },
+                {
+                    "OR",
+                    ((Func<object, object, bool>)DynamicOr).GetMethodInfo()
+                }
+            };
 
         /// <summary>
         /// Generates an <see cref="Expression"/> for the binary <see cref="ExpressionType"/>.
@@ -182,60 +197,69 @@ namespace ConnectQl.Internal.Validation.Operators
         /// </returns>
         public static Expression GenerateExpression([NotNull] string op, [NotNull] Expression first, [NotNull] Expression second, [CanBeNull] Action<string> onError = null)
         {
-            switch (op.ToUpperInvariant())
+            try
             {
-                case "+":
-                    return first.Type == typeof(string) || second.Type == typeof(string)
-                               ? Expression.Add(Operator.ToString(first), Operator.ToString(second), BinaryOperator.StringConcatMethod)
-                               : DoConversion(op, first, second, parts => Expression.Add(parts.Item1, parts.Item2, parts.Item3));
-                case "-":
-                    return DoConversion(op, first, second, parts => Expression.Subtract(parts.Item1, parts.Item2, parts.Item3));
-                case "/":
-                    return DoConversion(op, first, second, parts => Expression.Divide(parts.Item1, parts.Item2, parts.Item3));
-                case "*":
-                    return DoConversion(op, first, second, parts => Expression.Multiply(parts.Item1, parts.Item2, parts.Item3));
-                case "%":
-                    return DoConversion(op, first, second, parts => Expression.Modulo(parts.Item1, parts.Item2, parts.Item3));
-                case "^":
-                    return DoConversion(op, first, second, parts => Expression.Power(parts.Item1, parts.Item2, parts.Item3));
-                case ">":
-                    return first.Type == typeof(string) || second.Type == typeof(string)
-                               ? Expression.GreaterThan(Operator.ToString(first), Operator.ToString(second), false, ((Func<string, string, bool>)BinaryOperator.StringGreaterThan).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.GreaterThan(parts.Item1, parts.Item2, false, parts.Item3));
-                case ">=":
-                    return first.Type == typeof(string) || second.Type == typeof(string)
-                               ? Expression.GreaterThanOrEqual(
-                                   Operator.ToString(first),
-                                   Operator.ToString(second),
-                                   false,
-                                   ((Func<string, string, bool>)BinaryOperator.StringGreaterThanOrEqual).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.GreaterThanOrEqual(parts.Item1, parts.Item2, false, parts.Item3));
-                case "=":
-                    return first.Type == typeof(string) || second.Type == typeof(string)
-                               ? Expression.Equal(Operator.ToString(first), Operator.ToString(second), false, ((Func<string, string, bool>)BinaryOperator.StringEqual).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.Equal(parts.Item1, parts.Item2, false, parts.Item3));
-                case "<>":
-                    return first.Type == typeof(string) || second.Type == typeof(string)
-                               ? Expression.NotEqual(Operator.ToString(first), Operator.ToString(second), false, ((Func<string, string, bool>)BinaryOperator.StringNotEqual).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.NotEqual(parts.Item1, parts.Item2, false, parts.Item3));
-                case "<":
-                    return first.Type == typeof(string) || second.Type == typeof(string)
-                               ? Expression.LessThan(Operator.ToString(first), Operator.ToString(second), false, ((Func<string, string, bool>)BinaryOperator.StringLessThan).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.LessThan(parts.Item1, parts.Item2, false, parts.Item3));
-                case "<=":
-                    return first.Type == typeof(string) || second.Type == typeof(string)
-                               ? Expression.LessThanOrEqual(
-                                   Operator.ToString(first),
-                                   Operator.ToString(second),
-                                   false,
-                                   ((Func<string, string, bool>)BinaryOperator.StringLessThanOrEqual).GetMethodInfo())
-                               : DoConversion(op, first, second, parts => Expression.LessThanOrEqual(parts.Item1, parts.Item2, false, parts.Item3));
-                case "AND":
-                    return DoConversion(op, first, second, parts => Expression.And(parts.Item1, parts.Item2, parts.Item3));
-                case "OR":
-                    return DoConversion(op, first, second, parts => Expression.Or(parts.Item1, parts.Item2, parts.Item3));
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(op), string.Format(Messages.UnknownOperator, op));
+                switch (op.ToUpperInvariant())
+                {
+                    case "+":
+                        return first.Type == typeof(string) || second.Type == typeof(string)
+                                   ? Expression.Add(ToString(first), ToString(second), StringConcatMethod)
+                                   : DoConversion(op, first, second, parts => Expression.Add(parts.Item1, parts.Item2, parts.Item3));
+                    case "-":
+                        return DoConversion(op, first, second, parts => Expression.Subtract(parts.Item1, parts.Item2, parts.Item3));
+                    case "/":
+                        return DoConversion(op, first, second, parts => Expression.Divide(parts.Item1, parts.Item2, parts.Item3));
+                    case "*":
+                        return DoConversion(op, first, second, parts => Expression.Multiply(parts.Item1, parts.Item2, parts.Item3));
+                    case "%":
+                        return DoConversion(op, first, second, parts => Expression.Modulo(parts.Item1, parts.Item2, parts.Item3));
+                    case "^":
+                        return DoConversion(op, first, second, parts => Expression.Power(parts.Item1, parts.Item2, parts.Item3));
+                    case ">":
+                        return first.Type == typeof(string) || second.Type == typeof(string)
+                                   ? Expression.GreaterThan(ToString(first), ToString(second), false, ((Func<string, string, bool>)StringGreaterThan).GetMethodInfo())
+                                   : DoConversion(op, first, second, parts => Expression.GreaterThan(parts.Item1, parts.Item2, false, parts.Item3));
+                    case ">=":
+                        return first.Type == typeof(string) || second.Type == typeof(string)
+                                   ? Expression.GreaterThanOrEqual(
+                                                                   ToString(first),
+                                                                   ToString(second),
+                                                                   false,
+                                                                   ((Func<string, string, bool>)StringGreaterThanOrEqual).GetMethodInfo())
+                                   : DoConversion(op, first, second, parts => Expression.GreaterThanOrEqual(parts.Item1, parts.Item2, false, parts.Item3));
+                    case "=":
+                        return first.Type == typeof(string) || second.Type == typeof(string)
+                                   ? Expression.Equal(ToString(first), ToString(second), false, ((Func<string, string, bool>)StringEqual).GetMethodInfo())
+                                   : DoConversion(op, first, second, parts => Expression.Equal(parts.Item1, parts.Item2, false, parts.Item3));
+                    case "<>":
+                        return first.Type == typeof(string) || second.Type == typeof(string)
+                                   ? Expression.NotEqual(ToString(first), ToString(second), false, ((Func<string, string, bool>)StringNotEqual).GetMethodInfo())
+                                   : DoConversion(op, first, second, parts => Expression.NotEqual(parts.Item1, parts.Item2, false, parts.Item3));
+                    case "<":
+                        return first.Type == typeof(string) || second.Type == typeof(string)
+                                   ? Expression.LessThan(ToString(first), ToString(second), false, ((Func<string, string, bool>)StringLessThan).GetMethodInfo())
+                                   : DoConversion(op, first, second, parts => Expression.LessThan(parts.Item1, parts.Item2, false, parts.Item3));
+                    case "<=":
+                        return first.Type == typeof(string) || second.Type == typeof(string)
+                                   ? Expression.LessThanOrEqual(
+                                                                ToString(first),
+                                                                ToString(second),
+                                                                false,
+                                                                ((Func<string, string, bool>)StringLessThanOrEqual).GetMethodInfo())
+                                   : DoConversion(op, first, second, parts => Expression.LessThanOrEqual(parts.Item1, parts.Item2, false, parts.Item3));
+                    case "AND":
+                        return DoConversion(op, first, second, parts => Expression.And(parts.Item1, parts.Item2, parts.Item3));
+                    case "OR":
+                        return DoConversion(op, first, second, parts => Expression.Or(parts.Item1, parts.Item2, parts.Item3));
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(op), string.Format(Messages.UnknownOperator, op));
+                }
+            }
+            catch (Exception e)
+            {
+                onError?.Invoke(e.Message);
+
+                return Expression.Constant(new Error(e));
             }
         }
 
@@ -260,6 +284,102 @@ namespace ConnectQl.Internal.Validation.Operators
         public static Type InferType([NotNull] string op, Type first, Type second, Action<string> errorCallback)
         {
             return GenerateExpression(op, Expression.Parameter(first), Expression.Parameter(second), errorCallback).Type;
+        }
+
+        /// <summary>
+        /// Generates an <see cref="Expression"/> for the unary  operator.
+        /// </summary>
+        /// <param name="op">
+        /// The operator.
+        /// </param>
+        /// <param name="operand">
+        /// The operand of the unary expression.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Expression"/>.
+        /// </returns>
+        public static Expression GenerateExpression([NotNull] string op, Expression operand)
+        {
+            switch (op.ToUpperInvariant())
+            {
+                case "+": return Expression.UnaryPlus(operand);
+                case "-": return Expression.Negate(operand);
+                case "!":
+                case "NOT": return Expression.Not(operand);
+                default: throw new InvalidOperationException(string.Format(Messages.OperatorNotSupported, op));
+            }
+        }
+
+        /// <summary>
+        /// Infers the type of the unary expression.
+        /// </summary>
+        /// <param name="op">
+        /// The operator.
+        /// </param>
+        /// <param name="operand">
+        /// The operand of the unary expression.
+        /// </param>
+        /// ///
+        /// <returns>
+        /// The <see cref="Type"/>.
+        /// </returns>
+        public static Type InferType(string op, Type operand)
+        {
+            return GenerateExpression(op, Expression.Parameter(operand)).Type;
+        }
+
+        /// <summary>
+        /// Converts an expression into an object.
+        /// </summary>
+        /// <param name="expression">
+        /// The expression to convert.
+        /// </param>
+        /// <returns>
+        /// The expression, or a new one if conversion is needed.
+        /// </returns>
+        private static Expression ToObject([NotNull] Expression expression)
+        {
+            return ToType(expression, typeof(object));
+        }
+
+        /// <summary>
+        /// Converts an expression into a string.
+        /// </summary>
+        /// <param name="expression">
+        /// The expression to convert.
+        /// </param>
+        /// <returns>
+        /// The expression, or a new one if conversion is needed.
+        /// </returns>
+        private static Expression ToString([NotNull] Expression expression)
+        {
+            if (expression.Type == typeof(string))
+            {
+                return expression;
+            }
+
+            var method = typeof(Convert).GetRuntimeMethod("ToString", new[] { expression.Type, });
+
+            return method != null
+                       ? Expression.Call(method, expression)
+                       : Expression.Call(typeof(Convert).GetRuntimeMethod("ToString", new[] { typeof(object) }), Expression.Convert(expression, typeof(object)));
+        }
+
+        /// <summary>
+        /// Converts an expression into another type.
+        /// </summary>
+        /// <param name="expression">
+        /// The expression to convert.
+        /// </param>
+        /// <param name="type">
+        /// The type to convert to.
+        /// </param>
+        /// <returns>
+        /// The expression, or a new one if conversion is needed.
+        /// </returns>
+        private static Expression ToType([NotNull] Expression expression, Type type)
+        {
+            return expression.Type == type ? expression : Expression.Convert(expression, type);
         }
 
         /// <summary>
@@ -354,13 +474,13 @@ namespace ConnectQl.Internal.Validation.Operators
 
             var firstInfo = first.Type.GetTypeInfo();
             var secondInfo = second.Type.GetTypeInfo();
-            var overloaded = BinaryOperator.GetOverloadedMethod(op, firstInfo, secondInfo);
+            var overloaded = GetOverloadedMethod(op, firstInfo, secondInfo);
 
             if (overloaded != null)
             {
                 var parameters = overloaded.GetParameters();
 
-                return Tuple.Create(Operator.ToType(first, parameters[0].ParameterType), Operator.ToType(second, parameters[1].ParameterType), overloaded);
+                return Tuple.Create(ToType(first, parameters[0].ParameterType), ToType(second, parameters[1].ParameterType), overloaded);
             }
 
             if (first.Type == second.Type)
@@ -370,26 +490,26 @@ namespace ConnectQl.Internal.Validation.Operators
 
             if (firstInfo.IsEnum)
             {
-                first = Operator.ToType(first, Enum.GetUnderlyingType(first.Type));
+                first = ToType(first, Enum.GetUnderlyingType(first.Type));
             }
 
             if (secondInfo.IsEnum)
             {
-                second = Operator.ToType(second, Enum.GetUnderlyingType(second.Type));
+                second = ToType(second, Enum.GetUnderlyingType(second.Type));
             }
 
-            if (Operator.CommonTypeOrder.Contains(first.Type) && Operator.CommonTypeOrder.Contains(second.Type))
+            if (CommonTypeOrder.Contains(first.Type) && CommonTypeOrder.Contains(second.Type))
             {
                 // Try to cast the arguments to a common type, starting with the highest precision.
-                foreach (var type in Operator.CommonTypeOrder)
+                foreach (var type in CommonTypeOrder)
                 {
                     if (first.Type != type && second.Type != type)
                     {
                         continue;
                     }
 
-                    first = Operator.ToType(first, type);
-                    second = Operator.ToType(second, type);
+                    first = ToType(first, type);
+                    second = ToType(second, type);
 
                     return Tuple.Create(first, second, (MethodInfo)null);
                 }
@@ -505,8 +625,8 @@ namespace ConnectQl.Internal.Validation.Operators
                 var parts = GetExpressionParts(op, left, right);
 
                 var expr = Expression.Lambda<Func<object, object, object>>(
-                    Expression.Convert(createExpression(parts), typeof(object)).ReplaceParameter(left, Operator.ToType(leftObject, firstType))
-                        .ReplaceParameter(right, Operator.ToType(rightObject, secondType)),
+                    Expression.Convert(createExpression(parts), typeof(object)).ReplaceParameter(left, ToType(leftObject, firstType))
+                        .ReplaceParameter(right, ToType(rightObject, secondType)),
                     leftObject,
                     rightObject);
 
@@ -575,7 +695,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>The result.</returns>
         [CanBeNull]
         private static object DynamicAdd([CanBeNull] object first, [CanBeNull] object second) =>
-            first is string || second is string ? string.Concat(first, second) : BinaryOperator.Evaluate("+", first, second, p => Expression.Add(p.Item1, p.Item2, p.Item3));
+            first is string || second is string ? string.Concat(first, second) : Evaluate("+", first, second, p => Expression.Add(p.Item1, p.Item2, p.Item3));
 
         /// <summary>
         /// Checks if <paramref name="first"/> is greater than <paramref name="second"/> and returns the result.
@@ -631,7 +751,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first object.</param>
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
-        private static bool DynamicAnd([CanBeNull] object first, [CanBeNull] object second) => (bool)BinaryOperator.Evaluate("AND", first, second, p => Expression.And(p.Item1, p.Item2, p.Item3));
+        private static bool DynamicAnd([CanBeNull] object first, [CanBeNull] object second) => (bool)Evaluate("AND", first, second, p => Expression.And(p.Item1, p.Item2, p.Item3));
 
         /// <summary>
         /// Gets the logical OR of <paramref name="first"/> and <paramref name="second"/> and returns the result.
@@ -639,7 +759,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first object.</param>
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
-        private static bool DynamicOr([CanBeNull] object first, [CanBeNull] object second) => (bool)BinaryOperator.Evaluate("OR", first, second, p => Expression.Or(p.Item1, p.Item2, p.Item3));
+        private static bool DynamicOr([CanBeNull] object first, [CanBeNull] object second) => (bool)Evaluate("OR", first, second, p => Expression.Or(p.Item1, p.Item2, p.Item3));
         
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is greater than <paramref name="second"/>.
@@ -647,7 +767,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first string.</param>
         /// <param name="second">The second string.</param>
         /// <returns><c>true</c> if <paramref name="first"/> is greater than <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringGreaterThan(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) > 0;
+        private static bool StringGreaterThan(string first, string second) => string.Compare(first, second, StringComparisionMode) > 0;
 
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is greater than or equal to <paramref name="second"/>.
@@ -655,7 +775,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first string.</param>
         /// <param name="second">The second string.</param>
         /// <returns><c>true</c> if <paramref name="first"/> is greater than or equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringGreaterThanOrEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) >= 0;
+        private static bool StringGreaterThanOrEqual(string first, string second) => string.Compare(first, second, StringComparisionMode) >= 0;
 
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is less than <paramref name="second"/>.
@@ -663,7 +783,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first string.</param>
         /// <param name="second">The second string.</param>
         /// <returns><c>true</c> if <paramref name="first"/> is less than <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringLessThan(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) < 0;
+        private static bool StringLessThan(string first, string second) => string.Compare(first, second, StringComparisionMode) < 0;
 
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is less than or equal to <paramref name="second"/>.
@@ -671,7 +791,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first string.</param>
         /// <param name="second">The second string.</param>
         /// <returns><c>true</c> if <paramref name="first"/> is less than or equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringLessThanOrEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) <= 0;
+        private static bool StringLessThanOrEqual(string first, string second) => string.Compare(first, second, StringComparisionMode) <= 0;
 
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is equal to <paramref name="second"/>.
@@ -679,7 +799,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first string.</param>
         /// <param name="second">The second string.</param>
         /// <returns><c>true</c> if <paramref name="first"/> is equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) == 0;
+        private static bool StringEqual(string first, string second) => string.Compare(first, second, StringComparisionMode) == 0;
 
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is not equal to <paramref name="second"/>.
@@ -687,7 +807,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="first">The first string.</param>
         /// <param name="second">The second string.</param>
         /// <returns><c>true</c> if <paramref name="first"/> is not equal to <paramref name="second"/>, <c>false</c> otherwise.</returns>
-        private static bool StringNotEqual(string first, string second) => string.Compare(first, second, Operator.StringComparisionMode) != 0;
+        private static bool StringNotEqual(string first, string second) => string.Compare(first, second, StringComparisionMode) != 0;
 
         /// <summary>
         /// Compares the two object using the specified operator and expression and returns the result.

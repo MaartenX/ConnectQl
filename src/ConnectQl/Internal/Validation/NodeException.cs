@@ -26,6 +26,8 @@ namespace ConnectQl.Internal.Validation
 
     using ConnectQl.Internal.Ast;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The node exception.
     /// </summary>
@@ -67,6 +69,7 @@ namespace ConnectQl.Internal.Validation
         /// <summary>
         /// Gets the node that has the error.
         /// </summary>
+        [PublicAPI]
         public Node Node { get; }
     }
 }

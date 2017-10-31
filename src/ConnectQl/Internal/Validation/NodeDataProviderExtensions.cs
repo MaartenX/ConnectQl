@@ -37,24 +37,6 @@ namespace ConnectQl.Internal.Validation
     internal static class NodeDataProviderExtensions
     {
         /// <summary>
-        /// Gets the alias connected to the node.
-        /// </summary>
-        /// <param name="dataProvider">
-        /// The data provider.
-        /// </param>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// The alias or <c>null</c> when no alias is available.
-        /// </returns>
-        [CanBeNull]
-        public static string GetAlias([NotNull] this INodeDataProvider dataProvider, Node node)
-        {
-            return dataProvider.TryGet(node, "Alias", out string result) ? result : null;
-        }
-
-        /// <summary>
         /// Gets the expression connected to the node.
         /// </summary>
         /// <param name="dataProvider">
@@ -156,37 +138,6 @@ namespace ConnectQl.Internal.Validation
         public static ITypeDescriptor GetType(this INodeDataProvider dataProvider, [CanBeNull] Node node)
         {
             return node != null && dataProvider.TryGet(node, "Type", out ITypeDescriptor result) ? result ?? new TypeDescriptor(typeof(object)) : new TypeDescriptor(typeof(object));
-        }
-
-        /// <summary>
-        /// Checks if the node is a group function.
-        /// </summary>
-        /// <param name="dataProvider">
-        /// The data provider.
-        /// </param>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if the node is a group function, <c>false</c> otherwise.
-        /// </returns>
-        public static bool IsGroupFunction([NotNull] this INodeDataProvider dataProvider, Node node)
-        {
-            return dataProvider.TryGet(node, "IsGroupFunction", out object isGroupFunction) && (bool)isGroupFunction;
-        }
-
-        /// <summary>
-        /// Marks the node as a group function.
-        /// </summary>
-        /// <param name="dataProvider">
-        /// The data provider.
-        /// </param>
-        /// <param name="node">
-        /// The node.
-        /// </param>
-        public static void MarkAsGroupFunction([NotNull] this INodeDataProvider dataProvider, Node node)
-        {
-            dataProvider.Set(node, "IsGroupFunction", true);
         }
 
         /// <summary>

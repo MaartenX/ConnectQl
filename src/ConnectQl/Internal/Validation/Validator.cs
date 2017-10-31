@@ -69,7 +69,7 @@ namespace ConnectQl.Internal.Validation
         {
             this.context = context;
             this.Scope = new ValidationScope(context);
-            this.Scope.EnablePlugin(Validator.DefaultFunctions);
+            this.Scope.EnablePlugin(DefaultFunctions);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace ConnectQl.Internal.Validation
         /// The node to validate.
         /// </param>
         /// <returns>
-        /// The <see cref="ValidationContext"/>.
+        /// The <see cref="Node"/>.
         /// </returns>
         [CanBeNull]
         public static T Validate<T>([NotNull] IValidationContext context, T node)
@@ -122,7 +122,7 @@ namespace ConnectQl.Internal.Validation
         /// The functions.
         /// </param>
         /// <returns>
-        /// The <see cref="ValidationContext"/>.
+        /// The <see cref="Node"/>.
         /// </returns>
         [CanBeNull]
         internal static T Validate<T>([NotNull] IValidationContext context, T node, [NotNull] out ILookup<string, IFunctionDescriptor> functions)
@@ -179,7 +179,7 @@ namespace ConnectQl.Internal.Validation
         {
             node = this.ValidateChildren(node);
 
-            this.Data.SetType(node, new TypeDescriptor(BinaryOperator.InferType(node.Op, this.Data.GetType(node.First).SimplifiedType, this.Data.GetType(node.Second).SimplifiedType, error => this.AddError(node, error))));
+            this.Data.SetType(node, new TypeDescriptor(Operator.InferType(node.Op, this.Data.GetType(node.First).SimplifiedType, this.Data.GetType(node.Second).SimplifiedType, error => this.AddError(node, error))));
 
             if (this.Scope.IsGroupByExpression(node))
             {
@@ -287,7 +287,6 @@ namespace ConnectQl.Internal.Validation
             if (function.Arguments.Count > 0 && function.Arguments.Any(argument => argument.Type.Interfaces.Any(i => i.HasInterface(typeof(IAsyncEnumerable<>)))))
             {
                 this.Data.SetScope(result, NodeScope.Group);
-                this.Data.MarkAsGroupFunction(result);
             }
 
             return result;
@@ -303,7 +302,7 @@ namespace ConnectQl.Internal.Validation
         /// The node, or a new version of the node.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitFunctionSource([NotNull] FunctionSource node)
+        protected internal override Node VisitFunctionSource(FunctionSource node)
         {
             if (node.Alias != null)
             {
@@ -360,7 +359,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitImportPluginStatement([NotNull] ImportPluginStatement node)
+        protected internal override Node VisitImportPluginStatement(ImportPluginStatement node)
         {
             if (this.Scope.IsPluginEnabled(node.Plugin))
             {
@@ -425,7 +424,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectFromStatement([NotNull] SelectFromStatement node)
+        protected internal override Node VisitSelectFromStatement(SelectFromStatement node)
         {
             using (this.EnterScope())
             {
@@ -496,7 +495,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectSource([NotNull] SelectSource node)
+        protected internal override Node VisitSelectSource(SelectSource node)
         {
             this.Scope.AddSource(node.Alias, node);
 
@@ -513,7 +512,7 @@ namespace ConnectQl.Internal.Validation
         /// The <see cref="Node"/>.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitTrigger([NotNull] Trigger node)
+        protected internal override Node VisitTrigger(Trigger node)
         {
             var result = (Trigger)node.VisitChildren(this);
             var function = this.Data.GetFunction(result.Function);
@@ -540,7 +539,7 @@ namespace ConnectQl.Internal.Validation
         {
             node = this.ValidateChildren(node);
 
-            this.Data.SetType(node, new TypeDescriptor(UnaryOperator.InferType(node.Op, this.Data.GetType(node.Expression).SimplifiedType)));
+            this.Data.SetType(node, new TypeDescriptor(Operator.InferType(node.Op, this.Data.GetType(node.Expression).SimplifiedType)));
 
             if (this.Scope.IsGroupByExpression(node))
             {
@@ -677,7 +676,7 @@ namespace ConnectQl.Internal.Validation
         /// The node, or a new version of the node.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitWildCardSqlExpression([NotNull] WildcardSqlExpression node)
+        protected internal override Node VisitWildCardSqlExpression(WildcardSqlExpression node)
         {
             if (node.Source != null)
             {
@@ -703,7 +702,7 @@ namespace ConnectQl.Internal.Validation
         /// A <see cref="IDisposable"/>, that will exit the scope when disposed.
         /// </returns>
         [NotNull]
-        protected IDisposable EnterScope()
+        private IDisposable EnterScope()
         {
             var scope = this.Scope;
             this.Scope = this.Scope.CreateSubScope();

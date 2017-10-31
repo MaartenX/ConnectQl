@@ -222,18 +222,18 @@ namespace ConnectQl.Internal.DataSources.Joins
                                 case ExpressionType.Equal:
 
                                     return Expression.AndAlso(
-                                        BinaryOperator.GenerateExpression(ExpressionType.GreaterThanOrEqual, leftRange.MinExpression, node.Right),
-                                        BinaryOperator.GenerateExpression(ExpressionType.LessThanOrEqual, leftRange.MaxExpression, node.Right));
+                                        Operator.GenerateExpression(ExpressionType.GreaterThanOrEqual, leftRange.MinExpression, node.Right),
+                                        Operator.GenerateExpression(ExpressionType.LessThanOrEqual, leftRange.MaxExpression, node.Right));
 
                                 case ExpressionType.GreaterThan:
                                 case ExpressionType.GreaterThanOrEqual:
 
-                                    return BinaryOperator.GenerateExpression(node.NodeType, leftRange.MinExpression, node.Right);
+                                    return Operator.GenerateExpression(node.NodeType, leftRange.MinExpression, node.Right);
 
                                 case ExpressionType.LessThan:
                                 case ExpressionType.LessThanOrEqual:
 
-                                    return BinaryOperator.GenerateExpression(node.NodeType, leftRange.MaxExpression, node.Right);
+                                    return Operator.GenerateExpression(node.NodeType, leftRange.MaxExpression, node.Right);
 
                                 case ExpressionType.NotEqual:
 
@@ -249,18 +249,18 @@ namespace ConnectQl.Internal.DataSources.Joins
                             case ExpressionType.Equal:
 
                                 return Expression.AndAlso(
-                                    BinaryOperator.GenerateExpression(ExpressionType.GreaterThanOrEqual, node.Left, rightRange.MinExpression),
-                                    BinaryOperator.GenerateExpression(ExpressionType.LessThanOrEqual, node.Left, rightRange.MaxExpression));
+                                    Operator.GenerateExpression(ExpressionType.GreaterThanOrEqual, node.Left, rightRange.MinExpression),
+                                    Operator.GenerateExpression(ExpressionType.LessThanOrEqual, node.Left, rightRange.MaxExpression));
 
                             case ExpressionType.GreaterThan:
                             case ExpressionType.GreaterThanOrEqual:
 
-                                return BinaryOperator.GenerateExpression(node.NodeType, node.Left, rightRange.MinExpression);
+                                return Operator.GenerateExpression(node.NodeType, node.Left, rightRange.MinExpression);
 
                             case ExpressionType.LessThan:
                             case ExpressionType.LessThanOrEqual:
 
-                                return BinaryOperator.GenerateExpression(node.NodeType, node.Left, rightRange.MaxExpression);
+                                return Operator.GenerateExpression(node.NodeType, node.Left, rightRange.MaxExpression);
 
                             case ExpressionType.NotEqual:
 

@@ -228,7 +228,7 @@ namespace ConnectQl.Internal.Query
             {
                 var result = base.VisitBinarySqlExpression(node);
 
-                this.data.SetExpression(node, BinaryOperator.GenerateExpression(node.Op, this.data.GetExpression(node.First), this.data.GetExpression(node.Second)));
+                this.data.SetExpression(node, Operator.GenerateExpression(node.Op, this.data.GetExpression(node.First), this.data.GetExpression(node.Second)));
 
                 return result;
             }
@@ -338,7 +338,7 @@ namespace ConnectQl.Internal.Query
             {
                 var result = base.VisitUnarySqlExpression(node);
 
-                this.data.SetExpression(node, UnaryOperator.GenerateExpression(node.Op, this.data.GetExpression(node.Expression)));
+                this.data.SetExpression(node, Operator.GenerateExpression(node.Op, this.data.GetExpression(node.Expression)));
 
                 return result;
             }

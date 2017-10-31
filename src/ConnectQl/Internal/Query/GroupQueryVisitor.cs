@@ -285,7 +285,6 @@ namespace ConnectQl.Internal.Query
 
                 var result = new FunctionCallSqlExpression("$GROUP_FIRST", new ReadOnlyCollection<SqlExpressionBase>(fields));
 
-                this.data.MarkAsGroupFunction(result);
                 this.data.SetScope(node, NodeScope.Group);
                 this.data.SetFunction(result, new FunctionDescriptor(result.Name, false, (Expression<Func<IAsyncEnumerable<object>, Task<object>>>)(objs => objs.FirstAsync())));
 

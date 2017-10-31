@@ -128,18 +128,18 @@ namespace ConnectQl.Internal.DataSources.Joins
                             case ExpressionType.Equal:
 
                                 return Expression.AndAlso(
-                                    BinaryOperator.GenerateExpression(ExpressionType.GreaterThanOrEqual, field, Expression.Constant(range.Min, range.Type)),
-                                    BinaryOperator.GenerateExpression(ExpressionType.LessThanOrEqual, field, Expression.Constant(range.Max, range.Type)));
+                                    Operator.GenerateExpression(ExpressionType.GreaterThanOrEqual, field, Expression.Constant(range.Min, range.Type)),
+                                    Operator.GenerateExpression(ExpressionType.LessThanOrEqual, field, Expression.Constant(range.Max, range.Type)));
 
                             case ExpressionType.GreaterThan:
                             case ExpressionType.GreaterThanOrEqual:
 
-                                return BinaryOperator.GenerateExpression(node.NodeType, field, Expression.Constant(range.Min, range.Type));
+                                return Operator.GenerateExpression(node.NodeType, field, Expression.Constant(range.Min, range.Type));
 
                             case ExpressionType.LessThan:
                             case ExpressionType.LessThanOrEqual:
 
-                                return BinaryOperator.GenerateExpression(node.NodeType, field, Expression.Constant(range.Max, range.Type));
+                                return Operator.GenerateExpression(node.NodeType, field, Expression.Constant(range.Max, range.Type));
 
                             case ExpressionType.NotEqual:
 
