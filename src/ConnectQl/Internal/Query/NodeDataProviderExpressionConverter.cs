@@ -176,7 +176,7 @@ namespace ConnectQl.Internal.Query
 
                                    if (e.Operand is SourceFieldExpression sourceFieldExpression && e.NodeType == ExpressionType.Convert)
                                    {
-                                       return CustomExpression.MakeSourceField(sourceFieldExpression.SourceName, sourceFieldExpression.FieldName, e.Type);
+                                       return ConnectQlExpression.MakeSourceField(sourceFieldExpression.SourceName, sourceFieldExpression.FieldName, e.Type);
                                    }
 
                                    return e;
@@ -263,7 +263,7 @@ namespace ConnectQl.Internal.Query
             {
                 var result = base.VisitFieldReferenceSqlExpression(node);
 
-                this.data.SetExpression(node, CustomExpression.MakeSourceField(node.Source, node.Name));
+                this.data.SetExpression(node, ConnectQlExpression.MakeSourceField(node.Source, node.Name));
 
                 return result;
             }
@@ -308,7 +308,7 @@ namespace ConnectQl.Internal.Query
 
                     var displayName = getDisplayName.Body.ReplaceParameter(getDisplayName.Parameters[0], Expression.Constant(node.Name)).ReplaceParameter(getDisplayName.Parameters[1], Expression.NewArrayInit(typeof(object), variables.Select(v => Expression.Convert(v, typeof(object))).ToArray<Expression>()));
 
-                    expression = Expression.Call(Evaluator.MarkFunctionResultWithNameMethod.MakeGenericMethod(expression.Type), CustomExpression.ExecutionContext(), Expression.Constant(node.Name), displayName, expression);
+                    expression = Expression.Call(Evaluator.MarkFunctionResultWithNameMethod.MakeGenericMethod(expression.Type), ConnectQlExpression.ExecutionContext(), Expression.Constant(node.Name), displayName, expression);
                 }
 
                 statements.Add(expression);
@@ -317,7 +317,7 @@ namespace ConnectQl.Internal.Query
 
                 if (block.Type.IsConstructedGenericType && block.Type.GetGenericTypeDefinition() == typeof(Task<>))
                 {
-                    block = TaskExpression.Task(block);
+                    block = ConnectQlExpression.MakeTask(block);
                 }
 
                 this.data.SetExpression(node, block);
@@ -357,7 +357,7 @@ namespace ConnectQl.Internal.Query
                 var result = base.VisitVariableSqlExpression(node);
                 var getVariable = typeof(IExecutionContext).GetRuntimeMethod("GetVariable", new[] { typeof(string), }).MakeGenericMethod(this.data.GetType(node).SimplifiedType);
 
-                this.data.SetExpression(node, Expression.Call(CustomExpression.ExecutionContext(), getVariable, Expression.Constant(node.Name)));
+                this.data.SetExpression(node, Expression.Call(ConnectQlExpression.ExecutionContext(), getVariable, Expression.Constant(node.Name)));
 
                 return result;
             }

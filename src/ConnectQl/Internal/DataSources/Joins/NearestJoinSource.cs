@@ -186,7 +186,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                                        case ExpressionType.LessThanOrEqual:
                                            sortOrders.Add(
                                                new OrderByExpression(
-                                                   CustomExpression.MakeSourceField(field.SourceName, field.FieldName),
+                                                   ConnectQlExpression.MakeSourceField(field.SourceName, field.FieldName),
                                                    node.NodeType == ExpressionType.GreaterThan || node.NodeType == ExpressionType.GreaterThanOrEqual));
                                            break;
                                    }

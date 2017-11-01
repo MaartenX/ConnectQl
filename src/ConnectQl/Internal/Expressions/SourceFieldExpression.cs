@@ -27,7 +27,6 @@ namespace ConnectQl.Internal.Expressions
     using System.Reflection;
 
     using ConnectQl.AsyncEnumerables;
-    using ConnectQl.Expressions;
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Results;
 
@@ -36,7 +35,7 @@ namespace ConnectQl.Internal.Expressions
     /// <summary>
     /// Represents an expression that is a reference to a field.
     /// </summary>
-    internal class SourceFieldExpression : CustomExpression
+    internal sealed class SourceFieldExpression : Expression
     {
         /// <summary>
         /// The row get by internal name method.
@@ -68,13 +67,27 @@ namespace ConnectQl.Internal.Expressions
         /// <param name="type">
         /// The type of the field.
         /// </param>
-        protected internal SourceFieldExpression(string sourceName, string fieldName, bool useInternalName, Type type)
-            : base(type)
+        internal SourceFieldExpression(string sourceName, string fieldName, bool useInternalName, [NotNull] Type type)
         {
             this.SourceName = sourceName;
             this.FieldName = fieldName;
             this.UseInternalName = useInternalName;
+            this.Type = type;
         }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        [NotNull]
+        public override Type Type { get; }
+
+        /// <summary>
+        /// Gets the node type of this <see cref="T:System.Linq.Expressions.Expression"/>.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ExpressionType.Extension"/>.
+        /// </returns>
+        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Gets the name of the field.

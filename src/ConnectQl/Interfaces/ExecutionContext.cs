@@ -22,9 +22,12 @@
 
 namespace ConnectQl.Interfaces
 {
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The execution context.
     /// </summary>
+    [PublicAPI]
     public static class ExecutionContext
     {
         /// <summary>

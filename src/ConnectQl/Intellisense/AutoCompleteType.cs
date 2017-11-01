@@ -24,10 +24,13 @@ namespace ConnectQl.Intellisense
 {
     using System;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Specifies what type of auto completions are available.
     /// </summary>
     [Flags]
+    [PublicAPI]
     public enum AutoCompleteType
     {
         /// <summary>

@@ -915,7 +915,7 @@ namespace System.Linq.Expressions
                                                    var min = fieldMinimums[index];
                                                    var max = fieldMaximums[index];
 
-                                                   return object.Equals(min, max) ? (Expression)Expression.Constant(min, node.Type) : CustomExpression.MakeRange(min, max, node.Type);
+                                                   return object.Equals(min, max) ? (Expression)Expression.Constant(min, node.Type) : ConnectQlExpression.MakeRange(min, max, node.Type);
                                                },
                                        }.Visit(expression);
 
@@ -1076,7 +1076,7 @@ namespace System.Linq.Expressions
                 return Expression.Constant(values[0]);
             }
 
-            return values == null ? null : CustomExpression.MakeRange(values.Min(), values.Max(), expression.Type);
+            return values == null ? null : ConnectQlExpression.MakeRange(values.Min(), values.Max(), expression.Type);
         }
 
         /// <summary>

@@ -22,6 +22,7 @@
 
 namespace ConnectQl.Expressions
 {
+    using System;
     using System.Linq.Expressions;
 
     using ConnectQl.Interfaces;
@@ -31,15 +32,28 @@ namespace ConnectQl.Expressions
     /// <summary>
     /// The execution context expression.
     /// </summary>
-    public class ExecutionContextExpression : CustomExpression
+    public class ExecutionContextExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionContextExpression"/> class.
         /// </summary>
-        protected internal ExecutionContextExpression()
-            : base(typeof(IExecutionContext))
+        internal ExecutionContextExpression()
         {
         }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        [NotNull]
+        public override Type Type => typeof(IExecutionContext);
+
+        /// <summary>
+        /// Gets the node type of this <see cref="T:System.Linq.Expressions.Expression"/>.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ExpressionType.Extension"/>.
+        /// </returns>
+        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// The to string.

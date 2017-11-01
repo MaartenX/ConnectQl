@@ -29,9 +29,12 @@ namespace ConnectQl.Intellisense
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The intellisense session.
     /// </summary>
+    [PublicAPI]
     public interface IIntellisenseSession : IDisposable
     {
         /// <summary>

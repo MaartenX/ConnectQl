@@ -35,6 +35,7 @@ namespace ConnectQl.Intellisense
     /// <summary>
     /// The descriptor.
     /// </summary>
+    [PublicAPI]
     public static class Descriptor
     {
         /// <summary>
@@ -86,7 +87,7 @@ namespace ConnectQl.Intellisense
         /// The <see cref="IDataSourceDescriptor"/>.
         /// </returns>
         [NotNull]
-        public static IDataSourceDescriptor ForDataSource(string alias, IEnumerable<IColumnDescriptor> columns, bool allowsAnyColumnName = false)
+        public static IDataSourceDescriptor ForDataSource(string alias, [NotNull] IEnumerable<IColumnDescriptor> columns, bool allowsAnyColumnName = false)
         {
             return new DataSourceDescriptor(alias, columns, allowsAnyColumnName);
         }

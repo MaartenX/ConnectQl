@@ -34,6 +34,7 @@ namespace ConnectQl.Intellisense
     /// <summary>
     /// Resolves plugins using the assembly list provided.
     /// </summary>
+    [PublicAPI]
     public class AssemblyPluginResolver : IDynamicPluginResolver
     {
         /// <summary>
@@ -68,16 +69,19 @@ namespace ConnectQl.Intellisense
         public event EventHandler AvailablePluginsChanged;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the resolver is currently loading plugins.
+        /// Gets or sets a value indicating whether the resolver is currently loading plugins. Setter is used
+        /// when loading using the ConnectQl.Tools.AssemblyLoader.AppDomainIntellisenseSession in ConnectQl.Tools.AssemblyLoader.
         /// </summary>
-        public bool IsLoading { get; set; }
+        public bool IsLoading { get; [UsedImplicitly]set; }
 
         /// <summary>
-        /// Adds assemblies to the resolver.
+        /// Adds assemblies to the resolver. Method is used when loading using the ConnectQl.Tools.AssemblyLoader.AppDomainIntellisenseSession 
+        /// in ConnectQl.Tools.AssemblyLoader.
         /// </summary>
         /// <param name="assembliesToAdd">
         /// The assemblies to add.
         /// </param>
+        [UsedImplicitly]
         public void AddAssemblies([NotNull] IEnumerable<Assembly> assembliesToAdd)
         {
             foreach (var assemblyToAdd in assembliesToAdd)

@@ -26,6 +26,7 @@ namespace ConnectQl.Expressions
     using System.Linq.Expressions;
     using System.Reflection;
 
+    using ConnectQl.Interfaces;
     using ConnectQl.Internal.Extensions;
     using ConnectQl.Results;
 
@@ -34,7 +35,7 @@ namespace ConnectQl.Expressions
     /// <summary>
     /// The field expression.
     /// </summary>
-    public class FieldExpression : CustomExpression
+    public sealed class FieldExpression : Expression
     {
         /// <summary>
         /// The <see cref="Row.Get{T}"/> method.
@@ -58,12 +59,26 @@ namespace ConnectQl.Expressions
         /// <param name="type">
         /// The type.
         /// </param>
-        protected internal FieldExpression(string source, string fieldName, Type type)
-            : base(type)
+        internal FieldExpression([NotNull] string source, [NotNull] string fieldName, [NotNull] Type type)
         {
             this.source = source;
             this.FieldName = fieldName;
+            this.Type = type;
         }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        [NotNull]
+        public override Type Type { get; }
+
+        /// <summary>
+        /// Gets the node type of this <see cref="T:System.Linq.Expressions.Expression"/>.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ExpressionType.Extension"/>.
+        /// </returns>
+        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Gets the field name.

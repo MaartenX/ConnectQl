@@ -22,6 +22,8 @@
 
 namespace ConnectQl.Intellisense
 {
+    using System;
+
     using JetBrains.Annotations;
 
     /// <summary>
@@ -36,8 +38,13 @@ namespace ConnectQl.Intellisense
         /// <param name="context">The context.</param>
         /// <returns>The intellisense session.</returns>
         [NotNull]
-        public static IIntellisenseSession CreateIntellisenseSession(this ConnectQlContext context)
+        public static IIntellisenseSession CreateIntellisenseSession([NotNull] this ConnectQlContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             return new IntellisenseSession(context);
         }
     }

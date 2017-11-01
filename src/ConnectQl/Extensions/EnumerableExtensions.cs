@@ -34,39 +34,6 @@ namespace System.Collections.Generic
     public static class EnumerableExtensions
     {
         /// <summary>
-        /// Returns the same enumerable, but executes an action if the enumerable is empty.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the elements in the <see cref="IEnumerable{T}"/>.
-        /// </typeparam>
-        /// <param name="source">
-        /// The source <see cref="IEnumerable{T}"/>.
-        /// </param>
-        /// <param name="isEmpty">
-        /// The action to call when the enumerable is empty.
-        /// </param>
-        /// <returns>
-        /// An enumerable with the same elements as <paramref name="source"/>.
-        /// </returns>
-        public static IEnumerable<T> ActionIfEmpty<T>([NotNull] this IEnumerable<T> source, Action isEmpty)
-        {
-            using (var enumerator = source.GetEnumerator())
-            {
-                if (!enumerator.MoveNext())
-                {
-                    isEmpty();
-                    yield break;
-                }
-
-                do
-                {
-                    yield return enumerator.Current;
-                }
-                while (enumerator.MoveNext());
-            }
-        }
-
-        /// <summary>
         /// Aggregates an enumerable asynchronously.
         /// </summary>
         /// <param name="source">

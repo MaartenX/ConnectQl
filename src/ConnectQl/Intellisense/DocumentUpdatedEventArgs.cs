@@ -26,9 +26,12 @@ namespace ConnectQl.Intellisense
     using ConnectQl.Interfaces;
     using ConnectQl.Internal.Intellisense.Protocol;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Event arguments for the <see cref="IIntellisenseSession.DocumentUpdated" /> event.
     /// </summary>
+    [PublicAPI]
     public class DocumentUpdatedEventArgs : EventArgs
     {
         /// <summary>

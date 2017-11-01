@@ -32,7 +32,7 @@ namespace ConnectQl.Expressions
     /// <summary>
     /// The task expression.
     /// </summary>
-    public class TaskExpression : CustomExpression
+    public sealed class TaskExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskExpression"/> class.
@@ -43,11 +43,25 @@ namespace ConnectQl.Expressions
         /// <exception cref="ArgumentException">
         /// Thrown when the expression is not a <see cref="Task{TResult}"/>.
         /// </exception>
-        protected TaskExpression([NotNull] Expression expression)
-            : base(TaskExpression.ConvertType(expression.Type))
+        internal TaskExpression([NotNull] Expression expression)
         {
             this.Expression = expression;
+            this.Type = ConvertType(expression.Type);
         }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        [NotNull]
+        public override Type Type { get; }
+
+        /// <summary>
+        /// Gets the node type of this <see cref="T:System.Linq.Expressions.Expression"/>.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ExpressionType.Extension"/>.
+        /// </returns>
+        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Gets a value indicating whether this expression can be reduced.
@@ -58,22 +72,7 @@ namespace ConnectQl.Expressions
         /// Gets the expression.
         /// </summary>
         public Expression Expression { get; }
-
-        /// <summary>
-        /// The task.
-        /// </summary>
-        /// <param name="expression">
-        /// The expression.
-        /// </param>
-        /// <returns>
-        /// The <see cref="TaskExpression"/>.
-        /// </returns>
-        [NotNull]
-        public static TaskExpression Task(Expression expression)
-        {
-            return new TaskExpression(expression);
-        }
-
+        
         /// <summary>
         /// The reduce.
         /// </summary>
@@ -128,14 +127,14 @@ namespace ConnectQl.Expressions
         /// </exception>
         private static Type ConvertType(Type taskType)
         {
-            var info = taskType.GetTypeInfo();
+            var typeInfo = taskType.GetTypeInfo();
 
-            if (!(info.IsGenericType && info.GetGenericTypeDefinition() == typeof(Task<>)))
+            if (!(typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Task<>)))
             {
                 throw new ArgumentException("Expression must be of type Task<T>.", nameof(taskType));
             }
 
-            return info.GenericTypeArguments[0];
+            return typeInfo.GenericTypeArguments[0];
         }
     }
 }

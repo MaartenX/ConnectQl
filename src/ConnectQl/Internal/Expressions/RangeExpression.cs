@@ -33,7 +33,7 @@ namespace ConnectQl.Internal.Expressions
     /// <summary>
     /// The range expression.
     /// </summary>
-    internal class RangeExpression : CustomExpression
+    internal class RangeExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RangeExpression"/> class.
@@ -48,11 +48,25 @@ namespace ConnectQl.Internal.Expressions
         /// The type of the range.
         /// </param>
         protected internal RangeExpression(object min, object max, Type type)
-            : base(type)
         {
             this.Min = System.Convert.ChangeType(min, Nullable.GetUnderlyingType(type) ?? type);
             this.Max = System.Convert.ChangeType(max, Nullable.GetUnderlyingType(type) ?? type);
+            this.Type = type;
         }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        [NotNull]
+        public override Type Type { get; }
+
+        /// <summary>
+        /// Gets the node type of this <see cref="T:System.Linq.Expressions.Expression"/>.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ExpressionType.Extension"/>.
+        /// </returns>
+        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Gets the max.

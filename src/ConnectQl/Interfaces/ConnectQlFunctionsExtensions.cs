@@ -574,7 +574,7 @@ namespace ConnectQl.Interfaces
                         (MethodCallExpression e) =>
                             e.Object != enumerableParameter.Original && !e.Arguments.Contains(enumerableParameter.Original)
                                 ? null
-                                : TaskExpression.Task(
+                                : ConnectQlExpression.MakeTask(
                                     Expression.Call(
                                         ConnectQlFunctionsExtensions.ApplyEnumerableFunction.MakeGenericMethod(enumerableParameter.Original.Type.GenericTypeArguments[0], e.Type),
                                         enumerableParameter.ReplaceBy,

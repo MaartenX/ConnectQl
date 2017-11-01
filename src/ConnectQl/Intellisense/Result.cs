@@ -30,6 +30,7 @@ namespace ConnectQl.Intellisense
     /// <summary>
     /// The execute result.
     /// </summary>
+    [PublicAPI]
     public static class Result
     {
         /// <summary>

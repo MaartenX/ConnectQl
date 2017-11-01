@@ -276,8 +276,8 @@ namespace ConnectQl.Internal.Query
                                                                                                  }).Concat(groupQuery.OrderBy.Select((o, i) => new AliasedConnectQlExpression(o.Expression, $"$order{i}"))).Where(e => e.Expression != null));
                 var plan = this.CreateSelectQueryPlan(groupQuery.RowSelect);
                 var fields = node.Expressions.Select(f => f.Expression is WildcardConnectQlExpression ? "*" : f.Alias);
-                var orders = groupQuery.OrderBy.Select((o, i) => new OrderByExpression(CustomExpression.MakeSourceField(null, $"$order{i}", true), o.Ascending));
-                var having = groupQuery.Having == null ? null : CustomExpression.MakeSourceField(null, "$having", true, typeof(bool));
+                var orders = groupQuery.OrderBy.Select((o, i) => new OrderByExpression(ConnectQlExpression.MakeSourceField(null, $"$order{i}", true), o.Ascending));
+                var having = groupQuery.Having == null ? null : ConnectQlExpression.MakeSourceField(null, "$having", true, typeof(bool));
 
                 var aliases = groupQuery.Expressions;
 

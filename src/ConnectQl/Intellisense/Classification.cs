@@ -22,9 +22,12 @@
 
 namespace ConnectQl.Intellisense
 {
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The classification.
     /// </summary>
+    [PublicAPI]
     public enum Classification
     {
         /// <summary>

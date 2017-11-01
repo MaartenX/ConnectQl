@@ -31,6 +31,7 @@ namespace ConnectQl.Results
     /// <summary>
     /// The error.
     /// </summary>
+    [PublicAPI]
     public class Error
     {
         /// <summary>
@@ -47,13 +48,11 @@ namespace ConnectQl.Results
         /// <summary>
         /// Gets the exception.
         /// </summary>
-        [PublicAPI]
         public Exception Exception { get; }
 
         /// <summary>
         /// Gets the message.
         /// </summary>
-        [PublicAPI]
         public string Message => this.Exception.Message;
 
         /// <summary>

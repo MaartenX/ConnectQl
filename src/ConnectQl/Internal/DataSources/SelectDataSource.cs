@@ -86,7 +86,7 @@ namespace ConnectQl.Internal.DataSources
         /// </returns>
         internal override IAsyncEnumerable<Row> GetRows(IInternalExecutionContext context, [NotNull] IMultiPartQuery multiPartQuery)
         {
-            var fieldReplacer = GenericVisitor.Create((SourceFieldExpression e) => CustomExpression.MakeField(e.SourceName, e.FieldName, e.Type));
+            var fieldReplacer = GenericVisitor.Create((SourceFieldExpression e) => ConnectQlExpression.MakeField(e.SourceName, e.FieldName, e.Type));
 
             var query =
                 multiPartQuery.WildcardAliases.Contains(this.alias) ?

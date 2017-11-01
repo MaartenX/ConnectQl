@@ -24,6 +24,7 @@ namespace ConnectQl.Expressions
 {
     using System;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
 
     using ConnectQl.Internal.Expressions;
 
@@ -32,32 +33,8 @@ namespace ConnectQl.Expressions
     /// <summary>
     /// The custom expression.
     /// </summary>
-    public abstract class CustomExpression : Expression
+    public static class ConnectQlExpression 
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CustomExpression"/> class.
-        /// </summary>
-        /// <param name="type">
-        /// The type.
-        /// </param>
-        protected CustomExpression(Type type)
-        {
-            this.Type = type;
-        }
-
-        /// <summary>
-        /// Gets the node type of this <see cref="T:System.Linq.Expressions.Expression"/>.
-        /// </summary>
-        /// <returns>
-        /// One of the <see cref="T:System.Linq.Expressions.ExpressionType"/> values.
-        /// </returns>
-        public override sealed ExpressionType NodeType => ExpressionType.Extension;
-
-        /// <summary>
-        /// Gets the type.
-        /// </summary>
-        public override sealed Type Type { get; }
-
         /// <summary>
         /// The execution context.
         /// </summary>
@@ -70,25 +47,6 @@ namespace ConnectQl.Expressions
             return new ExecutionContextExpression();
         }
         
-
-        /// <summary>
-        /// Creates a <see cref="FieldExpression"/>.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="FieldExpression"/>.
-        /// </returns>
-        [NotNull]
-        public static FieldExpression MakeField(string source, string name)
-        {
-            return new FieldExpression(source, name, typeof(object));
-        }
-
         /// <summary>
         /// Creates a <see cref="FieldExpression"/>.
         /// </summary>
@@ -105,9 +63,37 @@ namespace ConnectQl.Expressions
         /// The <see cref="FieldExpression"/>.
         /// </returns>
         [NotNull]
-        public static FieldExpression MakeField(string source, string name, Type type)
+        public static FieldExpression MakeField([NotNull] string source, [NotNull] string name, Type type = null)
         {
-            return new FieldExpression(source, name, type);
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            
+            return new FieldExpression(source, name, type ?? typeof(object));
+        }
+
+        /// <summary>
+        /// Creates a <see cref="TaskExpression"/> from an expression returning <see cref="Task{T}"/>
+        /// </summary>
+        /// <param name="expression">The expression to create a <see cref="TaskExpression"/> from.</param>
+        /// <returns>
+        /// The <see cref="TaskExpression"/> returning the result of the task.
+        /// </returns>
+        [NotNull]
+        public static TaskExpression MakeTask([NotNull] Expression expression)
+        {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            return new TaskExpression(expression);
         }
 
         /// <summary>

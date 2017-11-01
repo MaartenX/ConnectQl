@@ -74,7 +74,7 @@ namespace ConnectQl.Internal.Query
             return Expression.Call(
                 Evaluator.CreateDataSource(expression, null),
                 typeof(DataSource).GetTypeInfo().GetDeclaredMethod(nameof(DataSource.GetRows)),
-                Expression.Convert(CustomExpression.ExecutionContext(), typeof(IInternalExecutionContext)),
+                Expression.Convert(ConnectQlExpression.ExecutionContext(), typeof(IInternalExecutionContext)),
                 Expression.Constant(new MultiPartQuery
                                         {
                                             WildcardAliases = new string[] { null },
