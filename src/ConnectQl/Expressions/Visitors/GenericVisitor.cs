@@ -928,7 +928,7 @@ namespace ConnectQl.Expressions.Visitors
         /// </param>
         protected override Expression VisitExtension(Expression node)
         {
-            return this.VisitImplementation(node) ?? (this.implementations.TryGetValue(node.GetType(), out Func<Expression, Expression> implementation)
+            return this.VisitImplementation(node) ?? (this.implementations.TryGetValue(node.GetType(), out var implementation)
                                               ? (implementation(node) ?? base.VisitExtension(node))
                                               : base.VisitExtension(node));
         }
@@ -1312,7 +1312,7 @@ namespace ConnectQl.Expressions.Visitors
         private Expression VisitImplementation<T>(T node)
             where T : Expression
         {
-            return this.implementations.TryGetValue(typeof(T), out Func<Expression, Expression> implementation) ? implementation(node) : this.defaultImplementation?.Invoke(node);
+            return this.implementations.TryGetValue(typeof(T), out var implementation) ? implementation(node) : this.defaultImplementation?.Invoke(node);
         }
 
         /// <summary>
@@ -1332,7 +1332,7 @@ namespace ConnectQl.Expressions.Visitors
                 return null;
             }
 
-            return this.implementations.TryGetValue(node.GetType(), out Func<Expression, Expression> implementation) ? implementation(node) : this.defaultImplementation?.Invoke(node);
+            return this.implementations.TryGetValue(node.GetType(), out var implementation) ? implementation(node) : this.defaultImplementation?.Invoke(node);
         }
     }
 }

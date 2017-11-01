@@ -43,7 +43,7 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <param name="functionName">
         /// The function Uri.
         /// </param>
-        public UseStatement(FunctionCallSqlExpression settingFunction, string functionName)
+        public UseStatement(FunctionCallConnectQlExpression settingFunction, string functionName)
         {
             this.SettingFunction = settingFunction;
             this.FunctionName = functionName;
@@ -68,7 +68,7 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <summary>
         /// Gets the expression.
         /// </summary>
-        public FunctionCallSqlExpression SettingFunction { get; }
+        public FunctionCallConnectQlExpression SettingFunction { get; }
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.

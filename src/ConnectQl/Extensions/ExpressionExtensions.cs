@@ -907,7 +907,7 @@ namespace System.Linq.Expressions
                                        {
                                            (SourceFieldExpression node) =>
                                                {
-                                                   if (!fieldLookup.TryGetValue(node, out int index))
+                                                   if (!fieldLookup.TryGetValue(node, out var index))
                                                    {
                                                        return null;
                                                    }

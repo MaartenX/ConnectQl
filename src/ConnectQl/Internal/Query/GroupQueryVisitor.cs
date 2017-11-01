@@ -52,7 +52,7 @@ namespace ConnectQl.Internal.Query
         /// <summary>
         /// The grouped nodes.
         /// </summary>
-        private readonly List<SqlExpressionBase> groupedNodes = new List<SqlExpressionBase>();
+        private readonly List<ConnectQlExpressionBase> groupedNodes = new List<ConnectQlExpressionBase>();
 
         /// <summary>
         /// The select.
@@ -82,7 +82,7 @@ namespace ConnectQl.Internal.Query
         /// <summary>
         /// Gets the expressions.
         /// </summary>
-        public ReadOnlyCollection<AliasedSqlExpression> Expressions { get; private set; }
+        public ReadOnlyCollection<AliasedConnectQlExpression> Expressions { get; private set; }
 
         /// <summary>
         /// Gets the groupings.
@@ -92,12 +92,12 @@ namespace ConnectQl.Internal.Query
         /// <summary>
         /// Gets the having.
         /// </summary>
-        public SqlExpressionBase Having { get; private set; }
+        public ConnectQlExpressionBase Having { get; private set; }
 
         /// <summary>
         /// Gets the order by.
         /// </summary>
-        public ReadOnlyCollection<OrderBySqlExpression> OrderBy { get; private set; }
+        public ReadOnlyCollection<OrderByConnectQlExpression> OrderBy { get; private set; }
 
         /// <summary>
         /// Gets the group query from the select statement.
@@ -120,13 +120,13 @@ namespace ConnectQl.Internal.Query
         }
 
         /// <summary>
-        /// Visits a <see cref="T:ConnectQl.Internal.Ast.Expressions.AliasedSqlExpression" />.
+        /// Visits a <see cref="T:ConnectQl.Internal.Ast.Expressions.AliasedConnectQlExpression" />.
         /// </summary>
         /// <param name="node">The node.</param>
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitAliasedSqlExpression([NotNull] AliasedSqlExpression node)
+        protected internal override Node VisitAliasedSqlExpression([NotNull] AliasedConnectQlExpression node)
         {
             if (this.data.GetScope(node.Expression) == NodeScope.Group)
             {
@@ -136,7 +136,7 @@ namespace ConnectQl.Internal.Query
         }
 
         /// <summary>
-        /// Visits a <see cref="BinarySqlExpression"/> expression.
+        /// Visits a <see cref="BinaryConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -144,13 +144,13 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitBinarySqlExpression(BinarySqlExpression node)
+        protected internal override Node VisitBinarySqlExpression(BinaryConnectQlExpression node)
         {
             return this.CheckForGroups(node, n => base.VisitBinarySqlExpression(n));
         }
 
         /// <summary>
-        /// Visits a <see cref="ConstSqlExpression"/> expression.
+        /// Visits a <see cref="ConstConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -158,13 +158,13 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitConstSqlExpression(ConstSqlExpression node)
+        protected internal override Node VisitConstSqlExpression(ConstConnectQlExpression node)
         {
             return this.CheckForGroups(node, n => base.VisitConstSqlExpression(n));
         }
 
         /// <summary>
-        /// Visits a <see cref="FieldReferenceSqlExpression"/> expression.
+        /// Visits a <see cref="FieldReferenceConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -172,13 +172,13 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
+        protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceConnectQlExpression node)
         {
             return this.CheckForGroups(node, n => base.VisitFieldReferenceSqlExpression(n));
         }
 
         /// <summary>
-        /// Visits a <see cref="FunctionCallSqlExpression"/> expression.
+        /// Visits a <see cref="FunctionCallConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -186,7 +186,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallSqlExpression node)
+        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallConnectQlExpression node)
         {
             return this.CheckForGroups(node, n => base.VisitFunctionCallSqlExpression(n));
         }
@@ -209,15 +209,15 @@ namespace ConnectQl.Internal.Query
 
             this.visitingGroupings++;
 
-            this.Groupings = new ReadOnlyCollection<string>(this.Visit(node.Groupings).Cast<FieldReferenceSqlExpression>().Select(f => f.Name).ToArray());
+            this.Groupings = new ReadOnlyCollection<string>(this.Visit(node.Groupings).Cast<FieldReferenceConnectQlExpression>().Select(f => f.Name).ToArray());
 
             this.visitingGroupings--;
 
-            return new SelectFromStatement(new ReadOnlyCollection<AliasedSqlExpression>(this.groupedNodes.Select((gn, idx) => new AliasedSqlExpression(gn, $"group{idx}")).ToArray()), node.Source, node.Where, new ReadOnlyCollection<SqlExpressionBase>(new List<SqlExpressionBase>()), null, new ReadOnlyCollection<OrderBySqlExpression>(new List<OrderBySqlExpression>()));
+            return new SelectFromStatement(new ReadOnlyCollection<AliasedConnectQlExpression>(this.groupedNodes.Select((gn, idx) => new AliasedConnectQlExpression(gn, $"group{idx}")).ToArray()), node.Source, node.Where, new ReadOnlyCollection<ConnectQlExpressionBase>(new List<ConnectQlExpressionBase>()), null, new ReadOnlyCollection<OrderByConnectQlExpression>(new List<OrderByConnectQlExpression>()));
         }
 
         /// <summary>
-        /// Visits a <see cref="UnarySqlExpression"/>.
+        /// Visits a <see cref="UnaryConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -225,13 +225,13 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitUnarySqlExpression(UnarySqlExpression node)
+        protected internal override Node VisitUnarySqlExpression(UnaryConnectQlExpression node)
         {
             return this.CheckForGroups(node, n => base.VisitUnarySqlExpression(n));
         }
 
         /// <summary>
-        /// Visits a <see cref="VariableSqlExpression"/>.
+        /// Visits a <see cref="VariableConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -239,7 +239,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
+        protected internal override Node VisitVariableSqlExpression(VariableConnectQlExpression node)
         {
             return this.CheckForGroups(node, n => base.VisitVariableSqlExpression(n));
         }
@@ -260,7 +260,7 @@ namespace ConnectQl.Internal.Query
         /// The node or the result of the <paramref name="baseCall"/>.
         /// </returns>
         private Node CheckForGroups<T>(T node, Func<T, Node> baseCall)
-            where T : SqlExpressionBase
+            where T : ConnectQlExpressionBase
         {
             var isGrouping = this.select.Groupings.Contains(node);
 
@@ -271,19 +271,19 @@ namespace ConnectQl.Internal.Query
                     this.groupedNodes.Add(node);
                 }
 
-                var field = new FieldReferenceSqlExpression($"group{this.groupedNodes.IndexOf(node)}");
+                var field = new FieldReferenceConnectQlExpression($"group{this.groupedNodes.IndexOf(node)}");
 
                 if (!isGrouping || this.visitingGroupings > 0)
                 {
                     return field;
                 }
 
-                var fields = new List<SqlExpressionBase>
+                var fields = new List<ConnectQlExpressionBase>
                                  {
                                      field,
                                  };
 
-                var result = new FunctionCallSqlExpression("$GROUP_FIRST", new ReadOnlyCollection<SqlExpressionBase>(fields));
+                var result = new FunctionCallConnectQlExpression("$GROUP_FIRST", new ReadOnlyCollection<ConnectQlExpressionBase>(fields));
 
                 this.data.SetScope(node, NodeScope.Group);
                 this.data.SetFunction(result, new FunctionDescriptor(result.Name, false, (Expression<Func<IAsyncEnumerable<object>, Task<object>>>)(objs => objs.FirstAsync())));
@@ -291,14 +291,14 @@ namespace ConnectQl.Internal.Query
                 return result;
             }
 
-            if (this.data.GetScope(node) == NodeScope.Group && node is FunctionCallSqlExpression)
+            if (this.data.GetScope(node) == NodeScope.Group && node is FunctionCallConnectQlExpression)
             {
                 this.visitingGroupings++;
             }
 
             var nodeResult = baseCall(node);
 
-            if (this.data.GetScope(node) == NodeScope.Group && node is FunctionCallSqlExpression)
+            if (this.data.GetScope(node) == NodeScope.Group && node is FunctionCallConnectQlExpression)
             {
                 this.visitingGroupings--;
             }
@@ -334,7 +334,7 @@ namespace ConnectQl.Internal.Query
             /// <param name="orderBy">
             /// The visitor order by.
             /// </param>
-            public GroupQuery(SelectFromStatement rowSelect, ReadOnlyCollection<AliasedSqlExpression> expressions, ReadOnlyCollection<string> groupings, SqlExpressionBase having, ReadOnlyCollection<OrderBySqlExpression> orderBy)
+            public GroupQuery(SelectFromStatement rowSelect, ReadOnlyCollection<AliasedConnectQlExpression> expressions, ReadOnlyCollection<string> groupings, ConnectQlExpressionBase having, ReadOnlyCollection<OrderByConnectQlExpression> orderBy)
             {
                 this.RowSelect = rowSelect;
                 this.Expressions = expressions;
@@ -346,7 +346,7 @@ namespace ConnectQl.Internal.Query
             /// <summary>
             /// Gets the expressions.
             /// </summary>
-            public ReadOnlyCollection<AliasedSqlExpression> Expressions { get; }
+            public ReadOnlyCollection<AliasedConnectQlExpression> Expressions { get; }
 
             /// <summary>
             /// Gets the groupings.
@@ -356,12 +356,12 @@ namespace ConnectQl.Internal.Query
             /// <summary>
             /// Gets the having.
             /// </summary>
-            public SqlExpressionBase Having { get; }
+            public ConnectQlExpressionBase Having { get; }
 
             /// <summary>
             /// Gets the visitor order by.
             /// </summary>
-            public ReadOnlyCollection<OrderBySqlExpression> OrderBy { get; }
+            public ReadOnlyCollection<OrderByConnectQlExpression> OrderBy { get; }
 
             /// <summary>
             /// Gets the row select.

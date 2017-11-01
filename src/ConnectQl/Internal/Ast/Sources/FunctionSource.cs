@@ -43,7 +43,7 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <param name="alias">
         /// The alias.
         /// </param>
-        public FunctionSource(FunctionCallSqlExpression function, string alias)
+        public FunctionSource(FunctionCallConnectQlExpression function, string alias)
         {
             this.Function = function;
             this.Alias = alias;
@@ -68,7 +68,7 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <summary>
         /// Gets the function expression.
         /// </summary>
-        public FunctionCallSqlExpression Function { get; }
+        public FunctionCallConnectQlExpression Function { get; }
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.

@@ -75,7 +75,7 @@ namespace ConnectQl.Internal.Results
         /// The field name.
         /// </returns>
         [CanBeNull]
-        public string this[string name] => this.mapToInternalName.TryGetValue(name, out string result) ? result : null;
+        public string this[string name] => this.mapToInternalName.TryGetValue(name, out var result) ? result : null;
 
         /// <summary>
         /// Adds a field to the translator.

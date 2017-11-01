@@ -109,7 +109,7 @@ namespace ConnectQl.Internal.Intellisense
         {
             try
             {
-                ((IInternalExecutionContext)this.statements).RegisterDefault(node.SettingFunction.Name, node.FunctionName, this.Evaluate(node.SettingFunction, out bool sideEffects));
+                ((IInternalExecutionContext)this.statements).RegisterDefault(node.SettingFunction.Name, node.FunctionName, this.Evaluate(node.SettingFunction, out var sideEffects));
             }
             catch
             {
@@ -130,7 +130,7 @@ namespace ConnectQl.Internal.Intellisense
         /// </returns>
         protected internal override Node VisitVariableDeclaration([NotNull] VariableDeclaration node)
         {
-            this.statements.SetVariable(node.Name, this.Evaluate(node.Expression, out bool sideEffects), !sideEffects);
+            this.statements.SetVariable(node.Name, this.Evaluate(node.Expression, out var sideEffects), !sideEffects);
 
             return base.VisitVariableDeclaration(node);
         }
@@ -146,7 +146,7 @@ namespace ConnectQl.Internal.Intellisense
         /// </returns>
         protected internal override Node VisitSelectFromStatement([NotNull] SelectFromStatement node)
         {
-            var descriptors = this.Evaluate(node.Source, out bool hasSideEffects)?.GetDataSourceDescriptorsAsync(this.statements).Result.ToArray();
+            var descriptors = this.Evaluate(node.Source, out var hasSideEffects)?.GetDataSourceDescriptorsAsync(this.statements).Result.ToArray();
 
             if (descriptors != null)
             {
@@ -160,7 +160,7 @@ namespace ConnectQl.Internal.Intellisense
         }
 
         /// <summary>
-        /// Evaluates the <see cref="SqlExpressionBase"/>.
+        /// Evaluates the <see cref="ConnectQlExpressionBase"/>.
         /// </summary>
         /// <param name="expression">
         /// The expression to evaluate.
@@ -171,7 +171,7 @@ namespace ConnectQl.Internal.Intellisense
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        private object Evaluate(SqlExpressionBase expression, out bool sideEffects)
+        private object Evaluate(ConnectQlExpressionBase expression, out bool sideEffects)
         {
             try
             {

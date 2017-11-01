@@ -44,12 +44,12 @@ namespace ConnectQl.Internal.Ast
         /// </param>
         public Trigger(string after)
         {
-            var arguments = new SqlExpressionBase[]
+            var arguments = new ConnectQlExpressionBase[]
                                 {
-                                    new ConstSqlExpression(after),
+                                    new ConstConnectQlExpression(after),
                                 };
 
-            this.Function = new FunctionCallSqlExpression("triggerafter", new ReadOnlyCollection<SqlExpressionBase>(arguments));
+            this.Function = new FunctionCallConnectQlExpression("triggerafter", new ReadOnlyCollection<ConnectQlExpressionBase>(arguments));
         }
 
         /// <summary>
@@ -60,12 +60,12 @@ namespace ConnectQl.Internal.Ast
         /// </param>
         public Trigger(TimeSpan interval)
         {
-            var arguments = new SqlExpressionBase[]
+            var arguments = new ConnectQlExpressionBase[]
                                 {
-                                    new ConstSqlExpression(interval),
+                                    new ConstConnectQlExpression(interval),
                                 };
 
-            this.Function = new FunctionCallSqlExpression("triggerevery", new ReadOnlyCollection<SqlExpressionBase>(arguments));
+            this.Function = new FunctionCallConnectQlExpression("triggerevery", new ReadOnlyCollection<ConnectQlExpressionBase>(arguments));
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace ConnectQl.Internal.Ast
         /// <param name="function">
         /// The function.
         /// </param>
-        public Trigger(FunctionCallSqlExpression function)
+        public Trigger(FunctionCallConnectQlExpression function)
         {
             this.Function = function;
         }
@@ -93,7 +93,7 @@ namespace ConnectQl.Internal.Ast
         /// <summary>
         /// Gets the function.
         /// </summary>
-        public FunctionCallSqlExpression Function { get; }
+        public FunctionCallConnectQlExpression Function { get; }
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.

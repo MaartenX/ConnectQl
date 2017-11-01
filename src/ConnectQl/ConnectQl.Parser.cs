@@ -446,7 +446,7 @@ namespace ConnectQl.Internal
 
         void DeclareStatement(out StatementBase statement)
         {
-            statement = null; VariableDeclaration variable; FunctionCallSqlExpression function; string jobName = null; var vars = new List<VariableDeclaration>(); var ctx = Mark();
+            statement = null; VariableDeclaration variable; FunctionCallConnectQlExpression function; string jobName = null; var vars = new List<VariableDeclaration>(); var ctx = Mark();
             Expect(13);
             if (this.LookAhead.Kind == 5)
             {
@@ -634,7 +634,7 @@ namespace ConnectQl.Internal
 
         void UseStatement(out StatementBase statement)
         {
-            FunctionCallSqlExpression function = null; string functionName = null; var ctx = Mark();
+            FunctionCallConnectQlExpression function = null; string functionName = null; var ctx = Mark();
             Expect(9);
             Expect(10);
             Function(out function);
@@ -643,9 +643,9 @@ namespace ConnectQl.Internal
             statement = this.SetContext(new UseStatement(function, functionName), ctx);
         }
 
-        void Function(out FunctionCallSqlExpression function)
+        void Function(out FunctionCallConnectQlExpression function)
         {
-            string name; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = Mark();
+            string name; var args = new List<ConnectQlExpressionBase>(); ConnectQlExpressionBase expression; var ctx = Mark();
             Identifier(out name);
             Expect(30);
             if (StartOf(3))
@@ -660,7 +660,7 @@ namespace ConnectQl.Internal
                 }
             }
             Expect(31);
-            function = CatchAll(() => this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx));
+            function = CatchAll(() => this.SetContext(new FunctionCallConnectQlExpression(name, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx));
         }
 
         void FunctionName(out string value)
@@ -671,11 +671,11 @@ namespace ConnectQl.Internal
 
         void VariableDeclaration(out VariableDeclaration declaration)
         {
-            string VariableSqlExpression; SqlExpressionBase expression; var ctx = Mark();
-            Variable(out VariableSqlExpression);
+            string VariableConnectQlExpression; ConnectQlExpressionBase expression; var ctx = Mark();
+            Variable(out VariableConnectQlExpression);
             Expect(12);
             Expression(out expression);
-            declaration = this.SetContext(new VariableDeclaration(VariableSqlExpression, expression), ctx);
+            declaration = this.SetContext(new VariableDeclaration(VariableConnectQlExpression, expression), ctx);
         }
 
         void Variable(out string value)
@@ -684,9 +684,9 @@ namespace ConnectQl.Internal
             value = t.Val;
         }
 
-        void Expression(out SqlExpressionBase expression)
+        void Expression(out ConnectQlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
+            ConnectQlExpressionBase expr; string op; var ctx = Mark();
             AndExpression(out expr);
             expression = expr;
             while (this.LookAhead.Kind == 20)
@@ -694,7 +694,7 @@ namespace ConnectQl.Internal
                 Get();
                 op = t.Val;
                 AndExpression(out expr);
-                expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
+                expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx);
             }
         }
 
@@ -753,7 +753,7 @@ namespace ConnectQl.Internal
                 Identifier(out name);
                 if (this.LookAhead.Kind == 30)
                 {
-                    var args = new List<SqlExpressionBase>(); SqlExpressionBase e;
+                    var args = new List<ConnectQlExpressionBase>(); ConnectQlExpressionBase e;
                     Get();
                     if (StartOf(3))
                     {
@@ -767,12 +767,12 @@ namespace ConnectQl.Internal
                         }
                     }
                     Expect(31);
-                    target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)), ctx));
+                    target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallConnectQlExpression(name, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx)), ctx));
                 }
                 if (target == null)
                 {
-                    var args = new[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-                    target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)), ctx));
+                    var args = new[] { this.SetContext(new ConstConnectQlExpression(name), ctx) };
+                    target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallConnectQlExpression(name, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx)), ctx));
                 }
 
             }
@@ -783,12 +783,12 @@ namespace ConnectQl.Internal
         {
             query = null;
             SourceBase source = null, join = null;
-            AliasedSqlExpression aliasedExpression;
-            SqlExpressionBase expression, where = null, having = null;
-            OrderBySqlExpression orderBy = null;
-            var expressions = new List<AliasedSqlExpression>();
-            var groups = new List<SqlExpressionBase>();
-            var orders = new List<OrderBySqlExpression>();
+            AliasedConnectQlExpression aliasedExpression;
+            ConnectQlExpressionBase expression, where = null, having = null;
+            OrderByConnectQlExpression orderBy = null;
+            var expressions = new List<AliasedConnectQlExpression>();
+            var groups = new List<ConnectQlExpressionBase>();
+            var orders = new List<OrderByConnectQlExpression>();
             var ctx = Mark();
             Expect(32);
             ExpressionAlias(out aliasedExpression);
@@ -834,40 +834,40 @@ namespace ConnectQl.Internal
             {
                 Get();
                 Expect(19);
-                OrderBySqlExpression(out orderBy);
+                OrderByConnectQlExpression(out orderBy);
                 orders.Add(orderBy);
                 while (WeakSeparator(14, 3, 8))
                 {
-                    OrderBySqlExpression(out orderBy);
+                    OrderByConnectQlExpression(out orderBy);
                     orders.Add(orderBy);
                 }
             }
             query = this.SetContext(new SelectFromStatement(
-            new ReadOnlyCollection<AliasedSqlExpression>(expressions),
+            new ReadOnlyCollection<AliasedConnectQlExpression>(expressions),
             source,
             where,
-            new ReadOnlyCollection<SqlExpressionBase>(groups),
+            new ReadOnlyCollection<ConnectQlExpressionBase>(groups),
             having,
-            new ReadOnlyCollection<OrderBySqlExpression>(orders)),
+            new ReadOnlyCollection<OrderByConnectQlExpression>(orders)),
             ctx);
         }
 
-        void ExpressionAlias(out AliasedSqlExpression aliased)
+        void ExpressionAlias(out AliasedConnectQlExpression aliased)
         {
-            string alias = null; SqlExpressionBase expression; var ctx = Mark();
+            string alias = null; ConnectQlExpressionBase expression; var ctx = Mark();
             Expression(out expression);
             if (this.LookAhead.Kind == 48)
             {
                 Get();
                 Name(out alias);
             }
-            aliased = this.SetContext(new AliasedSqlExpression(expression, alias), ctx);
+            aliased = this.SetContext(new AliasedConnectQlExpression(expression, alias), ctx);
         }
 
         void Join(out SourceBase source)
         {
             SourceBase join = null;
-            SqlExpressionBase expression;
+            ConnectQlExpressionBase expression;
             var ctx = Mark();
             JoinType joinType;
             SourceSelector(out source);
@@ -944,9 +944,9 @@ namespace ConnectQl.Internal
             }
         }
 
-        void OrderBySqlExpression(out OrderBySqlExpression orderBy)
+        void OrderByConnectQlExpression(out OrderByConnectQlExpression orderBy)
         {
-            SqlExpressionBase expression;
+            ConnectQlExpressionBase expression;
             var ascending = true;
             var ctx = Mark();
             Expression(out expression);
@@ -962,7 +962,7 @@ namespace ConnectQl.Internal
                     ascending = false;
                 }
             }
-            orderBy = this.SetContext(new OrderBySqlExpression(expression, ascending), ctx);
+            orderBy = this.SetContext(new OrderByConnectQlExpression(expression, ascending), ctx);
         }
 
         void SourceSelector(out SourceBase source)
@@ -999,7 +999,7 @@ namespace ConnectQl.Internal
 
         void SourceBase(out SourceBase source)
         {
-            string name, alias = null; source = null; FunctionCallSqlExpression function = null; var ctx = Mark(); string variable;
+            string name, alias = null; source = null; FunctionCallConnectQlExpression function = null; var ctx = Mark(); string variable;
             if (this.LookAhead.Kind == 5)
             {
                 Variable(out variable);
@@ -1013,7 +1013,7 @@ namespace ConnectQl.Internal
             else if (this.LookAhead.Kind == 4)
             {
                 Identifier(out name);
-                var args = new List<SqlExpressionBase>(); SqlExpressionBase e;
+                var args = new List<ConnectQlExpressionBase>(); ConnectQlExpressionBase e;
                 Expect(30);
                 if (StartOf(3))
                 {
@@ -1027,7 +1027,7 @@ namespace ConnectQl.Internal
                     }
                 }
                 Expect(31);
-                function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx);
+                function = this.SetContext(new FunctionCallConnectQlExpression(name, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx);
                 if (this.LookAhead.Kind == 48)
                 {
                     Get();
@@ -1038,9 +1038,9 @@ namespace ConnectQl.Internal
             else SynErr(85);
         }
 
-        void AndExpression(out SqlExpressionBase expression)
+        void AndExpression(out ConnectQlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
+            ConnectQlExpressionBase expr; string op; var ctx = Mark();
             NegateExpression(out expr);
             expression = expr;
             while (this.LookAhead.Kind == 49)
@@ -1048,25 +1048,25 @@ namespace ConnectQl.Internal
                 Get();
                 op = t.Val;
                 NegateExpression(out expr);
-                expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
+                expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx);
             }
         }
 
-        void NegateExpression(out SqlExpressionBase expression)
+        void NegateExpression(out ConnectQlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op = null; var ctx = Mark();
+            ConnectQlExpressionBase expr; string op = null; var ctx = Mark();
             if (this.LookAhead.Kind == 50)
             {
                 Get();
                 op = t.Val;
             }
             CompareExpression(out expr);
-            expression = op == null ? expr : this.SetContext(new UnarySqlExpression(op, expr), ctx);
+            expression = op == null ? expr : this.SetContext(new UnaryConnectQlExpression(op, expr), ctx);
         }
 
-        void CompareExpression(out SqlExpressionBase expression)
+        void CompareExpression(out ConnectQlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
+            ConnectQlExpressionBase expr; string op; var ctx = Mark();
             AddExpression(out expr);
             expression = expr;
             while (StartOf(10))
@@ -1106,13 +1106,13 @@ namespace ConnectQl.Internal
                 }
                 op = t.Val;
                 AddExpression(out expr);
-                expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
+                expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx);
             }
         }
 
-        void AddExpression(out SqlExpressionBase expression)
+        void AddExpression(out ConnectQlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
+            ConnectQlExpressionBase expr; string op; var ctx = Mark();
             MulExpression(out expr);
             expression = expr;
             while (this.LookAhead.Kind == 56 || this.LookAhead.Kind == 57)
@@ -1127,13 +1127,13 @@ namespace ConnectQl.Internal
                 }
                 op = t.Val;
                 MulExpression(out expr);
-                expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
+                expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx);
             }
         }
 
-        void MulExpression(out SqlExpressionBase expression)
+        void MulExpression(out ConnectQlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op; var ctx = Mark();
+            ConnectQlExpressionBase expr; string op; var ctx = Mark();
             Unary(out expr);
             expression = expr;
             while (StartOf(11))
@@ -1156,13 +1156,13 @@ namespace ConnectQl.Internal
                 }
                 op = t.Val;
                 Unary(out expr);
-                expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx);
+                expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx);
             }
         }
 
-        void Unary(out SqlExpressionBase expression)
+        void Unary(out ConnectQlExpressionBase expression)
         {
-            SqlExpressionBase expr; string op = null; var ctx = Mark();
+            ConnectQlExpressionBase expr; string op = null; var ctx = Mark();
             if (this.LookAhead.Kind == 56 || this.LookAhead.Kind == 57 || this.LookAhead.Kind == 62)
             {
                 if (this.LookAhead.Kind == 56)
@@ -1180,18 +1180,18 @@ namespace ConnectQl.Internal
                 op = t.Val;
             }
             ValueExpression(out expr);
-            expression = op == null ? expr : this.SetContext(new UnarySqlExpression(op, expr), ctx);
+            expression = op == null ? expr : this.SetContext(new UnaryConnectQlExpression(op, expr), ctx);
         }
 
-        void ValueExpression(out SqlExpressionBase expression)
+        void ValueExpression(out ConnectQlExpressionBase expression)
         {
-            string stringValue; object numberValue; SqlExpressionBase function; expression = null; string VariableSqlExpression; var ctx = Mark();
+            string stringValue; object numberValue; ConnectQlExpressionBase function; expression = null; string VariableConnectQlExpression; var ctx = Mark();
             switch (this.LookAhead.Kind)
             {
                 case 1:
                     {
                         String(out stringValue);
-                        expression = this.SetContext(new ConstSqlExpression(stringValue), ctx);
+                        expression = this.SetContext(new ConstConnectQlExpression(stringValue), ctx);
                         break;
                     }
                 case 2:
@@ -1201,9 +1201,9 @@ namespace ConnectQl.Internal
                         {
                             string duration;
                             Identifier(out duration);
-                            expression = this.SetContext(new ConstSqlExpression(ParseTimeSpan(duration, numberValue)), ctx);
+                            expression = this.SetContext(new ConstConnectQlExpression(ParseTimeSpan(duration, numberValue)), ctx);
                         }
-                        expression = expression ?? this.SetContext(new ConstSqlExpression(numberValue), ctx);
+                        expression = expression ?? this.SetContext(new ConstConnectQlExpression(numberValue), ctx);
                         break;
                     }
                 case 30:
@@ -1216,19 +1216,19 @@ namespace ConnectQl.Internal
                 case 63:
                     {
                         Get();
-                        expression = this.SetContext(new ConstSqlExpression(true), ctx);
+                        expression = this.SetContext(new ConstConnectQlExpression(true), ctx);
                         break;
                     }
                 case 64:
                     {
                         Get();
-                        expression = this.SetContext(new ConstSqlExpression(false), ctx);
+                        expression = this.SetContext(new ConstConnectQlExpression(false), ctx);
                         break;
                     }
                 case 65:
                     {
                         Get();
-                        expression = this.SetContext(new ConstSqlExpression(null), ctx);
+                        expression = this.SetContext(new ConstConnectQlExpression(null), ctx);
                         break;
                     }
                 case 3:
@@ -1241,17 +1241,17 @@ namespace ConnectQl.Internal
                     }
                 case 5:
                     {
-                        Variable(out VariableSqlExpression);
-                        expression = this.SetContext(new VariableSqlExpression(VariableSqlExpression), ctx);
+                        Variable(out VariableConnectQlExpression);
+                        expression = this.SetContext(new VariableConnectQlExpression(VariableConnectQlExpression), ctx);
                         break;
                     }
                 default: SynErr(86); break;
             }
         }
 
-        void FieldOrFunction(out SqlExpressionBase field)
+        void FieldOrFunction(out ConnectQlExpressionBase field)
         {
-            string first, second = null; field = null; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = Mark();
+            string first, second = null; field = null; var args = new List<ConnectQlExpressionBase>(); ConnectQlExpressionBase expression; var ctx = Mark();
             if (this.LookAhead.Kind == 4)
             {
                 Identifier(out first);
@@ -1275,10 +1275,10 @@ namespace ConnectQl.Internal
                         else SynErr(87);
                     }
                     field = second == null
-                    ? this.SetContext(new FieldReferenceSqlExpression(first), ctx)
+                    ? this.SetContext(new FieldReferenceConnectQlExpression(first), ctx)
                     : second == "*"
-                    ? (SqlExpressionBase)this.SetContext(new WildcardSqlExpression(first), ctx)
-                    : this.SetContext(new FieldReferenceSqlExpression(first, second), ctx);
+                    ? (ConnectQlExpressionBase)this.SetContext(new WildcardConnectQlExpression(first), ctx)
+                    : this.SetContext(new FieldReferenceConnectQlExpression(first, second), ctx);
                 }
                 else if (this.LookAhead.Kind == 30)
                 {
@@ -1295,7 +1295,7 @@ namespace ConnectQl.Internal
                         }
                     }
                     Expect(31);
-                    field = CatchAll(() => this.SetContext(new FunctionCallSqlExpression(first, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx));
+                    field = CatchAll(() => this.SetContext(new FunctionCallConnectQlExpression(first, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx));
                 }
                 else SynErr(88);
             }
@@ -1315,12 +1315,12 @@ namespace ConnectQl.Internal
                     }
                     else SynErr(89);
                 }
-                field = this.SetContext(second == null ? new FieldReferenceSqlExpression(first) : new FieldReferenceSqlExpression(first, second), ctx);
+                field = this.SetContext(second == null ? new FieldReferenceConnectQlExpression(first) : new FieldReferenceConnectQlExpression(first, second), ctx);
             }
             else if (this.LookAhead.Kind == 58)
             {
                 WildCard(out first);
-                field = this.SetContext(new WildcardSqlExpression(null), ctx);
+                field = this.SetContext(new WildcardConnectQlExpression(null), ctx);
             }
             else SynErr(90);
         }

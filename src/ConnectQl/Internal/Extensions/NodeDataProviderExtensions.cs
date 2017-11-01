@@ -48,7 +48,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression GetExpression([NotNull] this INodeDataProvider dataProvider, SqlExpressionBase node)
+        public static Expression GetExpression([NotNull] this INodeDataProvider dataProvider, ConnectQlExpressionBase node)
         {
             return dataProvider.Get<Expression>(node, "Expression");
         }
@@ -71,7 +71,7 @@ namespace ConnectQl.Internal.Validation
         }
 
         /// <summary>
-        /// Gets the expression that will replace a <see cref="FieldReferenceSqlExpression"/> in an ORDER BY clause.
+        /// Gets the expression that will replace a <see cref="FieldReferenceConnectQlExpression"/> in an ORDER BY clause.
         /// </summary>
         /// <param name="dataProvider">
         /// The data provider.
@@ -80,12 +80,12 @@ namespace ConnectQl.Internal.Validation
         /// The field.
         /// </param>
         /// <returns>
-        /// The <see cref="SqlExpressionBase"/>.
+        /// The <see cref="ConnectQlExpressionBase"/>.
         /// </returns>
         [CanBeNull]
-        public static SqlExpressionBase GetFieldReplacer([NotNull] this INodeDataProvider dataProvider, FieldReferenceSqlExpression field)
+        public static ConnectQlExpressionBase GetFieldReplacer([NotNull] this INodeDataProvider dataProvider, FieldReferenceConnectQlExpression field)
         {
-            return dataProvider.TryGet(field, "FieldReplacer", out SqlExpressionBase result) ? result : null;
+            return dataProvider.TryGet(field, "FieldReplacer", out ConnectQlExpressionBase result) ? result : null;
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="expression">
         /// The expression.
         /// </param>
-        public static void SetExpression([NotNull] this INodeDataProvider dataProvider, SqlExpressionBase node, Expression expression)
+        public static void SetExpression([NotNull] this INodeDataProvider dataProvider, ConnectQlExpressionBase node, Expression expression)
         {
             dataProvider.Set(node, "Expression", expression);
         }
@@ -192,7 +192,7 @@ namespace ConnectQl.Internal.Validation
         }
 
         /// <summary>
-        /// Sets the expression that will replace a <see cref="FieldReferenceSqlExpression"/> in an ORDER BY clause.
+        /// Sets the expression that will replace a <see cref="FieldReferenceConnectQlExpression"/> in an ORDER BY clause.
         /// </summary>
         /// <param name="dataProvider">
         /// The data provider.
@@ -203,7 +203,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="expression">
         /// The expression.
         /// </param>
-        public static void SetFieldReplacer([NotNull] this INodeDataProvider dataProvider, FieldReferenceSqlExpression field, SqlExpressionBase expression)
+        public static void SetFieldReplacer([NotNull] this INodeDataProvider dataProvider, FieldReferenceConnectQlExpression field, ConnectQlExpressionBase expression)
         {
             dataProvider.Set(field, "FieldReplacer", expression);
         }

@@ -32,15 +32,15 @@ namespace ConnectQl.Internal.Ast.Expressions
     /// <summary>
     /// The variable.
     /// </summary>
-    internal class VariableSqlExpression : SqlExpressionBase
+    internal class VariableConnectQlExpression : ConnectQlExpressionBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VariableSqlExpression"/> class.
+        /// Initializes a new instance of the <see cref="VariableConnectQlExpression"/> class.
         /// </summary>
         /// <param name="name">
         /// The name.
         /// </param>
-        public VariableSqlExpression(string name)
+        public VariableConnectQlExpression(string name)
         {
             this.Name = name;
         }
@@ -72,7 +72,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </param>
         public override bool Equals(object obj)
         {
-            var other = obj as VariableSqlExpression;
+            var other = obj as VariableConnectQlExpression;
 
             return other != null && string.Equals(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
         }

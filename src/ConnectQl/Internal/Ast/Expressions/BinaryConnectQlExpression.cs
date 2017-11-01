@@ -30,23 +30,27 @@ namespace ConnectQl.Internal.Ast.Expressions
     using JetBrains.Annotations;
 
     /// <summary>
-    /// The unary expression.
+    /// The binary expression.
     /// </summary>
-    internal class UnarySqlExpression : SqlExpressionBase
+    internal class BinaryConnectQlExpression : ConnectQlExpressionBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnarySqlExpression"/> class.
+        /// Initializes a new instance of the <see cref="BinaryConnectQlExpression"/> class.
         /// </summary>
+        /// <param name="first">
+        /// The first operand.
+        /// </param>
         /// <param name="op">
-        /// The op.
+        /// The operator.
         /// </param>
-        /// <param name="expression">
-        /// The expression.
+        /// <param name="second">
+        /// The second operand.
         /// </param>
-        public UnarySqlExpression([CanBeNull] string op, SqlExpressionBase expression)
+        public BinaryConnectQlExpression(ConnectQlExpressionBase first, string op, ConnectQlExpressionBase second)
         {
-            this.Op = op?.ToUpperInvariant();
-            this.Expression = expression;
+            this.First = first;
+            this.Op = op;
+            this.Second = second;
         }
 
         /// <summary>
@@ -56,19 +60,25 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             get
             {
-                yield return this.Expression;
+                yield return this.First;
+                yield return this.Second;
             }
         }
 
         /// <summary>
-        /// Gets the expression.
+        /// Gets the first operand.
         /// </summary>
-        public SqlExpressionBase Expression { get; }
+        public ConnectQlExpressionBase First { get; }
 
         /// <summary>
-        /// Gets the op.
+        /// Gets the operator.
         /// </summary>
         public string Op { get; }
+
+        /// <summary>
+        /// Gets the second operand.
+        /// </summary>
+        public ConnectQlExpressionBase Second { get; }
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
@@ -81,9 +91,9 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </param>
         public override bool Equals(object obj)
         {
-            var other = obj as UnarySqlExpression;
+            var other = obj as BinaryConnectQlExpression;
 
-            return other != null && string.Equals(this.Op, other.Op, StringComparison.OrdinalIgnoreCase) && object.Equals(this.Expression, other.Expression);
+            return other != null && object.Equals(this.First, other.First) && string.Equals(this.Op, other.Op, StringComparison.OrdinalIgnoreCase) && object.Equals(this.Second, other.Second);
         }
 
         /// <summary>
@@ -96,7 +106,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             unchecked
             {
-                return ((this.Expression?.GetHashCode() ?? 0) * 397) ^ (this.Op != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.Op) : 0);
+                return ((((this.First?.GetHashCode() ?? 0) * 397) ^ (this.Op != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.Op) : 0)) * 397) ^ (this.Second?.GetHashCode() ?? 0);
             }
         }
 
@@ -107,7 +117,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// The <see cref="string"/>.
         /// </returns>
         [NotNull]
-        public override string ToString() => $"({this.Op.ToUpperInvariant()} {this.Expression})";
+        public override string ToString() => $"({this.First} {this.Op.ToUpperInvariant()} {this.Second})";
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.
@@ -120,7 +130,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </returns>
         protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
-            return visitor.VisitUnarySqlExpression(this);
+            return visitor.VisitBinarySqlExpression(this);
         }
 
         /// <summary>
@@ -135,9 +145,10 @@ namespace ConnectQl.Internal.Ast.Expressions
         [NotNull]
         protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
-            var expression = visitor.Visit(this.Expression);
+            var first = visitor.Visit(this.First);
+            var second = visitor.Visit(this.Second);
 
-            return expression != this.Expression ? new UnarySqlExpression(this.Op, expression) : this;
+            return first != this.First || second != this.Second ? new BinaryConnectQlExpression(first, this.Op, second) : this;
         }
     }
 }

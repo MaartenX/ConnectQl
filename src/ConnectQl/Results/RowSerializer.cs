@@ -186,7 +186,7 @@ namespace ConnectQl.Results
             /// </returns>
             internal int GetResolverId(IRowFieldResolver resolver)
             {
-                if (this.idsByResolver.TryGetValue(resolver, out int id))
+                if (this.idsByResolver.TryGetValue(resolver, out var id))
                 {
                     return id;
                 }

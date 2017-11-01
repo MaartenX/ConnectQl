@@ -99,7 +99,7 @@ namespace ConnectQl.Internal.Query.Plans
         /// <param name="fields">
         /// The fields.
         /// </param>
-        public SelectGroupByQueryPlan(SelectQueryPlan plan, Func<IExecutionContext, IAsyncReadOnlyCollection<Row>, Task<KeyValuePair<string, object>[]>> rowFactory, [NotNull] IEnumerable<string> groupFields, ReadOnlyCollection<AliasedSqlExpression> aliases, Expression having, IEnumerable<OrderByExpression> orders, [NotNull] IEnumerable<string> fields)
+        public SelectGroupByQueryPlan(SelectQueryPlan plan, Func<IExecutionContext, IAsyncReadOnlyCollection<Row>, Task<KeyValuePair<string, object>[]>> rowFactory, [NotNull] IEnumerable<string> groupFields, ReadOnlyCollection<AliasedConnectQlExpression> aliases, Expression having, IEnumerable<OrderByExpression> orders, [NotNull] IEnumerable<string> fields)
         {
             this.plan = plan;
             this.rowFactory = async (c, rows) =>

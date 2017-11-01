@@ -41,7 +41,7 @@ namespace ConnectQl.Internal.Ast.Targets
         /// <param name="function">
         /// The function.
         /// </param>
-        public FunctionTarget(FunctionCallSqlExpression function)
+        public FunctionTarget(FunctionCallConnectQlExpression function)
         {
             this.Function = function;
         }
@@ -61,7 +61,7 @@ namespace ConnectQl.Internal.Ast.Targets
         /// <summary>
         /// Gets the function.
         /// </summary>
-        public FunctionCallSqlExpression Function { get; }
+        public FunctionCallConnectQlExpression Function { get; }
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.

@@ -157,7 +157,7 @@ namespace ConnectQl.Internal
                 return double.Parse(value, CultureInfo.InvariantCulture);
             }
 
-            if (!long.TryParse(value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out long longValue))
+            if (!long.TryParse(value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var longValue))
             {
                 this.SemErr("Invalid number (too long).");
                 return 0;

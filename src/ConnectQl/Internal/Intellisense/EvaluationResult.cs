@@ -250,7 +250,7 @@ namespace ConnectQl.Internal.Intellisense
         {
             try
             {
-                if (this.variablesValues.TryGetValue(variable, out object value))
+                if (this.variablesValues.TryGetValue(variable, out var value))
                 {
                     return typeof(T) == typeof(object) || typeof(T).GetTypeInfo().IsAssignableFrom(value.GetType().GetTypeInfo())
                         ? (T)value

@@ -289,7 +289,7 @@ namespace ConnectQl.Internal.Plugins
         /// </returns>
         private static int? ToInt([CanBeNull] object value)
         {
-            return int.TryParse(value as string ?? value?.ToString() ?? string.Empty, out int result) ? (int?)result : null;
+            return int.TryParse(value as string ?? value?.ToString() ?? string.Empty, out var result) ? (int?)result : null;
         }
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace ConnectQl.Internal.Plugins
         /// </returns>
         private static float? ToFloat([CanBeNull] object value)
         {
-            return float.TryParse(value as string ?? value?.ToString() ?? string.Empty, out float result) ? (int?)result : null;
+            return float.TryParse(value as string ?? value?.ToString() ?? string.Empty, out var result) ? (int?)result : null;
         }
 
         /// <summary>
@@ -493,7 +493,7 @@ namespace ConnectQl.Internal.Plugins
         /// </returns>
         private static DateTime Parse(string value)
         {
-            return DateTime.TryParse(value, out DateTime result) ? result : DateTime.MinValue;
+            return DateTime.TryParse(value, out var result) ? result : DateTime.MinValue;
         }
 
         /// <summary>
@@ -549,7 +549,7 @@ namespace ConnectQl.Internal.Plugins
         /// </returns>
         private static DateTime? ParseDate(string value)
         {
-            return DateTime.TryParse(value, out DateTime result) ? (DateTime?)result : null;
+            return DateTime.TryParse(value, out var result) ? (DateTime?)result : null;
         }
 
         /// <summary>
@@ -562,7 +562,7 @@ namespace ConnectQl.Internal.Plugins
         /// </returns>
         private static DateTime? ParseDate(string value, string pattern)
         {
-            return DateTime.TryParseExact(value, pattern, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result)
+            return DateTime.TryParseExact(value, pattern, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result)
                        ? (DateTime?)result
                        : null;
         }

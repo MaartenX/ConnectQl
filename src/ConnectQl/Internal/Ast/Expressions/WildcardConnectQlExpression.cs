@@ -32,15 +32,15 @@ namespace ConnectQl.Internal.Ast.Expressions
     /// <summary>
     /// The wildcard expression.
     /// </summary>
-    internal class WildcardSqlExpression : SqlExpressionBase
+    internal class WildcardConnectQlExpression : ConnectQlExpressionBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="WildcardSqlExpression"/> class.
+        /// Initializes a new instance of the <see cref="WildcardConnectQlExpression"/> class.
         /// </summary>
         /// <param name="source">
         /// The table.
         /// </param>
-        public WildcardSqlExpression(string source)
+        public WildcardConnectQlExpression(string source)
         {
             this.Source = source;
         }
@@ -72,7 +72,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </param>
         public override bool Equals(object obj)
         {
-            var other = obj as WildcardSqlExpression;
+            var other = obj as WildcardConnectQlExpression;
 
             return other != null && string.Equals(this.Source, other.Source, StringComparison.OrdinalIgnoreCase);
         }

@@ -34,10 +34,10 @@ namespace ConnectQl.Internal.Ast.Expressions
     /// <summary>
     /// The function call.
     /// </summary>
-    internal class FunctionCallSqlExpression : SqlExpressionBase
+    internal class FunctionCallConnectQlExpression : ConnectQlExpressionBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FunctionCallSqlExpression"/> class.
+        /// Initializes a new instance of the <see cref="FunctionCallConnectQlExpression"/> class.
         /// </summary>
         /// <param name="name">
         /// The name.
@@ -45,7 +45,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <param name="arguments">
         /// The arguments.
         /// </param>
-        public FunctionCallSqlExpression(string name, ReadOnlyCollection<SqlExpressionBase> arguments)
+        public FunctionCallConnectQlExpression(string name, ReadOnlyCollection<ConnectQlExpressionBase> arguments)
         {
             this.Name = name;
             this.Arguments = arguments;
@@ -54,7 +54,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <summary>
         /// Gets the arguments.
         /// </summary>
-        public ReadOnlyCollection<SqlExpressionBase> Arguments { get; }
+        public ReadOnlyCollection<ConnectQlExpressionBase> Arguments { get; }
 
         /// <summary>
         /// Gets the children of this node.
@@ -77,7 +77,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </param>
         public override bool Equals(object obj)
         {
-            var other = obj as FunctionCallSqlExpression;
+            var other = obj as FunctionCallConnectQlExpression;
 
             return other != null && string.Equals(this.Name, other.Name, StringComparison.OrdinalIgnoreCase) && this.Arguments.SequenceEqual(other.Arguments);
         }
@@ -133,7 +133,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             var arguments = visitor.Visit(this.Arguments);
 
-            return arguments != this.Arguments ? new FunctionCallSqlExpression(this.Name, arguments) : this;
+            return arguments != this.Arguments ? new FunctionCallConnectQlExpression(this.Name, arguments) : this;
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <param name="other">
         /// The other.
         /// </param>
-        protected bool Equals([NotNull] FunctionCallSqlExpression other)
+        protected bool Equals([NotNull] FunctionCallConnectQlExpression other)
         {
             return this.Arguments.SequenceEqual(other.Arguments) && string.Equals(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
         }

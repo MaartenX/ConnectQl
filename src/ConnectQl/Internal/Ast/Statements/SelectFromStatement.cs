@@ -58,7 +58,7 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <param name="orders">
         /// The orders.
         /// </param>
-        public SelectFromStatement(ReadOnlyCollection<AliasedSqlExpression> expressions, SourceBase source, SqlExpressionBase where, ReadOnlyCollection<SqlExpressionBase> groupings, SqlExpressionBase having, ReadOnlyCollection<OrderBySqlExpression> orders)
+        public SelectFromStatement(ReadOnlyCollection<AliasedConnectQlExpression> expressions, SourceBase source, ConnectQlExpressionBase where, ReadOnlyCollection<ConnectQlExpressionBase> groupings, ConnectQlExpressionBase having, ReadOnlyCollection<OrderByConnectQlExpression> orders)
         {
             this.Expressions = expressions;
             this.Source = source;
@@ -111,22 +111,22 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <summary>
         /// Gets the expressions.
         /// </summary>
-        public ReadOnlyCollection<AliasedSqlExpression> Expressions { get; }
+        public ReadOnlyCollection<AliasedConnectQlExpression> Expressions { get; }
 
         /// <summary>
         /// Gets the groupings.
         /// </summary>
-        public ReadOnlyCollection<SqlExpressionBase> Groupings { get; }
+        public ReadOnlyCollection<ConnectQlExpressionBase> Groupings { get; }
 
         /// <summary>
         /// Gets the having.
         /// </summary>
-        public SqlExpressionBase Having { get; }
+        public ConnectQlExpressionBase Having { get; }
 
         /// <summary>
         /// Gets the orders.
         /// </summary>
-        public ReadOnlyCollection<OrderBySqlExpression> Orders { get; }
+        public ReadOnlyCollection<OrderByConnectQlExpression> Orders { get; }
 
         /// <summary>
         /// Gets the sources.
@@ -136,7 +136,7 @@ namespace ConnectQl.Internal.Ast.Statements
         /// <summary>
         /// Gets the where.
         /// </summary>
-        public SqlExpressionBase Where { get; }
+        public ConnectQlExpressionBase Where { get; }
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.

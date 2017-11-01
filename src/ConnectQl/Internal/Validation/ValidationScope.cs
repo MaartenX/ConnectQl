@@ -57,7 +57,7 @@ namespace ConnectQl.Internal.Validation
         /// <summary>
         /// The groupings.
         /// </summary>
-        private readonly List<SqlExpressionBase> groupings = new List<SqlExpressionBase>();
+        private readonly List<ConnectQlExpressionBase> groupings = new List<ConnectQlExpressionBase>();
 
         /// <summary>
         /// The registered plugins.
@@ -157,7 +157,7 @@ namespace ConnectQl.Internal.Validation
         /// <param name="groupingsToAdd">
         /// The groupings to add.
         /// </param>
-        public void AddGroupings(IEnumerable<SqlExpressionBase> groupingsToAdd)
+        public void AddGroupings(IEnumerable<ConnectQlExpressionBase> groupingsToAdd)
         {
             this.groupings.AddRange(groupingsToAdd);
         }
@@ -270,7 +270,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="IFunctionDescriptor"/>.
         /// </returns>
-        public IFunctionDescriptor GetFunction(string name, [NotNull] ReadOnlyCollection<SqlExpressionBase> arguments)
+        public IFunctionDescriptor GetFunction(string name, [NotNull] ReadOnlyCollection<ConnectQlExpressionBase> arguments)
         {
             var scope = this;
 
@@ -349,7 +349,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// <c>true</c> if the node is in a group-by expression, <c>false</c> otherwise.
         /// </returns>
-        public bool IsGroupByExpression(SqlExpressionBase node)
+        public bool IsGroupByExpression(ConnectQlExpressionBase node)
         {
             var scope = this;
 

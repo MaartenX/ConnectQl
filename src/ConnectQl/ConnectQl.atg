@@ -49,18 +49,18 @@ Statement<out StatementBase statement>															(. statement = null; Select
 	| UseStatement<out statement>			
 	.
 
-UseStatement<out StatementBase statement>														(. FunctionCallSqlExpression function = null; string functionName = null; var ctx = Mark(); .)
+UseStatement<out StatementBase statement>														(. FunctionCallConnectQlExpression function = null; string functionName = null; var ctx = Mark(); .)
 	= "USE" "DEFAULT" 
 	  Function<out function>																
 	  "FOR"
 	  FunctionName<out functionName>															(. statement = this.SetContext(new UseStatement(function, functionName), ctx); .)
 	.
 
-VariableDeclaration<out VariableDeclaration declaration>										(. string VariableSqlExpression; SqlExpressionBase expression; var ctx = Mark(); .)
-	=	Variable<out VariableSqlExpression> "=" Expression<out expression>						(. declaration = this.SetContext(new VariableDeclaration(VariableSqlExpression, expression), ctx); .)
+VariableDeclaration<out VariableDeclaration declaration>										(. string VariableConnectQlExpression; ConnectQlExpressionBase expression; var ctx = Mark(); .)
+	=	Variable<out VariableConnectQlExpression> "=" Expression<out expression>						(. declaration = this.SetContext(new VariableDeclaration(VariableConnectQlExpression, expression), ctx); .)
 	.
 	 
-DeclareStatement<out StatementBase statement>													(. statement = null; VariableDeclaration variable; FunctionCallSqlExpression function; string jobName = null; var vars = new List<VariableDeclaration>(); var ctx = Mark(); .)
+DeclareStatement<out StatementBase statement>													(. statement = null; VariableDeclaration variable; FunctionCallConnectQlExpression function; string jobName = null; var vars = new List<VariableDeclaration>(); var ctx = Mark(); .)
 	= "DECLARE" 
 		(
 			VariableDeclaration<out variable>													(. vars.Add(variable); .)
@@ -143,12 +143,12 @@ UnionOrSelectStatement<out SelectStatement statement>											(. SelectStateme
 
 SelectStatement<out SelectStatement query>														(. query = null; 
 																								   SourceBase source = null, join = null; 
-																								   AliasedSqlExpression aliasedExpression;
-																								   SqlExpressionBase expression, where = null, having = null; 
-																								   OrderBySqlExpression orderBy = null;
-																								   var expressions = new List<AliasedSqlExpression>(); 
-																								   var groups = new List<SqlExpressionBase>();
-																								   var orders = new List<OrderBySqlExpression>();
+																								   AliasedConnectQlExpression aliasedExpression;
+																								   ConnectQlExpressionBase expression, where = null, having = null; 
+																								   OrderByConnectQlExpression orderBy = null;
+																								   var expressions = new List<AliasedConnectQlExpression>(); 
+																								   var groups = new List<ConnectQlExpressionBase>();
+																								   var orders = new List<OrderByConnectQlExpression>();
 																								   var ctx = Mark(); .)
 	= "SELECT" 
 		ExpressionAlias<out aliasedExpression>													(. expressions.Add(aliasedExpression); .)
@@ -175,23 +175,23 @@ SelectStatement<out SelectStatement query>														(. query = null;
 			]
 		]
 		[
-			"ORDER" "BY" OrderBySqlExpression<out orderBy>										(. orders.Add(orderBy); .)
+			"ORDER" "BY" OrderByConnectQlExpression<out orderBy>										(. orders.Add(orderBy); .)
 			{ 
-				WEAK "," OrderBySqlExpression<out orderBy>										(. orders.Add(orderBy); .)
+				WEAK "," OrderByConnectQlExpression<out orderBy>										(. orders.Add(orderBy); .)
 			}
 		]
 		
 																								(. query = this.SetContext(new SelectFromStatement(
-																												new ReadOnlyCollection<AliasedSqlExpression>(expressions),
+																												new ReadOnlyCollection<AliasedConnectQlExpression>(expressions),
 																												source, 
 																												where, 
-																												new ReadOnlyCollection<SqlExpressionBase>(groups), 
+																												new ReadOnlyCollection<ConnectQlExpressionBase>(groups), 
 																												having, 
-																												new ReadOnlyCollection<OrderBySqlExpression>(orders)), 
+																												new ReadOnlyCollection<OrderByConnectQlExpression>(orders)), 
 																												ctx); .)
 	.																							
 
-OrderBySqlExpression<out OrderBySqlExpression orderBy>											(. SqlExpressionBase expression; 
+OrderByConnectQlExpression<out OrderByConnectQlExpression orderBy>											(. ConnectQlExpressionBase expression; 
 																								   var ascending = true;
 																								   var ctx = Mark(); .)
 	=	Expression<out expression> 
@@ -200,11 +200,11 @@ OrderBySqlExpression<out OrderBySqlExpression orderBy>											(. SqlExpressio
 		|
 			"DESC"																				(. ascending = false; .)
 		]
-	 																							(. orderBy = this.SetContext(new OrderBySqlExpression(expression, ascending), ctx); .)
+	 																							(. orderBy = this.SetContext(new OrderByConnectQlExpression(expression, ascending), ctx); .)
 	.
 	 
 Join<out SourceBase source>																		(. SourceBase join = null;
-																								   SqlExpressionBase expression;
+																								   ConnectQlExpressionBase expression;
 																								   var ctx = Mark(); 
 																								   JoinType joinType; .)
 	= SourceSelector<out source> 
@@ -272,11 +272,11 @@ SourceSelector<out SourceBase source>															(. string name;
 		) 
 	.
 
-SourceBase<out SourceBase source>																(. string name, alias = null; source = null; FunctionCallSqlExpression function = null; var ctx = Mark(); string variable; .)
+SourceBase<out SourceBase source>																(. string name, alias = null; source = null; FunctionCallConnectQlExpression function = null; var ctx = Mark(); string variable; .)
 	=	Variable<out variable> ["AS"] Name<out alias>											(. source = CatchAll(() => this.SetContext(new VariableSource(variable, alias), ctx)) ; .)
 		|
 		Identifier<out name>	
-																								(. var args = new List<SqlExpressionBase>(); SqlExpressionBase e; .)
+																								(. var args = new List<ConnectQlExpressionBase>(); ConnectQlExpressionBase e; .)
 		"(" 
 			[
 				Expression<out e>																(. args.Add(e); .)
@@ -284,7 +284,7 @@ SourceBase<out SourceBase source>																(. string name, alias = null; s
 					"," Expression<out e>														(. args.Add(e); .)
 				}
 			]
-		")"																						(. function = this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx); .)
+		")"																						(. function = this.SetContext(new FunctionCallConnectQlExpression(name, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx); .)
 		["AS"] Name<out alias>																	(. source = CatchAll(() => this.SetContext(new FunctionSource(function, alias ), ctx)) ; .)
 		
 	.
@@ -293,7 +293,7 @@ InsertTarget<out TargetBase target>																(. string name; target = null
 	=	Variable<out variable>																	(. target = CatchAll(() => this.SetContext(new VariableTarget(variable), ctx)); .)
 		|
 		Identifier<out name>	
-		[																						(. var args = new List<SqlExpressionBase>(); SqlExpressionBase e; .)
+		[																						(. var args = new List<ConnectQlExpressionBase>(); ConnectQlExpressionBase e; .)
 			"(" 
 				[
 					Expression<out e>															(. args.Add(e); .)
@@ -301,88 +301,88 @@ InsertTarget<out TargetBase target>																(. string name; target = null
 						"," Expression<out e>													(. args.Add(e); .)
 					}
 				]
-			")"																					(. target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)), ctx)); .)
+			")"																					(. target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallConnectQlExpression(name, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx)), ctx)); .)
 		]
 																								(. if (target == null) 
 																								   {
-																									   var args = new[] { this.SetContext(new ConstSqlExpression(name), ctx) };
-																									   target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)), ctx)); 
+																									   var args = new[] { this.SetContext(new ConstConnectQlExpression(name), ctx) };
+																									   target = CatchAll(() => this.SetContext(new FunctionTarget(this.SetContext(new FunctionCallConnectQlExpression(name, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx)), ctx)); 
 																								   } 
 																								.)
 	.
-ExpressionAlias<out AliasedSqlExpression aliased>												(. string alias = null; SqlExpressionBase expression; var ctx = Mark(); .)
+ExpressionAlias<out AliasedConnectQlExpression aliased>												(. string alias = null; ConnectQlExpressionBase expression; var ctx = Mark(); .)
 	= Expression<out expression> 
 		[
 			"AS" Name<out alias>																 
-		]																						(. aliased = this.SetContext(new AliasedSqlExpression(expression, alias), ctx); .)
+		]																						(. aliased = this.SetContext(new AliasedConnectQlExpression(expression, alias), ctx); .)
 	. 
 
-Expression<out SqlExpressionBase expression>													(. SqlExpressionBase expr; string op; var ctx = Mark(); .)    
+Expression<out ConnectQlExpressionBase expression>													(. ConnectQlExpressionBase expr; string op; var ctx = Mark(); .)    
 	= AndExpression<out expr>																	(. expression = expr; .)
 		{ 
 			"OR"																				(. op = t.Val; .)
-			AndExpression<out expr>																(. expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx); .)
+			AndExpression<out expr>																(. expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx); .)
 		} 		
 	.
 	 
-AndExpression<out SqlExpressionBase expression>													(. SqlExpressionBase expr; string op; var ctx = Mark(); .)    
+AndExpression<out ConnectQlExpressionBase expression>													(. ConnectQlExpressionBase expr; string op; var ctx = Mark(); .)    
 	= NegateExpression<out expr>																(. expression = expr; .)
 		{ 
 			"AND"																				(. op = t.Val; .)
-			NegateExpression<out expr>															(. expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx); .)
+			NegateExpression<out expr>															(. expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx); .)
 		} 		
 	.
 	
-NegateExpression<out SqlExpressionBase expression>												(. SqlExpressionBase expr; string op = null; var ctx = Mark(); .)
+NegateExpression<out ConnectQlExpressionBase expression>												(. ConnectQlExpressionBase expr; string op = null; var ctx = Mark(); .)
 	=	[
 			"NOT"																				(. op = t.Val; .)
 		] 
-		CompareExpression<out expr>																(. expression = op == null ? expr : this.SetContext(new UnarySqlExpression(op, expr), ctx); .)
+		CompareExpression<out expr>																(. expression = op == null ? expr : this.SetContext(new UnaryConnectQlExpression(op, expr), ctx); .)
 	.
 
-CompareExpression<out SqlExpressionBase expression>												(. SqlExpressionBase expr; string op; var ctx = Mark(); .)    
+CompareExpression<out ConnectQlExpressionBase expression>												(. ConnectQlExpressionBase expr; string op; var ctx = Mark(); .)    
 	= AddExpression<out expr>																	(. expression = expr; .)
 		{ 
 			( ">" | ">=" | "=" | "<=" | "<" | "<>" )											(. op = t.Val; .)
-			AddExpression<out expr>																(. expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx); .)
+			AddExpression<out expr>																(. expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx); .)
 		} 		
 	.
 
-AddExpression<out SqlExpressionBase expression>													(. SqlExpressionBase expr; string op; var ctx = Mark(); .)    
+AddExpression<out ConnectQlExpressionBase expression>													(. ConnectQlExpressionBase expr; string op; var ctx = Mark(); .)    
 	= MulExpression<out expr>																	(. expression = expr; .)
 		{ 
 			( "+" | "-" )																		(. op = t.Val; .)
-			MulExpression<out expr>																(. expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx); .)
+			MulExpression<out expr>																(. expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx); .)
 		} 		
 	.
 	 
-MulExpression<out SqlExpressionBase expression>													(. SqlExpressionBase expr; string op; var ctx = Mark(); .)    
+MulExpression<out ConnectQlExpressionBase expression>													(. ConnectQlExpressionBase expr; string op; var ctx = Mark(); .)    
 	= Unary<out expr>																			(. expression = expr; .)
 		{ 
 			( "*" | "/" | "%" | "^" )															(. op = t.Val; .)
-			Unary<out expr>																		(. expression = this.SetContext(new BinarySqlExpression(expression, op, expr), ctx); .)
+			Unary<out expr>																		(. expression = this.SetContext(new BinaryConnectQlExpression(expression, op, expr), ctx); .)
 		} 
 	.
 
-Unary<out SqlExpressionBase expression>															(. SqlExpressionBase expr; string op = null; var ctx = Mark(); .)
+Unary<out ConnectQlExpressionBase expression>															(. ConnectQlExpressionBase expr; string op = null; var ctx = Mark(); .)
 	=	[
 			("+" | "-" | "!")																	(. op = t.Val; .)
 		]																						
-		ValueExpression<out expr>																(. expression = op == null ? expr : this.SetContext(new UnarySqlExpression(op, expr), ctx); .)
+		ValueExpression<out expr>																(. expression = op == null ? expr : this.SetContext(new UnaryConnectQlExpression(op, expr), ctx); .)
 	.
 
-ValueExpression<out SqlExpressionBase expression>												(. string stringValue; object numberValue; SqlExpressionBase function; expression = null; string VariableSqlExpression; var ctx = Mark(); .)
-	= String<out stringValue>																	(. expression = this.SetContext(new ConstSqlExpression(stringValue), ctx); .)
+ValueExpression<out ConnectQlExpressionBase expression>												(. string stringValue; object numberValue; ConnectQlExpressionBase function; expression = null; string VariableConnectQlExpression; var ctx = Mark(); .)
+	= String<out stringValue>																	(. expression = this.SetContext(new ConstConnectQlExpression(stringValue), ctx); .)
 	| Number<out numberValue>																	
 		[																						(. string duration; .)
-			Identifier<out duration>															(. expression = this.SetContext(new ConstSqlExpression(ParseTimeSpan(duration, numberValue)), ctx); .)
-		]																						(. expression = expression ?? this.SetContext(new ConstSqlExpression(numberValue), ctx); .)
+			Identifier<out duration>															(. expression = this.SetContext(new ConstConnectQlExpression(ParseTimeSpan(duration, numberValue)), ctx); .)
+		]																						(. expression = expression ?? this.SetContext(new ConstConnectQlExpression(numberValue), ctx); .)
 	| "(" Expression<out expression> ")"														
-	| "TRUE"																					(. expression = this.SetContext(new ConstSqlExpression(true), ctx); .)
-	| "FALSE"																					(. expression = this.SetContext(new ConstSqlExpression(false), ctx); .)
-	| "NULL"																					(. expression = this.SetContext(new ConstSqlExpression(null), ctx); .)
+	| "TRUE"																					(. expression = this.SetContext(new ConstConnectQlExpression(true), ctx); .)
+	| "FALSE"																					(. expression = this.SetContext(new ConstConnectQlExpression(false), ctx); .)
+	| "NULL"																					(. expression = this.SetContext(new ConstConnectQlExpression(null), ctx); .)
 	| FieldOrFunction<out function>																(. expression = function; .)
-	| Variable<out VariableSqlExpression>														(. expression = this.SetContext(new VariableSqlExpression(VariableSqlExpression), ctx); .)
+	| Variable<out VariableConnectQlExpression>														(. expression = this.SetContext(new VariableConnectQlExpression(VariableConnectQlExpression), ctx); .)
 	.
 
 Name<out string value>																			(. value = null; .)
@@ -394,7 +394,7 @@ WildCard<out string value>
 	= "*"																						(. value = t.Val; .)
 	.
 
-Function<out FunctionCallSqlExpression function>												(. string name; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = Mark(); .)
+Function<out FunctionCallConnectQlExpression function>												(. string name; var args = new List<ConnectQlExpressionBase>(); ConnectQlExpressionBase expression; var ctx = Mark(); .)
 	= Identifier<out name>																		
 		"("
 			[ 
@@ -403,20 +403,20 @@ Function<out FunctionCallSqlExpression function>												(. string name; var 
 					"," Expression<out expression>												(. args.Add(expression); .)
 				}
 			] 
-		")"																						(. function = CatchAll(() => this.SetContext(new FunctionCallSqlExpression(name, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)); .)
+		")"																						(. function = CatchAll(() => this.SetContext(new FunctionCallConnectQlExpression(name, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx)); .)
 		.
 		
-FieldOrFunction<out SqlExpressionBase field>													(. string first, second = null; field = null; var args = new List<SqlExpressionBase>(); SqlExpressionBase expression; var ctx = Mark(); .)
+FieldOrFunction<out ConnectQlExpressionBase field>													(. string first, second = null; field = null; var args = new List<ConnectQlExpressionBase>(); ConnectQlExpressionBase expression; var ctx = Mark(); .)
 	= Identifier<out first> 
 		(
 			[
 				 "." 
 				 (Identifier<out second>|BracketedIdentifier<out second>|WildCard<out second>) 
 			]																					(. field = second == null 
-																										? this.SetContext(new FieldReferenceSqlExpression(first), ctx) 
+																										? this.SetContext(new FieldReferenceConnectQlExpression(first), ctx) 
 																										: second == "*" 
-																											? (SqlExpressionBase)this.SetContext(new WildcardSqlExpression(first), ctx)
-																											: this.SetContext(new FieldReferenceSqlExpression(first, second), ctx); .)
+																											? (ConnectQlExpressionBase)this.SetContext(new WildcardConnectQlExpression(first), ctx)
+																											: this.SetContext(new FieldReferenceConnectQlExpression(first, second), ctx); .)
 			|
 			"("
 				[ 
@@ -425,12 +425,12 @@ FieldOrFunction<out SqlExpressionBase field>													(. string first, second
 						"," Expression<out expression>											(. args.Add(expression); .)
 					}
 				] 
-			")"																					(. field = CatchAll(() => this.SetContext(new FunctionCallSqlExpression(first, new ReadOnlyCollection<SqlExpressionBase>(args)), ctx)); .)
+			")"																					(. field = CatchAll(() => this.SetContext(new FunctionCallConnectQlExpression(first, new ReadOnlyCollection<ConnectQlExpressionBase>(args)), ctx)); .)
 		)
 
 	| BracketedIdentifier<out first>
-		[ "."  (Identifier<out second>|BracketedIdentifier<out second>) ]						(. field = this.SetContext(second == null ? new FieldReferenceSqlExpression(first) : new FieldReferenceSqlExpression(first, second), ctx); .)
-	| WildCard<out first>																		(. field = this.SetContext(new WildcardSqlExpression(null), ctx); .)
+		[ "."  (Identifier<out second>|BracketedIdentifier<out second>) ]						(. field = this.SetContext(second == null ? new FieldReferenceConnectQlExpression(first) : new FieldReferenceConnectQlExpression(first, second), ctx); .)
+	| WildCard<out first>																		(. field = this.SetContext(new WildcardConnectQlExpression(null), ctx); .)
 		
 	.
 

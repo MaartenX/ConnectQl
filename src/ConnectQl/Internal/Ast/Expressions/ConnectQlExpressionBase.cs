@@ -25,7 +25,7 @@ namespace ConnectQl.Internal.Ast.Expressions
     /// <summary>
     /// Base class for expressions.
     /// </summary>
-    internal abstract class SqlExpressionBase : Node
+    internal abstract class ConnectQlExpressionBase : Node
     {
     }
 }

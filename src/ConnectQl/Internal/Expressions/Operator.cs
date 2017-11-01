@@ -761,6 +761,7 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <returns>The result.</returns>
         private static bool DynamicOr([CanBeNull] object first, [CanBeNull] object second) => (bool)Evaluate("OR", first, second, p => Expression.Or(p.Item1, p.Item2, p.Item3));
         
+
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is greater than <paramref name="second"/>.
         /// </summary>

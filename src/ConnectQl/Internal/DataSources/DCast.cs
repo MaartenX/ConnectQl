@@ -154,7 +154,7 @@ namespace ConnectQl.Internal.DataSources
                 return Convert.ToDouble(value);
             }
 
-            if (value is string str && double.TryParse(str, out double result))
+            if (value is string str && double.TryParse(str, out var result))
             {
                 return result;
             }
@@ -210,7 +210,7 @@ namespace ConnectQl.Internal.DataSources
                                         switch (this.function)
                                         {
                                             case DCastFunction.Concat:
-                                                if (values.TryGetValue(name, out object existingValue))
+                                                if (values.TryGetValue(name, out var existingValue))
                                                 {
                                                     values[name] = $"{(string)existingValue}, {value}";
                                                 }
@@ -218,6 +218,7 @@ namespace ConnectQl.Internal.DataSources
                                                 {
                                                     values[name] = value;
                                                 }
+
                                                 break;
                                             case DCastFunction.First:
                                                 if (!values.ContainsKey(name))
@@ -281,7 +282,7 @@ namespace ConnectQl.Internal.DataSources
                                         }
 
                                         values[name] = row[this.columnValue];
-                                        counts[name] = counts.TryGetValue(name, out int count) ? count + 1 : 1;
+                                        counts[name] = counts.TryGetValue(name, out var count) ? count + 1 : 1;
                                     }
                                 });
 

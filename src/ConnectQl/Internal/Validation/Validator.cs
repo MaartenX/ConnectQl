@@ -137,7 +137,7 @@ namespace ConnectQl.Internal.Validation
         }
 
         /// <summary>
-        /// Visits a <see cref="AliasedSqlExpression"/>.
+        /// Visits a <see cref="AliasedConnectQlExpression"/>.
         /// Adds the alias to the current scope (or a default alias if none exists). Returns a new node if an alias was created.
         /// </summary>
         /// <param name="node">
@@ -146,25 +146,25 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitAliasedSqlExpression(AliasedSqlExpression node)
+        protected internal override Node VisitAliasedSqlExpression(AliasedConnectQlExpression node)
         {
-            if (node.Expression is WildcardSqlExpression)
+            if (node.Expression is WildcardConnectQlExpression)
             {
                 return this.ValidateChildren(node);
             }
 
-            var alias = this.Scope.AddAlias(node.Alias ?? (node.Expression as FieldReferenceSqlExpression)?.Name);
+            var alias = this.Scope.AddAlias(node.Alias ?? (node.Expression as FieldReferenceConnectQlExpression)?.Name);
 
             if (node.Alias != alias)
             {
-                node = this.Data.CopyValues(node, new AliasedSqlExpression(node.Expression, alias));
+                node = this.Data.CopyValues(node, new AliasedConnectQlExpression(node.Expression, alias));
             }
 
             return this.ValidateChildren(node);
         }
 
         /// <summary>
-        /// Visits a <see cref="BinarySqlExpression"/> expression.
+        /// Visits a <see cref="BinaryConnectQlExpression"/> expression.
         /// Infers the type of the binary expression and stores it in the node data. Checks if children are in a grouping,
         /// if so, marks this node as a group too.
         /// </summary>
@@ -175,7 +175,7 @@ namespace ConnectQl.Internal.Validation
         /// The node, or a new version of the node.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitBinarySqlExpression(BinarySqlExpression node)
+        protected internal override Node VisitBinarySqlExpression(BinaryConnectQlExpression node)
         {
             node = this.ValidateChildren(node);
 
@@ -190,7 +190,7 @@ namespace ConnectQl.Internal.Validation
         }
 
         /// <summary>
-        /// Visits a <see cref="ConstSqlExpression"/> expression.
+        /// Visits a <see cref="ConstConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -199,7 +199,7 @@ namespace ConnectQl.Internal.Validation
         /// The node, or a new version of the node.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitConstSqlExpression(ConstSqlExpression node)
+        protected internal override Node VisitConstSqlExpression(ConstConnectQlExpression node)
         {
             this.Data.SetType(node, new TypeDescriptor(node.Value?.GetType() ?? typeof(object)));
             this.Data.SetScope(node, this.Scope.IsGroupByExpression(node) ? NodeScope.Group : NodeScope.Constant);
@@ -208,7 +208,7 @@ namespace ConnectQl.Internal.Validation
         }
 
         /// <summary>
-        /// Visits a <see cref="FieldReferenceSqlExpression"/> expression.
+        /// Visits a <see cref="FieldReferenceConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -217,7 +217,7 @@ namespace ConnectQl.Internal.Validation
         /// The node, or a new version of the node.
         /// </returns>
         [CanBeNull]
-        protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
+        protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceConnectQlExpression node)
         {
             var replacer = this.Data.GetFieldReplacer(node);
 
@@ -257,7 +257,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallSqlExpression node)
+        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallConnectQlExpression node)
         {
             var function = this.Scope.GetFunction(node.Name, node.Arguments);
 
@@ -439,7 +439,7 @@ namespace ConnectQl.Internal.Validation
 
                 var aliasOrders = expressions
                     .Join(
-                        node.Orders.Select(o => o.Expression as FieldReferenceSqlExpression).Where(fr => fr != null && fr.Source == null),
+                        node.Orders.Select(o => o.Expression as FieldReferenceConnectQlExpression).Where(fr => fr != null && fr.Source == null),
                         e => e.Alias,
                         fr => fr.Name,
                         (expression, field) => new
@@ -455,7 +455,7 @@ namespace ConnectQl.Internal.Validation
 
                 var orders = this.Visit(node.Orders);
 
-                foreach (var invalidOrderBy in orders.Select(o => o.Expression as FieldReferenceSqlExpression).Where(fr => fr != null && fr.Source == null))
+                foreach (var invalidOrderBy in orders.Select(o => o.Expression as FieldReferenceConnectQlExpression).Where(fr => fr != null && fr.Source == null))
                 {
                     this.AddError(invalidOrderBy, $"Alias '{invalidOrderBy.Name}' is not defined.");
                 }
@@ -535,7 +535,7 @@ namespace ConnectQl.Internal.Validation
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitUnarySqlExpression(UnarySqlExpression node)
+        protected internal override Node VisitUnarySqlExpression(UnaryConnectQlExpression node)
         {
             node = this.ValidateChildren(node);
 
@@ -609,7 +609,7 @@ namespace ConnectQl.Internal.Validation
         }
 
         /// <summary>
-        /// Visits a <see cref="VariableSqlExpression"/>.
+        /// Visits a <see cref="VariableConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -618,7 +618,7 @@ namespace ConnectQl.Internal.Validation
         /// The node, or a new version of the node.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
+        protected internal override Node VisitVariableSqlExpression(VariableConnectQlExpression node)
         {
             node = this.ValidateChildren(node);
 
@@ -667,7 +667,7 @@ namespace ConnectQl.Internal.Validation
         }
 
         /// <summary>
-        /// Visits a <see cref="WildcardSqlExpression"/>.
+        /// Visits a <see cref="WildcardConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -676,7 +676,7 @@ namespace ConnectQl.Internal.Validation
         /// The node, or a new version of the node.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitWildCardSqlExpression(WildcardSqlExpression node)
+        protected internal override Node VisitWildCardSqlExpression(WildcardConnectQlExpression node)
         {
             if (node.Source != null)
             {
@@ -755,7 +755,7 @@ namespace ConnectQl.Internal.Validation
         /// <returns>
         /// The node with replaced.
         /// </returns>
-        private Node ReplaceEnumArguments([NotNull] FunctionCallSqlExpression node)
+        private Node ReplaceEnumArguments([NotNull] FunctionCallConnectQlExpression node)
         {
             var arguments = node.Arguments;
             var function = this.Data.GetFunction(node);
@@ -770,36 +770,36 @@ namespace ConnectQl.Internal.Validation
                     continue;
                 }
 
-                var constExpr = arg as ConstSqlExpression;
-                var fieldExpr = arg as FieldReferenceSqlExpression;
+                var constExpr = arg as ConstConnectQlExpression;
+                var fieldExpr = arg as FieldReferenceConnectQlExpression;
 
-                ConstSqlExpression enumExpr;
+                ConstConnectQlExpression enumExpr;
 
                 if (fieldExpr != null && fieldExpr.Source == null)
                 {
-                    enumExpr = new ConstSqlExpression(Enum.Parse(param, fieldExpr.Name, true));
+                    enumExpr = new ConstConnectQlExpression(Enum.Parse(param, fieldExpr.Name, true));
                 }
                 else if (constExpr?.Value is int)
                 {
-                    enumExpr = new ConstSqlExpression(Enum.ToObject(param, constExpr.Value));
+                    enumExpr = new ConstConnectQlExpression(Enum.ToObject(param, constExpr.Value));
                 }
                 else if (constExpr?.Value is string)
                 {
-                    enumExpr = new ConstSqlExpression(Enum.Parse(param, (string)constExpr.Value, true));
+                    enumExpr = new ConstConnectQlExpression(Enum.Parse(param, (string)constExpr.Value, true));
                 }
                 else
                 {
                     continue;
                 }
 
-                arguments = new ReadOnlyCollection<SqlExpressionBase>(
-                    new List<SqlExpressionBase>(arguments)
+                arguments = new ReadOnlyCollection<ConnectQlExpressionBase>(
+                    new List<ConnectQlExpressionBase>(arguments)
                         {
                             [i] = this.Data.CopyValues(arguments[i], enumExpr),
                         });
             }
 
-            return arguments != node.Arguments ? this.Data.CopyValues(node, new FunctionCallSqlExpression(node.Name, arguments)) : node;
+            return arguments != node.Arguments ? this.Data.CopyValues(node, new FunctionCallConnectQlExpression(node.Name, arguments)) : node;
         }
 
         /// <summary>
@@ -818,14 +818,14 @@ namespace ConnectQl.Internal.Validation
             where T : Node
         {
             var result = (T)node.VisitChildren(this);
-            var baseExpression = node as SqlExpressionBase;
+            var baseExpression = node as ConnectQlExpressionBase;
 
             if (baseExpression == null)
             {
                 return result;
             }
 
-            var scopes = result.Children.OfType<SqlExpressionBase>()
+            var scopes = result.Children.OfType<ConnectQlExpressionBase>()
                 .Select(expression =>
                     new
                         {

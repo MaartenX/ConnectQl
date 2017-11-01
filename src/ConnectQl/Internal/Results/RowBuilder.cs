@@ -194,7 +194,7 @@ namespace ConnectQl.Internal.Results
         /// </returns>
         public int? GetIndex(string field)
         {
-            return this.fields.TryGetValue(this.fieldMapping == null ? field : this.fieldMapping[field], out int index) ? (int?)index : null;
+            return this.fields.TryGetValue(this.fieldMapping == null ? field : this.fieldMapping[field], out var index) ? (int?)index : null;
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace ConnectQl.Internal.Results
 
             foreach (var keyValuePair in values)
             {
-                var index = this.fields.TryGetValue(keyValuePair.Key, out int fieldIndex) ? (int?)fieldIndex : null;
+                var index = this.fields.TryGetValue(keyValuePair.Key, out var fieldIndex) ? (int?)fieldIndex : null;
 
                 if (index == null)
                 {
@@ -256,7 +256,7 @@ namespace ConnectQl.Internal.Results
         /// </returns>
         public int? GetInternalNameIndex(string internalName)
         {
-            return this.fields.TryGetValue(internalName, out int index) ? (int?)index : null;
+            return this.fields.TryGetValue(internalName, out var index) ? (int?)index : null;
         }
     }
 }

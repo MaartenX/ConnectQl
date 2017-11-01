@@ -564,7 +564,7 @@ namespace ConnectQl.Internal.Intellisense.Protocol
             return Expression.Condition(
                 ProtocolSerializer.ReadValue(stream, typeof(bool)),
                 Expression.Block(
-                    new ParameterExpression[]
+                    new[]
                     {
                                 list,
                                 length,

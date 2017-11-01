@@ -49,7 +49,7 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <param name="expression">
         /// The expression.
         /// </param>
-        public JoinSource(JoinType joinType, SourceBase first, SourceBase second, [CanBeNull] SqlExpressionBase expression = null)
+        public JoinSource(JoinType joinType, SourceBase first, SourceBase second, [CanBeNull] ConnectQlExpressionBase expression = null)
         {
             this.JoinType = joinType;
             this.First = first;
@@ -77,7 +77,7 @@ namespace ConnectQl.Internal.Ast.Sources
         /// <summary>
         /// Gets the expression.
         /// </summary>
-        public SqlExpressionBase Expression { get; }
+        public ConnectQlExpressionBase Expression { get; }
 
         /// <summary>
         /// Gets the first joined source.

@@ -134,7 +134,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         }
 
         /// <summary>
-        /// Visits a <see cref="AliasedSqlExpression"/>.
+        /// Visits a <see cref="AliasedConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -142,7 +142,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitAliasedSqlExpression(AliasedSqlExpression node)
+        protected internal override Node VisitAliasedSqlExpression(AliasedConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitAliasedSqlExpression(node);
         }
@@ -162,7 +162,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         }
 
         /// <summary>
-        /// Visits a <see cref="BinarySqlExpression"/> expression.
+        /// Visits a <see cref="BinaryConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -170,7 +170,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitBinarySqlExpression(BinarySqlExpression node)
+        protected internal override Node VisitBinarySqlExpression(BinaryConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitBinarySqlExpression(node);
         }
@@ -190,7 +190,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         }
 
         /// <summary>
-        /// Visits a <see cref="ConstSqlExpression"/> expression.
+        /// Visits a <see cref="ConstConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -198,7 +198,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitConstSqlExpression(ConstSqlExpression node)
+        protected internal override Node VisitConstSqlExpression(ConstConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitConstSqlExpression(node);
         }
@@ -232,7 +232,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         }
 
         /// <summary>
-        /// Visits a <see cref="FieldReferenceSqlExpression"/> expression.
+        /// Visits a <see cref="FieldReferenceConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -240,13 +240,13 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceSqlExpression node)
+        protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitFieldReferenceSqlExpression(node);
         }
 
         /// <summary>
-        /// Visits a <see cref="FunctionCallSqlExpression"/> expression.
+        /// Visits a <see cref="FunctionCallConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -254,7 +254,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallSqlExpression node)
+        protected internal override Node VisitFunctionCallSqlExpression(FunctionCallConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitFunctionCallSqlExpression(node);
         }
@@ -344,7 +344,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         }
 
         /// <summary>
-        /// Visits a <see cref="OrderBySqlExpression"/>.
+        /// Visits a <see cref="OrderByConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -352,7 +352,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitOrderBySqlExpression(OrderBySqlExpression node)
+        protected internal override Node VisitOrderBySqlExpression(OrderByConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitOrderBySqlExpression(node);
         }
@@ -428,7 +428,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         }
 
         /// <summary>
-        /// Visits a <see cref="UnarySqlExpression"/>.
+        /// Visits a <see cref="UnaryConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -436,7 +436,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitUnarySqlExpression(UnarySqlExpression node)
+        protected internal override Node VisitUnarySqlExpression(UnaryConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitUnarySqlExpression(node);
         }
@@ -484,7 +484,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         }
 
         /// <summary>
-        /// Visits a <see cref="VariableSqlExpression"/>.
+        /// Visits a <see cref="VariableConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -492,7 +492,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitVariableSqlExpression(VariableSqlExpression node)
+        protected internal override Node VisitVariableSqlExpression(VariableConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitVariableSqlExpression(node);
         }
@@ -512,7 +512,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         }
 
         /// <summary>
-        /// Visits a <see cref="WildcardSqlExpression"/>.
+        /// Visits a <see cref="WildcardConnectQlExpression"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -520,7 +520,7 @@ namespace ConnectQl.Internal.Ast.Visitors
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitWildCardSqlExpression(WildcardSqlExpression node)
+        protected internal override Node VisitWildCardSqlExpression(WildcardConnectQlExpression node)
         {
             return this.VisitImplementation(node) ?? base.VisitWildCardSqlExpression(node);
         }

@@ -411,7 +411,7 @@ namespace ConnectQl.Internal.Query
             {
                 node = (VariableSource)base.VisitVariableSource(node);
 
-                this.data.SetFactoryExpression(node, Evaluator.CreateDataSource(Expression.Convert(this.data.ConvertToLinqExpression(new VariableSqlExpression(node.Variable)), typeof(IDataSource)), node.Alias));
+                this.data.SetFactoryExpression(node, Evaluator.CreateDataSource(Expression.Convert(this.data.ConvertToLinqExpression(new VariableConnectQlExpression(node.Variable)), typeof(IDataSource)), node.Alias));
 
                 return node;
             }
@@ -430,7 +430,7 @@ namespace ConnectQl.Internal.Query
             {
                 node = (VariableTarget)base.VisitVariableTarget(node);
 
-                this.data.SetFactoryExpression(node, Evaluator.CreateDataTarget(Expression.Convert(this.data.ConvertToLinqExpression(new VariableSqlExpression(node.Variable)), typeof(IDataTarget))));
+                this.data.SetFactoryExpression(node, Evaluator.CreateDataTarget(Expression.Convert(this.data.ConvertToLinqExpression(new VariableConnectQlExpression(node.Variable)), typeof(IDataTarget))));
 
                 return node;
             }

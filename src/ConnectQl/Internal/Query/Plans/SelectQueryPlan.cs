@@ -33,7 +33,6 @@ namespace ConnectQl.Internal.Query.Plans
     using ConnectQl.Internal.DataSources;
     using ConnectQl.Internal.Interfaces;
     using ConnectQl.Internal.Results;
-
     using JetBrains.Annotations;
 
     using AsyncValueFactory = System.Func<ConnectQl.Interfaces.IExecutionContext, ConnectQl.Results.Row, System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>>;

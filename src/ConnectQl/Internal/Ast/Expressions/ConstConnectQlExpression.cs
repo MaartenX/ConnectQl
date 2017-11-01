@@ -31,15 +31,15 @@ namespace ConnectQl.Internal.Ast.Expressions
     /// <summary>
     /// The constant.
     /// </summary>
-    internal class ConstSqlExpression : SqlExpressionBase
+    internal class ConstConnectQlExpression : ConnectQlExpressionBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConstSqlExpression"/> class.
+        /// Initializes a new instance of the <see cref="ConstConnectQlExpression"/> class.
         /// </summary>
         /// <param name="value">
         /// The value.
         /// </param>
-        public ConstSqlExpression(object value)
+        public ConstConnectQlExpression(object value)
         {
             this.Value = value;
         }
@@ -71,7 +71,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </param>
         public override bool Equals(object obj)
         {
-            var other = obj as ConstSqlExpression;
+            var other = obj as ConstConnectQlExpression;
 
             return other != null && object.Equals(other.Value, this.Value);
         }

@@ -28,6 +28,7 @@ namespace ConnectQl.Internal.Query
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
+
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.DataSources;
     using ConnectQl.Expressions;
@@ -271,10 +272,10 @@ namespace ConnectQl.Internal.Query
                 var groupQuery = GroupQueryVisitor.GetGroupQuery(node, this.data);
                 var groupFactories = this.GetGroupValueFactory(groupQuery.Expressions.Concat(new[]
                                                                                                  {
-                                                                                                     new AliasedSqlExpression(groupQuery.Having, "$having"),
-                                                                                                 }).Concat(groupQuery.OrderBy.Select((o, i) => new AliasedSqlExpression(o.Expression, $"$order{i}"))).Where(e => e.Expression != null));
+                                                                                                     new AliasedConnectQlExpression(groupQuery.Having, "$having"),
+                                                                                                 }).Concat(groupQuery.OrderBy.Select((o, i) => new AliasedConnectQlExpression(o.Expression, $"$order{i}"))).Where(e => e.Expression != null));
                 var plan = this.CreateSelectQueryPlan(groupQuery.RowSelect);
-                var fields = node.Expressions.Select(f => f.Expression is WildcardSqlExpression ? "*" : f.Alias);
+                var fields = node.Expressions.Select(f => f.Expression is WildcardConnectQlExpression ? "*" : f.Alias);
                 var orders = groupQuery.OrderBy.Select((o, i) => new OrderByExpression(CustomExpression.MakeSourceField(null, $"$order{i}", true), o.Ascending));
                 var having = groupQuery.Having == null ? null : CustomExpression.MakeSourceField(null, "$having", true, typeof(bool));
 
@@ -412,7 +413,7 @@ namespace ConnectQl.Internal.Query
         {
             var usedFields = new HashSet<IField>();
             var wildcardAliases = new HashSet<string>();
-            var fieldNames = node.Expressions.Select(f => f.Expression is WildcardSqlExpression ? "*" : f.Alias);
+            var fieldNames = node.Expressions.Select(f => f.Expression is WildcardConnectQlExpression ? "*" : f.Alias);
             var valueFactory = this.GetValueFactory(node.Expressions, usedFields, wildcardAliases, SourceAliasesRetriever.GetAllSources(node));
             var sourceFactory = this.GetSourceFactory(node.Source);
 
@@ -441,7 +442,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        private AsyncGroupValueFactory GetGroupValueFactory([NotNull] IEnumerable<AliasedSqlExpression> expressions)
+        private AsyncGroupValueFactory GetGroupValueFactory([NotNull] IEnumerable<AliasedConnectQlExpression> expressions)
         {
             var rows = Expression.Parameter(typeof(IAsyncReadOnlyCollection<Row>), "rows");
             var context = Expression.Parameter(typeof(IExecutionContext));
@@ -513,7 +514,7 @@ namespace ConnectQl.Internal.Query
         /// Gets a function that creates the values for the selected records from a row.
         /// </summary>
         /// <param name="expressions">
-        /// The <see cref="AliasedSqlExpression"/>s to get the values for.
+        /// The <see cref="AliasedConnectQlExpression"/>s to get the values for.
         /// </param>
         /// <param name="fieldList">
         /// A collection that will be filled with all the fields that are used in the select statement.
@@ -527,7 +528,7 @@ namespace ConnectQl.Internal.Query
         /// <returns>
         /// A delegate.
         /// </returns>
-        private Delegate GetValueFactory([NotNull] IEnumerable<AliasedSqlExpression> expressions, ICollection<IField> fieldList, ICollection<string> wildCardAliasList, IEnumerable<string> allSourceAliases)
+        private Delegate GetValueFactory([NotNull] IEnumerable<AliasedConnectQlExpression> expressions, ICollection<IField> fieldList, ICollection<string> wildCardAliasList, IEnumerable<string> allSourceAliases)
         {
             var row = Expression.Parameter(typeof(Row), "row");
             var context = Expression.Parameter(typeof(IExecutionContext), "context");
@@ -559,7 +560,7 @@ namespace ConnectQl.Internal.Query
 
             foreach (var expression in expressions)
             {
-                if (expression.Expression is WildcardSqlExpression wildcard)
+                if (expression.Expression is WildcardConnectQlExpression wildcard)
                 {
                     if (wildcard.Source != null)
                     {

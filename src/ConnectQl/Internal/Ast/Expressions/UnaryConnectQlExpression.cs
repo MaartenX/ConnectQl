@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -30,29 +30,24 @@ namespace ConnectQl.Internal.Ast.Expressions
     using JetBrains.Annotations;
 
     /// <summary>
-    /// The aliased expression.
+    /// The unary expression.
     /// </summary>
-    internal class AliasedSqlExpression : SqlExpressionBase
+    internal class UnaryConnectQlExpression : ConnectQlExpressionBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AliasedSqlExpression"/> class.
+        /// Initializes a new instance of the <see cref="UnaryConnectQlExpression"/> class.
         /// </summary>
+        /// <param name="op">
+        /// The op.
+        /// </param>
         /// <param name="expression">
         /// The expression.
         /// </param>
-        /// <param name="alias">
-        /// The alias.
-        /// </param>
-        public AliasedSqlExpression(SqlExpressionBase expression, string alias)
+        public UnaryConnectQlExpression([CanBeNull] string op, ConnectQlExpressionBase expression)
         {
+            this.Op = op?.ToUpperInvariant();
             this.Expression = expression;
-            this.Alias = alias;
         }
-
-        /// <summary>
-        /// Gets the alias.
-        /// </summary>
-        public string Alias { get; }
 
         /// <summary>
         /// Gets the children of this node.
@@ -68,7 +63,12 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <summary>
         /// Gets the expression.
         /// </summary>
-        public SqlExpressionBase Expression { get; }
+        public ConnectQlExpressionBase Expression { get; }
+
+        /// <summary>
+        /// Gets the op.
+        /// </summary>
+        public string Op { get; }
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
@@ -81,9 +81,9 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </param>
         public override bool Equals(object obj)
         {
-            var other = obj as AliasedSqlExpression;
+            var other = obj as UnaryConnectQlExpression;
 
-            return other != null && string.Equals(this.Alias, other.Alias, StringComparison.OrdinalIgnoreCase) && object.Equals(this.Expression, other.Expression);
+            return other != null && string.Equals(this.Op, other.Op, StringComparison.OrdinalIgnoreCase) && object.Equals(this.Expression, other.Expression);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             unchecked
             {
-                return ((this.Alias != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.Alias) : 0) * 397) ^ (this.Expression?.GetHashCode() ?? 0);
+                return ((this.Expression?.GetHashCode() ?? 0) * 397) ^ (this.Op != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.Op) : 0);
             }
         }
 
@@ -107,7 +107,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// The <see cref="string"/>.
         /// </returns>
         [NotNull]
-        public override string ToString() => $"{this.Expression} AS {this.Alias}";
+        public override string ToString() => $"({this.Op.ToUpperInvariant()} {this.Expression})";
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.
@@ -120,7 +120,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </returns>
         protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
-            return visitor.VisitAliasedSqlExpression(this);
+            return visitor.VisitUnarySqlExpression(this);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             var expression = visitor.Visit(this.Expression);
 
-            return expression != this.Expression ? new AliasedSqlExpression(expression, this.Alias) : this;
+            return expression != this.Expression ? new UnaryConnectQlExpression(this.Op, expression) : this;
         }
     }
 }

@@ -516,7 +516,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
                 {
                     var currentAddTask = this.addTask;
 
-                    Func<Task> add = currentAddTask == null
+                    var add = currentAddTask == null
                         ? (Func<Task>)(() => this.AddAsync(items))
                         : async () =>
                           {
@@ -594,7 +594,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
             {
                 this.file = await this.policy.storageProvider.GetFileAsync(this.fileId = this.policy.currentId++, FileAccessType.Write).ConfigureAwait(false);
 
-                this.policy.registeredTransforms.TryGetValue(typeof(T), out object transformObject);
+                this.policy.registeredTransforms.TryGetValue(typeof(T), out var transformObject);
                 this.transform = transformObject as ITransform<T>;
                 this.context = this.transform?.CreateContext();
 

@@ -53,7 +53,7 @@ namespace ConnectQl.Internal
         [NotNull]
         public KeyValuePair<string, object>[] GetAllValues(Node node)
         {
-            return this.nodeData.TryGetValue(node, out Dictionary<string, object> values) ? values.OrderBy(kv => kv.Key).ToArray() : new KeyValuePair<string, object>[0];
+            return this.nodeData.TryGetValue(node, out var values) ? values.OrderBy(kv => kv.Key).ToArray() : new KeyValuePair<string, object>[0];
         }
 
         /// <summary>
@@ -76,9 +76,9 @@ namespace ConnectQl.Internal
         /// </returns>
         T INodeDataProvider.CopyValues<T>(T from, T to, bool overwrite)
         {
-            if (this.nodeData.TryGetValue(from, out Dictionary<string, object> fromValues))
+            if (this.nodeData.TryGetValue(from, out var fromValues))
             {
-                if (!this.nodeData.TryGetValue(to, out Dictionary<string, object> targetValues))
+                if (!this.nodeData.TryGetValue(to, out var targetValues))
                 {
                     this.nodeData[to] = targetValues = new Dictionary<string, object>();
                 }
@@ -140,7 +140,7 @@ namespace ConnectQl.Internal
         /// </typeparam>
         void INodeDataProvider.Set<T>(Node node, string data, T value)
         {
-            if (!this.nodeData.TryGetValue(node, out Dictionary<string, object> nodeValues))
+            if (!this.nodeData.TryGetValue(node, out var nodeValues))
             {
                 nodeValues = this.nodeData[node] = new Dictionary<string, object>();
             }
@@ -168,7 +168,7 @@ namespace ConnectQl.Internal
         /// </returns>
         bool INodeDataProvider.TryGet<T>([CanBeNull] Node node, string data, out T value)
         {
-            if (node != null && this.nodeData.TryGetValue(node, out Dictionary<string, object> nodeValues) && nodeValues.TryGetValue(data, out object objectValue))
+            if (node != null && this.nodeData.TryGetValue(node, out var nodeValues) && nodeValues.TryGetValue(data, out var objectValue))
             {
                 value = (T)objectValue;
                 return true;

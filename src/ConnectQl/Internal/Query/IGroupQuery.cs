@@ -35,7 +35,7 @@ namespace ConnectQl.Internal.Query
         /// <summary>
         /// Gets the expressions.
         /// </summary>
-        ReadOnlyCollection<AliasedSqlExpression> Expressions { get; }
+        ReadOnlyCollection<AliasedConnectQlExpression> Expressions { get; }
 
         /// <summary>
         /// Gets the groupings.
@@ -45,7 +45,7 @@ namespace ConnectQl.Internal.Query
         /// <summary>
         /// Gets the having.
         /// </summary>
-        SqlExpressionBase Having { get; }
+        ConnectQlExpressionBase Having { get; }
 
         /// <summary>
         /// Gets the row select.
@@ -55,6 +55,6 @@ namespace ConnectQl.Internal.Query
         /// <summary>
         /// Gets the visitor order by.
         /// </summary>
-        ReadOnlyCollection<OrderBySqlExpression> OrderBy { get; }
+        ReadOnlyCollection<OrderByConnectQlExpression> OrderBy { get; }
     }
 }

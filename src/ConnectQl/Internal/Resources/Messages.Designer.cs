@@ -10,9 +10,10 @@
 
 namespace ConnectQl.Internal.Resources {
     using System;
+    using System.Globalization;
     using System.Reflection;
-    
-    
+    using System.Resources;
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -25,42 +26,47 @@ namespace ConnectQl.Internal.Resources {
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Messages {
         
-        private static global::System.Resources.ResourceManager resourceMan;
+        private static ResourceManager resourceMan;
         
-        private static global::System.Globalization.CultureInfo resourceCulture;
+        private static CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Messages() {
         }
         
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        internal static ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ConnectQl.Internal.Resources.Messages", typeof(Messages).GetTypeInfo().Assembly);
+                    var temp = new global::System.Resources.ResourceManager("ConnectQl.Internal.Resources.Messages", typeof(Messages).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
+
                 return resourceMan;
             }
         }
         
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        internal static CultureInfo Culture {
             get {
                 return resourceCulture;
             }
+
             set {
                 resourceCulture = value;
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to #ERROR: {0}#.
         /// </summary>
@@ -70,6 +76,7 @@ namespace ConnectQl.Internal.Resources {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to Node type {0} is not supported..
         /// </summary>
@@ -79,6 +86,7 @@ namespace ConnectQl.Internal.Resources {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to Operator {0} is not supported for types {1} and {2}..
         /// </summary>
@@ -88,6 +96,7 @@ namespace ConnectQl.Internal.Resources {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to Unknown operator &apos;{0}&apos;.
         /// </summary>

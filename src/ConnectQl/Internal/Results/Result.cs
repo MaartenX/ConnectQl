@@ -99,7 +99,7 @@ namespace ConnectQl.Internal.Results
         [CanBeNull]
         public T GetNodeData<T>(Node node, string type)
         {
-            return this.nodeData.TryGetValue(node, out Dictionary<string, object> existingData) && existingData.TryGetValue(type, out object data) && data is T ? (T)data : default(T);
+            return this.nodeData.TryGetValue(node, out var existingData) && existingData.TryGetValue(type, out var data) && data is T ? (T)data : default(T);
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace ConnectQl.Internal.Results
         /// </returns>
         T IResultBuilder.AddNodeData<T>(Node node, string type, T data)
         {
-            if (!this.nodeData.TryGetValue(node, out Dictionary<string, object> existingData))
+            if (!this.nodeData.TryGetValue(node, out var existingData))
             {
                 this.nodeData[node] = existingData = new Dictionary<string, object>();
             }
@@ -197,7 +197,7 @@ namespace ConnectQl.Internal.Results
         /// </returns>
         bool IResultBuilder.RemoveNodeData(Node node, string type)
         {
-            return this.nodeData.TryGetValue(node, out Dictionary<string, object> existingData) && existingData.Remove(type);
+            return this.nodeData.TryGetValue(node, out var existingData) && existingData.Remove(type);
         }
 
         /// <summary>
@@ -218,12 +218,12 @@ namespace ConnectQl.Internal.Results
         /// </returns>
         bool IResultBuilder.TransferData(Node from, Node to, bool overwrite)
         {
-            if (!this.nodeData.TryGetValue(from, out Dictionary<string, object> dataFrom))
+            if (!this.nodeData.TryGetValue(from, out var dataFrom))
             {
                 return false;
             }
 
-            if (!this.nodeData.TryGetValue(to, out Dictionary<string, object> dataTo))
+            if (!this.nodeData.TryGetValue(to, out var dataTo))
             {
                 this.nodeData[to] = dataTo = new Dictionary<string, object>();
             }

@@ -43,7 +43,7 @@ namespace ConnectQl.Internal.Ast
         /// <param name="expression">
         /// The expression.
         /// </param>
-        public VariableDeclaration(string name, SqlExpressionBase expression)
+        public VariableDeclaration(string name, ConnectQlExpressionBase expression)
         {
             this.Name = name;
             this.Expression = expression;
@@ -63,7 +63,7 @@ namespace ConnectQl.Internal.Ast
         /// <summary>
         /// Gets the expression.
         /// </summary>
-        public SqlExpressionBase Expression { get; }
+        public ConnectQlExpressionBase Expression { get; }
 
         /// <summary>
         /// Gets the name.

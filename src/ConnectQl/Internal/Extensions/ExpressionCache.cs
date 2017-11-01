@@ -52,7 +52,7 @@ namespace ConnectQl.Internal.Extensions
         [CanBeNull]
         public static LambdaExpression Get(Delegate func)
         {
-            return ExpressionCache.Expressions.TryGetValue(func, out LambdaExpression result) ? result : null;
+            return ExpressionCache.Expressions.TryGetValue(func, out var result) ? result : null;
         }
 
         /// <summary>

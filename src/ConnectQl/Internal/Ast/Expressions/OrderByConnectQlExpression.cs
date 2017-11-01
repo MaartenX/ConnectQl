@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -22,7 +22,6 @@
 
 namespace ConnectQl.Internal.Ast.Expressions
 {
-    using System;
     using System.Collections.Generic;
 
     using ConnectQl.Internal.Ast.Visitors;
@@ -30,35 +29,29 @@ namespace ConnectQl.Internal.Ast.Expressions
     using JetBrains.Annotations;
 
     /// <summary>
-    /// The field reference.
+    /// The order by.
     /// </summary>
-    internal class FieldReferenceSqlExpression : SqlExpressionBase
+    internal class OrderByConnectQlExpression : Node
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldReferenceSqlExpression"/> class.
+        /// Initializes a new instance of the <see cref="OrderByConnectQlExpression"/> class.
         /// </summary>
-        /// <param name="name">
-        /// The name.
+        /// <param name="expression">
+        /// The expression.
         /// </param>
-        public FieldReferenceSqlExpression(string name)
-            : this(null, name)
+        /// <param name="ascending">
+        /// <c>true</c> to sort ascending, <c>false</c> otherwise.
+        /// </param>
+        public OrderByConnectQlExpression(ConnectQlExpressionBase expression, bool ascending)
         {
+            this.Expression = expression;
+            this.Ascending = ascending;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldReferenceSqlExpression"/> class.
+        /// Gets a value indicating whether ascending.
         /// </summary>
-        /// <param name="source">
-        /// The table.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        public FieldReferenceSqlExpression(string source, string name)
-        {
-            this.Source = source;
-            this.Name = name;
-        }
+        public bool Ascending { get; }
 
         /// <summary>
         /// Gets the children of this node.
@@ -67,19 +60,14 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             get
             {
-                yield break;
+                yield return this.Expression;
             }
         }
 
         /// <summary>
-        /// Gets the name.
+        /// Gets the expression.
         /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// Gets the table.
-        /// </summary>
-        public string Source { get; }
+        public ConnectQlExpressionBase Expression { get; }
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
@@ -92,9 +80,9 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </param>
         public override bool Equals(object obj)
         {
-            var other = obj as FieldReferenceSqlExpression;
+            var other = obj as OrderByConnectQlExpression;
 
-            return other != null && string.Equals(other.Source, this.Source, StringComparison.OrdinalIgnoreCase) && string.Equals(other.Name, this.Name, StringComparison.OrdinalIgnoreCase);
+            return other != null && other.Ascending == this.Ascending && object.Equals(other.Expression, this.Expression);
         }
 
         /// <summary>
@@ -107,7 +95,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             unchecked
             {
-                return ((this.Name != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.Name) : 0) * 397) ^ (this.Source != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.Source) : 0);
+                return (this.Ascending.GetHashCode() * 397) ^ (this.Expression?.GetHashCode() ?? 0);
             }
         }
 
@@ -118,7 +106,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// The <see cref="string"/>.
         /// </returns>
         [NotNull]
-        public override string ToString() => this.Source == null ? $"[{this.Name}]" : $"[{this.Source}].[{this.Name}]";
+        public override string ToString() => this.Expression + " " + (this.Ascending ? "ASC" : "DESC");
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.
@@ -131,7 +119,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </returns>
         protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
-            return visitor.VisitFieldReferenceSqlExpression(this);
+            return visitor.VisitOrderBySqlExpression(this);
         }
 
         /// <summary>
@@ -144,9 +132,13 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// The <see cref="Node"/>.
         /// </returns>
         [NotNull]
-        protected internal override Node VisitChildren(NodeVisitor visitor)
+        protected internal override Node VisitChildren([NotNull] NodeVisitor visitor)
         {
-            return this;
+            var expression = visitor.Visit(this.Expression);
+
+            return expression != this.Expression
+                       ? new OrderByConnectQlExpression(expression, this.Ascending)
+                       : this;
         }
     }
 }

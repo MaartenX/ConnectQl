@@ -22,6 +22,7 @@
 
 namespace ConnectQl.Internal.Ast.Expressions
 {
+    using System;
     using System.Collections.Generic;
 
     using ConnectQl.Internal.Ast.Visitors;
@@ -29,29 +30,29 @@ namespace ConnectQl.Internal.Ast.Expressions
     using JetBrains.Annotations;
 
     /// <summary>
-    /// The order by.
+    /// The aliased expression.
     /// </summary>
-    internal class OrderBySqlExpression : Node
+    internal class AliasedConnectQlExpression : ConnectQlExpressionBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrderBySqlExpression"/> class.
+        /// Initializes a new instance of the <see cref="AliasedConnectQlExpression"/> class.
         /// </summary>
         /// <param name="expression">
         /// The expression.
         /// </param>
-        /// <param name="ascending">
-        /// <c>true</c> to sort ascending, <c>false</c> otherwise.
+        /// <param name="alias">
+        /// The alias.
         /// </param>
-        public OrderBySqlExpression(SqlExpressionBase expression, bool ascending)
+        public AliasedConnectQlExpression(ConnectQlExpressionBase expression, string alias)
         {
             this.Expression = expression;
-            this.Ascending = ascending;
+            this.Alias = alias;
         }
 
         /// <summary>
-        /// Gets a value indicating whether ascending.
+        /// Gets the alias.
         /// </summary>
-        public bool Ascending { get; }
+        public string Alias { get; }
 
         /// <summary>
         /// Gets the children of this node.
@@ -67,22 +68,22 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// <summary>
         /// Gets the expression.
         /// </summary>
-        public SqlExpressionBase Expression { get; }
+        public ConnectQlExpressionBase Expression { get; }
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <returns>
-        /// True if the specified object  is equal to the current object; otherwise, false.
+        /// <c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.
         /// </returns>
         /// <param name="obj">
         /// The object to compare with the current object.
         /// </param>
         public override bool Equals(object obj)
         {
-            var other = obj as OrderBySqlExpression;
+            var other = obj as AliasedConnectQlExpression;
 
-            return other != null && other.Ascending == this.Ascending && object.Equals(other.Expression, this.Expression);
+            return other != null && string.Equals(this.Alias, other.Alias, StringComparison.OrdinalIgnoreCase) && object.Equals(this.Expression, other.Expression);
         }
 
         /// <summary>
@@ -95,7 +96,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             unchecked
             {
-                return (this.Ascending.GetHashCode() * 397) ^ (this.Expression?.GetHashCode() ?? 0);
+                return ((this.Alias != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.Alias) : 0) * 397) ^ (this.Expression?.GetHashCode() ?? 0);
             }
         }
 
@@ -106,7 +107,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// The <see cref="string"/>.
         /// </returns>
         [NotNull]
-        public override string ToString() => this.Expression + " " + (this.Ascending ? "ASC" : "DESC");
+        public override string ToString() => $"{this.Expression} AS {this.Alias}";
 
         /// <summary>
         /// Dispatches the visitor to the correct visit-method.
@@ -119,7 +120,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         /// </returns>
         protected internal override Node Accept([NotNull] NodeVisitor visitor)
         {
-            return visitor.VisitOrderBySqlExpression(this);
+            return visitor.VisitAliasedSqlExpression(this);
         }
 
         /// <summary>
@@ -136,9 +137,7 @@ namespace ConnectQl.Internal.Ast.Expressions
         {
             var expression = visitor.Visit(this.Expression);
 
-            return expression != this.Expression
-                       ? new OrderBySqlExpression(expression, this.Ascending)
-                       : this;
+            return expression != this.Expression ? new AliasedConnectQlExpression(expression, this.Alias) : this;
         }
     }
 }
