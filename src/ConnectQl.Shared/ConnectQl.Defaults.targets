@@ -41,13 +41,13 @@
     </PackageReference>
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release' And Exists('$(MSBuildThisFileDirectory)..\key\Key.snk')">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' And Exists('$(MSBuildThisFileDirectory)..\..\key\Key.snk')">
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\..\key\Key.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or !Exists('$(MSBuildThisFileDirectory)..\key\Key.snk')">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or !Exists('$(MSBuildThisFileDirectory)..\..\key\Key.snk')">
     <SignAssembly>False</SignAssembly>
   </PropertyGroup>
 
