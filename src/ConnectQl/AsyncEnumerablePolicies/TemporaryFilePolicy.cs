@@ -24,7 +24,6 @@ namespace ConnectQl.AsyncEnumerablePolicies
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Linq.Expressions;
@@ -38,6 +37,7 @@ namespace ConnectQl.AsyncEnumerablePolicies
     /// <summary>
     ///     The temporary file policy.
     /// </summary>
+    [PublicAPI]
     public class TemporaryFilePolicy : IMaterializationPolicy
     {
         /// <summary>

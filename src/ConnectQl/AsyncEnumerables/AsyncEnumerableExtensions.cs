@@ -40,6 +40,7 @@ namespace ConnectQl.AsyncEnumerables
     /// <summary>
     /// The async enumerable extensions.
     /// </summary>
+    [PublicAPI]
     public static class AsyncEnumerableExtensions
     {
         /// <summary>
@@ -65,6 +66,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [LinqTunnel]
+        [NotNull]
         public static IAsyncEnumerable<T> AfterElement<T>([NotNull] this IAsyncEnumerable<T> source, long index, Action<T> callback)
         {
             return source.Policy.CreateAsyncEnumerable(() => new CallbackEnumerator<T>(source, null, null, index, callback));
@@ -77,11 +80,12 @@ namespace ConnectQl.AsyncEnumerables
         /// The source.
         /// </param>
         /// <returns>
-        /// The <see cref="Type"/>.
+        /// The <see cref="Type"/> or <c>null</c> if this is not an <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        public static Type GetElementType([NotNull] this IAsyncEnumerable source)
+        [CanBeNull]
+        public static Type GetElementType([InstantHandle][NotNull] this IAsyncEnumerable source)
         {
-            return source.GetType().GetInterface(typeof(IAsyncEnumerable<>)).GenericTypeArguments[0];
+            return source.GetType().GetInterface(typeof(IAsyncEnumerable<>))?.GenericTypeArguments[0];
         }
 
         /// <summary>
@@ -96,9 +100,10 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable"/>.
         /// </returns>
+        [LinqTunnel]
         public static IAsyncEnumerable<T> Convert<T>([NotNull] this IAsyncEnumerable source)
         {
-            var elementType = source.GetType().GetInterface(typeof(IAsyncEnumerable<>)).GenericTypeArguments[0];
+            var elementType = source.GetType().GetInterface(typeof(IAsyncEnumerable<>))?.GenericTypeArguments[0];
             var parameter =
                 new object[]
                     {
@@ -129,6 +134,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [LinqTunnel]
+        [NotNull]
         public static IAsyncEnumerable<T> AfterLastElement<T>([NotNull] this IAsyncEnumerable<T> source, Action<long> callback)
         {
             return source.Policy.CreateAsyncEnumerable(() => new CallbackEnumerator<T>(source, null, callback, -1, null));
@@ -150,7 +157,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The result.
         /// </returns>
         [ItemCanBeNull]
-        public static async Task<TSource> AggregateAsync<TSource>([NotNull] this IAsyncEnumerable<TSource> source, Func<TSource, TSource, Task<TSource>> func)
+        public static async Task<TSource> AggregateAsync<TSource>([InstantHandle][NotNull] this IAsyncEnumerable<TSource> source, [InstantHandle]Func<TSource, TSource, Task<TSource>> func)
         {
             var enumerator = source.GetAsyncEnumerator();
             var result = default(TSource);
@@ -192,7 +199,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The result.
         /// </returns>
         [ItemCanBeNull]
-        public static async Task<TSource> AggregateAsync<TSource>([NotNull] this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> func)
+        public static async Task<TSource> AggregateAsync<TSource>([InstantHandle][NotNull] this IAsyncEnumerable<TSource> source, [InstantHandle]Func<TSource, TSource, TSource> func)
         {
             var enumerator = source.GetAsyncEnumerator();
             var result = default(TSource);
@@ -239,7 +246,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The result.
         /// </returns>
-        public static async Task<TAccumulate> AggregateAsync<TSource, TAccumulate>([NotNull] this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
+        public static async Task<TAccumulate> AggregateAsync<TSource, TAccumulate>([InstantHandle][NotNull] this IAsyncEnumerable<TSource> source, TAccumulate seed, [InstantHandle]Func<TAccumulate, TSource, TAccumulate> func)
         {
             var enumerator = source.GetAsyncEnumerator();
 
@@ -276,7 +283,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The result.
         /// </returns>
-        public static async Task<TAccumulate> AggregateAsync<TSource, TAccumulate>([NotNull] this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, Task<TAccumulate>> func)
+        public static async Task<TAccumulate> AggregateAsync<TSource, TAccumulate>([InstantHandle][NotNull] this IAsyncEnumerable<TSource> source, TAccumulate seed, [InstantHandle]Func<TAccumulate, TSource, Task<TAccumulate>> func)
         {
             var enumerator = source.GetAsyncEnumerator();
 
@@ -310,7 +317,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<TResult> ApplyEnumerableFunction<TItem, TResult>(this IAsyncEnumerable<TItem> source, Func<IEnumerable<TItem>, TResult> func)
+        public static Task<TResult> ApplyEnumerableFunction<TItem, TResult>([InstantHandle]this IAsyncEnumerable<TItem> source, [InstantHandle]Func<IEnumerable<TItem>, TResult> func)
         {
             return Task.Run(() => func(source.ConvertToIEnumerable()));
         }
@@ -324,7 +331,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<float> AverageAsync(this IAsyncEnumerable<float> source)
+        public static async Task<float> AverageAsync([NotNull] [InstantHandle]this IAsyncEnumerable<float> source)
         {
             var result = await source.AggregateAsync(new Tuple<float, int>(0, 0), (sum, item) => Tuple.Create(sum.Item1 + item, sum.Item2 + 1));
 
@@ -340,7 +347,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<double> AverageAsync(this IAsyncEnumerable<double> source)
+        public static async Task<double> AverageAsync([NotNull] [InstantHandle]this IAsyncEnumerable<double> source)
         {
             var result = await source.AggregateAsync(new Tuple<double, int>(0, 0), (sum, item) => Tuple.Create(sum.Item1 + item, sum.Item2 + 1));
 
@@ -356,7 +363,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<int> AverageAsync(this IAsyncEnumerable<int> source)
+        public static async Task<int> AverageAsync([NotNull] [InstantHandle]this IAsyncEnumerable<int> source)
         {
             var result = await source.AggregateAsync(new Tuple<int, int>(0, 0), (sum, item) => Tuple.Create(sum.Item1 + item, sum.Item2 + 1));
 
@@ -372,7 +379,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<long> AverageAsync(this IAsyncEnumerable<long> source)
+        public static async Task<long> AverageAsync([NotNull] [InstantHandle]this IAsyncEnumerable<long> source)
         {
             var result = await source.AggregateAsync(new Tuple<long, int>(0, 0), (sum, item) => Tuple.Create(sum.Item1 + item, sum.Item2 + 1));
 
@@ -388,7 +395,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<float?> AverageAsync(this IAsyncEnumerable<float?> source)
+        public static async Task<float?> AverageAsync([NotNull] [InstantHandle]this IAsyncEnumerable<float?> source)
         {
             var result = await source.AggregateAsync(new Tuple<float?, int>(0, 0), (sum, item) => Tuple.Create(sum.Item1 + (item ?? 0), sum.Item2 + (item == null ? 0 : 1)));
 
@@ -404,7 +411,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<double?> AverageAsync(this IAsyncEnumerable<double?> source)
+        public static async Task<double?> AverageAsync([NotNull] this IAsyncEnumerable<double?> source)
         {
             var result = await source.AggregateAsync(new Tuple<double?, int>(0, 0), (sum, item) => Tuple.Create(sum.Item1 + (item ?? 0), sum.Item2 + (item == null ? 0 : 1)));
 
@@ -420,7 +427,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<int?> AverageAsync(this IAsyncEnumerable<int?> source)
+        public static async Task<int?> AverageAsync([NotNull] [InstantHandle]this IAsyncEnumerable<int?> source)
         {
             var result = await source.AggregateAsync(new Tuple<int?, int>(0, 0), (sum, item) => Tuple.Create(sum.Item1 + (item ?? 0), sum.Item2 + (item == null ? 0 : 1)));
 
@@ -436,7 +443,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<long?> AverageAsync(this IAsyncEnumerable<long?> source)
+        public static async Task<long?> AverageAsync([NotNull] [InstantHandle]this IAsyncEnumerable<long?> source)
         {
             var result = await source.AggregateAsync(new Tuple<long?, int>(0, 0), (sum, item) => Tuple.Create(sum.Item1 + (item ?? 0), sum.Item2 + (item == null ? 0 : 1)));
 
@@ -458,6 +465,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The groupings.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<IAsyncEnumerable<TSource>> Batch<TSource>([NotNull] this IAsyncEnumerable<TSource> source, long batchSize)
         {
             return source.Policy.CreateAsyncEnumerable(() => new BatchesEnumerator<TSource>(source, batchSize));
@@ -488,6 +497,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The groupings.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<IAsyncEnumerable<TSource>> Batch<TSource, TValue>([NotNull] this IAsyncEnumerable<TSource> source, int batchSize, Func<TSource, TValue> valueSelector, [CanBeNull] IComparer<TValue> comparer = null)
         {
             return source.Policy.CreateAsyncEnumerable(() => new ValueBatchesEnumerator<TSource, TValue>(source, source.Policy, batchSize, valueSelector, comparer ?? DefaultComparer.Create<TValue>()));
@@ -508,6 +519,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<T> BeforeFirstElement<T>([NotNull] this IAsyncEnumerable<T> source, Action callback)
         {
             return source.Policy.CreateAsyncEnumerable(() => new CallbackEnumerator<T>(source, callback, null, -1, null));
@@ -526,7 +539,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<long> CountAsync<TSource>(this IAsyncEnumerable<TSource> source) => source.CountAsync(null);
+        public static Task<long> CountAsync<TSource>([InstantHandle]this IAsyncEnumerable<TSource> source) => source.CountAsync(null);
 
         /// <summary>
         /// Counts the number of items in the <see cref="IAsyncEnumerable{T}"/>.
@@ -543,7 +556,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The number of elements in the enumerable.
         /// </returns>
-        public static async Task<long> CountAsync<TSource>(this IAsyncEnumerable<TSource> source, [CanBeNull] Func<TSource, bool> condition)
+        public static async Task<long> CountAsync<TSource>([NotNull] [InstantHandle]this IAsyncEnumerable<TSource> source, [CanBeNull] Func<TSource, bool> condition)
         {
             return (source as IAsyncReadOnlyCollection<TSource>)?.Count ??
                    (condition == null
@@ -575,6 +588,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> CrossApply<TLeft, TRight, TResult>([NotNull] this IAsyncEnumerable<TLeft> source, Func<TLeft, IAsyncEnumerable<TRight>> function, Func<TLeft, TRight, TResult> resultSelector)
         {
             return source.Policy.CreateAsyncEnumerable(() => new ApplyEnumerator<TLeft, TRight, TResult>(false, source, function, resultSelector));
@@ -604,6 +619,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> CrossJoin<TLeft, TRight, TResult>([NotNull] this IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TRight, TResult> resultSelector)
         {
             return left.Policy.CreateAsyncEnumerable(() => new CrossJoinEnumerator<TLeft, TRight, TResult>(left, right, resultSelector));
@@ -621,7 +638,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
-        public static IAsyncEnumerable<TSource> Distinct<TSource>(this IAsyncEnumerable<TSource> source) => source.Distinct(null);
+        [LinqTunnel]
+        public static IAsyncEnumerable<TSource> Distinct<TSource>([NotNull] this IAsyncEnumerable<TSource> source) => source.Distinct(null);
 
         /// <summary>
         /// Groups the asynchronous enumerable.
@@ -638,6 +656,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The groupings.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TSource> Distinct<TSource>([NotNull] this IAsyncEnumerable<TSource> source, IComparer<TSource> comparer)
         {
             return source.Policy.CreateAsyncEnumerable(() => new DistinctEnumerator<TSource>(source, comparer ?? DefaultComparer.Create<TSource>()));
@@ -656,7 +676,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> FirstAsync<TItem>(this IAsyncEnumerable<TItem> source)
+        public static Task<TItem> FirstAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
             => AsyncEnumerableExtensions.FirstInternalAsync(
                 source,
                 null,
@@ -678,7 +698,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> FirstAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
+        public static Task<TItem> FirstAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
             => AsyncEnumerableExtensions.FirstInternalAsync(
                 source,
                 condition,
@@ -697,7 +717,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> FirstOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source)
+        public static Task<TItem> FirstOrDefaultAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
             => AsyncEnumerableExtensions.FirstInternalAsync(source, null, () => default(TItem));
 
         /// <summary>
@@ -716,7 +736,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> FirstOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition) => AsyncEnumerableExtensions.FirstInternalAsync(source, condition, () => default(TItem));
+        public static Task<TItem> FirstOrDefaultAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition) => AsyncEnumerableExtensions.FirstInternalAsync(source, condition, () => default(TItem));
 
         /// <summary>
         /// Executes an action for all items in the <see cref="IAsyncEnumerable{T}"/>.
@@ -733,7 +753,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task ForEachAsync<TItem>([NotNull] this IAsyncEnumerable<TItem> source, Action<TItem> action)
+        public static async Task ForEachAsync<TItem>([InstantHandle][NotNull] this IAsyncEnumerable<TItem> source, Action<TItem> action)
         {
             using (var enumerator = source.GetAsyncEnumerator())
             {
@@ -763,7 +783,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task ForEachAsync<TItem>([NotNull] this IAsyncEnumerable<TItem> source, Func<TItem, Task> asyncAction)
+        public static async Task ForEachAsync<TItem>([InstantHandle][NotNull] this IAsyncEnumerable<TItem> source, Func<TItem, Task> asyncAction)
         {
             using (var enumerator = source.GetAsyncEnumerator())
             {
@@ -793,7 +813,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task ForEachBatchAsync<TItem>([NotNull] this IAsyncEnumerable<TItem> source, Action<IEnumerable<TItem>> action)
+        public static async Task ForEachBatchAsync<TItem>([InstantHandle][NotNull] this IAsyncEnumerable<TItem> source, Action<IEnumerable<TItem>> action)
         {
             using (var enumerator = source.GetAsyncEnumerator())
             {
@@ -820,7 +840,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task ForEachBatchAsync<TItem>([NotNull] this IAsyncEnumerable<TItem> source, Func<IEnumerable<TItem>, Task> action)
+        public static async Task ForEachBatchAsync<TItem>([InstantHandle][NotNull] this IAsyncEnumerable<TItem> source, Func<IEnumerable<TItem>, Task> action)
         {
             using (var enumerator = source.GetAsyncEnumerator())
             {
@@ -853,6 +873,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The groupings.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<IAsyncGrouping<TSource, TKey>> GroupBy<TSource, TKey>([NotNull] this IAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
             return source.Policy.CreateAsyncEnumerable(() => new GroupByEnumerator<TSource, TKey>(source, keySelector, comparer ?? DefaultComparer.Create<TKey>()));
@@ -896,6 +918,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> Join<TLeft, TRight, TKey, TResult>([NotNull] this IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TKey> leftKeySelector, Func<TRight, TKey> rightKeySelector, Func<TLeft, TRight, TResult> resultSelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
             return left.Policy.CreateAsyncEnumerable(() => new JoinEnumerator<TLeft, TRight, TKey, TResult>(true, false, left, right, leftKeySelector, ExpressionType.Equal, rightKeySelector, null, resultSelector, comparer ?? DefaultComparer.Create<TKey>()));
@@ -945,6 +969,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> Join<TLeft, TRight, TKey, TResult>([NotNull] this IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TKey> leftKeySelector, ExpressionType joinOperator, Func<TRight, TKey> rightKeySelector, Func<TLeft, TRight, bool> resultFilter, Func<TLeft, TRight, TResult> resultSelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
             if (joinOperator != ExpressionType.Equal && joinOperator != ExpressionType.LessThan && joinOperator != ExpressionType.LessThanOrEqual && joinOperator != ExpressionType.GreaterThan && joinOperator != ExpressionType.GreaterThanOrEqual && joinOperator != ExpressionType.NotEqual)
@@ -968,7 +994,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> LastAsync<TItem>(this IAsyncEnumerable<TItem> source)
+        public static Task<TItem> LastAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
             => AsyncEnumerableExtensions.LastInternalAsync(
                 source,
                 null,
@@ -993,7 +1019,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> LastAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
+        public static Task<TItem> LastAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
             => AsyncEnumerableExtensions.LastInternalAsync(
                 source,
                 condition,
@@ -1012,7 +1038,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> LastOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source)
+        public static Task<TItem> LastOrDefaultAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
             => AsyncEnumerableExtensions.LastInternalAsync(source, null, () => default(TItem));
 
         /// <summary>
@@ -1031,8 +1057,8 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> LastOrDefaultAsync<TItem>(this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
-            => AsyncEnumerableExtensions.LastInternalAsync(source, condition, () => default(TItem));
+        public static Task<TItem> LastOrDefaultAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
+            => source.LastInternalAsync(condition, () => default(TItem));
 
         /// <summary>
         /// Joins the two <see cref="IAsyncEnumerable{T}"/>s on a key. When no item is found that matches an item in
@@ -1081,6 +1107,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> LeftJoin<TLeft, TRight, TKey, TResult>([NotNull] this IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TKey> leftKeySelector, ExpressionType joinOperator, Func<TRight, TKey> rightKeySelector, Func<TLeft, TRight, bool> resultFilter, Func<TLeft, TRight, TResult> resultSelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
             if (joinOperator != ExpressionType.Equal && joinOperator != ExpressionType.LessThan && joinOperator != ExpressionType.LessThanOrEqual && joinOperator != ExpressionType.GreaterThan && joinOperator != ExpressionType.GreaterThanOrEqual && joinOperator != ExpressionType.NotEqual)
@@ -1107,7 +1135,7 @@ namespace ConnectQl.AsyncEnumerables
         ///     multiple times.
         /// </returns>
         [NotNull]
-        public static Task<IAsyncReadOnlyCollection<TSource>> MaterializeAsync<TSource>([NotNull] this IAsyncEnumerable<TSource> source)
+        public static Task<IAsyncReadOnlyCollection<TSource>> MaterializeAsync<TSource>([InstantHandle][NotNull] this IAsyncEnumerable<TSource> source)
         {
             return source.Policy.MaterializeAsync(source);
         }
@@ -1124,7 +1152,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<TItem> MaxAsync<TItem>(this IAsyncEnumerable<TItem> source)
+        [NotNull]
+        public static Task<TItem> MaxAsync<TItem>([InstantHandle]this IAsyncEnumerable<TItem> source)
             => source.MaxAsync(null);
 
         /// <summary>
@@ -1143,7 +1172,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> MaxAsync<TItem>(this IAsyncEnumerable<TItem> source, IComparer<TItem> comparer)
+        public static Task<TItem> MaxAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, IComparer<TItem> comparer)
         {
             comparer = comparer ?? DefaultComparer.Create<TItem>();
 
@@ -1162,7 +1191,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<TItem> MinAsync<TItem>(this IAsyncEnumerable<TItem> source)
+        [NotNull]
+        public static Task<TItem> MinAsync<TItem>([InstantHandle]this IAsyncEnumerable<TItem> source)
             => source.MinAsync(null);
 
         /// <summary>
@@ -1181,7 +1211,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> MinAsync<TItem>(this IAsyncEnumerable<TItem> source, IComparer<TItem> comparer)
+        public static Task<TItem> MinAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, IComparer<TItem> comparer)
         {
             comparer = comparer ?? DefaultComparer.Create<TItem>();
 
@@ -1210,6 +1240,7 @@ namespace ConnectQl.AsyncEnumerables
         /// An <see cref="IOrderedAsyncEnumerable{TSource}"/> whose elements are sorted according to a key..
         /// </returns>
         [NotNull]
+        [LinqTunnel]
         public static IOrderedAsyncEnumerable<TSource> OrderBy<TSource, TKey>(this IAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
             Comparison<TSource> compareLambda = (first, second) => (comparer ?? DefaultComparer.Create<TKey>()).Compare(keySelector(first), keySelector(second));
@@ -1232,6 +1263,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [LinqTunnel]
         public static IAsyncEnumerable<T> OrderBy<T>(this IAsyncEnumerable<T> source, [NotNull] IEnumerable<IOrderByExpression> orderByExpressions)
         {
             Comparison<T> comparison = null;
@@ -1282,6 +1314,7 @@ namespace ConnectQl.AsyncEnumerables
         /// An <see cref="IOrderedAsyncEnumerable{TSource}"/> whose elements are sorted according to a key..
         /// </returns>
         [NotNull]
+        [LinqTunnel]
         public static IOrderedAsyncEnumerable<TSource> OrderByDescending<TSource, TKey>(this IAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
             Comparison<TSource> compareLambda = (first, second) => (comparer ?? DefaultComparer.Create<TKey>()).Compare(keySelector(second), keySelector(first));
@@ -1314,6 +1347,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> OuterApply<TLeft, TRight, TResult>([NotNull] this IAsyncEnumerable<TLeft> source, Func<TLeft, IAsyncEnumerable<TRight>> function, Func<TLeft, TRight, TResult> resultSelector)
         {
             return source.Policy.CreateAsyncEnumerable(() => new ApplyEnumerator<TLeft, TRight, TResult>(true, source, function, resultSelector));
@@ -1365,6 +1400,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> PreSortedJoin<TLeft, TRight, TKey, TResult>([NotNull] this IAsyncEnumerable<TLeft> left, IAsyncReadOnlyCollection<TRight> right, Func<TLeft, TKey> leftKeySelector, ExpressionType joinOperator, Func<TRight, TKey> rightKeySelector, Func<TLeft, TRight, bool> resultFilter, Func<TLeft, TRight, TResult> resultSelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
             if (joinOperator != ExpressionType.Equal && joinOperator != ExpressionType.LessThan && joinOperator != ExpressionType.LessThanOrEqual && joinOperator != ExpressionType.GreaterThan && joinOperator != ExpressionType.GreaterThanOrEqual && joinOperator != ExpressionType.NotEqual)
@@ -1421,6 +1458,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> PreSortedLeftJoin<TLeft, TRight, TKey, TResult>([NotNull] this IAsyncEnumerable<TLeft> left, IAsyncReadOnlyCollection<TRight> right, Func<TLeft, TKey> leftKeySelector, ExpressionType joinOperator, Func<TRight, TKey> rightKeySelector, Func<TLeft, TRight, bool> resultFilter, Func<TLeft, TRight, TResult> resultSelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
             if (joinOperator != ExpressionType.Equal && joinOperator != ExpressionType.LessThan && joinOperator != ExpressionType.LessThanOrEqual && joinOperator != ExpressionType.GreaterThan && joinOperator != ExpressionType.GreaterThanOrEqual && joinOperator != ExpressionType.NotEqual)
@@ -1450,6 +1489,8 @@ namespace ConnectQl.AsyncEnumerables
         /// An <see cref="IAsyncEnumerable{T}"/> whose elements are the result of invoking the transform function on each
         ///     element of <paramref name="source"/>.
         /// </returns>
+        [LinqTunnel]
+        [NotNull]
         public static IAsyncEnumerable<TResult> Select<TSource, TResult>([NotNull] this IAsyncEnumerable<TSource> source, Func<TSource, Task<TResult>> selector)
         {
             return source.Policy.CreateAsyncEnumerable(() => new SelectAsyncEnumerator<TSource, TResult>(source, selector));
@@ -1474,6 +1515,8 @@ namespace ConnectQl.AsyncEnumerables
         /// An <see cref="IAsyncEnumerable{T}"/> whose elements are the result of invoking the transform function on each
         ///     element of <paramref name="source"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TResult> Select<TSource, TResult>([NotNull] this IAsyncEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
             return source.Policy.CreateAsyncEnumerable(() => new SelectEnumerator<TSource, TResult>(source, selector));
@@ -1494,6 +1537,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<T> Skip<T>([NotNull] this IAsyncEnumerable<T> source, long count)
         {
             return source.Policy.CreateAsyncEnumerable(() => new SkipEnumerator<T>(source, count));
@@ -1514,7 +1559,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The sorted <see cref="IAsyncReadOnlyCollection{T}"/>.
         /// </returns>
-        public static Task<IAsyncReadOnlyCollection<TSource>> SortAsync<TSource>([NotNull] this IAsyncEnumerable<TSource> source, Comparison<TSource> comparison)
+        public static Task<IAsyncReadOnlyCollection<TSource>> SortAsync<TSource>([NotNull][InstantHandle] this IAsyncEnumerable<TSource> source, Comparison<TSource> comparison)
         {
             return source.Policy.SortAsync(source, comparison);
         }
@@ -1529,7 +1574,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<float> SumAsync(this IAsyncEnumerable<float> source) => source.AggregateAsync((sum, item) => sum + item);
+        public static Task<float> SumAsync([NotNull] [InstantHandle]this IAsyncEnumerable<float> source) => source.AggregateAsync((sum, item) => sum + item);
 
         /// <summary>
         /// The sum async.
@@ -1541,7 +1586,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<double> SumAsync(this IAsyncEnumerable<double> source) => source.AggregateAsync((sum, item) => sum + item);
+        public static Task<double> SumAsync([NotNull] [InstantHandle]this IAsyncEnumerable<double> source) => source.AggregateAsync((sum, item) => sum + item);
 
         /// <summary>
         /// The sum async.
@@ -1553,7 +1598,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<int> SumAsync(this IAsyncEnumerable<int> source) => source.AggregateAsync((sum, item) => sum + item);
+        public static Task<int> SumAsync([NotNull] [InstantHandle]this IAsyncEnumerable<int> source) => source.AggregateAsync((sum, item) => sum + item);
 
         /// <summary>
         /// The sum async.
@@ -1565,7 +1610,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<long> SumAsync(this IAsyncEnumerable<long> source) => source.AggregateAsync((sum, item) => sum + item);
+        public static Task<long> SumAsync([NotNull] [InstantHandle]this IAsyncEnumerable<long> source) => source.AggregateAsync((sum, item) => sum + item);
 
         /// <summary>
         /// The sum async.
@@ -1577,7 +1622,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<float?> SumAsync(this IAsyncEnumerable<float?> source) => source.AggregateAsync((sum, item) => sum + item);
+        public static Task<float?> SumAsync([NotNull] [InstantHandle]this IAsyncEnumerable<float?> source) => source.AggregateAsync((sum, item) => sum + item);
 
         /// <summary>
         /// The sum async.
@@ -1589,7 +1634,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<double?> SumAsync(this IAsyncEnumerable<double?> source) => source.AggregateAsync((sum, item) => sum + item);
+        public static Task<double?> SumAsync([NotNull] [InstantHandle]this IAsyncEnumerable<double?> source) => source.AggregateAsync((sum, item) => sum + item);
 
         /// <summary>
         /// The sum async.
@@ -1601,7 +1646,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<int?> SumAsync(this IAsyncEnumerable<int?> source) => source.AggregateAsync((sum, item) => sum + item);
+        public static Task<int?> SumAsync([NotNull] [InstantHandle]this IAsyncEnumerable<int?> source) => source.AggregateAsync((sum, item) => sum + item);
 
         /// <summary>
         /// The sum async.
@@ -1613,7 +1658,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<long?> SumAsync(this IAsyncEnumerable<long?> source) => source.AggregateAsync((sum, item) => sum + item);
+        public static Task<long?> SumAsync([NotNull] [InstantHandle]this IAsyncEnumerable<long?> source) => source.AggregateAsync((sum, item) => sum + item);
 
         /// <summary>
         /// The take.
@@ -1630,6 +1675,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [LinqTunnel]
+        [NotNull]
         public static IAsyncEnumerable<T> Take<T>([NotNull] this IAsyncEnumerable<T> source, long count)
         {
             return source.Policy.CreateAsyncEnumerable(() => new TakeEnumerator<T>(source, count));
@@ -1651,6 +1698,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [LinqTunnel]
         public static IAsyncEnumerable<T> Take<T>(this IAsyncEnumerable<T> source, long? count)
         {
             return count == null ? source : source.Take(count.Value);
@@ -1669,7 +1717,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The array.
         /// </returns>
         [ItemNotNull]
-        public static async Task<T[]> ToArrayAsync<T>([NotNull] this IAsyncEnumerable<T> source)
+        public static async Task<T[]> ToArrayAsync<T>([NotNull] [InstantHandle] this IAsyncEnumerable<T> source)
         {
             T[] result = null;
 
@@ -1704,6 +1752,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
+        [LinqTunnel]
         public static IAsyncEnumerable<TSource> Union<TSource>([NotNull] this IAsyncEnumerable<TSource> first, IAsyncEnumerable<TSource> second, [CanBeNull] IComparer<TSource> comparer = null)
         {
             return first.Policy.CreateAsyncEnumerable(() => new UnionEnumerator<TSource>(first, second, comparer ?? DefaultComparer.Create<TSource>()));
@@ -1724,6 +1774,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// An <see cref="IAsyncEnumerable{T}"/> that contains elements from the input sequence that satisfy the condition.
         /// </returns>
+        [LinqTunnel]
         public static IAsyncEnumerable<TSource> Where<TSource>(this IAsyncEnumerable<TSource> source, [CanBeNull] Func<TSource, bool> predicate)
         {
             return predicate == null ? source : source.Policy.CreateAsyncEnumerable(() => new WhereEnumerator<TSource>(source, predicate));
@@ -1753,6 +1804,8 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [LinqTunnel]
+        [NotNull]
         public static IAsyncEnumerable<TResult> Zip<TLeft, TRight, TResult>([NotNull] this IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TRight, TResult> resultSelector)
         {
             return left.Policy.CreateAsyncEnumerable(() => new ZipEnumerator<TLeft, TRight, TResult>(left, right, resultSelector, false));
@@ -1784,6 +1837,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
         public static IAsyncEnumerable<TResult> ZipAll<TLeft, TRight, TResult>([NotNull] this IAsyncEnumerable<TLeft> left, IAsyncEnumerable<TRight> right, Func<TLeft, TRight, TResult> resultSelector)
         {
             return left.Policy.CreateAsyncEnumerable(() => new ZipEnumerator<TLeft, TRight, TResult>(left, right, resultSelector, true));
@@ -1951,7 +2005,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable"/>.
         /// </returns>
-        private static IAsyncEnumerable<TTarget> ConvertInternal<TSource, TTarget>(IAsyncEnumerable<TSource> source)
+        private static IAsyncEnumerable<TTarget> ConvertInternal<TSource, TTarget>([NotNull] IAsyncEnumerable<TSource> source)
         {
             if (typeof(TTarget).IsConstructedGenericType && typeof(TTarget).GetGenericTypeDefinition() == typeof(Nullable<>))
             {
