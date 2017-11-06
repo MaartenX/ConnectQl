@@ -48,11 +48,11 @@ before_build:
 
 build_script:
   - md logs
-  - msbuild /t:build src /bl:logs\Solution.binlog /p:Version=%GitVersion_NuGetVersion% /p:AssemblyVersion=%GitVersion_AssemblySemVer% /p:FileVersion=%GitVersion_MajorMinorPatch%.0 /p:InformationalVersion=%GitVersion_InformationalVersion% /p:VsixVersion=%GitVersion_MajorMinorPatch% /p:VsixPreReleaseVersion=%GitVersion_PreReleaseNumber%
+  - msbuild /t:build src /bl:logs\Solution.binlog /p:Version=%GitVersion_NuGetVersion% /p:AssemblyVersion=%GitVersion_AssemblySemVer% /p:FileVersion=%GitVersion_MajorMinorPatch%.0 /p:InformationalVersion=%GitVersion_InformationalVersion% /p:VsixVersion=%GitVersion_MajorMinorPatch% /p:VsixPreReleaseVersion=%GitVersion_PreReleaseNumber% /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
       $packProjects | % { 
-            msbuild /t:pack "$_" "/bl:logs\$($_.Name).binlog" /p:Version=$env:GitVersion_NuGetVersion /p:AssemblyVersion=$env:GitVersion_AssemblySemVer /p:FileVersion=$($env:GitVersion_MajorMinorPatch).0 /p:InformationalVersion=$env:GitVersion_InformationalVersion /p:VsixVersion=$env:GitVersion_MajorMinorPatch /p:VsixPreReleaseVersion=$env:GitVersion_PreReleaseNumber /p:PackageOutputPath=..\..\artifacts
+            msbuild /t:pack "$_" "/bl:logs\$($_.Name).binlog" /p:Version=$env:GitVersion_NuGetVersion /p:AssemblyVersion=$env:GitVersion_AssemblySemVer /p:FileVersion=$($env:GitVersion_MajorMinorPatch).0 /p:InformationalVersion=$env:GitVersion_InformationalVersion /p:VsixVersion=$env:GitVersion_MajorMinorPatch /p:VsixPreReleaseVersion=$env:GitVersion_PreReleaseNumber /p:PackageOutputPath=..\..\artifacts /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
       };
       .\ps\UpdatePackageReferences.ps1 -PackProjects $packProjects
 

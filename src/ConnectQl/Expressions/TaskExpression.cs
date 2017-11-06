@@ -72,7 +72,7 @@ namespace ConnectQl.Expressions
         /// Gets the expression.
         /// </summary>
         public Expression Expression { get; }
-        
+
         /// <summary>
         /// The reduce.
         /// </summary>

@@ -40,7 +40,7 @@ namespace ConnectQl.Internal.Comparers
         public static readonly MostSpecificComparer Default = new MostSpecificComparer();
 
         /// <summary>
-        /// Compares the two <see cref="CompareExpression"/>s.
+        /// Compares the two <see cref="BinaryExpression"/>s.
         /// </summary>
         /// <param name="x">
         /// The first expression.
@@ -57,7 +57,7 @@ namespace ConnectQl.Internal.Comparers
         }
 
         /// <summary>
-        /// Converts a <see cref="CompareExpression"/> to a sort order.
+        /// Converts a <see cref="BinaryExpression"/> to a sort order.
         /// </summary>
         /// <param name="x">
         /// The expression.

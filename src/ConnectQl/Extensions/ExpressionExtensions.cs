@@ -924,6 +924,19 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
+        /// Checks if the <see cref="BinaryExpression"/> is a comparison.
+        /// </summary>
+        /// <param name="expression">The expresion to check.</param>
+        /// <returns><c>true</c> if the <paramref name="expression"/> is a comparison, <c>false</c> otherwise.</returns>
+        public static bool IsComparison([NotNull] this BinaryExpression expression)
+        {
+            var nodeType = expression.NodeType;
+
+            return nodeType == ExpressionType.Equal || nodeType == ExpressionType.NotEqual || nodeType == ExpressionType.LessThan || nodeType == ExpressionType.LessThanOrEqual
+                   || nodeType == ExpressionType.GreaterThan || nodeType == ExpressionType.GreaterThanOrEqual;
+        }
+
+        /// <summary>
         /// Swaps the operands and creates a new comparison.
         /// </summary>
         /// <param name="expression">The expression to swap operands for.</param>
@@ -1126,19 +1139,6 @@ namespace System.Linq.Expressions
                                    return node.SwapOperandsForComparison();
                                },
                        }.Visit(expression);
-        }
-
-        /// <summary>
-        /// Checks if the <see cref="BinaryExpression"/> is a comparison.
-        /// </summary>
-        /// <param name="expression">The expresion to check.</param>
-        /// <returns><c>true</c> if the <paramref name="expression"/> is a comparison, <c>false</c> otherwise.</returns>
-        public static bool IsComparison([NotNull] this BinaryExpression expression)
-        {
-            var nodeType = expression.NodeType;
-
-            return nodeType == ExpressionType.Equal || nodeType == ExpressionType.NotEqual || nodeType == ExpressionType.LessThan || nodeType == ExpressionType.LessThanOrEqual
-                   || nodeType == ExpressionType.GreaterThan || nodeType == ExpressionType.GreaterThanOrEqual;
         }
 
         /// <summary>

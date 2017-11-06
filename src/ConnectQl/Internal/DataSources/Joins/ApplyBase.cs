@@ -218,7 +218,7 @@ namespace ConnectQl.Internal.DataSources.Joins
                         {
                             return null;
                         }
-                        
+
                         if (!(node.Right is RangeExpression rightRange))
                         {
                             if (!(node.Left is RangeExpression leftRange))

@@ -38,7 +38,6 @@ namespace ConnectQl.Internal.Validation.Operators
     /// </summary>
     internal static class Operator
     {
-
         /// <summary>
         /// The string comparision mode that will be used in operators.
         /// </summary>
@@ -519,7 +518,7 @@ namespace ConnectQl.Internal.Validation.Operators
         }
 
         /// <summary>
-        /// Looks for operator overloads in <paramref name="firstInfo"/> and <paramref name="secondInfo"/> and returns the 
+        /// Looks for operator overloads in <paramref name="firstInfo"/> and <paramref name="secondInfo"/> and returns the
         /// best fit.
         /// </summary>
         /// <param name="operatorName">
@@ -760,7 +759,6 @@ namespace ConnectQl.Internal.Validation.Operators
         /// <param name="second">The second object.</param>
         /// <returns>The result.</returns>
         private static bool DynamicOr([CanBeNull] object first, [CanBeNull] object second) => (bool)Evaluate("OR", first, second, p => Expression.Or(p.Item1, p.Item2, p.Item3));
-        
 
         /// <summary>
         /// Compares two strings, and returns true if <paramref name="first"/> is greater than <paramref name="second"/>.

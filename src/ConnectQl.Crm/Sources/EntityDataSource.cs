@@ -222,8 +222,6 @@ namespace ConnectQl.Crm.Sources
         [CanBeNull]
         private QueryExpression GetQueryExpression(Expression filter)
         {
-            //var f = new GenericVisitor { (CompareExpression c) => c }.Visit(filter);
-
             return null;
         }
 

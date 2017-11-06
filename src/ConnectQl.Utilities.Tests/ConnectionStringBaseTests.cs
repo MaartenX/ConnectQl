@@ -41,7 +41,7 @@ namespace ConnectQl.Utilities.Tests
 
             Assert.Equal("Test", parsed.First);
             Assert.Equal(2, parsed.Second);
-            Assert.Equal(true, parsed.Third);
+            Assert.True(parsed.Third);
             Assert.Equal(new Uri("http://test.nl"), parsed.Fourth);
             Assert.Equal(Guid.Empty, parsed.Fifth);
         }

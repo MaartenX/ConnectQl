@@ -33,7 +33,7 @@ namespace ConnectQl.Expressions
     /// <summary>
     /// The custom expression.
     /// </summary>
-    public static class ConnectQlExpression 
+    public static class ConnectQlExpression
     {
         /// <summary>
         /// The execution context.
@@ -46,7 +46,7 @@ namespace ConnectQl.Expressions
         {
             return new ExecutionContextExpression();
         }
-        
+
         /// <summary>
         /// Creates a <see cref="FieldExpression"/>.
         /// </summary>

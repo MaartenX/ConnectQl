@@ -152,8 +152,7 @@ namespace ConnectQl.Internal.Query
         }
 
         /// <summary>
-        /// Cleans the expression by merging <see cref="UnaryExpression"/> and <see cref="SourceFieldExpression"/>, and
-        ///     replacing <see cref="BinaryExpression"/>s with <see cref="CompareExpression"/>s.
+        /// Cleans the expression by merging <see cref="UnaryExpression"/> and <see cref="SourceFieldExpression"/>.
         /// </summary>
         /// <param name="expression">
         /// The expression.
