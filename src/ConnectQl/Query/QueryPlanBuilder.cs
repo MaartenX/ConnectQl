@@ -47,29 +47,13 @@ namespace ConnectQl.Query
 
     using JetBrains.Annotations;
 
-    /// <summary>
-    /// Creates an enumerable of key/value pairs based on an array of rows for a grouping.
-    /// </summary>
-    /// <param name="context">The execution context.</param>
-    /// <param name="rows">The rows to create the key/value pairs from.</param>
-    /// <returns>A <see cref="Task"/> returning the enumerable of key/value pairs.</returns>
-    public delegate Task<KeyValuePair<string, object>[]> AsyncGroupValueFactory(IExecutionContext context, IAsyncReadOnlyCollection<Row> rows);
+    #region "No Resharper Refactoring here"
 
-    /// <summary>
-    /// Creates an enumerable of key/value pairs based on a row.
-    /// </summary>
-    /// <param name="context">The execution context.</param>
-    /// <param name="row">The row to create the key/value pairs from.</param>
-    /// <returns>A <see cref="Task"/> returning the enumerable of key/value pairs.</returns>
-    public delegate Task<IEnumerable<KeyValuePair<string, object>>> AsyncValueFactory(IExecutionContext context, Row row);
+    using AsyncGroupValueFactory = System.Func<Interfaces.IExecutionContext, AsyncEnumerables.IAsyncReadOnlyCollection<Results.Row>, System.Threading.Tasks.Task<System.Collections.Generic.KeyValuePair<string, object>[]>>;
+    using AsyncValueFactory = System.Func<Interfaces.IExecutionContext, Results.Row, System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>>;
+    using ValueFactory = System.Func<Interfaces.IExecutionContext, Results.Row, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>;
 
-    /// <summary>
-    /// Creates an enumerable of key/value pairs based on a row.
-    /// </summary>
-    /// <param name="context">The execution context.</param>
-    /// <param name="row">The row to create the key/value pairs from.</param>
-    /// <returns>The enumerable of key/value pairs.</returns>
-    public delegate IEnumerable<KeyValuePair<string, object>> ValueFactory(IExecutionContext context, Row row);
+    #endregion
 
     /// <summary>
     /// The query plan.

@@ -9,7 +9,7 @@
   <PropertyGroup>
     <DebugType>full</DebugType>
     <DocumentationFile>bin\doc\$(AssemblyName).xml</DocumentationFile>
-    <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407;SA1134;SA1126;SA1119;SA1028</NoWarn>
+    <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407;SA1134;SA1126;SA1119;SA1028;SA1124</NoWarn>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <!-- Set the version to something ridiculously high, so we always override nuget-packages. -->

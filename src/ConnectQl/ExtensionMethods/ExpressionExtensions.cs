@@ -363,7 +363,7 @@ namespace System.Linq.Expressions
         {
             if (expression is LambdaExpression lambdaExpression)
             {
-                return RewriteTasksToAsyncExpression(lambdaExpression);
+                return Expression.Lambda(RewriteTasksToAsyncExpression(lambdaExpression.Body), lambdaExpression.Parameters);
             }
 
             var tasks = new List<Tuple<Expression, ParameterExpression>>();

@@ -36,8 +36,14 @@ namespace ConnectQl.Query.Plans
     using ConnectQl.Internal.Results;
     using ConnectQl.Parser.Ast.Expressions;
     using ConnectQl.Results;
-
+    
     using JetBrains.Annotations;
+    
+    #region "No Resharper Refactoring here"
+
+    using AsyncGroupValueFactory = System.Func<Interfaces.IExecutionContext, AsyncEnumerables.IAsyncReadOnlyCollection<Results.Row>, System.Threading.Tasks.Task<System.Collections.Generic.KeyValuePair<string, object>[]>>;
+
+    #endregion
 
     /// <summary>
     /// The select group query source.

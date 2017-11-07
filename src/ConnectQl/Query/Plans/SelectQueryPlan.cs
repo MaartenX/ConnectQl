@@ -35,7 +35,14 @@ namespace ConnectQl.Query.Plans
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
-    
+
+    #region "No Resharper Refactoring here"
+
+    using AsyncValueFactory = System.Func<Interfaces.IExecutionContext, Results.Row, System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>>;
+    using ValueFactory = System.Func<Interfaces.IExecutionContext, Results.Row, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>;
+
+    #endregion
+
     /// <summary>
     /// The select group query plan.
     /// </summary>
