@@ -30,9 +30,12 @@ namespace ConnectQl.Platform
     using ConnectQl.Interfaces;
     using ConnectQl.Platform.FileFormats;
 
+    using JetBrains.Annotations;
+
     /// <summary>
     /// The platform plugin.
     /// </summary>
+    [PublicAPI]
     public class Plugin : IConnectQlPlugin
     {
         /// <summary>

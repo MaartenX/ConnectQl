@@ -37,7 +37,6 @@ using ConnectQl.Parser.Ast.Expressions;
 using ConnectQl.Parser.Ast.Sources;
 using ConnectQl.Parser.Ast.Statements;
 using ConnectQl.Parser.Ast.Targets;
-using ConnectQl.Parser.Interfaces;
 using ConnectQl.Interfaces;
 using ConnectQl.Results;
 
