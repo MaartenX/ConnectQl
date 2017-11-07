@@ -26,9 +26,9 @@ namespace ConnectQl.Internal
     using System.Collections.Generic;
     using System.Linq;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Ast;
-    using ConnectQl.Internal.Ast.Statements;
-    using ConnectQl.Internal.Ast.Visitors;
+    using ConnectQl.Parser.Ast;
+    using ConnectQl.Parser.Ast.Statements;
+    using ConnectQl.Parser.Ast.Visitors;
 
     using JetBrains.Annotations;
 

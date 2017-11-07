@@ -432,7 +432,7 @@ using System.Collections.Generic;
 /// The scanner.
 /// </summary>
 [GeneratedCode("CoCo/R", "0.1")]
-internal class Scanner {
+internal class ConnectQlScanner {
 	/// <summary>
 	/// The end-of-line character.
 	/// </summary>
@@ -513,7 +513,7 @@ internal class Scanner {
 	/// <summary>
 	/// Initializes the static state of the <see cref="Scanner" /> class.
 	/// </summary>
-	static Scanner() {
+	static ConnectQlScanner() {
 		Start = new Dictionary<int, int>(128);
 -->initialization 
 	} 
@@ -524,7 +524,7 @@ internal class Scanner {
 	/// <param name="s">
 	/// The stream to scan for tokens.
 	/// </param>
-	public Scanner (Stream s) {
+	public ConnectQlScanner (Stream s) {
 		this.Buffer = new Buffer(s, true);
 		Init();
 	}

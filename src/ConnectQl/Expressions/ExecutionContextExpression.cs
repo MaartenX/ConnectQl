@@ -32,7 +32,7 @@ namespace ConnectQl.Expressions
     /// <summary>
     /// The execution context expression.
     /// </summary>
-    public class ExecutionContextExpression : Expression
+    public sealed class ExecutionContextExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionContextExpression"/> class.

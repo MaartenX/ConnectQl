@@ -34,16 +34,17 @@ namespace ConnectQl
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using ConnectQl.AsyncEnumerablePolicies;
+
+    using ConnectQl.AsyncEnumerables.Policies;
+    using ConnectQl.DataSources;
     using ConnectQl.Intellisense;
+    using ConnectQl.Intellisense.Protocol;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
-    using ConnectQl.Internal.Ast.Statements;
-    using ConnectQl.Internal.Intellisense.Protocol;
-    using ConnectQl.Internal.Interfaces;
-    using ConnectQl.Internal.Query;
-    using ConnectQl.Internal.Validation;
+    using ConnectQl.Parser.Ast.Statements;
+    using ConnectQl.Query;
     using ConnectQl.Results;
+    using ConnectQl.Validation;
 
     using JetBrains.Annotations;
 
@@ -318,12 +319,12 @@ namespace ConnectQl
         /// </returns>
         internal static Block Parse(Stream content, INodeDataProvider data, IMessageWriter messages, bool parseForIntellisense, [CanBeNull] List<Token> tokens = null)
         {
-            var scanner = new Scanner(content)
+            var scanner = new ConnectQlScanner(content)
                               {
                                   EmitComments = parseForIntellisense,
                               };
 
-            var parser = new Parser(scanner, data, messages);
+            var parser = new ConnectQlParser(scanner, data, messages);
 
             var ctx = parser.Mark();
 
@@ -331,7 +332,7 @@ namespace ConnectQl
 
             if (parseForIntellisense)
             {
-                while (scanner.Scan().Kind != Parser.EOFSymbol)
+                while (scanner.Scan().Kind != ConnectQlParser.EOFSymbol)
                 {
                 }
             }

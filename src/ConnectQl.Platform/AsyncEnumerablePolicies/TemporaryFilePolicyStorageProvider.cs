@@ -26,7 +26,7 @@ namespace ConnectQl.Platform.AsyncEnumerablePolicies
     using System.IO;
     using System.Threading.Tasks;
 
-    using ConnectQl.AsyncEnumerablePolicies;
+    using ConnectQl.AsyncEnumerables.Policies;
 
     /// <summary>
     /// The temporary file policy storage provider.

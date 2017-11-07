@@ -30,8 +30,8 @@ namespace ConnectQl.Interfaces
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Expressions;
     using ConnectQl.Expressions.Visitors;
+    using ConnectQl.ExtensionMethods;
     using ConnectQl.Internal;
-    using ConnectQl.Internal.Extensions;
 
     using JetBrains.Annotations;
 

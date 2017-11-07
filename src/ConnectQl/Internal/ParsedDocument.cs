@@ -22,7 +22,7 @@
 
 namespace ConnectQl.Internal
 {
-    using ConnectQl.Internal.Ast.Statements;
+    using ConnectQl.Parser.Ast.Statements;
 
     /// <summary>
     /// The parsed script.

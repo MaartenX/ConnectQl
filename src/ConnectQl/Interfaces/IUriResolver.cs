@@ -25,6 +25,8 @@ namespace ConnectQl.Interfaces
     using System.IO;
     using System.Threading.Tasks;
 
+    using ConnectQl.DataSources;
+
     /// <summary>
     /// Used to resolve uri's.
     /// </summary>

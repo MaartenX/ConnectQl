@@ -409,7 +409,7 @@ namespace ConnectQl.Internal
     /// The scanner.
     /// </summary>
     [GeneratedCode("CoCo/R", "0.1")]
-    internal class Scanner
+    internal class ConnectQlScanner
     {
         /// <summary>
         /// The end-of-line character.
@@ -502,7 +502,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// Initializes the static state of the <see cref="Scanner" /> class.
         /// </summary>
-        static Scanner()
+        static ConnectQlScanner()
         {
             Start = new Dictionary<int, int>(128);
             for (int i = 48; i <= 57; ++i) Start[i] = 3;
@@ -535,7 +535,7 @@ namespace ConnectQl.Internal
         /// <param name="s">
         /// The stream to scan for tokens.
         /// </param>
-        public Scanner(Stream s)
+        public ConnectQlScanner(Stream s)
         {
             this.Buffer = new Buffer(s, true);
             Init();

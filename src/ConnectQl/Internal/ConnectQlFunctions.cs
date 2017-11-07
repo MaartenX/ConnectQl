@@ -27,7 +27,6 @@ namespace ConnectQl.Internal
     using System.Diagnostics;
 
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Interfaces;
 
     using JetBrains.Annotations;
 

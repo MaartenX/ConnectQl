@@ -24,7 +24,7 @@ namespace ConnectQl.Results
 {
     using System;
 
-    using ConnectQl.Internal.Resources;
+    using ConnectQl.Resources;
 
     using JetBrains.Annotations;
 

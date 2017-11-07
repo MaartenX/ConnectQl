@@ -28,8 +28,8 @@ namespace ConnectQl.DataSources
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
-    using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.AsyncEnumerables.Policies;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;

@@ -22,7 +22,7 @@
 
 namespace ConnectQl.Platform.AsyncEnumerablePolicies
 {
-    using ConnectQl.AsyncEnumerablePolicies;
+    using ConnectQl.AsyncEnumerables.Policies;
     using ConnectQl.Results;
 
     /// <summary>

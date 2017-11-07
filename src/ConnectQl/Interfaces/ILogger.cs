@@ -23,6 +23,7 @@
 namespace ConnectQl.Interfaces
 {
     using System;
+
     using JetBrains.Annotations;
 
     /// <summary>

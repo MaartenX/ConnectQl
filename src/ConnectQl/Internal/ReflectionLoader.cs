@@ -28,6 +28,8 @@ namespace ConnectQl.Internal
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
+
+    using ConnectQl.DataSources;
     using ConnectQl.Interfaces;
 
     using JetBrains.Annotations;

@@ -25,7 +25,9 @@ namespace ConnectQl.Platform.AsyncEnumerablePolicies
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
-    using ConnectQl.AsyncEnumerablePolicies;
+
+    using ConnectQl.AsyncEnumerables.Policies;
+
     using Newtonsoft.Json;
 
     /// <summary>

@@ -22,7 +22,7 @@
 
 namespace ConnectQl.AsyncEnumerables
 {
-    using ConnectQl.AsyncEnumerablePolicies;
+    using ConnectQl.AsyncEnumerables.Policies;
 
     /// <summary>
     /// The AsyncEnumerable interface.

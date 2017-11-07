@@ -28,8 +28,9 @@ namespace ConnectQl.Azure.Sources
     using System.Linq.Expressions;
     using System.Text;
     using System.Threading.Tasks;
-    using ConnectQl.AsyncEnumerablePolicies;
+
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.AsyncEnumerables.Policies;
     using ConnectQl.Expressions;
     using ConnectQl.Expressions.Visitors;
     using ConnectQl.Intellisense;

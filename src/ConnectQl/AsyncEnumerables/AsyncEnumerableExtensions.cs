@@ -28,12 +28,12 @@ namespace ConnectQl.AsyncEnumerables
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
-    using ConnectQl.AsyncEnumerablePolicies;
+
+    using ConnectQl.AsyncEnumerables.Enumerators;
+    using ConnectQl.AsyncEnumerables.Policies;
+    using ConnectQl.Comparers;
+    using ConnectQl.ExtensionMethods;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.AsyncEnumerables;
-    using ConnectQl.Internal.AsyncEnumerables.Enumerators;
-    using ConnectQl.Internal.Comparers;
-    using ConnectQl.Internal.Extensions;
 
     using JetBrains.Annotations;
 

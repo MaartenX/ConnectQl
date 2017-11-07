@@ -25,8 +25,9 @@ namespace ConnectQl.Tests
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using ConnectQl.AsyncEnumerablePolicies;
+
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.AsyncEnumerables.Policies;
 
     using JetBrains.Annotations;
 

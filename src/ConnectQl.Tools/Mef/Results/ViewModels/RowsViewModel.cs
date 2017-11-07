@@ -29,8 +29,8 @@ namespace ConnectQl.Tools.Mef.Results.ViewModels
     using System.Linq;
     using System.Threading.Tasks;
 
-    using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.AsyncEnumerables.Policies;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;

@@ -23,8 +23,9 @@
 namespace ConnectQl.Intellisense
 {
     using System;
+
+    using ConnectQl.Intellisense.Protocol;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Intellisense.Protocol;
 
     using JetBrains.Annotations;
 

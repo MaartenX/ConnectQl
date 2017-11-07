@@ -26,14 +26,12 @@ namespace ConnectQl.Expressions
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
-    using ConnectQl.Internal.Expressions;
-
     using JetBrains.Annotations;
 
     /// <summary>
     /// The custom expression.
     /// </summary>
-    public static class ConnectQlExpression
+    internal static class ConnectQlExpression
     {
         /// <summary>
         /// The execution context.
@@ -42,7 +40,7 @@ namespace ConnectQl.Expressions
         /// The <see cref="ExecutionContextExpression"/>.
         /// </returns>
         [NotNull]
-        public static ExecutionContextExpression ExecutionContext()
+        internal static ExecutionContextExpression ExecutionContext()
         {
             return new ExecutionContextExpression();
         }
@@ -63,7 +61,7 @@ namespace ConnectQl.Expressions
         /// The <see cref="FieldExpression"/>.
         /// </returns>
         [NotNull]
-        public static FieldExpression MakeField([NotNull] string source, [NotNull] string name, Type type = null)
+        internal static FieldExpression MakeField([NotNull] string source, [NotNull] string name, Type type = null)
         {
             if (source == null)
             {
@@ -86,7 +84,7 @@ namespace ConnectQl.Expressions
         /// The <see cref="TaskExpression"/> returning the result of the task.
         /// </returns>
         [NotNull]
-        public static TaskExpression MakeTask([NotNull] Expression expression)
+        internal static TaskExpression MakeTask([NotNull] Expression expression)
         {
             if (expression == null)
             {
@@ -115,24 +113,6 @@ namespace ConnectQl.Expressions
         internal static RangeExpression MakeRange(object min, object max, Type type)
         {
             return new RangeExpression(min, max, type);
-        }
-
-        /// <summary>
-        /// Creates a RangeExpression, given the minimum and maximum, by calling an appropriate factory method.
-        /// </summary>
-        /// <param name="min">
-        /// The minimum value in the range.
-        /// </param>
-        /// <param name="max">
-        /// The maximum value in the range.
-        /// </param>
-        /// <returns>
-        /// The RangeExpression that results from calling the appropriate factory method.
-        /// </returns>
-        [NotNull]
-        internal static RangeExpression MakeRange([CanBeNull] object min, [CanBeNull] object max)
-        {
-            return new RangeExpression(min, max, min?.GetType() ?? max?.GetType() ?? typeof(object));
         }
 
         /// <summary>

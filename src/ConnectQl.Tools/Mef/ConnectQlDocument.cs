@@ -29,13 +29,12 @@ namespace ConnectQl.Tools.Mef
     using System.Text;
     using System.Threading.Tasks;
 
+    using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
     using ConnectQl.Tools.Mef.Intellisense;
 
     using Interfaces;
-    using Internal.Intellisense;
-
     using JetBrains.Annotations;
 
     using Microsoft.VisualStudio.Text;

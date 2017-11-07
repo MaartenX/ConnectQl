@@ -28,10 +28,9 @@ namespace ConnectQl.Crm.Sources
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
-    using ConnectQl.AsyncEnumerablePolicies;
+
     using ConnectQl.AsyncEnumerables;
-    using ConnectQl.Expressions;
-    using ConnectQl.Expressions.Visitors;
+    using ConnectQl.AsyncEnumerables.Policies;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
@@ -80,6 +79,8 @@ namespace ConnectQl.Crm.Sources
         /// </summary>
         /// <param name="entityName">Name of the entity.</param>
         public EntityDataSource(string entityName)
+
+            // ReSharper disable once IntroduceOptionalParameters.Global, because we need to instantiate this class in a lambda expression.
             : this(entityName, null)
         {
         }
@@ -133,7 +134,8 @@ namespace ConnectQl.Crm.Sources
         /// <returns>
         /// A task returning the data set.
         /// </returns>
-        public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, IQuery query)
+        [NotNull]
+        public IAsyncEnumerable<Row> GetRows(IExecutionContext context, IRowBuilder rowBuilder, [NotNull] IQuery query)
         {
             this.GetQueryExpression(query.GetFilter(context));
 

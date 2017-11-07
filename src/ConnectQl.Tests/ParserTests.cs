@@ -31,7 +31,7 @@ namespace ConnectQl.Tests
     using Xunit;
 
     /// <summary>
-    /// Tests for the <see cref="Internal.Parser" /> class.
+    /// Tests for the <see cref="Parser" /> class.
     /// </summary>
     [Trait("Category", "Parser")]
     public class ParserTests

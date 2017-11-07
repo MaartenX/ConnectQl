@@ -27,11 +27,10 @@ namespace ConnectQl.Internal
     using System.IO;
     using System.Threading.Tasks;
 
-    using ConnectQl.AsyncEnumerablePolicies;
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.AsyncEnumerables.Policies;
     using ConnectQl.DataSources;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Interfaces;
 
     using JetBrains.Annotations;
 

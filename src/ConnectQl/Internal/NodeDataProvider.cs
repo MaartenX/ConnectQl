@@ -24,10 +24,10 @@ namespace ConnectQl.Internal
 {
     using System.Collections.Generic;
     using System.Linq;
-    using ConnectQl.Internal.Ast;
-    using ConnectQl.Internal.Comparers;
-    using ConnectQl.Internal.Interfaces;
-    using ConnectQl.Internal.Validation;
+
+    using ConnectQl.Comparers;
+    using ConnectQl.Interfaces;
+    using ConnectQl.Parser.Ast;
 
     using JetBrains.Annotations;
 

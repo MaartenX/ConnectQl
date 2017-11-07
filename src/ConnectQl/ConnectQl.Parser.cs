@@ -5,12 +5,11 @@ namespace ConnectQl.Internal
     using System.CodeDom.Compiler;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using ConnectQl.Internal.Ast;
-    using ConnectQl.Internal.Ast.Expressions;
-    using ConnectQl.Internal.Ast.Sources;
-    using ConnectQl.Internal.Ast.Statements;
-    using ConnectQl.Internal.Ast.Targets;
-    using ConnectQl.Internal.Interfaces;
+    using ConnectQl.Parser.Ast;
+    using ConnectQl.Parser.Ast.Expressions;
+    using ConnectQl.Parser.Ast.Sources;
+    using ConnectQl.Parser.Ast.Statements;
+    using ConnectQl.Parser.Ast.Targets;
     using ConnectQl.Interfaces;
     using ConnectQl.Results;
 
@@ -37,7 +36,7 @@ namespace ConnectQl.Internal
     /// The parser.
     /// </summary>
     [GeneratedCode("CoCo/R", "0.1")]
-    internal partial class Parser
+    internal partial class ConnectQlParser
     {
 
         /// <summary>
@@ -161,7 +160,7 @@ namespace ConnectQl.Internal
         /// <summary>
         /// The scanner.
         /// </summary>
-        private readonly Scanner scanner;
+        private readonly ConnectQlScanner scanner;
 
         /// <summary>
         /// The error writer.
@@ -189,7 +188,7 @@ namespace ConnectQl.Internal
         /// <param name="messages">
         /// The message writer.
         /// </param>
-        public Parser(Scanner scanner, INodeDataProvider data, IMessageWriter messages)
+        public ConnectQlParser(ConnectQlScanner scanner, INodeDataProvider data, IMessageWriter messages)
         {
             this.scanner = scanner;
             this.data = data;

@@ -28,8 +28,9 @@ namespace ConnectQl.Results
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+
+    using ConnectQl.ExtensionMethods;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Extensions;
     using ConnectQl.Internal.Results;
 
     using JetBrains.Annotations;

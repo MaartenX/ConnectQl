@@ -25,9 +25,9 @@ namespace ConnectQl.Results
     using System;
     using System.Collections.Generic;
 
-    using ConnectQl.AsyncEnumerablePolicies;
+    using ConnectQl.AsyncEnumerables.Policies;
+    using ConnectQl.Comparers;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Comparers;
     using ConnectQl.Internal.Results;
 
     using JetBrains.Annotations;

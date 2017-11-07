@@ -26,6 +26,7 @@ namespace ConnectQl.Excel.Tests
     using System.Threading.Tasks;
 
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.DataSources;
     using ConnectQl.Interfaces;
     using Moq;
     using OfficeOpenXml;

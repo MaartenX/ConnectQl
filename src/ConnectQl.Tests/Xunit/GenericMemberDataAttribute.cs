@@ -27,7 +27,7 @@ namespace ConnectQl.Tests
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using ConnectQl.AsyncEnumerablePolicies;
+
     using ConnectQl.AsyncEnumerables;
     using Xunit;
 

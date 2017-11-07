@@ -22,7 +22,7 @@
 
 namespace ConnectQl.Intellisense
 {
-    using ConnectQl.Internal.Intellisense.Protocol;
+    using ConnectQl.Intellisense.Protocol;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
