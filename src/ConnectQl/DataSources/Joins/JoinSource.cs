@@ -31,7 +31,6 @@ namespace ConnectQl.DataSources.Joins
     using ConnectQl.Expressions.Helpers;
     using ConnectQl.Expressions.Visitors;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;

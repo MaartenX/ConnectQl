@@ -28,7 +28,6 @@ namespace ConnectQl.Results
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
-    using ConnectQl.Internal.Results;
 
     using JetBrains.Annotations;
 

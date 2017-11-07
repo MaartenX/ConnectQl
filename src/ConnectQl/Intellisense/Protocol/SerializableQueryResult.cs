@@ -28,7 +28,6 @@ namespace ConnectQl.Intellisense.Protocol
 
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.AsyncEnumerables.Policies;
-    using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;

@@ -30,7 +30,6 @@ namespace ConnectQl.DataSources
     using ConnectQl.AsyncEnumerables.Policies;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
     /// <summary>

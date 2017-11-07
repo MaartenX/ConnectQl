@@ -31,7 +31,6 @@ namespace ConnectQl.Results
 
     using ConnectQl.ExtensionMethods;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Results;
 
     using JetBrains.Annotations;
 

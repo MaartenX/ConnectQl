@@ -27,8 +27,7 @@ namespace ConnectQl.DataSources.Joins
 
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Comparers;
-    using ConnectQl.Internal.Extensions;
-    using ConnectQl.Internal.Results;
+    using ConnectQl.ExtensionMethods;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;

@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Internal.Results
+namespace ConnectQl.Results
 {
     using System;
     using System.Collections.Generic;
 
     using ConnectQl.Interfaces;
-    using ConnectQl.Results;
+    using ConnectQl.Internal;
 
     using JetBrains.Annotations;
 

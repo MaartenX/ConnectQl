@@ -4,7 +4,7 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Collections.Generic;
 
-namespace ConnectQl.Internal
+namespace ConnectQl.Parser
 {
     /// <summary>
     /// The token.

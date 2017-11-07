@@ -35,6 +35,7 @@ namespace ConnectQl.Tools.Mef
     using ConnectQl.Tools.Mef.Intellisense;
 
     using Interfaces;
+
     using JetBrains.Annotations;
 
     using Microsoft.VisualStudio.Text;

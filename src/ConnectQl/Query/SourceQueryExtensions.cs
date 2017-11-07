@@ -27,8 +27,8 @@ namespace ConnectQl.Query
     using System.Linq.Expressions;
 
     using ConnectQl.DataSources;
+    using ConnectQl.ExtensionMethods;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Extensions;
 
     using JetBrains.Annotations;
 

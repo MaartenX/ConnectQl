@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Internal.Results
+namespace ConnectQl.Results
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -28,7 +28,6 @@ namespace ConnectQl.Internal.Results
 
     using ConnectQl.Interfaces;
     using ConnectQl.Parser.Ast;
-    using ConnectQl.Results;
 
     using JetBrains.Annotations;
 

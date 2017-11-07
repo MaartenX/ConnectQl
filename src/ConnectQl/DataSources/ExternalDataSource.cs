@@ -34,7 +34,6 @@ namespace ConnectQl.DataSources
     using ConnectQl.Expressions.Visitors;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Results;
     using ConnectQl.Query;
     using ConnectQl.Results;
 

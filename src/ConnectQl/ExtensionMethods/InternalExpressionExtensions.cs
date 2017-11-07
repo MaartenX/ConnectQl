@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Internal.Extensions
+namespace ConnectQl.ExtensionMethods
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
 
+    using ConnectQl.DataSources;
     using ConnectQl.Expressions;
     using ConnectQl.Expressions.Visitors;
     using ConnectQl.Interfaces;
-    using ConnectQl.DataSources;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;

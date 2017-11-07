@@ -31,7 +31,6 @@ namespace ConnectQl.Query.Plans
     using ConnectQl.DataSources;
     using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;

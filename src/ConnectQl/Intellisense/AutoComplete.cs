@@ -27,10 +27,10 @@ namespace ConnectQl.Intellisense
     using System.Linq;
 
     using ConnectQl.Interfaces;
+    using ConnectQl.Parser;
 
     using JetBrains.Annotations;
-    using ConnectQl.Internal;
-
+    
     /// <summary>
     /// Extensions for the <see cref="IDocumentDescriptor"/>.
     /// </summary>

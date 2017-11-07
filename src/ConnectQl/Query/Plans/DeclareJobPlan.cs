@@ -27,7 +27,6 @@ namespace ConnectQl.Query.Plans
     using System.Threading.Tasks;
 
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Results;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;

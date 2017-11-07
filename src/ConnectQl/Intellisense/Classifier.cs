@@ -25,10 +25,10 @@ namespace ConnectQl.Intellisense
     using System.Collections.Generic;
     using System.Linq;
 
-    using ConnectQl.Internal;
+    using ConnectQl.Parser;
 
     using JetBrains.Annotations;
-
+    
     /// <summary>
     /// Changes classifications for the tokens.
     /// </summary>

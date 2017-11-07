@@ -1,4 +1,4 @@
-$namespace=ConnectQl.Internal
+$namespace=ConnectQl.Parser
 $scannerFrame=./ConnectQl.Scanner.frame
 $parserFrame=./ConnectQl.Parser.frame
 

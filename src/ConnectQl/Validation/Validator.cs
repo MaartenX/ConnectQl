@@ -31,19 +31,19 @@ namespace ConnectQl.Validation
 
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Expressions.Helpers;
+    using ConnectQl.ExtensionMethods;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
-    using ConnectQl.Plugins;
-    using ConnectQl.Results;
-    using ConnectQl.ExtensionMethods;
-
-    using JetBrains.Annotations;
     using ConnectQl.Parser.Ast;
     using ConnectQl.Parser.Ast.Expressions;
     using ConnectQl.Parser.Ast.Sources;
     using ConnectQl.Parser.Ast.Statements;
     using ConnectQl.Parser.Ast.Targets;
     using ConnectQl.Parser.Ast.Visitors;
+    using ConnectQl.Plugins;
+    using ConnectQl.Results;
+
+    using JetBrains.Annotations;
 
     /// <summary>
     /// The validator.

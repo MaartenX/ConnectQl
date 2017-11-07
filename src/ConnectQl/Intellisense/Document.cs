@@ -34,6 +34,7 @@ namespace ConnectQl.Intellisense
     using ConnectQl.Intellisense.Protocol;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
+    using ConnectQl.Parser;
     using ConnectQl.Validation;
 
     using JetBrains.Annotations;

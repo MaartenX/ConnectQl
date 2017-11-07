@@ -41,13 +41,14 @@ namespace ConnectQl
     using ConnectQl.Intellisense.Protocol;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
+    using ConnectQl.Parser;
     using ConnectQl.Parser.Ast.Statements;
     using ConnectQl.Query;
     using ConnectQl.Results;
     using ConnectQl.Validation;
 
     using JetBrains.Annotations;
-
+    
     /// <summary>
     ///     The ConnectQl context.
     /// </summary>

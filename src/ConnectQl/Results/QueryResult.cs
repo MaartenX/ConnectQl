@@ -20,10 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Internal.Results
+namespace ConnectQl.Results
 {
     using ConnectQl.AsyncEnumerables;
-    using ConnectQl.Results;
 
     /// <summary>
     /// The query result.

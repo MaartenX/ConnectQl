@@ -31,8 +31,8 @@ namespace ConnectQl.DataSources.Joins
     using ConnectQl.Comparers;
     using ConnectQl.Expressions;
     using ConnectQl.Expressions.Visitors;
+    using ConnectQl.ExtensionMethods;
     using ConnectQl.Interfaces;
-    using ConnectQl.Internal.Extensions;
     using ConnectQl.Query;
     using ConnectQl.Results;
 
