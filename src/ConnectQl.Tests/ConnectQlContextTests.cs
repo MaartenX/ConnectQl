@@ -30,7 +30,9 @@ namespace ConnectQl.Tests
     using System.Threading.Tasks;
 
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
+    using ConnectQl.Results;
 
     using JetBrains.Annotations;
 
@@ -110,6 +112,46 @@ namespace ConnectQl.Tests
             var array = await result.QueryResults[0].Rows.Select(r => r["Item"]).ToArrayAsync();
 
             Assert.Equal(resultValues, array);
+        }
+
+        /// <summary>
+        /// The intellisense should return correct tokens.
+        /// </summary>
+        /// <param name="query">
+        /// The query.
+        /// </param>
+        /// <param name="tokens">
+        /// The tokens.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [Theory(DisplayName = "Intellisense should return the correct number of tokens. ")]
+        [InlineData("IMPORT PLUGIN 'Dummy' INSERT INTO dummy() SELECT 'a' + 'b'", 15)]
+        [InlineData("SELECT * FROM SPLIT('1', '2') s", 13)]
+        [InlineData("-- SELECT * FROM SPLIT('1', '2') s", 3)]
+        public async Task IntellisenseShouldReturnCorrectTokens(string query, int tokens)
+        {
+            using (var context = new ConnectQlContext().CreateIntellisenseSession())
+            {
+                var tcs = new TaskCompletionSource<IDocumentDescriptor>();
+
+                new CancellationTokenSource(2000).Token.Register(() => tcs.TrySetCanceled(), false);
+
+                context.DocumentUpdated += (sender, args) =>
+                                           {
+                                               if (args.Document.Tokens != null)
+                                               {
+                                                   tcs.SetResult(args.Document);
+                                               }
+                                           };
+
+                context.UpdateDocument("file1.connectql", query, 1);
+
+                var doc = await tcs.Task;
+
+                Assert.Equal(tokens, doc.Tokens.Count);
+            }
         }
 
         /// <summary>

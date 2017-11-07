@@ -48,26 +48,19 @@ namespace ConnectQl.Parser
             {
                 var token = this.scanner.Current;
 
-                return token == null
+                return token == null || (token.Col == 0 && token.Line == 0)
                            ? new Position
                              {
                                  Column = 1,
                                  Line = 1,
                                  TokenIndex = -1,
                              }
-                           : token.Col == 0 && token.Line == 0
-                               ? new Position
-                                 {
-                                     Column = 1,
-                                     Line = 1,
-                                     TokenIndex = -1,
-                                 }
-                               : new Position
-                                 {
-                                     Column = token.Col,
-                                     Line = token.Line,
-                                     TokenIndex = token.Index - 1,
-                                 };
+                           : new Position
+                             {
+                                 Column = token.Col,
+                                 Line = token.Line,
+                                 TokenIndex = token.Index - 1,
+                             };
             }
         }
 
