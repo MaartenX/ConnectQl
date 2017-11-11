@@ -21,8 +21,15 @@
 // SOFTWARE.
 
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 [assembly: NeutralResourcesLanguage("en")]
+
+#if NOT_SIGNED
+[assembly: InternalsVisibleTo("ConnectQl.Tests")]
+#else 
+[assembly: InternalsVisibleTo("ConnectQl.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100794156f7f392b0e582199123489c3194624082324f16629f2ad262202f1f17de02812b3fc6903b40e1586e2176ce45befc6af57537ff38408702a9383d35658724915eb4427c5404aef2b142cbddd22e1156319c76de32b1cee6266f4e3116ce9a2da22ec6c27d567e921e04de2bf840139f46ebbe0118f2335d100782558bc8")]
+#endif
 
 namespace ConnectQl
 {
@@ -216,7 +223,7 @@ namespace ConnectQl
                 return null;
             }
 
-            var result = await plan.ExecuteAsync(context);
+            var result = await plan.Invoke(context);
 
             return result;
         }

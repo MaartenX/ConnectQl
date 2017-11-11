@@ -41,46 +41,28 @@ namespace ConnectQl.Query.Plans
     internal class DeclareVariableQueryPlan : IQueryPlan
     {
         /// <summary>
-        /// The <see cref="IInternalExecutionContext.SetVariable{T}"/> method.
+        /// Stores the name of the variable.
         /// </summary>
-        private static readonly MethodInfo SetVariable = typeof(IInternalExecutionContext).GetGenericMethod(nameof(IInternalExecutionContext.SetVariable), typeof(string), null);
+        private readonly string name;
 
         /// <summary>
         /// The setter.
         /// </summary>
-        private readonly Func<IInternalExecutionContext, Task> evaluateVariable;
-
+        private readonly Func<IExecutionContext, Task> setter;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="DeclareVariableQueryPlan"/> class.
         /// </summary>
         /// <param name="name">
         /// The name.
         /// </param>
-        /// <param name="expression">
-        /// The expression.
+        /// <param name="setter">
+        /// The setter.
         /// </param>
-        public DeclareVariableQueryPlan(string name, Expression expression)
+        public DeclareVariableQueryPlan(string name, Func<IExecutionContext, Task> setter)
         {
-            var context = Expression.Parameter(typeof(IInternalExecutionContext), "context");
-
-            expression = GenericVisitor.Visit(
-                (ExecutionContextExpression e) => context,
-                Expression.Call(context, DeclareVariableQueryPlan.SetVariable.MakeGenericMethod(expression.Type), Expression.Constant(name), expression).RewriteTasksToAsyncExpression());
-
-            if (!expression.Type.IsConstructedGenericType || expression.Type.GetGenericTypeDefinition() != typeof(Task<>))
-            {
-                var setVariable = Expression.Lambda<Action<IInternalExecutionContext>>(expression, context).Compile();
-
-                this.evaluateVariable = ctx =>
-                    {
-                        setVariable(ctx);
-                        return Task.FromResult(true);
-                    };
-            }
-            else
-            {
-                this.evaluateVariable = Expression.Lambda<Func<IExecutionContext, Task>>(expression, context).Compile();
-            }
+            this.name = name;
+            this.setter = setter;
         }
 
         /// <summary>
@@ -95,7 +77,7 @@ namespace ConnectQl.Query.Plans
         [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
-            await this.evaluateVariable(context);
+            await this.setter(context);
 
             return new ExecuteResult();
         }

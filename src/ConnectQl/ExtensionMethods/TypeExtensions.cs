@@ -61,6 +61,24 @@ namespace ConnectQl.ExtensionMethods
         }
 
         /// <summary>
+        /// Gets the constructor.
+        /// </summary>
+        /// <param name="type">
+        /// The type to get the constructor from.
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ConstructorInfo"/>.
+        /// </returns>
+        [CanBeNull]
+        public static ConstructorInfo GetConstructor(this Type type, params Type[] parameters)
+        {
+            return type.GetTypeInfo().DeclaredConstructors.FirstOrDefault(c => c.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameters));
+        }
+
+        /// <summary>
         /// Gets the interface if the <paramref name="type"/> implements it. When <paramref name="interfaceType"/> is a generic type definition,
         /// the constructed generic interface is returned.
         /// </summary>

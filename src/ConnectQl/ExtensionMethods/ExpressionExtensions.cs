@@ -314,24 +314,48 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Replaces the parameters in the specified expression.
+        /// Replaces the parameter with the specified name by <paramref name="replace"/>.
         /// </summary>
-        /// <param name="haystack">
-        /// The expression in which to look for the <paramref name="needles"/>.
-        /// </param>
-        /// <param name="needles">
-        /// The parameter expressions to replace.
-        /// </param>
-        /// <param name="replaces">
-        /// The expressions to replace the parameters with.
-        /// </param>
-        /// <typeparam name="TExpression">
-        /// The type of the expression.
-        /// </typeparam>
-        /// <returns>
-        /// The <typeparamref name="TExpression"/>.
-        /// </returns>
-        public static TExpression ReplaceParameters<TExpression>(this TExpression haystack, [NotNull] IEnumerable<ParameterExpression> needles, [NotNull] IEnumerable<Expression> replaces)
+        /// <param name="haystack">The lambda expression to replace the parameter in.</param>
+        /// <param name="parameterName">The name of the parameter to replace.</param>
+        /// <param name="replace">The expression to replace with.</param>
+        /// <returns>The lambda with the replaced parameter.</returns>
+        public static LambdaExpression ReplaceParameter([NotNull] this LambdaExpression haystack, string parameterName, Expression replace)
+        {
+            var parameter = haystack.Parameters.FirstOrDefault(p => p.Name == parameterName);
+
+            if (parameter == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(parameterName), $"Cannot replace parameter {parameterName}: parameter not found.");
+            }
+
+            var parameters = replace is ParameterExpression replaceParameter
+                                 ? haystack.Parameters.Select(p => p == parameter ? replaceParameter : p)
+                                 : haystack.Parameters.Where(p => p != parameter);
+            
+            return Expression.Lambda(haystack.Body.ReplaceParameter(parameter, replace), parameters);
+        }
+
+
+        /// <summary>
+            /// Replaces the parameters in the specified expression.
+            /// </summary>
+            /// <param name="haystack">
+            /// The expression in which to look for the <paramref name="needles"/>.
+            /// </param>
+            /// <param name="needles">
+            /// The parameter expressions to replace.
+            /// </param>
+            /// <param name="replaces">
+            /// The expressions to replace the parameters with.
+            /// </param>
+            /// <typeparam name="TExpression">
+            /// The type of the expression.
+            /// </typeparam>
+            /// <returns>
+            /// The <typeparamref name="TExpression"/>.
+            /// </returns>
+            public static TExpression ReplaceParameters<TExpression>(this TExpression haystack, [NotNull] IEnumerable<ParameterExpression> needles, [NotNull] IEnumerable<Expression> replaces)
             where TExpression : Expression
         {
             return needles.Zip(replaces, Tuple.Create).Aggregate(haystack, (current, replaceAction) => current.ReplaceParameter(replaceAction.Item1, replaceAction.Item2));

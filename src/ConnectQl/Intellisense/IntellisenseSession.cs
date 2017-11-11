@@ -38,7 +38,7 @@ namespace ConnectQl.Intellisense
         /// <summary>
         /// The documents.
         /// </summary>
-        private readonly Dictionary<string, Document> documents = new Dictionary<string, Document>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, DocumentDescriptor> documents = new Dictionary<string, DocumentDescriptor>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntellisenseSession"/> class.
@@ -139,7 +139,7 @@ namespace ConnectQl.Intellisense
         {
             if (!this.documents.TryGetValue(filename, out var doc))
             {
-                doc = this.documents[filename] = new Document(this, filename);
+                doc = this.documents[filename] = new DocumentDescriptor(this, filename);
             }
 
             doc.Update(contents, documentVersion);

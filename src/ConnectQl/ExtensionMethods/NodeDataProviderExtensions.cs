@@ -22,12 +22,16 @@
 
 namespace ConnectQl.ExtensionMethods
 {
+    using System;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
 
+    using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
     using ConnectQl.Parser.Ast;
     using ConnectQl.Parser.Ast.Expressions;
+    using ConnectQl.Results;
 
     using JetBrains.Annotations;
 
@@ -272,9 +276,9 @@ namespace ConnectQl.ExtensionMethods
         /// The <see cref="IQuery"/>.
         /// </returns>
         [CanBeNull]
-        internal static IQueryPlan GetQueryPlan([NotNull] this INodeDataProvider dataProvider, Node node)
+        internal static Expression GetQueryPlanExpression([NotNull] this INodeDataProvider dataProvider, Node node)
         {
-            return dataProvider.TryGet(node, "Query", out IQueryPlan result) ? result : null;
+            return dataProvider.TryGet(node, "Query", out Expression<Func<IExecutionContext, Task<ExecuteResult>>> result) ? result : null;
         }
 
         /// <summary>
@@ -289,7 +293,7 @@ namespace ConnectQl.ExtensionMethods
         /// <param name="query">
         /// The query.
         /// </param>
-        internal static void SetQueryPlan([NotNull] this INodeDataProvider dataProvider, Node node, IQueryPlan query)
+        internal static void SetQueryPlanExpression([NotNull] this INodeDataProvider dataProvider, Node node, Expression query)
         {
             dataProvider.Set(node, "Query", query);
         }

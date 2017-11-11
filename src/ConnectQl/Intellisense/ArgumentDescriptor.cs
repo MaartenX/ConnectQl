@@ -22,6 +22,7 @@
 
 namespace ConnectQl.Internal
 {
+    using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
 
     /// <summary>

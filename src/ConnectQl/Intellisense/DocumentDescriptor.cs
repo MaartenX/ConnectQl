@@ -40,9 +40,9 @@ namespace ConnectQl.Intellisense
     using JetBrains.Annotations;
 
     /// <summary>
-    /// The document.
+    /// The document descriptor.
     /// </summary>
-    internal class Document : IDocumentDescriptor
+    internal class DocumentDescriptor : IDocumentDescriptor
     {
         /// <summary>
         /// The session.
@@ -60,7 +60,7 @@ namespace ConnectQl.Intellisense
         private bool updating;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Document"/> class.
+        /// Initializes a new instance of the <see cref="DocumentDescriptor"/> class.
         /// </summary>
         /// <param name="session">
         /// The session.
@@ -68,7 +68,7 @@ namespace ConnectQl.Intellisense
         /// <param name="filename">
         /// The filename.
         /// </param>
-        public Document(IntellisenseSession session, string filename)
+        public DocumentDescriptor(IntellisenseSession session, string filename)
         {
             this.session = session;
             this.Descriptor = new SerializableDocumentDescriptor { Filename = filename };
@@ -294,6 +294,7 @@ namespace ConnectQl.Intellisense
         private void ValidateDocument([NotNull] ParsedDocument document, [NotNull] SerializableDocumentDescriptor descriptorToUpdate)
         {
             document.Root = Validator.Validate(document.Context, document.Root, out var functionDefinitions);
+
             var messages = document.Context.Messages.Select(message => new SerializableMessage(message)).ToArray();
             var functions = functionDefinitions.SelectMany(lookup => lookup.Select(function => new SerializableFunctionDescriptor(lookup.Key, function))).ToArray();
 

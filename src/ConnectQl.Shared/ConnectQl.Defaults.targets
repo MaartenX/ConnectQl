@@ -49,6 +49,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or !Exists('$(MSBuildThisFileDirectory)..\..\key\Key.snk')">
     <SignAssembly>False</SignAssembly>
+    <DefineConstants>$(DefineConstants);NOT_SIGNED</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">

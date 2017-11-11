@@ -40,6 +40,7 @@ namespace ConnectQl.Query
     using ConnectQl.Parser.Ast.Sources;
     using ConnectQl.Parser.Ast.Targets;
     using ConnectQl.Parser.Ast.Visitors;
+    using ConnectQl.Query.Factories;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
@@ -95,7 +96,7 @@ namespace ConnectQl.Query
         /// <returns>
         ///     The <see cref="Expression" />.
         /// </returns>
-        public static Expression ConvertToDataSource(this INodeDataProvider dataProvider, SourceBase source, [CanBeNull] IMessageWriter messages = null)
+        public static Factory<DataSource> ConvertToDataSource(this INodeDataProvider dataProvider, SourceBase source, [CanBeNull] IMessageWriter messages = null)
         {
             new Evaluator(dataProvider, messages ?? new MessageWriter("null")).Visit(source);
 
@@ -119,7 +120,7 @@ namespace ConnectQl.Query
         /// <returns>
         ///     The <see cref="Expression" />.
         /// </returns>
-        public static Expression ConvertToDataTarget(this INodeDataProvider dataProvider, TargetBase target, [CanBeNull] IMessageWriter messages = null)
+        public static Factory<DataTarget> ConvertToDataTarget(this INodeDataProvider dataProvider, TargetBase target, [CanBeNull] IMessageWriter messages = null)
         {
             new Evaluator(dataProvider, messages ?? new MessageWriter("null")).Visit(target);
 
@@ -198,7 +199,7 @@ namespace ConnectQl.Query
             ///     Visits a <see cref="ConnectQl.Parser.Ast.Sources.ApplySource" />.
             /// </summary>
             /// <param name="node">
-            ///     The node.
+            ///     The
             /// </param>
             /// <returns>
             ///     The node, or a new version of the node.

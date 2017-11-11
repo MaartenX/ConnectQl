@@ -23,48 +23,51 @@
 namespace ConnectQl.Internal
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
+    using System.Diagnostics;
 
+    using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
 
+    using JetBrains.Annotations;
+
     /// <summary>
-    /// The type descriptor.
+    /// The column descriptor.
     /// </summary>
-    internal class TypeDescriptor : ITypeDescriptor
+    [DebuggerDisplay("{Name}: {Type.SimplifiedType}")]
+    internal class ColumnDescriptor : IColumnDescriptor
     {
         /// <summary>
-        /// The assembly name of the current assembly.
-        /// </summary>
-        private static readonly string ThisAssemblyName = typeof(TypeDescriptor).GetTypeInfo().Assembly.FullName;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TypeDescriptor"/> class.
+        /// Initializes a new instance of the <see cref="ColumnDescriptor"/> class.
         /// </summary>
         /// <param name="type">
         /// The type.
         /// </param>
-        public TypeDescriptor(Type type)
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="description">
+        /// The description.
+        /// </param>
+        public ColumnDescriptor(Type type, string name, [CanBeNull] string description = null)
         {
-            var typeInfo = type.GetTypeInfo();
-            var interfaces = new List<TypeInfo>(type.GetTypeInfo().ImplementedInterfaces.Select(t => t.GetTypeInfo()))
-                                 {
-                                     typeInfo,
-                                 }.Where(i => i.IsInterface);
-
-            this.Interfaces = interfaces.Where(ti => ti.Assembly.FullName == TypeDescriptor.ThisAssemblyName).Select(t => t.AsType()).ToArray();
-            this.SimplifiedType = type;
+            this.Type = new TypeDescriptor(type);
+            this.Name = name;
+            this.Description = description ?? $"The {name}.";
         }
 
         /// <summary>
-        /// Gets the interfaces.
+        /// Gets the description.
         /// </summary>
-        public Type[] Interfaces { get; }
+        public string Description { get; }
 
         /// <summary>
-        /// Gets the simplified type.
+        /// Gets the name.
         /// </summary>
-        public Type SimplifiedType { get; }
+        public string Name { get; }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        public ITypeDescriptor Type { get; }
     }
 }

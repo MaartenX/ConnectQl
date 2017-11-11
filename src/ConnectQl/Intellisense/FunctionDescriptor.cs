@@ -27,6 +27,7 @@ namespace ConnectQl.Internal
     using System.Linq.Expressions;
 
     using ConnectQl.AsyncEnumerables;
+    using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
 
     using JetBrains.Annotations;

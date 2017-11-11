@@ -32,6 +32,7 @@ namespace ConnectQl.Validation
     using ConnectQl.AsyncEnumerables;
     using ConnectQl.Expressions.Helpers;
     using ConnectQl.ExtensionMethods;
+    using ConnectQl.Intellisense;
     using ConnectQl.Interfaces;
     using ConnectQl.Internal;
     using ConnectQl.Parser.Ast;
@@ -41,6 +42,7 @@ namespace ConnectQl.Validation
     using ConnectQl.Parser.Ast.Targets;
     using ConnectQl.Parser.Ast.Visitors;
     using ConnectQl.Plugins;
+    using ConnectQl.Resources;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
@@ -61,6 +63,11 @@ namespace ConnectQl.Validation
         private readonly IValidationContext context;
 
         /// <summary>
+        /// Gets or sets the scope.
+        /// </summary>
+        private ValidationScope scope;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Validator"/> class.
         /// </summary>
         /// <param name="context">
@@ -69,22 +76,12 @@ namespace ConnectQl.Validation
         private Validator([NotNull] IValidationContext context)
         {
             this.context = context;
-            this.Scope = new ValidationScope(context);
-            this.Scope.EnablePlugin(Validator.DefaultFunctions);
+            this.scope = new ValidationScope(context);
+            this.scope.EnablePlugin(DefaultFunctions);
         }
 
         /// <summary>
-        /// Gets the data.
-        /// </summary>
-        private INodeDataProvider Data => this.context.NodeData;
-
-        /// <summary>
-        /// Gets or sets the scope.
-        /// </summary>
-        private ValidationScope Scope { get; set; }
-
-        /// <summary>
-        /// Validates the specified <see cref="ConnectQl.Parser.Ast.Node"/>.
+        /// Validates the specified <see cref="Node"/>.
         /// </summary>
         /// <typeparam name="T">
         /// The type of the node to validate.
@@ -96,19 +93,17 @@ namespace ConnectQl.Validation
         /// The node to validate.
         /// </param>
         /// <returns>
-        /// The <see cref="ConnectQl.Parser.Ast.Node"/>.
+        /// The <see cref="Node"/>.
         /// </returns>
         [CanBeNull]
         public static T Validate<T>([NotNull] IValidationContext context, T node)
             where T : Node
         {
-            var validator = new Validator(context);
-
-            return validator.Visit(node);
+            return new Validator(context).Visit(node);
         }
 
         /// <summary>
-        /// Validates the specified <see cref="ConnectQl.Parser.Ast.Node"/>.
+        /// Validates the specified <see cref="Node"/>.
         /// </summary>
         /// <typeparam name="T">
         /// The type of the node to validate.
@@ -123,7 +118,7 @@ namespace ConnectQl.Validation
         /// The functions.
         /// </param>
         /// <returns>
-        /// The <see cref="ConnectQl.Parser.Ast.Node"/>.
+        /// The <see cref="Node"/>.
         /// </returns>
         [CanBeNull]
         internal static T Validate<T>([NotNull] IValidationContext context, T node, [NotNull] out ILookup<string, IFunctionDescriptor> functions)
@@ -132,7 +127,7 @@ namespace ConnectQl.Validation
             var validator = new Validator(context);
             var result = validator.Visit(node);
 
-            functions = ((IFunctionDictionary)validator.Scope.Functions).Dictionary.ToLookup(d => d.Key.Split('\'')[0].ToLowerInvariant(), d => d.Value);
+            functions = ((IFunctionDictionary)validator.scope.Functions).Dictionary.ToLookup(d => d.Key.Split('\'')[0].ToLowerInvariant(), d => d.Value);
 
             return result;
         }
@@ -154,11 +149,11 @@ namespace ConnectQl.Validation
                 return this.ValidateChildren(node);
             }
 
-            var alias = this.Scope.AddAlias(node.Alias ?? (node.Expression as FieldReferenceConnectQlExpression)?.Name);
+            var alias = this.scope.AddAlias(node.Alias ?? (node.Expression as FieldReferenceConnectQlExpression)?.Name);
 
             if (node.Alias != alias)
             {
-                node = this.Data.CopyValues(node, new AliasedConnectQlExpression(node.Expression, alias));
+                node = this.context.NodeData.CopyValues(node, new AliasedConnectQlExpression(node.Expression, alias));
             }
 
             return this.ValidateChildren(node);
@@ -180,18 +175,20 @@ namespace ConnectQl.Validation
         {
             node = this.ValidateChildren(node);
 
-            this.Data.SetType(node, new TypeDescriptor(OperatorHelper.InferType(node.Op, this.Data.GetType(node.First).SimplifiedType, this.Data.GetType(node.Second).SimplifiedType, error => this.AddError(node, error))));
+            var resultType = new TypeDescriptor(OperatorHelper.InferType(node.Op, this.context.NodeData.GetType(node.First).SimplifiedType, this.context.NodeData.GetType(node.Second).SimplifiedType, error => this.AddError(node, error)));
 
-            if (this.Scope.IsGroupByExpression(node))
+            this.context.NodeData.SetType(node, resultType);
+
+            if (this.scope.IsGroupByExpression(node))
             {
-                this.Data.SetScope(node, NodeScope.Group);
+                this.context.NodeData.SetScope(node, NodeScope.Group);
             }
 
             return node;
         }
 
         /// <summary>
-        /// Visits a <see cref="ConnectQl.Parser.Ast.Expressions.ConstConnectQlExpression"/> expression.
+        /// Visits a <see cref="ConstConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -202,14 +199,14 @@ namespace ConnectQl.Validation
         [NotNull]
         protected internal override Node VisitConstSqlExpression(ConstConnectQlExpression node)
         {
-            this.Data.SetType(node, new TypeDescriptor(node.Value?.GetType() ?? typeof(object)));
-            this.Data.SetScope(node, this.Scope.IsGroupByExpression(node) ? NodeScope.Group : NodeScope.Constant);
+            this.context.NodeData.SetType(node, new TypeDescriptor(node.Value?.GetType() ?? typeof(object)));
+            this.context.NodeData.SetScope(node, this.scope.IsGroupByExpression(node) ? NodeScope.Group : NodeScope.Constant);
 
             return node;
         }
 
         /// <summary>
-        /// Visits a <see cref="ConnectQl.Parser.Ast.Expressions.FieldReferenceConnectQlExpression"/> expression.
+        /// Visits a <see cref="FieldReferenceConnectQlExpression"/> expression.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -220,31 +217,31 @@ namespace ConnectQl.Validation
         [CanBeNull]
         protected internal override Node VisitFieldReferenceSqlExpression(FieldReferenceConnectQlExpression node)
         {
-            var replacer = this.Data.GetFieldReplacer(node);
+            var replacer = this.context.NodeData.GetFieldReplacer(node);
 
             if (replacer != null)
             {
                 return this.Visit(replacer);
             }
-
-            this.Data.SetType(node, new TypeDescriptor(typeof(object)));
-            this.Data.SetScope(node, this.Scope.IsGroupByExpression(node) ? NodeScope.Group : NodeScope.Row);
+            
+            this.context.NodeData.SetType(node, new TypeDescriptor(typeof(object)));
+            this.context.NodeData.SetScope(node, this.scope.IsGroupByExpression(node) ? NodeScope.Group : NodeScope.Row);
 
             if (node.Source == null)
             {
-                this.AddError(node, $"Field {node.Name} must have a source.");
+                this.AddError(node, string.Format(Messages.FieldMustHaveASource, node.Name));
 
                 return node;
             }
 
-            var source = this.Scope.GetSource(node.Source);
+            var source = this.scope.GetSource(node.Source);
 
             if (source == null)
             {
-                this.AddError(node, $"Source {node.Source} is referenced before it is declared.");
+                this.AddError(node, string.Format(Messages.SourceReferencedBeforeDeclared, node.Source));
             }
 
-            this.Data.Set(node, "Source", source);
+            this.context.NodeData.Set(node, "Source", source);
 
             return node;
         }
@@ -260,34 +257,34 @@ namespace ConnectQl.Validation
         /// </returns>
         protected internal override Node VisitFunctionCallSqlExpression(FunctionCallConnectQlExpression node)
         {
-            var function = this.Scope.GetFunction(node.Name, node.Arguments);
+            var function = this.scope.GetFunction(node.Name, node.Arguments);
 
             if (function == null)
             {
-                this.AddError(node, $"Cannot find function {NodeExtensions.GetDisplay(node)}.");
+                this.AddError(node, string.Format(Messages.FunctionNotFound, node.GetDisplay()));
 
-                this.Data.SetType(node, new TypeDescriptor(typeof(object)));
-                this.Data.SetFunction(node, this.Scope.GetFunction(node.Name, node.Arguments));
-                this.Data.SetScope(node, NodeScope.Constant);
+                this.context.NodeData.SetType(node, new TypeDescriptor(typeof(object)));
+                this.context.NodeData.SetFunction(node, this.scope.GetFunction(node.Name, node.Arguments));
+                this.context.NodeData.SetScope(node, NodeScope.Constant);
 
                 return node;
             }
 
-            this.Data.SetType(node, function.ReturnType);
-            this.Data.SetFunction(node, this.Scope.GetFunction(node.Name, node.Arguments));
+            this.context.NodeData.SetType(node, function.ReturnType);
+            this.context.NodeData.SetFunction(node, this.scope.GetFunction(node.Name, node.Arguments));
 
             var result = this.ValidateChildren(this.ReplaceEnumArguments(node));
 
             for (var i = 0; i < function.Arguments.Count; i++)
             {
-                ConversionHelper.ValidateConversion(node.Arguments[i], this.Data.GetType(node.Arguments[i]).SimplifiedType, function.Arguments[i].Type.SimplifiedType);
+                ConversionHelper.ValidateConversion(node.Arguments[i], this.context.NodeData.GetType(node.Arguments[i]).SimplifiedType, function.Arguments[i].Type.SimplifiedType);
             }
 
-            this.Data.SetScope(node, this.Scope.IsGroupByExpression(node) || (node.Arguments.All(a => this.Data.GetScope(a) != NodeScope.Row) && node.Arguments.Any(a => this.Data.GetScope(a) == NodeScope.Group)) ? NodeScope.Group : NodeScope.Row);
+            this.context.NodeData.SetScope(node, this.scope.IsGroupByExpression(node) || (node.Arguments.All(a => this.context.NodeData.GetScope(a) != NodeScope.Row) && node.Arguments.Any(a => this.context.NodeData.GetScope(a) == NodeScope.Group)) ? NodeScope.Group : NodeScope.Row);
 
             if (function.Arguments.Count > 0 && function.Arguments.Any(argument => argument.Type.Interfaces.Any(i => i.HasInterface(typeof(IAsyncEnumerable<>)))))
             {
-                this.Data.SetScope(result, NodeScope.Group);
+                this.context.NodeData.SetScope(result, NodeScope.Group);
             }
 
             return result;
@@ -307,22 +304,22 @@ namespace ConnectQl.Validation
         {
             if (node.Alias != null)
             {
-                if (this.Scope.GetSource(node.Alias) != null)
+                if (this.scope.GetSource(node.Alias) != null)
                 {
-                    this.AddError(node, $"There is already a source with alias {node.Alias}.");
+                    this.AddError(node, string.Format(Messages.AliasAlreadyUsed, node.Alias));
                 }
                 else
                 {
-                    this.Scope.AddSource(node.Alias, node);
+                    this.scope.AddSource(node.Alias, node);
                 }
             }
 
             var result = this.ValidateChildren(node);
-            var function = this.Data.GetFunction(result.Function);
+            var function = this.context.NodeData.GetFunction(result.Function);
 
             if (!function?.ReturnType.Interfaces.Contains(typeof(IDataSource)) ?? false)
             {
-                this.AddError(node, $"Function {node.Function.Name.ToUpperInvariant()} is not a data source.");
+                this.AddError(node, string.Format(Messages.FunctionIsNoDataSource, node.Function.Name.ToUpperInvariant()));
             }
 
             return result;
@@ -341,11 +338,11 @@ namespace ConnectQl.Validation
         protected internal override Node VisitFunctionTarget(FunctionTarget node)
         {
             var result = this.ValidateChildren(node);
-            var function = this.Data.GetFunction(result.Function);
+            var function = this.context.NodeData.GetFunction(result.Function);
 
             if (!function?.ReturnType.Interfaces.Contains(typeof(IDataTarget)) ?? false)
             {
-                this.AddError(node, $"Function {node.Function.Name.ToUpperInvariant()} is not a data target.");
+                this.AddError(node, string.Format(Messages.FunctionIsNoDataTarget, node.Function.Name.ToUpperInvariant()));
             }
 
             return result;
@@ -362,15 +359,15 @@ namespace ConnectQl.Validation
         /// </returns>
         protected internal override Node VisitImportPluginStatement(ImportPluginStatement node)
         {
-            if (this.Scope.IsPluginEnabled(node.Plugin))
+            if (this.scope.IsPluginEnabled(node.Plugin))
             {
-                this.AddWarning(node, $"Plugin {node.Plugin} was already enabled.");
+                this.AddWarning(node, string.Format(Messages.PluginAlreadyEnabled, node.Plugin));
             }
 
-            if (!this.Scope.EnablePlugin((string)node.Plugin) && !this.Scope.IsLoadingPlugins)
+            if (!this.scope.EnablePlugin(node.Plugin) && !this.scope.IsLoadingPlugins)
             {
-                var plugins = this.Scope.GetAvailablePlugins().ToArray();
-                var availablePlugins = plugins.Length == 0 ? string.Empty : $" Available plugins: {string.Join(", ", plugins.Where(p => !string.Equals(p, "DefaultFunctions")))}";
+                var plugins = this.scope.GetAvailablePlugins().ToArray();
+                var availablePlugins = plugins.Length == 0 ? string.Empty : " " + string.Format(Messages.AvailablePlugins, string.Join(", ", plugins.Where(p => !string.Equals(p, "DefaultFunctions"))));
                 this.AddError(node, $"Plugin {node.Plugin} was not found.{availablePlugins}");
             }
 
@@ -410,7 +407,7 @@ namespace ConnectQl.Validation
 
             if (!object.ReferenceEquals(result, node))
             {
-                this.Data.CopyValues(node, result);
+                this.context.NodeData.CopyValues(node, result);
             }
 
             return result;
@@ -433,12 +430,14 @@ namespace ConnectQl.Validation
                 var where = this.Visit(node.Where);
                 var groupings = this.Visit(node.Groupings);
 
-                this.Scope.AddGroupings(groupings);
+                this.scope.AddGroupings(groupings);
 
                 var having = this.Visit(node.Having);
                 var expressions = this.Visit(node.Expressions);
 
-                var aliasOrders = Enumerable.Join(expressions, node.Orders.Select(o => o.Expression as FieldReferenceConnectQlExpression).Where(fr => fr != null && fr.Source == null),
+                var aliasOrders = expressions.Join(
+                    node.Orders.Select(
+                        o => o.Expression as FieldReferenceConnectQlExpression).Where(fr => fr != null && fr.Source == null),
                         e => e.Alias,
                         fr => fr.Name,
                         (expression, field) => new
@@ -449,38 +448,38 @@ namespace ConnectQl.Validation
 
                 foreach (var aliasOrder in aliasOrders)
                 {
-                    this.Data.SetFieldReplacer(aliasOrder.field, aliasOrder.expression.Expression);
+                    this.context.NodeData.SetFieldReplacer(aliasOrder.field, aliasOrder.expression.Expression);
                 }
 
                 var orders = this.Visit(node.Orders);
 
                 foreach (var invalidOrderBy in orders.Select(o => o.Expression as FieldReferenceConnectQlExpression).Where(fr => fr != null && fr.Source == null))
                 {
-                    this.AddError(invalidOrderBy, $"Alias '{invalidOrderBy.Name}' is not defined.");
+                    this.AddError(invalidOrderBy, string.Format(Messages.AliasNotDefined, invalidOrderBy.Name));
                 }
 
                 var hasGroupings = groupings.Any();
 
                 if (hasGroupings)
                 {
-                    if (having != null && this.Data.GetScope(having) == NodeScope.Row)
+                    if (having != null && this.context.NodeData.GetScope(having) == NodeScope.Row)
                     {
-                        this.AddError(having, $"Missing aggregate function for '{node.Having}'.");
+                        this.AddError(having, string.Format(Messages.MissingAggregateFunction, node.Having));
                     }
 
-                    foreach (var e in expressions.Where(e => this.Data.GetScope(e) == NodeScope.Row))
+                    foreach (var e in expressions.Where(e => this.context.NodeData.GetScope(e) == NodeScope.Row))
                     {
-                        this.AddError(e, $"Missing aggregate function for '{e}'.");
+                        this.AddError(e, string.Format(Messages.MissingAggregateFunction, e));
                     }
                 }
                 else if (having != null)
                 {
-                    this.AddError(having, "HAVING is only allowed when GROUP BY is used.");
+                    this.AddError(having, Messages.HavingNotAllowed);
                 }
 
                 return expressions != node.Expressions || source != node.Source || where != node.Where ||
                        groupings != node.Groupings || having != node.Having || orders != node.Orders
-                           ? this.Data.CopyValues(node, new SelectFromStatement(expressions, source, where, groupings, having, orders))
+                           ? this.context.NodeData.CopyValues(node, new SelectFromStatement(expressions, source, where, groupings, having, orders))
                            : node;
             }
         }
@@ -496,7 +495,7 @@ namespace ConnectQl.Validation
         /// </returns>
         protected internal override Node VisitSelectSource(SelectSource node)
         {
-            this.Scope.AddSource(node.Alias, node);
+            this.scope.AddSource(node.Alias, node);
 
             return base.VisitSelectSource(node);
         }
@@ -508,17 +507,17 @@ namespace ConnectQl.Validation
         /// The node.
         /// </param>
         /// <returns>
-        /// The <see cref="ConnectQl.Parser.Ast.Node"/>.
+        /// The <see cref="Node"/>.
         /// </returns>
         [NotNull]
         protected internal override Node VisitTrigger(Trigger node)
         {
             var result = (Trigger)node.VisitChildren(this);
-            var function = this.Data.GetFunction(result.Function);
+            var function = this.context.NodeData.GetFunction(result.Function);
 
             if (!function?.ReturnType.Interfaces.Contains(typeof(ITrigger)) ?? false)
             {
-                this.AddError(node, $"Function {node.Function.Name.ToUpperInvariant()} is not a trigger.");
+                this.AddError(node, string.Format(Messages.FunctionIsNoTrigger, node.Function.Name.ToUpperInvariant()));
             }
 
             return result;
@@ -538,11 +537,11 @@ namespace ConnectQl.Validation
         {
             node = this.ValidateChildren(node);
 
-            this.Data.SetType(node, new TypeDescriptor(OperatorHelper.InferType(node.Op, this.Data.GetType(node.Expression).SimplifiedType)));
+            this.context.NodeData.SetType(node, new TypeDescriptor(OperatorHelper.InferType(node.Op, this.context.NodeData.GetType(node.Expression).SimplifiedType)));
 
-            if (this.Scope.IsGroupByExpression(node))
+            if (this.scope.IsGroupByExpression(node))
             {
-                this.Data.SetScope(node, NodeScope.Group);
+                this.context.NodeData.SetScope(node, NodeScope.Group);
             }
 
             return node;
@@ -562,7 +561,7 @@ namespace ConnectQl.Validation
         {
             node = this.ValidateChildren(node);
 
-            this.Scope.AddVariable(node.Name, node.Expression == null ? new TypeDescriptor(typeof(object)) : this.Data.GetType(node.Expression));
+            this.scope.AddVariable(node.Name, node.Expression == null ? new TypeDescriptor(typeof(object)) : this.context.NodeData.GetType(node.Expression));
 
             return node;
         }
@@ -581,28 +580,28 @@ namespace ConnectQl.Validation
         {
             node = this.ValidateChildren(node);
 
-            var variableType = this.Scope.GetVariableType(node.Variable);
+            var variableType = this.scope.GetVariableType(node.Variable);
 
             if (variableType == null)
             {
-                this.AddError(node, $"Undeclared variable '{node.Variable}'.");
+                this.AddError(node, string.Format(Messages.UndeclaredVariable, node.Variable));
             }
             else if (!variableType.Interfaces.Contains(typeof(IDataSource)))
             {
-                this.AddError(node, $"Variable {node.Variable} is not a data source.");
+                this.AddError(node, string.Format(Messages.VariableIsNoDataSource, node.Variable));
             }
 
-            if (this.Scope.GetSource(node.Alias) != null)
+            if (this.scope.GetSource(node.Alias) != null)
             {
-                this.AddError(node, $"There is already a source with alias {node.Alias}.");
+                this.AddError(node, string.Format(Messages.AliasAlreadyUsed, node.Alias));
             }
             else
             {
-                this.Scope.AddSource(node.Alias, node);
+                this.scope.AddSource(node.Alias, node);
             }
 
-            this.Data.SetType(node, variableType);
-            this.Data.SetScope(node, NodeScope.Constant);
+            this.context.NodeData.SetType(node, variableType);
+            this.context.NodeData.SetScope(node, NodeScope.Constant);
 
             return node;
         }
@@ -621,15 +620,15 @@ namespace ConnectQl.Validation
         {
             node = this.ValidateChildren(node);
 
-            var variableType = this.Scope.GetVariableType(node.Name);
+            var variableType = this.scope.GetVariableType(node.Name);
 
             if (variableType == null)
             {
-                this.AddError(node, $"Undeclared variable '{node.Name}'.");
+                this.AddError(node, string.Format(Messages.UndeclaredVariable, node.Name));
             }
 
-            this.Data.SetType(node, variableType);
-            this.Data.SetScope(node, NodeScope.Constant);
+            this.context.NodeData.SetType(node, variableType);
+            this.context.NodeData.SetScope(node, NodeScope.Constant);
 
             return node;
         }
@@ -648,19 +647,19 @@ namespace ConnectQl.Validation
         {
             node = this.ValidateChildren(node);
 
-            var variableType = this.Scope.GetVariableType(node.Variable);
+            var variableType = this.scope.GetVariableType(node.Variable);
 
             if (variableType == null)
             {
-                this.AddError(node, $"Undeclared variable '{node.Variable}'.");
+                this.AddError(node, string.Format(Messages.UndeclaredVariable, node.Variable));
             }
             else if (!variableType.Interfaces.Contains(typeof(IDataTarget)))
             {
-                this.AddError(node, $"Variable {node.Variable} is not a data target.");
+                this.AddError(node, string.Format(Messages.VariableIsNoDataTarget, node.Variable));
             }
 
-            this.Data.SetType(node, variableType);
-            this.Data.SetScope(node, NodeScope.Constant);
+            this.context.NodeData.SetType(node, variableType);
+            this.context.NodeData.SetScope(node, NodeScope.Constant);
 
             return node;
         }
@@ -679,17 +678,17 @@ namespace ConnectQl.Validation
         {
             if (node.Source != null)
             {
-                var source = this.Scope.GetSource(node.Source);
+                var source = this.scope.GetSource(node.Source);
 
                 if (source == null)
                 {
-                    this.AddError(node, $"Source '{node.Source}' was referenced before it was declared.");
+                    this.AddError(node, string.Format(Messages.SourceReferencedBeforeDeclared, node.Source));
                 }
 
-                this.Data.Set(node, "Source", source);
+                this.context.NodeData.Set(node, "Source", source);
             }
 
-            this.Data.SetScope(node, NodeScope.Row);
+            this.context.NodeData.SetScope(node, NodeScope.Row);
 
             return node;
         }
@@ -703,10 +702,10 @@ namespace ConnectQl.Validation
         [NotNull]
         private IDisposable EnterScope()
         {
-            var scope = this.Scope;
-            this.Scope = this.Scope.CreateSubScope();
+            var scope = this.scope;
+            this.scope = this.scope.CreateSubScope();
 
-            return new ActionOnDispose(() => this.Scope = scope);
+            return new ActionOnDispose(() => this.scope = scope);
         }
 
         /// <summary>
@@ -721,7 +720,7 @@ namespace ConnectQl.Validation
         private void AddError(Node node, string message)
         {
             // ReSharper disable StyleCop.SA1126
-            this.Data.TryGet(node, "Context", out IParserContext parserContext);
+            this.context.NodeData.TryGet(node, "Context", out IParserContext parserContext);
             this.context.Messages.AddError(parserContext?.Start ?? new Position(), parserContext?.End ?? new Position(), message);
 
             // ReSharper restore StyleCop.SA1126
@@ -739,7 +738,7 @@ namespace ConnectQl.Validation
         private void AddWarning(Node node, string message)
         {
             // ReSharper disable StyleCop.SA1126
-            this.Data.TryGet(node, "Context", out IParserContext parserContext);
+            this.context.NodeData.TryGet(node, "Context", out IParserContext parserContext);
             this.context.Messages.AddWarning(parserContext?.Start ?? new Position(), parserContext?.End ?? new Position(), message);
 
             // ReSharper restore StyleCop.SA1126
@@ -757,7 +756,7 @@ namespace ConnectQl.Validation
         private Node ReplaceEnumArguments([NotNull] FunctionCallConnectQlExpression node)
         {
             var arguments = node.Arguments;
-            var function = this.Data.GetFunction(node);
+            var function = this.context.NodeData.GetFunction(node);
 
             for (var i = 0; i < function.Arguments.Count; i++)
             {
@@ -794,11 +793,11 @@ namespace ConnectQl.Validation
                 arguments = new ReadOnlyCollection<ConnectQlExpressionBase>(
                     new List<ConnectQlExpressionBase>(arguments)
                         {
-                            [i] = this.Data.CopyValues(arguments[i], enumExpr),
+                            [i] = this.context.NodeData.CopyValues(arguments[i], enumExpr),
                         });
             }
 
-            return arguments != node.Arguments ? this.Data.CopyValues(node, new FunctionCallConnectQlExpression(node.Name, arguments)) : node;
+            return arguments != node.Arguments ? this.context.NodeData.CopyValues(node, new FunctionCallConnectQlExpression(node.Name, arguments)) : node;
         }
 
         /// <summary>
@@ -824,40 +823,40 @@ namespace ConnectQl.Validation
                 return result;
             }
 
-            var scopes = Enumerable.Select(result.Children.OfType<ConnectQlExpressionBase>(), expression =>
+            var scopes = result.Children.OfType<ConnectQlExpressionBase>().Select(expression =>
                     new
                         {
                             Expression = expression,
-                            Scope = this.Data.GetScope(expression),
+                            Scope = this.context.NodeData.GetScope(expression),
                         })
                 .ToArray();
 
-            if (Enumerable.Any(scopes, s => s.Expression == null || s.Scope == NodeScope.Error || s.Scope == NodeScope.Initial))
+            if (scopes.Any(s => s.Expression == null || s.Scope == NodeScope.Error || s.Scope == NodeScope.Initial))
             {
-                this.AddError(node, "Invalid scope.");
+                this.AddError(node, Messages.InvalidScope);
             }
 
-            if (Enumerable.Any(scopes, s => s.Scope == NodeScope.Group))
+            if (scopes.Any(s => s.Scope == NodeScope.Group))
             {
-                if (Enumerable.Any(scopes, s => s.Scope == NodeScope.Row))
+                if (scopes.Any(s => s.Scope == NodeScope.Row))
                 {
-                    foreach (var child in Enumerable.Where(scopes, s => s.Scope == NodeScope.Row))
+                    foreach (var child in scopes.Where(s => s.Scope == NodeScope.Row))
                     {
-                        this.AddError(child.Expression, $"Missing aggregate function for '{child.Expression}'.");
+                        this.AddError(child.Expression, string.Format(Messages.MissingAggregateFunction, child.Expression));
                     }
                 }
                 else
                 {
-                    this.Data.SetScope(baseExpression, NodeScope.Group);
+                    this.context.NodeData.SetScope(baseExpression, NodeScope.Group);
                 }
             }
-            else if (Enumerable.Any(scopes, s => s.Scope == NodeScope.Row))
+            else if (scopes.Any(s => s.Scope == NodeScope.Row))
             {
-                this.Data.SetScope(baseExpression, NodeScope.Row);
+                this.context.NodeData.SetScope(baseExpression, NodeScope.Row);
             }
             else
             {
-                this.Data.SetScope(baseExpression, NodeScope.Constant);
+                this.context.NodeData.SetScope(baseExpression, NodeScope.Constant);
             }
 
             return result;

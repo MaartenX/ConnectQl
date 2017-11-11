@@ -46,15 +46,11 @@ namespace ConnectQl.Query
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
-
-    #region "No Resharper Refactoring here"
-
+    
     using AsyncGroupValueFactory = System.Func<Interfaces.IExecutionContext, AsyncEnumerables.IAsyncReadOnlyCollection<Results.Row>, System.Threading.Tasks.Task<System.Collections.Generic.KeyValuePair<string, object>[]>>;
     using AsyncValueFactory = System.Func<Interfaces.IExecutionContext, Results.Row, System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>>;
     using ValueFactory = System.Func<Interfaces.IExecutionContext, Results.Row, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, object>>>;
-
-    #endregion
-
+    
     /// <summary>
     /// The query plan.
     /// </summary>
@@ -70,6 +66,11 @@ namespace ConnectQl.Query
         /// The constructor for a <see cref="T:KeyValuePair{string,object}"/>.
         /// </summary>
         private static readonly ConstructorInfo KeyValuePairConstructor = typeof(KeyValuePair<string, object>).GetTypeInfo().DeclaredConstructors.First(c => c.GetParameters().Length == 2);
+
+        /// <summary>
+        /// The job trigger constructor.
+        /// </summary>
+        private static readonly ConstructorInfo JobTriggerConstructor = typeof(JobTrigger).GetTypeInfo().DeclaredConstructors.First();
 
         /// <summary>
         /// The data.
@@ -111,19 +112,18 @@ namespace ConnectQl.Query
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static IQueryPlan Build(IMessageWriter messages, INodeDataProvider data, Node node)
+        [CanBeNull]
+        public static Func<IExecutionContext, Task<ExecuteResult>> Build(IMessageWriter messages, [NotNull] INodeDataProvider data, Node node)
         {
-            var generator = new QueryPlanBuilder(messages, data);
+            new QueryPlanBuilder(messages, data).Visit(node);
 
-            generator.Visit(node);
-
-            return data.GetQueryPlan(node);
+            return null; //data.GetQueryPlanExpression(node)?.Compile();
         }
 
         /// <summary>
         /// Visits a <see cref="ConnectQl.Parser.Ast.Statements.Block"/>, creates query plans for each statement and combines them in a
         ///     <see cref="CombinedQueryPlan"/>.
-        ///     This <see cref="CombinedQueryPlan"/> is than attached to the current node in the <see cref="data"/> store.
+        ///     This <see cref="CombinedQueryPlan"/> is then attached to the current node in the <see cref="data"/> store.
         /// </summary>
         /// <param name="node">
         /// The node to visit.
@@ -135,14 +135,15 @@ namespace ConnectQl.Query
         protected internal override Node VisitBlock(Block node)
         {
             node = (Block)base.VisitBlock(node);
-
-            this.data.SetQueryPlan(node, new CombinedQueryPlan(node.Statements.Select(this.data.GetQueryPlan)));
+            
+            this.data.SetQueryPlanExpression(node, FactoryBuilder.CombinePlans(node.Statements.Select(this.data.GetQueryPlanExpression)));
 
             return node;
         }
 
         /// <summary>
-        /// Visits a <see cref="ConnectQl.Parser.Ast.Statements.DeclareJobStatement"/>.
+        /// Visits a <see cref="DeclareJobStatement"/>, creates a <see cref="DeclareJobPlan"/> containing all triggers and 
+        /// statements in the job.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -150,45 +151,25 @@ namespace ConnectQl.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitDeclareJobStatement([NotNull] DeclareJobStatement node)
+        protected internal override Node VisitDeclareJobStatement(DeclareJobStatement node)
         {
-            base.VisitDeclareJobStatement(node);
+            node = (DeclareJobStatement)base.VisitDeclareJobStatement(node);
 
-            var context = Expression.Parameter(typeof(IExecutionContext), "context");
-            var replaceContext = GenericVisitor.Create((ExecutionContextExpression e) => context);
+            //var plan = node.Statements.Count == 1
+            //               ? this.data.GetQueryPlanExpression(node.Statements[0])
+            //               : new CombinedQueryPlan(node.Statements.Select(this.data.GetQueryPlanExpression));
 
-            var expr = Expression.Convert(
-                Expression.NewArrayInit(
-                    typeof(JobTrigger),
-                    (IEnumerable<Expression>)node.Triggers.Select(t =>
-                                                          Expression.New(
-                                                                         typeof(JobTrigger).GetTypeInfo().DeclaredConstructors.First(),
-                                                                         replaceContext.Visit(this.data.ConvertToLinqExpression(t.Function)),
-                                                                         Expression.Constant(t.GetDisplay())))),
-                typeof(IEnumerable<JobTrigger>)).RewriteTasksToAsyncExpression();
+            //var triggersFactory = FactoryBuilder.CreateTriggerCollectionFactory(this.data, node.Triggers);
 
-            if (!expr.Type.IsConstructedGenericType || expr.Type.GetGenericTypeDefinition() != typeof(Task<>))
-            {
-                var fromResult = typeof(Task).GetGenericMethod(nameof(Task.FromResult), (Type)null).MakeGenericMethod(typeof(IEnumerable<JobTrigger>));
-
-                expr = Expression.Call(null, fromResult, expr);
-            }
-
-            var factories = Expression.Lambda<Func<IExecutionContext, Task<IEnumerable<IJobTrigger>>>>(expr, context).Compile();
-
-            var plan = node.Statements.Count == 1
-                           ? this.data.GetQueryPlan(node.Statements[0])
-                           : new CombinedQueryPlan(node.Statements.Select(this.data.GetQueryPlan));
-
-            this.data.SetQueryPlan(node, new DeclareJobPlan(node.Name, plan, factories));
+            //this.data.SetQueryPlanExpression(node, new DeclareJobPlan(node.Name, plan, triggersFactory));
 
             return base.VisitDeclareJobStatement(node);
         }
 
         /// <summary>
-        /// Visits a declare statement and attaches a <see cref="ConnectQl.Parser.Ast.Statements.DeclareStatement"/> to the <paramref name="node"/> in the
+        /// Visits a declare statement and attaches a <see cref="DeclareStatement"/> to the <paramref name="node"/> in the
         ///     <see cref="data"/> store.
-        ///     When multiple variables are declared in the <see cref="ConnectQl.Parser.Ast.Statements.DeclareStatement"/>, a <see cref="CombinedQueryPlan"/> is
+        ///     When multiple variables are declared in the <see cref="DeclareStatement"/>, a <see cref="CombinedQueryPlan"/> is
         ///     created containing all query plans for declarations.
         /// </summary>
         /// <param name="node">
@@ -202,17 +183,15 @@ namespace ConnectQl.Query
         {
             node = (DeclareStatement)base.VisitDeclareStatement(node);
 
-            var plan = node.Declarations.Count == 1
-                           ? this.data.GetQueryPlan(node.Declarations[0])
-                           : new CombinedQueryPlan(node.Declarations.Select(this.data.GetQueryPlan));
-
-            this.data.SetQueryPlan(node, plan);
+            this.data.SetQueryPlanExpression(
+                node,
+                FactoryBuilder.CombinePlans(node.Declarations.Select(this.data.GetQueryPlanExpression)));
 
             return node;
         }
 
         /// <summary>
-        /// Visits a <see cref="ConnectQl.Parser.Ast.Sources.FunctionSource"/>.
+        /// Visits a <see cref="FunctionSource"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -220,15 +199,17 @@ namespace ConnectQl.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitFunctionSource([NotNull] FunctionSource node)
+        protected internal override Node VisitFunctionSource(FunctionSource node)
         {
+            node = (FunctionSource)base.VisitFunctionSource(node);
+
             this.data.SetAlias(node.Function, node.Alias);
 
-            return base.VisitFunctionSource(node);
+            return node;
         }
 
         /// <summary>
-        /// Visits a <see cref="ConnectQl.Parser.Ast.Statements.InsertStatement"/>.
+        /// Visits a <see cref="InsertStatement"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -240,22 +221,17 @@ namespace ConnectQl.Query
         protected internal override Node VisitInsertStatement(InsertStatement node)
         {
             node = (InsertStatement)base.VisitInsertStatement(node);
+            
+            //var targetFactory = FactoryBuilder.CreateTargetFactory(this.data, node.Target);
+            //var plan = new InsertQueryPlan(targetFactory, this.data.GetQueryPlanExpression(node.Select), node.Upsert);
 
-            var context = Expression.Parameter(typeof(IExecutionContext), "context");
-            var replaceContext = new GenericVisitor
-                                     {
-                                         (ExecutionContextExpression e) => context,
-                                     };
-
-            var targetFactory = Expression.Lambda<Func<IExecutionContext, DataTarget>>(replaceContext.Visit(this.data.ConvertToDataTarget(node.Target)), context).Compile();
-
-            this.data.SetQueryPlan(node, new InsertQueryPlan(targetFactory, this.data.GetQueryPlan(node.Select), node.Upsert));
+            //this.data.SetQueryPlanExpression(node, plan);
 
             return node;
         }
 
         /// <summary>
-        /// Visits a <see cref="ConnectQl.Parser.Ast.Statements.SelectFromStatement"/>.
+        /// Visits a <see cref="SelectFromStatement"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -268,32 +244,32 @@ namespace ConnectQl.Query
         {
             node = (SelectFromStatement)base.VisitSelectFromStatement(node);
 
-            if (node.Groupings.Any())
-            {
-                var groupQuery = GroupQueryVisitor.GetGroupQuery(node, this.data);
-                var groupFactories = this.GetGroupValueFactory(groupQuery.Expressions.Concat(new[]
-                                                                                                 {
-                                                                                                     new AliasedConnectQlExpression(groupQuery.Having, "$having"),
-                                                                                                 }).Concat(groupQuery.OrderBy.Select((o, i) => new AliasedConnectQlExpression(o.Expression, $"$order{i}"))).Where(e => e.Expression != null));
-                var plan = this.CreateSelectQueryPlan(groupQuery.RowSelect);
-                var fields = node.Expressions.Select(f => f.Expression is WildcardConnectQlExpression ? "*" : f.Alias);
-                var orders = groupQuery.OrderBy.Select((o, i) => new OrderByExpression(ConnectQlExpression.MakeSourceField(null, $"$order{i}", true), o.Ascending));
-                var having = groupQuery.Having == null ? null : ConnectQlExpression.MakeSourceField(null, "$having", true, typeof(bool));
+            //if (node.Groupings.Any())
+            //{
+            //    var groupQuery = GroupQueryVisitor.GetGroupQuery(node, this.data);
+            //    var groupFactories = this.GetGroupValueFactory(groupQuery.Expressions.Concat(new[]
+            //                                                                                     {
+            //                                                                                         new AliasedConnectQlExpression(groupQuery.Having, "$having"),
+            //                                                                                     }).Concat(groupQuery.OrderBy.Select((o, i) => new AliasedConnectQlExpression(o.Expression, $"$order{i}"))).Where(e => e.Expression != null));
+            //    var plan = this.CreateSelectQueryPlan(groupQuery.RowSelect);
+            //    var fields = node.Expressions.Select(f => f.Expression is WildcardConnectQlExpression ? "*" : f.Alias);
+            //    var orders = groupQuery.OrderBy.Select((o, i) => new OrderByExpression(ConnectQlExpression.MakeSourceField(null, $"$order{i}", true), o.Ascending));
+            //    var having = groupQuery.Having == null ? null : ConnectQlExpression.MakeSourceField(null, "$having", true, typeof(bool));
 
-                var aliases = groupQuery.Expressions;
+            //    var aliases = groupQuery.Expressions;
 
-                this.data.SetQueryPlan(node, new SelectGroupByQueryPlan(plan, groupFactories, groupQuery.Groupings, aliases, having, orders, fields));
-            }
-            else
-            {
-                this.data.SetQueryPlan(node, this.CreateSelectQueryPlan(node));
-            }
+            //    this.data.SetQueryPlanExpression(node, new SelectGroupByQueryPlan(plan, groupFactories, groupQuery.Groupings, aliases, having, orders, fields));
+            //}
+            //else
+            //{
+            //    this.data.SetQueryPlanExpression(node, this.CreateSelectQueryPlan(node));
+            //}
 
             return node;
         }
 
         /// <summary>
-        /// Visits a <see cref="ConnectQl.Parser.Ast.Sources.SelectSource"/>.
+        /// Visits a <see cref="SelectSource"/>.
         /// </summary>
         /// <param name="node">
         /// The node.
@@ -301,7 +277,7 @@ namespace ConnectQl.Query
         /// <returns>
         /// The node, or a new version of the node.
         /// </returns>
-        protected internal override Node VisitSelectSource([NotNull] SelectSource node)
+        protected internal override Node VisitSelectSource(SelectSource node)
         {
             this.data.SetAlias(node.Select, node.Alias);
 
@@ -321,15 +297,11 @@ namespace ConnectQl.Query
         protected internal override Node VisitUseStatement(UseStatement node)
         {
             node = (UseStatement)base.VisitUseStatement(node);
+            
+            //var getValue = FactoryBuilder.CreateValueFactory(this.data, node.SettingFunction);
+            //var plan = new UseDefaultQueryPlan(node.SettingFunction.Name, node.FunctionName, getValue);
 
-            var context = Expression.Parameter(typeof(IExecutionContext), "context");
-            var getValue = Expression.Lambda<Func<IExecutionContext, object>>(
-                GenericVisitor.Visit(
-                    (ExecutionContextExpression e) => context,
-                    this.data.ConvertToLinqExpression(node.SettingFunction)),
-                context).Compile();
-
-            this.data.SetQueryPlan(node, new UseDefaultQueryPlan(node.SettingFunction.Name, node.FunctionName, getValue));
+            //this.data.SetQueryPlanExpression(node, plan);
 
             return node;
         }
@@ -348,7 +320,9 @@ namespace ConnectQl.Query
         {
             node = (VariableDeclaration)base.VisitVariableDeclaration(node);
 
-            this.data.SetQueryPlan(node, new DeclareVariableQueryPlan(node.Name, this.data.ConvertToLinqExpression(node.Expression)));
+            //var setVariable = FactoryBuilder.CreateVariableSetter(this.data, node);
+            
+            //this.data.SetQueryPlanExpression(node, new DeclareVariableQueryPlan(node.Name, setVariable));
 
             return node;
         }
@@ -426,8 +400,7 @@ namespace ConnectQl.Query
                                 WildcardAliases = wildcardAliases,
                             };
 
-            var func = valueFactory as ValueFactory;
-            var queryPlan = func != null
+            var queryPlan = valueFactory is ValueFactory func
                                 ? new SelectQueryPlan(sourceFactory, query, fieldNames, func)
                                 : new SelectQueryPlan(sourceFactory, query, fieldNames, (AsyncValueFactory)valueFactory);
 
@@ -464,7 +437,6 @@ namespace ConnectQl.Query
 
             var rowGetter = Expression.NewArrayInit(typeof(KeyValuePair<string, object>), fields);
 
-            // Expression.Call(TaskExpression.Task(Expression.Call(null, typeof(AsyncEnumerableExtensions))))
             var result =
                 Expression.Lambda<AsyncGroupValueFactory>(
                     rowGetter.RewriteTasksToAsyncExpression(),

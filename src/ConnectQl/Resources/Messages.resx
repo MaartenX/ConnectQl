@@ -117,16 +117,64 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AliasAlreadyUsed" xml:space="preserve">
+    <value>There is already a source with alias '{0}'.</value>
+  </data>
+  <data name="AliasNotDefined" xml:space="preserve">
+    <value>Alias '{0}' is not defined.</value>
+  </data>
+  <data name="AvailablePlugins" xml:space="preserve">
+    <value>Available plugins: {0}.</value>
+  </data>
   <data name="Error" xml:space="preserve">
     <value>#ERROR: {0}#</value>
   </data>
+  <data name="FieldMustHaveASource" xml:space="preserve">
+    <value>Field '{0}' must have a source.</value>
+  </data>
+  <data name="FunctionIsNoDataSource" xml:space="preserve">
+    <value>Function '{0}' should return a data source.</value>
+  </data>
+  <data name="FunctionIsNoDataTarget" xml:space="preserve">
+    <value>Function '{0}' is not a data target.</value>
+  </data>
+  <data name="FunctionIsNoTrigger" xml:space="preserve">
+    <value>Function '{0}' is not a trigger.</value>
+  </data>
+  <data name="FunctionNotFound" xml:space="preserve">
+    <value>Function '{0}' not found.</value>
+  </data>
+  <data name="HavingNotAllowed" xml:space="preserve">
+    <value>HAVING is only allowed when GROUP BY is used.</value>
+  </data>
+  <data name="InvalidScope" xml:space="preserve">
+    <value>Invalid scope.</value>
+  </data>
+  <data name="MissingAggregateFunction" xml:space="preserve">
+    <value>Missing aggregate function for '{0}'.</value>
+  </data>
   <data name="NodeTypeNotSupported" xml:space="preserve">
-    <value>Node type {0} is not supported.</value>
+    <value>Node type '{0}' is not supported.</value>
   </data>
   <data name="OperatorNotSupported" xml:space="preserve">
-    <value>Operator {0} is not supported for types {1} and {2}.</value>
+    <value>Operator '{0}' is not supported for types '{1}' and '{2}'.</value>
+  </data>
+  <data name="PluginAlreadyEnabled" xml:space="preserve">
+    <value>Plugin '{0}' was already enabled.</value>
+  </data>
+  <data name="SourceReferencedBeforeDeclared" xml:space="preserve">
+    <value>Source '{0}' is referenced before it is declared.</value>
+  </data>
+  <data name="UndeclaredVariable" xml:space="preserve">
+    <value>Undeclared variable '{0}'.</value>
   </data>
   <data name="UnknownOperator" xml:space="preserve">
-    <value>Unknown operator '{0}'</value>
+    <value>Unknown operator '{0}'.</value>
+  </data>
+  <data name="VariableIsNoDataSource" xml:space="preserve">
+    <value>Variable {0} is not a data source.</value>
+  </data>
+  <data name="VariableIsNoDataTarget" xml:space="preserve">
+    <value>Variable '{0}' is not a data target.</value>
   </data>
 </root>

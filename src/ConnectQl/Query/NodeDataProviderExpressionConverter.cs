@@ -301,7 +301,7 @@ namespace ConnectQl.Query
                 if (expression.Type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDataAccess)))
                 {
                     Expression<Func<string, object[], string>> getDisplayName = (name, args) =>
-                        $"{name.ToUpperInvariant()}({string.Join(", ", args.Select(a => a is IAsyncEnumerable ? ((IAsyncEnumerable)a).GetElementType().Name + "[]" : a is string ? $"'{a}'" : a ?? "NULL"))})";
+                        $"{name.ToUpperInvariant()}({string.Join(", ", args.Select(a => a is IAsyncEnumerable ? ((IAsyncEnumerable)a).GetElementType().Name + "[]" : a is string ? string.Concat("'", a.ToString(), "'") : a ?? "NULL"))})";
 
                     var displayName = getDisplayName.Body.ReplaceParameter(getDisplayName.Parameters[0], Expression.Constant(node.Name)).ReplaceParameter(getDisplayName.Parameters[1], Expression.NewArrayInit(typeof(object), variables.Select(v => Expression.Convert(v, typeof(object))).ToArray<Expression>()));
 
@@ -380,7 +380,7 @@ namespace ConnectQl.Query
             /// <returns>
             /// The <typeparamref name="TFunctionResult"/>.
             /// </returns>
-            private static TFunctionResult MarkFunctionResultWithName<TFunctionResult>(IExecutionContext context, string name, string displayName, TFunctionResult function)
+            public static TFunctionResult MarkFunctionResultWithName<TFunctionResult>(IExecutionContext context, string name, string displayName, TFunctionResult function)
                 where TFunctionResult : IDataAccess
             {
                 ((IInternalExecutionContext)context).SetFunctionName(function, name);
