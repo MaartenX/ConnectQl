@@ -569,6 +569,19 @@ namespace ConnectQl.Query
                     
                     return v.Visit(Expression.Call(Expression.Convert(delegate1,  funcType), funcType.GetRuntimeMethods().First(m => m.Name == "Invoke"), e.Arguments));
                 },
+                (GenericVisitor v, NewExpression e) =>
+                {
+                    if (e.Constructor.IsPublic && e.Constructor.DeclaringType.GetTypeInfo().IsPublic)
+                    {
+                        return null;
+                    }
+
+                    Expression<Func<Type, object[], object>> activator = (t, p) => Activator.CreateInstance(t, p);
+
+                    var newObj = Expression.Convert(activator.ReplaceParameter("t", Expression.Constant(e.Constructor.DeclaringType)).ReplaceParameter("p", Expression.NewArrayInit(typeof(object), e.Arguments)).Body, e.Type);
+
+                    return v.Visit(newObj);
+                },
                 (ConstantExpression e) =>
                 {
                     if (e.Value == null)

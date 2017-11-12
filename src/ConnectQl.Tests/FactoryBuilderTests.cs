@@ -62,7 +62,6 @@ namespace ConnectQl.Tests
                 var executeAsync = builder.GetType("GeneratedQuery.Query").GetMethod("ExecuteAsync");
                 
                 var result = await (await (Task<IAsyncEnumerable<Row>>)executeAsync.Invoke(null, new object[] { context })).MaterializeAsync();
-
 #endif
             }
         }
