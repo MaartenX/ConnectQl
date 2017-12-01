@@ -25,6 +25,7 @@ namespace ConnectQl.ExtensionMethods
     using System;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
 
     using JetBrains.Annotations;
 
@@ -58,6 +59,34 @@ namespace ConnectQl.ExtensionMethods
                                   : p.ParameterType.IsGenericParameter
                                       ? null
                                       : p.ParameterType).SequenceEqual(parameters));
+        }
+
+        /// <summary>
+        /// Checks if the type is a <see cref="Task{T}"/>.
+        /// </summary>
+        /// <param name="type">
+        /// The type to check.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if this is a task, <c>false</c> otherwise.
+        /// </returns>
+        public static bool IsTask(this Type type)
+        {
+            return type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Task<>);
+        }
+
+        /// <summary>
+        /// Checks if the type is a <see cref="Task{T}"/>, and if so, returns the result type of the task.
+        /// </summary>
+        /// <param name="type">
+        /// The type to unwrap.
+        /// </param>
+        /// <returns>
+        /// A non-task type.
+        /// </returns>
+        public static Type UnwrapTasks(this Type type)
+        {
+            return type.IsTask() ? type.GenericTypeArguments[0] : type;
         }
 
         /// <summary>

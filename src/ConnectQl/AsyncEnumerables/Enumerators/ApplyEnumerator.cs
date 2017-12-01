@@ -68,7 +68,7 @@ namespace ConnectQl.AsyncEnumerables.Enumerators
         private IAsyncEnumerator<TRight> rightEnumerator;
 
         /// <summary>
-        /// The right factory.
+        /// The right expr.
         /// </summary>
         private Func<TLeft, IAsyncEnumerable<TRight>> rightFactory;
 
@@ -92,7 +92,7 @@ namespace ConnectQl.AsyncEnumerables.Enumerators
         /// The left.
         /// </param>
         /// <param name="rightFactory">
-        /// The right factory.
+        /// The right expr.
         /// </param>
         /// <param name="resultSelector">
         /// The result selector.

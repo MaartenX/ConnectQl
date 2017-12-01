@@ -44,7 +44,7 @@ namespace ConnectQl.Tools.Mef.Results
     public class ResultsPanelScrollBarProvider : IWpfTextViewMarginProvider
     {
         /// <summary>
-        /// Gets or sets the document factory service.
+        /// Gets or sets the document expr service.
         /// </summary>
         [Import]
         internal ITextDocumentFactoryService DocumentFactoryService { get; set; }

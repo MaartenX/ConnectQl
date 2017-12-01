@@ -76,7 +76,7 @@ namespace ConnectQl.AsyncEnumerables.Policies
         /// The policy.
         /// </param>
         /// <param name="factory">
-        /// The factory.
+        /// The expr.
         /// </param>
         /// <typeparam name="T">
         /// The type of the items.
@@ -451,7 +451,7 @@ namespace ConnectQl.AsyncEnumerables.Policies
         /// The policy.
         /// </param>
         /// <param name="factory">
-        /// The factory.
+        /// The expr.
         /// </param>
         /// <typeparam name="T">
         /// The type of the elements.
@@ -504,7 +504,7 @@ namespace ConnectQl.AsyncEnumerables.Policies
         }
 
         /// <summary>
-        /// The factory enumerable.
+        /// The expr enumerable.
         /// </summary>
         /// <typeparam name="TElement">
         /// The type of the elements.
@@ -513,7 +513,7 @@ namespace ConnectQl.AsyncEnumerables.Policies
         private class FactoryEnumerable<TElement> : IAsyncEnumerable<TElement>
         {
             /// <summary>
-            /// The factory.
+            /// The expr.
             /// </summary>
             private readonly Func<IAsyncEnumerator<TElement>> factory;
 
@@ -529,7 +529,7 @@ namespace ConnectQl.AsyncEnumerables.Policies
             /// The policy.
             /// </param>
             /// <param name="factory">
-            /// The factory.
+            /// The expr.
             /// </param>
             /// <param name="name">
             /// The name of the enumerator Used for debugging.

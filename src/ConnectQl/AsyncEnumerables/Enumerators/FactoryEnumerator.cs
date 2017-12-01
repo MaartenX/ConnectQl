@@ -55,7 +55,7 @@ namespace ConnectQl.AsyncEnumerables.Enumerators
         /// Initializes a new instance of the <see cref="FactoryEnumerator{T}"/> class.
         /// </summary>
         /// <param name="factory">
-        /// The factory.
+        /// The expr.
         /// </param>
         public FactoryEnumerator(Func<Task<IAsyncEnumerable<T>>> factory)
         {

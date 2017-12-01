@@ -53,7 +53,7 @@ namespace ConnectQl.Query.Plans
         private readonly AsyncValueFactory asyncValueFactory;
 
         /// <summary>
-        /// The data source factory.
+        /// The data source expr.
         /// </summary>
         private readonly Func<IExecutionContext, Task<DataSource>> dataSourceFactory;
 
@@ -76,7 +76,7 @@ namespace ConnectQl.Query.Plans
         /// Initializes a new instance of the <see cref="SelectQueryPlan"/> class.
         /// </summary>
         /// <param name="dataSourceFactory">
-        /// The data source factory.
+        /// The data source expr.
         /// </param>
         /// <param name="query">
         /// The query.
@@ -97,7 +97,7 @@ namespace ConnectQl.Query.Plans
         /// Initializes a new instance of the <see cref="SelectQueryPlan"/> class.
         /// </summary>
         /// <param name="dataSourceFactory">
-        /// The data source factory.
+        /// The data source expr.
         /// </param>
         /// <param name="query">
         /// The query.
@@ -118,7 +118,7 @@ namespace ConnectQl.Query.Plans
         /// Initializes a new instance of the <see cref="SelectQueryPlan"/> class.
         /// </summary>
         /// <param name="dataSourceFactory">
-        /// The data source factory.
+        /// The data source expr.
         /// </param>
         /// <param name="query">
         /// The query.

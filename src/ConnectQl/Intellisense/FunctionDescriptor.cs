@@ -31,6 +31,7 @@ namespace ConnectQl.Internal
     using ConnectQl.Interfaces;
 
     using JetBrains.Annotations;
+    using ConnectQl.ExtensionMethods;
 
     /// <summary>
     /// The function descriptor.
@@ -65,8 +66,8 @@ namespace ConnectQl.Internal
             this.HasSideEffects = hasSideEffects;
             this.lambda = lambda;
             this.arguments = lambda.Parameters.Select(parameter => new ArgumentDescriptor(parameter.Name, new TypeDescriptor(parameter.Type))).ToArray();
-            this.ReturnType = new TypeDescriptor(lambda.ReturnType);
-            this.IsAggregateFunction = this.arguments.Any(argument => argument.Type.Interfaces.Any(i => i == typeof(IAsyncEnumerable<>) || i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>)));
+            this.ReturnType = new TypeDescriptor(lambda.ReturnType.UnwrapTasks());
+            this.IsAggregateFunction = this.arguments.Any(argument => argument.Type.Interfaces.Any(i => i == typeof(IAsyncEnumerable<>) || (i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>))));
         }
 
         /// <summary>

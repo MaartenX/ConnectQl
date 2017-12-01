@@ -44,7 +44,7 @@ namespace ConnectQl.Query.Plans
         private readonly IQueryPlan dataGenerator;
 
         /// <summary>
-        /// The data target factory.
+        /// The data target expr.
         /// </summary>
         private readonly Func<IExecutionContext, DataTarget> dataTargetFactory;
 
@@ -57,7 +57,7 @@ namespace ConnectQl.Query.Plans
         /// Initializes a new instance of the <see cref="InsertQueryPlan"/> class.
         /// </summary>
         /// <param name="dataTargetFactory">
-        /// The data target factory.
+        /// The data target expr.
         /// </param>
         /// <param name="dataGenerator">
         /// The data generator.

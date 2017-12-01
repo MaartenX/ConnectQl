@@ -45,7 +45,7 @@ namespace ConnectQl.DataSources.Joins
         /// The right data source.
         /// </param>
         /// <param name="rightFactory">
-        /// The right factory.
+        /// The right expr.
         /// </param>
         public CrossApply(DataSource left, DataSource right, Expression rightFactory)
             : base(left, right, rightFactory)

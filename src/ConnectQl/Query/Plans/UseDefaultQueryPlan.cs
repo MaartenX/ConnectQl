@@ -46,7 +46,7 @@ namespace ConnectQl.Query.Plans
         private readonly string setting;
 
         /// <summary>
-        /// The value factory.
+        /// The value expr.
         /// </summary>
         private readonly Func<IExecutionContext, object> valueFactory;
 
@@ -60,7 +60,7 @@ namespace ConnectQl.Query.Plans
         /// The function name.
         /// </param>
         /// <param name="valueFactory">
-        /// The value factory.
+        /// The value expr.
         /// </param>
         public UseDefaultQueryPlan(string setting, string functionName, Func<IExecutionContext, object> valueFactory)
         {

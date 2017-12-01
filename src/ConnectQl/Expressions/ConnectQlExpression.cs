@@ -95,7 +95,7 @@ namespace ConnectQl.Expressions
         }
 
         /// <summary>
-        /// Creates a RangeExpression, given the minimum and maximum, by calling an appropriate factory method.
+        /// Creates a RangeExpression, given the minimum and maximum, by calling an appropriate expr method.
         /// </summary>
         /// <param name="min">
         /// The minimum value in the range.
@@ -107,7 +107,7 @@ namespace ConnectQl.Expressions
         /// The type of the expression.
         /// </param>
         /// <returns>
-        /// The RangeExpression that results from calling the appropriate factory method.
+        /// The RangeExpression that results from calling the appropriate expr method.
         /// </returns>
         [NotNull]
         internal static RangeExpression MakeRange(object min, object max, Type type)
@@ -117,7 +117,7 @@ namespace ConnectQl.Expressions
 
         /// <summary>
         /// Creates a <see cref="SourceFieldExpression"/>, given the source name and field name, by calling an appropriate
-        ///     factory method.
+        ///     expr method.
         /// </summary>
         /// <param name="sourceName">
         /// The name that represents the source.
@@ -126,7 +126,7 @@ namespace ConnectQl.Expressions
         /// The name that represents the field.
         /// </param>
         /// <returns>
-        /// The FieldExpression that results from calling the appropriate factory method.
+        /// The FieldExpression that results from calling the appropriate expr method.
         /// </returns>
         [NotNull]
         internal static SourceFieldExpression MakeSourceField(string sourceName, string fieldName)
@@ -148,7 +148,7 @@ namespace ConnectQl.Expressions
         /// <c>true</c> to use the internal name, <c>false</c> otherwise.
         /// </param>
         /// <returns>
-        /// The FieldExpression that results from calling the appropriate factory method.
+        /// The FieldExpression that results from calling the appropriate expr method.
         /// </returns>
         [NotNull]
         internal static SourceFieldExpression MakeSourceField(string sourceName, string fieldName, bool useInternalName)
@@ -173,7 +173,7 @@ namespace ConnectQl.Expressions
         /// The type of the parameter.
         /// </param>
         /// <returns>
-        /// The FieldExpression that results from calling the appropriate factory method.
+        /// The FieldExpression that results from calling the appropriate expr method.
         /// </returns>
         [NotNull]
         internal static SourceFieldExpression MakeSourceField(string sourceName, string fieldName, bool useInternalName, Type type)
@@ -194,7 +194,7 @@ namespace ConnectQl.Expressions
         /// The type of the parameter.
         /// </param>
         /// <returns>
-        /// The FieldExpression that results from calling the appropriate factory method.
+        /// The FieldExpression that results from calling the appropriate expr method.
         /// </returns>
         [NotNull]
         internal static SourceFieldExpression MakeSourceField(string sourceName, string fieldName, Type type)

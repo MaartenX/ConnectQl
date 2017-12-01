@@ -84,7 +84,7 @@ namespace ConnectQl.Results
         /// <param name="combinedResults">
         ///     The combined results.
         /// </param>
-        internal ExecuteResult(ICollection<ExecuteResult> combinedResults)
+        internal ExecuteResult(IEnumerable<IExecuteResult> combinedResults)
             : this(combinedResults, null)
         {
         }
@@ -98,8 +98,10 @@ namespace ConnectQl.Results
         /// <param name="messages">
         ///     The messages.
         /// </param>
-        internal ExecuteResult([NotNull] ICollection<ExecuteResult> combinedResults, [CanBeNull] MessageWriter messages)
+        internal ExecuteResult([NotNull] IEnumerable<IExecuteResult> combinedResults, [CanBeNull] MessageWriter messages)
         {
+            combinedResults = combinedResults.ToArray();
+
             this.QueryResults = combinedResults.SelectMany(c => c.QueryResults).ToArray();
             this.Jobs = combinedResults.SelectMany(c => c.Jobs).ToArray();
             this.Warnings = messages?.Where(msg => msg.Type == ResultMessageType.Warning).ToArray() ?? new Message[0];

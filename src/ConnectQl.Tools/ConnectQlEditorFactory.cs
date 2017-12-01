@@ -33,7 +33,7 @@ namespace ConnectQl.Tools
     using Microsoft.VisualStudio.TextManager.Interop;
 
     /// <summary>
-    /// The editor factory.
+    /// The editor expr.
     /// </summary>
     [Guid("C08E64C0-CBBF-4070-95B0-247E8B07EED7")]
     internal class ConnectQlEditorFactory : IVsEditorFactory
@@ -51,7 +51,7 @@ namespace ConnectQl.Tools
         }
 
         /// <summary>
-        /// Used by the editor factory architecture to create editors that support data/view separation.
+        /// Used by the editor expr architecture to create editors that support data/view separation.
         /// </summary>
         /// <param name="grfCreateDoc">[in] Flags whose values are taken from the <see cref="T:Microsoft.VisualStudio.Shell.Interop.__VSCREATEEDITORFLAGS" /> enumeration that defines the conditions under which to create the editor. Only open and silent flags are valid.</param>
         /// <param name="pszMkDocument">[in] String form of the moniker identifier of the document in the project system. In the case of documents that are files, this is always the path to the file. This parameter can also be used to specify documents that are not files. For example, in a database-oriented project, this parameter could contain a string that refers to records in a table.</param>
@@ -124,7 +124,7 @@ namespace ConnectQl.Tools
         /// <summary>
         /// Initializes an editor in the environment.
         /// </summary>
-        /// <param name="psp">[in] Pointer to the <see cref="T:System.IServiceProvider" /> interface which can be used by the factory to obtain other interfaces.</param>
+        /// <param name="psp">[in] Pointer to the <see cref="T:System.IServiceProvider" /> interface which can be used by the expr to obtain other interfaces.</param>
         /// <returns>
         /// If the method succeeds, it returns <see cref="F:Microsoft.VisualStudio.VSConstants.S_OK" />. If it fails, it returns an error code.
         /// </returns>

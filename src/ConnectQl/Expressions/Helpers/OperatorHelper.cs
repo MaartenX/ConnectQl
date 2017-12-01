@@ -814,7 +814,7 @@ namespace ConnectQl.Expressions.Helpers
         /// <param name="op">The operator.</param>
         /// <param name="first">he first object.</param>
         /// <param name="second">The second object.</param>
-        /// <param name="expression">Factory for <see cref="Expression"/>.</param>
+        /// <param name="expression">Expr for <see cref="Expression"/>.</param>
         /// <returns>The result.</returns>
         private static bool DynamicComparison(string op, [CanBeNull] object first, [CanBeNull] object second, Func<Expression, Expression, bool, MethodInfo, Expression> expression)
         {

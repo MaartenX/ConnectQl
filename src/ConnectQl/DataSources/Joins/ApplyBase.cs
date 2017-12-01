@@ -70,7 +70,7 @@ namespace ConnectQl.DataSources.Joins
         /// The right.
         /// </param>
         /// <param name="rightFactory">
-        /// The right Factory.
+        /// The right Expr.
         /// </param>
         protected ApplyBase([NotNull] DataSource left, [NotNull] DataSource right, [CanBeNull] Expression rightFactory)
             : base(new HashSet<string>(left.Aliases.Concat(right.Aliases)))
@@ -96,7 +96,7 @@ namespace ConnectQl.DataSources.Joins
         }
 
         /// <summary>
-        /// Gets the right factory.
+        /// Gets the right expr.
         /// </summary>
         protected Func<IExecutionContext, Row, DataSource> RightFactory { get; }
 

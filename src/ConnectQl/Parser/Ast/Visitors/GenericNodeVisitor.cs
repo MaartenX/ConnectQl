@@ -23,8 +23,10 @@
 namespace ConnectQl.Parser.Ast.Visitors
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Linq.Expressions;
 
     using Expressions;
@@ -40,7 +42,7 @@ namespace ConnectQl.Parser.Ast.Visitors
     /// <summary>
     /// The generic node visitor.
     /// </summary>
-    internal class GenericNodeVisitor : NodeVisitor
+    internal class GenericNodeVisitor : NodeVisitor, IEnumerable<object>
     {
         /// <summary>
         /// The implementations.
@@ -561,6 +563,16 @@ namespace ConnectQl.Parser.Ast.Visitors
         private Node VisitImplementation([CanBeNull] Node node)
         {
             return node == null ? null : this.VisitImplementation<Node>(node);
+        }
+
+        IEnumerator<object> IEnumerable<object>.GetEnumerator()
+        {
+            return Enumerable.Empty<object>().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<object>)this).GetEnumerator();
         }
     }
 }

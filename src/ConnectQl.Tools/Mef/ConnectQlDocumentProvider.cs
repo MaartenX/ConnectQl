@@ -68,7 +68,7 @@ namespace ConnectQl.Tools.Mef
         }
 
         /// <summary>
-        /// Gets or sets the document factory service.
+        /// Gets or sets the document expr service.
         /// </summary>
         [Import]
         internal ITextDocumentFactoryService DocumentFactoryService { get; set; }

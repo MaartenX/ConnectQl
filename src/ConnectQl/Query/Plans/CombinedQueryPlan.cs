@@ -65,16 +65,18 @@ namespace ConnectQl.Query.Plans
         [ItemNotNull]
         public async Task<ExecuteResult> ExecuteAsync(IInternalExecutionContext context)
         {
-            return new ExecuteResult(await this.SubQueries.Where(p => p != null).AggregateAsync(
-                                         new List<ExecuteResult>(),
-                                         async (result, plan) =>
-                                             {
-                                                 var planResult = await plan.ExecuteAsync(context);
+            //return new ExecuteResult(await this.SubQueries.Where(p => p != null).AggregateAsync(
+            //                             new List<IExecuteResult>(),
+            //                             async (result, plan) =>
+            //                                 {
+            //                                     var planResult = await plan.ExecuteAsync(context);
 
-                                                 result.Add(planResult);
+            //                                     result.Add(planResult);
 
-                                                 return result;
-                                             }));
+            //                                     return result;
+            //                                 }));
+
+            return null;
         }
     }
 }

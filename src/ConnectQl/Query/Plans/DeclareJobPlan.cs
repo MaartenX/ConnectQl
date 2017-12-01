@@ -47,7 +47,7 @@ namespace ConnectQl.Query.Plans
         private readonly IQueryPlan plan;
 
         /// <summary>
-        /// The triggers factory.
+        /// The triggers expr.
         /// </summary>
         private readonly Func<IExecutionContext, Task<IEnumerable<IJobTrigger>>> triggersFactory;
 

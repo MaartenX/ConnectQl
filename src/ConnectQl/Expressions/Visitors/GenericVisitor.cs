@@ -28,11 +28,14 @@ namespace ConnectQl.Expressions.Visitors
     using System.Linq;
     using System.Linq.Expressions;
 
+    using ConnectQl.Query.Factories;
+
     using JetBrains.Annotations;
 
     /// <summary>
     /// The generic visitor.
     /// </summary>
+    [PublicAPI]
     public class GenericVisitor : ExpressionVisitor, IEnumerable<object>
     {
         /// <summary>
@@ -271,6 +274,222 @@ namespace ConnectQl.Expressions.Visitors
         }
 
         /// <summary>
+        /// Creates a <see cref="GenericVisitor"/>, visits the <paramref name="expr"/> and returns the result.
+        /// </summary>
+        /// <param name="action">
+        /// The action to add to the visitor.
+        /// </param>
+        /// <param name="expr">
+        /// The expr.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type of the function parameter.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="Expression"/>.
+        /// </returns>
+        [NotNull]
+        public static Expr<TResult> Visit<T, TResult>(Func<T, Expression> action, Expr<TResult> expr)
+            where T : Expression
+        {
+            return new GenericVisitor
+                   {
+                       action,
+                   }.Visit(expr);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="GenericVisitor"/>, visits the <paramref name="expr"/> and returns the result.
+        /// </summary>
+        /// <param name="firstAction">
+        /// The first action to add to the visitor.
+        /// </param>
+        /// <param name="secondAction">
+        /// The second action to add to the visitor.
+        /// </param>
+        /// <param name="expr">
+        /// The expr.
+        /// </param>
+        /// <typeparam name="T1">
+        /// The type of the first function parameter.
+        /// </typeparam>
+        /// <typeparam name="T2">
+        /// The type of the second function parameter.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="Expression"/>.
+        /// </returns>
+        [NotNull]
+        public static Expr<TResult> Visit<T1, T2, TResult>(Func<T1, Expression> firstAction, Func<T2, Expression> secondAction, Expr<TResult> expr)
+            where T1 : Expression
+            where T2 : Expression
+        {
+            return new GenericVisitor
+                   {
+                       firstAction,
+                       secondAction,
+                   }.Visit(expr);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="GenericVisitor"/>, visits the <paramref name="expr"/> and returns the result.
+        /// </summary>
+        /// <param name="firstAction">
+        /// The first action to add to the visitor.
+        /// </param>
+        /// <param name="secondAction">
+        /// The second action to add to the visitor.
+        /// </param>
+        /// <param name="thirdAction">
+        /// The third action to add to the visitor.
+        /// </param>
+        /// <param name="expr">
+        /// The expr.
+        /// </param>
+        /// <typeparam name="T1">
+        /// The type of the first function parameter.
+        /// </typeparam>
+        /// <typeparam name="T2">
+        /// The type of the second function parameter.
+        /// </typeparam>
+        /// <typeparam name="T3">
+        /// The type of the third function parameter.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="Expression"/>.
+        /// </returns>
+        [NotNull]
+        public static Expr<TResult> Visit<T1, T2, T3, TResult>(Func<T1, Expression> firstAction, Func<T2, Expression> secondAction, Func<T3, Expression> thirdAction, Expr<TResult> expr)
+            where T1 : Expression
+            where T2 : Expression
+            where T3 : Expression
+        {
+            return new GenericVisitor
+                   {
+                       firstAction,
+                       secondAction,
+                       thirdAction,
+                   }.Visit(expr);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="GenericVisitor"/>, visits the <paramref name="expression"/> and returns the result.
+        /// </summary>
+        /// <param name="action">
+        /// The action to add to the visitor.
+        /// </param>
+        /// <param name="expression">
+        /// The expression.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type of the function parameter.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="Expression"/>.
+        /// </returns>
+        [NotNull]
+        public static Expr<TResult> Visit<T, TResult>(Action<T> action, Expr<TResult> expression)
+            where T : Expression
+        {
+            return new GenericVisitor
+                   {
+                       action,
+                   }.Visit(expression);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="GenericVisitor"/>, visits the <paramref name="expression"/> and returns the result.
+        /// </summary>
+        /// <param name="firstAction">
+        /// The first action to add to the visitor.
+        /// </param>
+        /// <param name="secondAction">
+        /// The second action to add to the visitor.
+        /// </param>
+        /// <param name="expression">
+        /// The expression.
+        /// </param>
+        /// <typeparam name="T1">
+        /// The type of the first function parameter.
+        /// </typeparam>
+        /// <typeparam name="T2">
+        /// The type of the second function parameter.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="Expression"/>.
+        /// </returns>
+        [NotNull]
+        public static Expr<TResult> Visit<T1, T2, TResult>(Action<T1> firstAction, Action<T2> secondAction, Expr<TResult> expression)
+            where T1 : Expression
+            where T2 : Expression
+        {
+            return new GenericVisitor
+                   {
+                       firstAction,
+                       secondAction,
+                   }.Visit(expression);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="GenericVisitor"/>, visits the <paramref name="expression"/> and returns the result.
+        /// </summary>
+        /// <param name="firstAction">
+        /// The first action to add to the visitor.
+        /// </param>
+        /// <param name="secondAction">
+        /// The second action to add to the visitor.
+        /// </param>
+        /// <param name="thirdAction">
+        /// The third action to add to the visitor.
+        /// </param>
+        /// <param name="expression">
+        /// The expression.
+        /// </param>
+        /// <typeparam name="T1">
+        /// The type of the first function parameter.
+        /// </typeparam>
+        /// <typeparam name="T2">
+        /// The type of the second function parameter.
+        /// </typeparam>
+        /// <typeparam name="T3">
+        /// The type of the third function parameter.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="Expression"/>.
+        /// </returns>
+        [NotNull]
+        public static Expr<TResult> Visit<T1, T2, T3, TResult>(Action<T1> firstAction, Action<T2> secondAction, Action<T3> thirdAction, Expr<TResult> expression)
+            where T1 : Expression
+            where T2 : Expression
+            where T3 : Expression
+        {
+            return new GenericVisitor
+                   {
+                       firstAction,
+                       secondAction,
+                       thirdAction,
+                   }.Visit(expression);
+        }
+
+        /// <summary>
         /// Creates a <see cref="GenericVisitor"/>, visits the <paramref name="expression"/> and returns the result.
         /// </summary>
         /// <param name="action">
@@ -381,7 +600,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="Expression"/>.
         /// </returns>
-        public static Expression Visit<T>(Action<T> action, Expression expression)
+        public static Expression Visit<T>([InstantHandle]Action<T> action, Expression expression)
             where T : Expression
         {
             return new GenericVisitor
@@ -475,6 +694,45 @@ namespace ConnectQl.Expressions.Visitors
         public GenericVisitor Add(Func<CatchBlock, CatchBlock> catchBlock)
         {
             this.visitCatchBlock = catchBlock;
+
+            return this;
+        }
+
+        /// <summary>
+        /// The add.
+        /// </summary>
+        /// <param name="catchBlock">
+        /// The catch block.
+        /// </param>
+        /// <returns>
+        /// The <see cref="GenericVisitor"/>.
+        /// </returns>
+        [NotNull]
+        public GenericVisitor Add(Action<CatchBlock> catchBlock)
+        {
+            this.visitCatchBlock = c =>
+                                   {
+                                       catchBlock(c);
+
+                                       return null;
+                                   };
+
+            return this;
+        }
+
+        /// <summary>
+        /// The add.
+        /// </summary>
+        /// <param name="catchBlock">
+        /// The catch block.
+        /// </param>
+        /// <returns>
+        /// The <see cref="GenericVisitor"/>.
+        /// </returns>
+        [NotNull]
+        public GenericVisitor Add(Func<GenericVisitor, CatchBlock, CatchBlock> catchBlock)
+        {
+            this.visitCatchBlock = (c) => catchBlock(this, c);
 
             return this;
         }
@@ -753,6 +1011,7 @@ namespace ConnectQl.Expressions.Visitors
         /// <returns>
         /// The <see cref="GenericVisitor"/>.
         /// </returns>
+        [NotNull]
         public GenericVisitor Default(Func<GenericVisitor, Expression, Expression> implementation)
         {
             return this.Default(e => implementation(this, e));
@@ -770,6 +1029,24 @@ namespace ConnectQl.Expressions.Visitors
         public override Expression Visit(Expression node)
         {
             return this.VisitImplementation(node) ?? base.Visit(node);
+        }
+
+        /// <summary>
+        /// Dispatches the expression to one of the more specialized visit methods in this class.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The modified expression, if it or any sub-Expression was modified; otherwise, returns the original Expression.
+        /// </returns>
+        /// <param name="node">
+        /// The expression to visit.
+        /// </param>
+        [NotNull]
+        public Expr<T> Visit<T>(Expr<T> node)
+        {
+            return new Expr<T>(this.Visit((Expression)node));
         }
 
         /// <summary>
@@ -1023,7 +1300,7 @@ namespace ConnectQl.Expressions.Visitors
         /// </typeparam>
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
-            return this.VisitImplementation(node) ?? base.VisitLambda(node);
+            return this.VisitImplementation(node) ?? this.VisitImplementation<LambdaExpression>(node) ?? base.VisitLambda(node);
         }
 
         /// <summary>

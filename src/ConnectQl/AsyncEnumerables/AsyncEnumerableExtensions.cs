@@ -539,7 +539,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<long> CountAsync<TSource>([InstantHandle]this IAsyncEnumerable<TSource> source) => source.CountAsync(null);
+        public static Task<long> CountAsync<TSource>([NotNull] [InstantHandle]this IAsyncEnumerable<TSource> source) => source.CountAsync(null);
 
         /// <summary>
         /// Counts the number of items in the <see cref="IAsyncEnumerable{T}"/>.
@@ -638,6 +638,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable{T}"/>.
         /// </returns>
+        [NotNull]
         [LinqTunnel]
         public static IAsyncEnumerable<TSource> Distinct<TSource>([NotNull] this IAsyncEnumerable<TSource> source) => source.Distinct(null);
 
@@ -677,10 +678,9 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         [NotNull]
         public static Task<TItem> FirstAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
-            => AsyncEnumerableExtensions.FirstInternalAsync(
-                source,
+            => source.FirstInternalAsync(
                 null,
-                () => { throw new InvalidOperationException("Sequence contains no matching elements."); });
+                () => throw new InvalidOperationException("Sequence contains no matching elements."));
 
         /// <summary>
         /// Returns the first item.
@@ -699,10 +699,9 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         [NotNull]
         public static Task<TItem> FirstAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
-            => AsyncEnumerableExtensions.FirstInternalAsync(
-                source,
+            => source.FirstInternalAsync(
                 condition,
-                () => { throw new InvalidOperationException("Sequence contains no matching elements."); });
+                () => throw new InvalidOperationException("Sequence contains no matching elements."));
 
         /// <summary>
         /// The first or default async.
@@ -718,7 +717,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         [NotNull]
         public static Task<TItem> FirstOrDefaultAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
-            => AsyncEnumerableExtensions.FirstInternalAsync(source, null, () => default(TItem));
+            => source.FirstInternalAsync(null, () => default(TItem));
 
         /// <summary>
         /// Returns the first item for which the <paramref name="condition"/> is <c>true</c>.
@@ -736,7 +735,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> FirstOrDefaultAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition) => AsyncEnumerableExtensions.FirstInternalAsync(source, condition, () => default(TItem));
+        public static Task<TItem> FirstOrDefaultAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition) => source.FirstInternalAsync(condition, () => default(TItem));
 
         /// <summary>
         /// Executes an action for all items in the <see cref="IAsyncEnumerable{T}"/>.
@@ -994,14 +993,10 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> LastAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
-            => AsyncEnumerableExtensions.LastInternalAsync(
-                source,
+        public static Task<TItem> LastAsync<TItem>([NotNull] [InstantHandle] this IAsyncEnumerable<TItem> source)
+            => source.LastInternalAsync(
                 null,
-                () =>
-                    {
-                        throw new InvalidOperationException("Sequence contains no matching elements.");
-                    });
+                () => throw new InvalidOperationException("Sequence contains no matching elements."));
 
         /// <summary>
         /// The last async.
@@ -1020,10 +1015,9 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         [NotNull]
         public static Task<TItem> LastAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source, Func<TItem, bool> condition)
-            => AsyncEnumerableExtensions.LastInternalAsync(
-                source,
+            => source.LastInternalAsync(
                 condition,
-                () => { throw new InvalidOperationException("Sequence contains no matching elements."); });
+                () => throw new InvalidOperationException("Sequence contains no matching elements."));
 
         /// <summary>
         /// The last or default async.
@@ -1039,7 +1033,7 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         [NotNull]
         public static Task<TItem> LastOrDefaultAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
-            => AsyncEnumerableExtensions.LastInternalAsync(source, null, () => default(TItem));
+            => source.LastInternalAsync(null, () => default(TItem));
 
         /// <summary>
         /// The last or default async.
@@ -1153,7 +1147,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> MaxAsync<TItem>([InstantHandle]this IAsyncEnumerable<TItem> source)
+        public static Task<TItem> MaxAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
             => source.MaxAsync(null);
 
         /// <summary>
@@ -1192,7 +1186,7 @@ namespace ConnectQl.AsyncEnumerables
         /// The <see cref="Task"/>.
         /// </returns>
         [NotNull]
-        public static Task<TItem> MinAsync<TItem>([InstantHandle]this IAsyncEnumerable<TItem> source)
+        public static Task<TItem> MinAsync<TItem>([NotNull] [InstantHandle]this IAsyncEnumerable<TItem> source)
             => source.MinAsync(null);
 
         /// <summary>
@@ -1241,11 +1235,11 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         [NotNull]
         [LinqTunnel]
-        public static IOrderedAsyncEnumerable<TSource> OrderBy<TSource, TKey>(this IAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
+        public static IOrderedAsyncEnumerable<TSource> OrderBy<TSource, TKey>(this IAsyncEnumerable<TSource> source, [NotNull] Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
-            Comparison<TSource> compareLambda = (first, second) => (comparer ?? DefaultComparer.Create<TKey>()).Compare(keySelector(first), keySelector(second));
+            int CompareLambda(TSource first, TSource second) => (comparer ?? DefaultComparer.Create<TKey>()).Compare(keySelector(first), keySelector(second));
 
-            return new OrderedAsyncEnumerable<TSource>(source, compareLambda);
+            return new OrderedAsyncEnumerable<TSource>(source, CompareLambda);
         }
 
         /// <summary>
@@ -1315,11 +1309,67 @@ namespace ConnectQl.AsyncEnumerables
         /// </returns>
         [NotNull]
         [LinqTunnel]
-        public static IOrderedAsyncEnumerable<TSource> OrderByDescending<TSource, TKey>(this IAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
+        public static IOrderedAsyncEnumerable<TSource> OrderByDescending<TSource, TKey>(this IAsyncEnumerable<TSource> source, [NotNull] Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
         {
-            Comparison<TSource> compareLambda = (first, second) => (comparer ?? DefaultComparer.Create<TKey>()).Compare(keySelector(second), keySelector(first));
+            int CompareLambda(TSource first, TSource second) => (comparer ?? DefaultComparer.Create<TKey>()).Compare(keySelector(second), keySelector(first));
 
-            return new OrderedAsyncEnumerable<TSource>(source, compareLambda);
+            return new OrderedAsyncEnumerable<TSource>(source, CompareLambda);
+        }
+
+        /// <summary>
+        /// Sorts the elements of a sequence in ascending order according to a key.
+        /// </summary>
+        /// <param name="source">
+        /// A sequence of values to order.
+        /// </param>
+        /// <param name="keySelector">
+        /// A function to extract a key from an element.
+        /// </param>
+        /// <param name="comparer">
+        /// An <see cref="IComparer{T}"/> to compare keys.
+        /// </param>
+        /// <typeparam name="TSource">
+        /// The type of the elements of <paramref name="source"/>.
+        /// </typeparam>
+        /// <typeparam name="TKey">
+        /// The type of the key returned by <paramref name="keySelector"/>.
+        /// </typeparam>
+        /// <returns>
+        /// An <see cref="IOrderedAsyncEnumerable{TSource}"/> whose elements are sorted according to a key.
+        /// </returns>
+        [NotNull]
+        [LinqTunnel]
+        public static IOrderedAsyncEnumerable<TSource> ThenBy<TSource, TKey>([NotNull] this IOrderedAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
+        {
+            return source.CreateOrderedAsyncEnumerable(keySelector, comparer, false);
+        }
+
+        /// <summary>
+        /// Sorts the elements of a sequence in descending order according to a key.
+        /// </summary>
+        /// <param name="source">
+        /// A sequence of values to order.
+        /// </param>
+        /// <param name="keySelector">
+        /// A function to extract a key from an element.
+        /// </param>
+        /// <param name="comparer">
+        /// An <see cref="IComparer{T}"/> to compare keys.
+        /// </param>
+        /// <typeparam name="TSource">
+        /// The type of the elements of <paramref name="source"/>.
+        /// </typeparam>
+        /// <typeparam name="TKey">
+        /// The type of the key returned by <paramref name="keySelector"/>.
+        /// </typeparam>
+        /// <returns>
+        /// An <see cref="IOrderedAsyncEnumerable{TSource}"/> whose elements are sorted according to a key.
+        /// </returns>
+        [NotNull]
+        [LinqTunnel]
+        public static IOrderedAsyncEnumerable<TSource> ThenByDescending<TSource, TKey>([NotNull] this IOrderedAsyncEnumerable<TSource> source, Func<TSource, TKey> keySelector, [CanBeNull] IComparer<TKey> comparer = null)
+        {
+            return source.CreateOrderedAsyncEnumerable(keySelector, comparer, true);
         }
 
         /// <summary>
@@ -2005,6 +2055,7 @@ namespace ConnectQl.AsyncEnumerables
         /// <returns>
         /// The <see cref="IAsyncEnumerable"/>.
         /// </returns>
+        [NotNull]
         private static IAsyncEnumerable<TTarget> ConvertInternal<TSource, TTarget>([NotNull] IAsyncEnumerable<TSource> source)
         {
             if (typeof(TTarget).IsConstructedGenericType && typeof(TTarget).GetGenericTypeDefinition() == typeof(Nullable<>))

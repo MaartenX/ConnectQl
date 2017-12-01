@@ -81,7 +81,7 @@ namespace ConnectQl.Query.Plans
         /// The plan.
         /// </param>
         /// <param name="rowFactory">
-        /// The factory function to convert a group into the values for a row.
+        /// The expr function to convert a group into the values for a row.
         /// </param>
         /// <param name="groupFields">
         /// The group fields.

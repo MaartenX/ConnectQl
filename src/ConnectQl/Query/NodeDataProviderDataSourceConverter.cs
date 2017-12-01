@@ -96,13 +96,15 @@ namespace ConnectQl.Query
         /// <returns>
         ///     The <see cref="Expression" />.
         /// </returns>
-        public static Factory<DataSource> ConvertToDataSource(this INodeDataProvider dataProvider, SourceBase source, [CanBeNull] IMessageWriter messages = null)
+        public static Expr<DataSource> ConvertToDataSource(this INodeDataProvider dataProvider, SourceBase source, [CanBeNull] IMessageWriter messages = null)
         {
             new Evaluator(dataProvider, messages ?? new MessageWriter("null")).Visit(source);
 
             var factoryExpression = dataProvider.GetFactoryExpression(source);
 
-            return factoryExpression.Type == typeof(DataSource) ? factoryExpression : Expression.Convert(factoryExpression, typeof(DataSource));
+            return factoryExpression.Type == typeof(DataSource)
+                       ? new Expr<DataSource>(factoryExpression)
+                       : new Expr<DataSource>(Expression.Convert(factoryExpression, typeof(DataSource)));
         }
 
         /// <summary>
@@ -120,11 +122,11 @@ namespace ConnectQl.Query
         /// <returns>
         ///     The <see cref="Expression" />.
         /// </returns>
-        public static Factory<DataTarget> ConvertToDataTarget(this INodeDataProvider dataProvider, TargetBase target, [CanBeNull] IMessageWriter messages = null)
+        public static Expr<DataTarget> ConvertToDataTarget(this INodeDataProvider dataProvider, TargetBase target, [CanBeNull] IMessageWriter messages = null)
         {
             new Evaluator(dataProvider, messages ?? new MessageWriter("null")).Visit(target);
 
-            return dataProvider.GetFactoryExpression(target);
+            return new Expr<DataTarget>(dataProvider.GetFactoryExpression(target));
         }
 
         /// <summary>

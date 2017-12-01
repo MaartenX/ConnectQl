@@ -45,7 +45,7 @@ namespace ConnectQl.DataSources.Joins
         /// The right.
         /// </param>
         /// <param name="rightFactory">
-        /// The right Factory.
+        /// The right Expr.
         /// </param>
         public OuterApply(DataSource left, DataSource right, Expression rightFactory)
             : base(left, right, rightFactory)

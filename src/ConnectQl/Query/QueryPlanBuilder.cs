@@ -42,6 +42,7 @@ namespace ConnectQl.Query
     using ConnectQl.Parser.Ast.Sources;
     using ConnectQl.Parser.Ast.Statements;
     using ConnectQl.Parser.Ast.Visitors;
+    using ConnectQl.Query.Factories;
     using ConnectQl.Query.Plans;
     using ConnectQl.Results;
 
@@ -82,6 +83,8 @@ namespace ConnectQl.Query
         /// </summary>
         private readonly IMessageWriter messages;
 
+        private FactoryGenerator generator;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryPlanBuilder"/> class.
         /// </summary>
@@ -95,6 +98,7 @@ namespace ConnectQl.Query
         {
             this.messages = messages;
             this.data = data;
+            this.generator = new FactoryGenerator(data);
         }
 
         /// <summary>
@@ -113,11 +117,14 @@ namespace ConnectQl.Query
         /// The <see cref="Task"/>.
         /// </returns>
         [CanBeNull]
-        public static Func<IExecutionContext, Task<ExecuteResult>> Build(IMessageWriter messages, [NotNull] INodeDataProvider data, Node node)
+        public static Expression<Func<IInternalExecutionContext, Task<IExecuteResult>>> Build(IMessageWriter messages, [NotNull] INodeDataProvider data, Node node)
         {
             new QueryPlanBuilder(messages, data).Visit(node);
 
-            return null; //data.GetQueryPlanExpression(node)?.Compile();
+            var func = data.GetQueryPlanExpression(node).ToFunc().AddArgument(FactoryGenerator.Context);
+            var result = func.MakeAsync().ToExpression();
+
+            return (Expression<Func<IInternalExecutionContext, Task<IExecuteResult>>>)GenericVisitor.Visit((ExecutionContextExpression e) => (ParameterExpression)FactoryGenerator.Context, result);
         }
 
         /// <summary>
@@ -136,7 +143,7 @@ namespace ConnectQl.Query
         {
             node = (Block)base.VisitBlock(node);
             
-            this.data.SetQueryPlanExpression(node, FactoryBuilder.CombinePlans(node.Statements.Select(this.data.GetQueryPlanExpression)));
+            this.Set(node, this.generator.GenerateBlock(node.Statements));
 
             return node;
         }
@@ -159,7 +166,7 @@ namespace ConnectQl.Query
             //               ? this.data.GetQueryPlanExpression(node.Statements[0])
             //               : new CombinedQueryPlan(node.Statements.Select(this.data.GetQueryPlanExpression));
 
-            //var triggersFactory = FactoryBuilder.CreateTriggerCollectionFactory(this.data, node.Triggers);
+            //var triggersFactory = FactoryGenerator.CreateTriggerCollectionFactory(this.data, node.Triggers);
 
             //this.data.SetQueryPlanExpression(node, new DeclareJobPlan(node.Name, plan, triggersFactory));
 
@@ -183,11 +190,23 @@ namespace ConnectQl.Query
         {
             node = (DeclareStatement)base.VisitDeclareStatement(node);
 
-            this.data.SetQueryPlanExpression(
-                node,
-                FactoryBuilder.CombinePlans(node.Declarations.Select(this.data.GetQueryPlanExpression)));
+            this.Set(node, this.generator.GenerateBlock(node.Declarations));
 
             return node;
+        }
+
+        /// <summary>
+        /// The sets the expr for a node.
+        /// </summary>
+        /// <param name="node">
+        /// The node.
+        /// </param>
+        /// <param name="expr">
+        /// The expr.
+        /// </param>
+        private void Set(Node node, Expr<IExecuteResult> expr) 
+        {
+            this.data.SetQueryPlanExpression(node, expr);
         }
 
         /// <summary>
@@ -222,7 +241,10 @@ namespace ConnectQl.Query
         {
             node = (InsertStatement)base.VisitInsertStatement(node);
             
-            //var targetFactory = FactoryBuilder.CreateTargetFactory(this.data, node.Target);
+            this.Set(node, this.generator.GenerateInsert(node));
+
+
+            //var targetFactory = FactoryGenerator.CreateTargetFactory(this.data, node.Target);
             //var plan = new InsertQueryPlan(targetFactory, this.data.GetQueryPlanExpression(node.Select), node.Upsert);
 
             //this.data.SetQueryPlanExpression(node, plan);
@@ -243,6 +265,8 @@ namespace ConnectQl.Query
         protected internal override Node VisitSelectFromStatement(SelectFromStatement node)
         {
             node = (SelectFromStatement)base.VisitSelectFromStatement(node);
+            
+            this.Set(node, this.generator.GenerateSelect(node));
 
             //if (node.Groupings.Any())
             //{
@@ -251,7 +275,7 @@ namespace ConnectQl.Query
             //                                                                                     {
             //                                                                                         new AliasedConnectQlExpression(groupQuery.Having, "$having"),
             //                                                                                     }).Concat(groupQuery.OrderBy.Select((o, i) => new AliasedConnectQlExpression(o.Expression, $"$order{i}"))).Where(e => e.Expression != null));
-            //    var plan = this.CreateSelectQueryPlan(groupQuery.RowSelect);
+            //    var plan = this.CreateSelectQueryPlan(groupQuery.InnerSelect);
             //    var fields = node.Expressions.Select(f => f.Expression is WildcardConnectQlExpression ? "*" : f.Alias);
             //    var orders = groupQuery.OrderBy.Select((o, i) => new OrderByExpression(ConnectQlExpression.MakeSourceField(null, $"$order{i}", true), o.Ascending));
             //    var having = groupQuery.Having == null ? null : ConnectQlExpression.MakeSourceField(null, "$having", true, typeof(bool));
@@ -298,7 +322,7 @@ namespace ConnectQl.Query
         {
             node = (UseStatement)base.VisitUseStatement(node);
             
-            //var getValue = FactoryBuilder.CreateValueFactory(this.data, node.SettingFunction);
+            //var getValue = FactoryGenerator.CreateValueFactory(this.data, node.SettingFunction);
             //var plan = new UseDefaultQueryPlan(node.SettingFunction.Name, node.FunctionName, getValue);
 
             //this.data.SetQueryPlanExpression(node, plan);
@@ -320,7 +344,7 @@ namespace ConnectQl.Query
         {
             node = (VariableDeclaration)base.VisitVariableDeclaration(node);
 
-            //var setVariable = FactoryBuilder.CreateVariableSetter(this.data, node);
+            //var setVariable = FactoryGenerator.GenerateVariableSetter(this.data, node);
             
             //this.data.SetQueryPlanExpression(node, new DeclareVariableQueryPlan(node.Name, setVariable));
 
@@ -408,7 +432,7 @@ namespace ConnectQl.Query
         }
 
         /// <summary>
-        /// The get group value factory async.
+        /// The get group value expr async.
         /// </summary>
         /// <param name="expressions">
         /// The expressions.
@@ -447,10 +471,10 @@ namespace ConnectQl.Query
         }
 
         /// <summary>
-        /// Gets a factory function for the data source of this.
+        /// Gets a expr function for the data source of this.
         /// </summary>
         /// <param name="source">
-        /// The <see cref="ConnectQl.Parser.Ast.Sources.SourceBase"/> AST node to generate the factory for.
+        /// The <see cref="ConnectQl.Parser.Ast.Sources.SourceBase"/> AST node to generate the expr for.
         /// </param>
         /// <returns>
         /// The <see cref="Task"/>.

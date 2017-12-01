@@ -31,6 +31,7 @@ namespace ConnectQl.ExtensionMethods
     using ConnectQl.Internal;
     using ConnectQl.Parser.Ast;
     using ConnectQl.Parser.Ast.Expressions;
+    using ConnectQl.Query.Factories;
     using ConnectQl.Results;
 
     using JetBrains.Annotations;
@@ -58,7 +59,7 @@ namespace ConnectQl.ExtensionMethods
         }
 
         /// <summary>
-        /// Gets the source factory .
+        /// Gets the source expr .
         /// </summary>
         /// <param name="dataProvider">
         /// The data provider.
@@ -67,7 +68,7 @@ namespace ConnectQl.ExtensionMethods
         /// The node.
         /// </param>
         /// <returns>
-        /// The source factory.
+        /// The source expr.
         /// </returns>
         public static Expression GetFactoryExpression([NotNull] this INodeDataProvider dataProvider, Node node)
         {
@@ -179,7 +180,7 @@ namespace ConnectQl.ExtensionMethods
         }
 
         /// <summary>
-        /// Sets the source factory .
+        /// Sets the source expr .
         /// </summary>
         /// <param name="dataProvider">
         /// The data provider.
@@ -188,7 +189,7 @@ namespace ConnectQl.ExtensionMethods
         /// The node.
         /// </param>
         /// <param name="factory">
-        /// The factory.
+        /// The expr.
         /// </param>
         public static void SetFactoryExpression([NotNull] this INodeDataProvider dataProvider, Node node, Expression factory)
         {
@@ -276,9 +277,9 @@ namespace ConnectQl.ExtensionMethods
         /// The <see cref="IQuery"/>.
         /// </returns>
         [CanBeNull]
-        internal static Expression GetQueryPlanExpression([NotNull] this INodeDataProvider dataProvider, Node node)
+        internal static Expr<IExecuteResult> GetQueryPlanExpression([NotNull] this INodeDataProvider dataProvider, Node node)
         {
-            return dataProvider.TryGet(node, "Query", out Expression<Func<IExecutionContext, Task<ExecuteResult>>> result) ? result : null;
+            return dataProvider.TryGet(node, "Query", out Expr<IExecuteResult> result) ? result : null;
         }
 
         /// <summary>
@@ -293,7 +294,7 @@ namespace ConnectQl.ExtensionMethods
         /// <param name="query">
         /// The query.
         /// </param>
-        internal static void SetQueryPlanExpression([NotNull] this INodeDataProvider dataProvider, Node node, Expression query)
+        internal static void SetQueryPlanExpression([NotNull] this INodeDataProvider dataProvider, Node node, Expr<IExecuteResult> query)
         {
             dataProvider.Set(node, "Query", query);
         }

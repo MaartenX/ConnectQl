@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,41 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Query
+namespace ConnectQl.Interfaces
 {
-    using System.Collections.ObjectModel;
-
-    using ConnectQl.Parser.Ast.Expressions;
-    using ConnectQl.Parser.Ast.Statements;
+    using System;
+    using System.IO;
+    using System.Linq.Expressions;
+    using System.Threading.Tasks;
+    using ConnectQl.Results;
 
     /// <summary>
-    /// The GroupQuery interface.
+    /// Generates a query plan.
     /// </summary>
-    internal interface IGroupQuery
+    internal interface IQueryPlanGenerator
     {
         /// <summary>
-        /// Gets the expressions.
+        /// Generates the query plan for the specified query and filename.
         /// </summary>
-        ReadOnlyCollection<AliasedConnectQlExpression> Expressions { get; }
-
-        /// <summary>
-        /// Gets the groupings.
-        /// </summary>
-        ReadOnlyCollection<string> Groupings { get; }
-
-        /// <summary>
-        /// Gets the having.
-        /// </summary>
-        ConnectQlExpressionBase Having { get; }
-
-        /// <summary>
-        /// Gets the row select.
-        /// </summary>
-        SelectFromStatement InnerSelect { get; }
-
-        /// <summary>
-        /// Gets the visitor order by.
-        /// </summary>
-        ReadOnlyCollection<OrderByConnectQlExpression> OrderBy { get; }
+        /// <param name="filename">
+        /// The file name to generate the query plan for.
+        /// </param>
+        /// <param name="query">
+        /// The query to generate the plan for.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Task{T}"/> returning the query plan.
+        /// </returns>
+        Task<Expression<Func<IInternalExecutionContext, Task<IExecuteResult>>>> GetQueryPlanAsync(string filename, Stream query);
     }
 }

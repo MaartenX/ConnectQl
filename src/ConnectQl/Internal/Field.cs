@@ -69,8 +69,9 @@ namespace ConnectQl.Internal
         /// </returns>
         public override bool Equals(object obj)
         {
-            var other = obj as Field;
-            return other != null && string.Equals(this.SourceAlias, other.SourceAlias, StringComparison.OrdinalIgnoreCase) && string.Equals(this.FieldName, other.FieldName, StringComparison.OrdinalIgnoreCase);
+            return obj is Field other &&
+                string.Equals(this.SourceAlias, other.SourceAlias, StringComparison.OrdinalIgnoreCase) && 
+                string.Equals(this.FieldName, other.FieldName, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace ConnectQl.Internal
         {
             unchecked
             {
-                return ((this.SourceAlias != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.SourceAlias) : 0) * 397) ^ (this.FieldName != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.FieldName) : 0);
+                return (this.SourceAlias != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.SourceAlias) : 0) * 397 ^ (this.FieldName != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(this.FieldName) : 0);
             }
         }
 

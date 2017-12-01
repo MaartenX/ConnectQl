@@ -39,6 +39,7 @@ namespace ConnectQl
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -59,7 +60,7 @@ namespace ConnectQl
     /// <summary>
     ///     The ConnectQl context.
     /// </summary>
-    public class ConnectQlContext : IDisposable, IConnectQlContext
+    public class ConnectQlContext : IDisposable, IConnectQlContext, IQueryPlanGenerator
     {
         /// <summary>
         /// The default plugin resolver.
@@ -203,29 +204,9 @@ namespace ConnectQl
         [PublicAPI]
         public async Task<IExecuteResult> ExecuteAsync(string filename, [CanBeNull] Stream stream)
         {
-            if (this.disposed)
-            {
-                throw new ObjectDisposedException(this.GetType().Name);
-            }
+            var plan = await ((IQueryPlanGenerator)this).GetQueryPlanAsync(filename, stream);
 
-            var script = this.GetParsedScript(filename, stream ?? await this.ResolveStream(filename), false);
-
-            if (script == null)
-            {
-                return null;
-            }
-
-            var context = script.Context;
-            var plan = QueryPlanBuilder.Build(context.Messages, context.NodeData, script.Root);
-
-            if (!this.HandleErrors(context, script.Root))
-            {
-                return null;
-            }
-
-            var result = await plan.Invoke(context);
-
-            return result;
+            return await plan.Compile().Invoke(null);
         }
 
         /// <summary>
@@ -294,6 +275,34 @@ namespace ConnectQl
         async Task<byte[]> IConnectQlContext.ExecuteToByteArrayAsync(string filename, Stream stream)
         {
             return ProtocolSerializer.Serialize(await SerializableExecuteResult.CreateAync(await this.ExecuteAsync(filename, stream)));
+        }
+
+        /// <summary>
+        /// Generates the query plan for the specified query and filename.
+        /// </summary>
+        /// <param name="filename">
+        /// The file name to generate the query plan for.
+        /// </param>
+        /// <param name="query">
+        /// The query to generate the plan for.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Task{T}"/> returning the query plan.
+        /// </returns>
+        [ItemCanBeNull]
+        [PublicAPI]
+        async Task<Expression<Func<IInternalExecutionContext, Task<IExecuteResult>>>> IQueryPlanGenerator.GetQueryPlanAsync(string filename, [CanBeNull] Stream query)
+        {
+            if (this.disposed)
+            {
+                throw new ObjectDisposedException(this.GetType().Name);
+            }
+            
+            var script = this.GetParsedScript(filename, query ?? await this.ResolveStream(filename), false);
+
+            return script != null
+                       ? QueryPlanBuilder.Build(script.Context.Messages, script.Context.NodeData, script.Root)
+                       : null;
         }
 
         /// <summary>

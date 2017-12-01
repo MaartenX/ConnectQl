@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2017 Maarten van Sambeek.
 //
@@ -20,41 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ConnectQl.Query
+namespace ConnectQl.Query.Factories
 {
-    using System.Collections.ObjectModel;
+    using System.Linq.Expressions;
 
-    using ConnectQl.Parser.Ast.Expressions;
-    using ConnectQl.Parser.Ast.Statements;
+    using JetBrains.Annotations;
 
     /// <summary>
-    /// The GroupQuery interface.
+    /// A expr that creates a lambda parameter.
     /// </summary>
-    internal interface IGroupQuery
+    /// <typeparam name="T">
+    /// The type of the parameter.
+    /// </typeparam>
+    public class ParameterExpr<T> : Expr<T>
     {
         /// <summary>
-        /// Gets the expressions.
+        /// Initializes a new instance of the <see cref="ParameterExpr{T}"/> class.
         /// </summary>
-        ReadOnlyCollection<AliasedConnectQlExpression> Expressions { get; }
+        /// <param name="p">
+        /// The p.
+        /// </param>
+        public ParameterExpr([NotNull] ParameterExpression p) 
+            : base(p)
+        {
+        }
 
         /// <summary>
-        /// Gets the groupings.
+        /// Implicitly converts a expr to a parameter expression.
         /// </summary>
-        ReadOnlyCollection<string> Groupings { get; }
+        /// <param name="expr">
+        /// The expr.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Expression"/>
+        /// </returns>
+        [NotNull]
+        public static implicit operator ParameterExpression([NotNull] ParameterExpr<T> expr)
+        {
+            return (ParameterExpression)expr.Expression;
+        }
 
-        /// <summary>
-        /// Gets the having.
-        /// </summary>
-        ConnectQlExpressionBase Having { get; }
-
-        /// <summary>
-        /// Gets the row select.
-        /// </summary>
-        SelectFromStatement InnerSelect { get; }
-
-        /// <summary>
-        /// Gets the visitor order by.
-        /// </summary>
-        ReadOnlyCollection<OrderByConnectQlExpression> OrderBy { get; }
+        public Expr Index(string s)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

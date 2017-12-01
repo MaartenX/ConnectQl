@@ -137,7 +137,7 @@ namespace ConnectQl.Expressions
 
             return Expression.Call(SourceFieldExpression.SelectMethod, rows, getField);
         }
-
+        
         /// <summary>
         /// Returns a textual representation of the <see cref="T:System.Linq.Expressions.Expression"/>.
         /// </summary>
