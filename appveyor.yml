@@ -48,7 +48,7 @@ install:
 before_build:
   - msbuild /t:restore /v:minimal src
   - ps: gitversion /l console /output buildserver
-  - SonarScanner.MSBuild.exe begin /k:ConnectQl /v:%GitVersion_NuGetVersion% /d:sonar.login=%SONARCLOUDTOKEN% /d:sonar.host.url=https://sonarcloud.io /d:sonar.organization=maartenx-github
+  - SonarScanner.MSBuild.exe begin /k:ConnectQl /v:%GitVersion_NuGetVersion% /d:sonar.login=%SONARCLOUDTOKEN% /d:sonar.host.url=https://sonarcloud.io /d:sonar.organization=maartenx-github /d:sonar.cs.opencover.reportsPath="artifacts\ConnectQl.Coverage.xml"
 
 build_script:
   - md logs
@@ -78,7 +78,7 @@ test_script:
 
 on_finish:
   - SonarScanner.MSBuild.exe end /d:sonar.login=%SONARCLOUDTOKEN%
-  
+
 artifacts:
   - path: artifacts\**\*.*
   
