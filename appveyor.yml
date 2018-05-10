@@ -43,11 +43,12 @@ install:
   - nuget install xunit.runner.console -ExcludeVersion
   - choco install gitversion.portable -pre -y
   - choco install codecov
-  
+  - choco install msbuild-sonarqube-runner -y
+
 before_build:
   - msbuild /t:restore /v:minimal src
   - ps: gitversion /l console /output buildserver
-  - tools\SonarCloud\SonarScanner.MSBuild.exe begin /k:ConnectQl /v:%GitVersion_NuGetVersion% /d:sonar.login=%SONARCLOUDTOKEN%
+  - SonarScanner.MSBuild.exe begin /k:ConnectQl /v:%GitVersion_NuGetVersion% /d:sonar.login=%SONARCLOUDTOKEN% /d:sonar.host.url=https://sonarcloud.io /d:sonar.organization=maartenx-github
 
 build_script:
   - md logs
@@ -76,7 +77,7 @@ test_script:
   - tools\runcoverage.bat
 
 after_test:
-  - tools\SonarCloud\SonarScanner.MSBuild.exe end /d:sonar.login=%SONARCLOUDTOKEN%
+  - SonarScanner.MSBuild.exe end /d:sonar.login=%SONARCLOUDTOKEN% /d:sonar.host.url=https://sonarcloud.io /d:sonar.organization=maartenx-github
 
 artifacts:
   - path: artifacts\**\*.*
