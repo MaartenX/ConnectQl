@@ -26,6 +26,8 @@ environment:
     secure: 5TI2LVqKI0e9RN6tfKGY1kOGqQPnzVT5nVvGhEmNXZ4=
   KEYSECRET:
     secure: R5dL3BcCgnJ4e8l7CXVC+PORgj+8Z/4seFazfXiYZUAzoxFZOpj7GT3/S00dO72vAkKhvsGCPPfnKZAf12WZXj7rOJDaM8OSuvUifZdQ7Oo=
+  SONARCLOUDTOKEN:
+    secure: sAuWRAPAsny51buli2NyFCRFx5XiabATepPBhEKKGjDKkRSjPzJv6pqZ1+TDSVFN
 
 init:
   - ps: $Env:LABEL = "CI" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0");
@@ -45,6 +47,7 @@ install:
 before_build:
   - msbuild /t:restore /v:minimal src
   - ps: gitversion /l console /output buildserver
+  - tools\SonarCloud\SonarScanner.MSBuild.exe begin /k:ConnectQl /v:%GitVersion_NuGetVersion% /d:sonar.login=%SONARCLOUDTOKEN%
 
 build_script:
   - md logs
@@ -71,6 +74,9 @@ after_deploy:
 
 test_script:
   - tools\runcoverage.bat
+
+after_test:
+  - tools\SonarCloud\SonarScanner.MSBuild.exe end /d:sonar.login=%SONARCLOUDTOKEN%
 
 artifacts:
   - path: artifacts\**\*.*

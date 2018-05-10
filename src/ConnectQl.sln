@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectQl", "ConnectQl\Conn
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectQl Solution Items", "ConnectQl Solution Items", "{DD93BAB1-431A-42E3-9285-F0C44CC78783}"
 	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
 		..\appveyor.yml = ..\appveyor.yml
 		..\codecov.yml = ..\codecov.yml
 		..\ConnectQl.png = ..\ConnectQl.png
