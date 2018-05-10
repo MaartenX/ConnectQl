@@ -76,7 +76,7 @@ after_deploy:
 test_script:
   - tools\runcoverage.bat
 
-after_test:
+on_finish:
   - SonarScanner.MSBuild.exe end /d:sonar.login=%SONARCLOUDTOKEN% /d:sonar.host.url=https://sonarcloud.io /d:sonar.organization=maartenx-github
 
 artifacts:
