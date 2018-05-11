@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
-    <PackageReference Include="EPPlus" Version="4.1.1" Condition="'$(TargetFramework)'=='net45'" />
-    <PackageReference Include="EPPlus.Core" Version="1.5.2" Condition="'$(TargetFramework)'=='netstandard1.3'" />
+    <PackageReference Include="EPPlus" Version="4.5.1" Condition="'$(TargetFramework)'=='net45'" />
+    <PackageReference Include="EPPlus.Core" Version="1.5.4" Condition="'$(TargetFramework)'=='netstandard1.3'" />
   </ItemGroup>
 
 </Project>

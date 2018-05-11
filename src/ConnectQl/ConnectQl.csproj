@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+
   <PropertyGroup>
     <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' != ''">netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
     <TargetFrameworks Condition="'BUILD_ALL_PLATFORMS' == ''">netstandard1.0</TargetFrameworks>
@@ -11,43 +11,19 @@
   <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
-    <Compile Remove="obj\**" />
-    <EmbeddedResource Remove="obj\**" />
-    <None Remove="obj\**" />
+    <PackageReference Include="Scripty.MsBuild" Version="0.7.4.1" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Update="$(AtgChildren)">
       <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
     </Compile>
-    <Compile Update="Resources\Messages.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
     <None Update="$(AtgChildren)">
       <DependentUpon Condition="Exists($([System.String]::Concat($([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '.atg')), '')))">$([System.Text.RegularExpressions.Regex]::Replace('%(FileName)%(Extension)', '$(AtgChildren.Replace('*', '').Replace('.', '\.').Replace(';', '|'))', '')).atg</DependentUpon>
     </None>
-    <PackageReference Include="Scripty.MsBuild" Version="0.7.4.1">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <Compile Update="Resources\Messages.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Messages.resx" />
+    <EmbeddedResource Update="Resources\Messages.nl.resx" LastGenOutput="Messages.Designer.cs" Generator="ResXFileCodeGenerator" />
+    <EmbeddedResource Update="Resources\Messages.resx" LastGenOutput="Messages.Designer.cs" Generator="ResXFileCodeGenerator" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Messages.nl.resx">
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Internal\Intellisense\" />
-    <Folder Include="Internal\Interfaces\" />
-    <Folder Include="Internal\Results\" />
-  </ItemGroup>
-  
 </Project>

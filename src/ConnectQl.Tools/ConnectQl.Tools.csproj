@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EnvDTE100" Version="10.0.1" />
+    <PackageReference Include="EnvDTE100" Version="[10.0.2]" />
     <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost" Version="[14.0.25424,14.1)" />
     <PackageReference Include="Microsoft.VisualStudio.Editor" Version="[14.0.23205,14.1)" />
     <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="[14.0.23205,14.1)" />
@@ -28,9 +28,9 @@
     <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="[14.0.23205,14.1)" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.14.0" Version="[14.0.23205,14.1)" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="[14.0.25023,14.1)" />
-    <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.5.72" />
+    <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.7.109" />
     <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
-    <PackageReference Include="VSLangProj140" Version="14.0.25029" />
+    <PackageReference Include="VSLangProj140" Version="14.0.25030" />
   </ItemGroup>
 
   <ItemGroup>

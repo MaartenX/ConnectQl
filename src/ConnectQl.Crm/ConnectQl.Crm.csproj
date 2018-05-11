@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
-    <PackageReference Include="Microsoft.CrmSdk.XrmTooling.CoreAssembly" Version="8.2.0.5" />
+    <PackageReference Include="Microsoft.CrmSdk.XrmTooling.CoreAssembly" Version="9.0.2.3" />
   </ItemGroup>
   
 </Project>

@@ -46,13 +46,13 @@ install:
   - choco install msbuild-sonarqube-runner -y
 
 before_build:
-  - msbuild /t:restore /v:minimal src
+  - msbuild /t:restore /v:minimal
   - ps: gitversion /l console /output buildserver
   - SonarScanner.MSBuild.exe begin /k:ConnectQl /v:%GitVersion_NuGetVersion% /d:sonar.login=%SONARCLOUDTOKEN% /d:sonar.host.url=https://sonarcloud.io /d:sonar.organization=maartenx-github /d:sonar.cs.opencover.reportsPath="artifacts\ConnectQl.Coverage.xml"
 
 build_script:
   - md logs
-  - msbuild /t:build src /bl:logs\Solution.binlog /p:Version=%GitVersion_NuGetVersion% /p:AssemblyVersion=%GitVersion_AssemblySemVer% /p:FileVersion=%GitVersion_MajorMinorPatch%.0 /p:InformationalVersion=%GitVersion_InformationalVersion% /p:VsixVersion=%GitVersion_MajorMinorPatch% /p:VsixPreReleaseVersion=%GitVersion_PreReleaseNumber% /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - msbuild /t:build /bl:logs\Solution.binlog /p:Version=%GitVersion_NuGetVersion% /p:AssemblyVersion=%GitVersion_AssemblySemVer% /p:FileVersion=%GitVersion_MajorMinorPatch%.0 /p:InformationalVersion=%GitVersion_InformationalVersion% /p:VsixVersion=%GitVersion_MajorMinorPatch% /p:VsixPreReleaseVersion=%GitVersion_PreReleaseNumber% /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - ps: >-
       $packProjects = (.\ps\GetChangesSinceLastBuild.ps1 -ApiToken $Env:APITOKEN); 
       $packProjects | % { 
