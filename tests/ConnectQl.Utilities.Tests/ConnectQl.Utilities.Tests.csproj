@@ -1,24 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net452;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;net452</TargetFrameworks>
     <NoWarn>CS2002;1701;1702;1705;SA1408;SA1407</NoWarn>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.Tests.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ConnectQl.Utilities.Tests.xml</DocumentationFile>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <Import Project="..\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
+  <Import Project="..\..\src\ConnectQl.Shared\ConnectQl.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
-    <PackageReference Include="Moq" Version="4.8.2" />
-    <PackageReference Include="xunit" Version="2.3.1" />
-    <PackageReference Include="xunit.runner.console" Version="2.3.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <Compile Remove="Class1.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.console" Version="2.3.1" Condition="'$(TargetFramework)' == 'net452'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ConnectQl.Utilities\ConnectQl.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
