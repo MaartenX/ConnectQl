@@ -26,11 +26,12 @@
       <Link>source.extensions.vsixmanifest</Link>
     </SourceVsixManifest>
     <VSTemplate Include="ConnectQl.Tools.ItemTemplate.CSharp.vstemplate" OutputSubPath="ConnectQl" SubType="Designer" />
+    <PackageReference Include="Microsoft.VsSdk.BuildTools" Version="15.7.109" />
   </ItemGroup>
   
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VsSDKInstall)\Microsoft.VsSDK.targets" Condition="'$(vsSDKInstall)' != '' And Exists('$(VsSDKInstall)\Microsoft.VsSDK.targets')" />
 
   <Target Name="PkgdefProjectOutputGroup" />
-  <Target Name="TemplateProjectOutputGroup" />
+  <!--  <Target Name="TemplateProjectOutputGroup" /> -->
 </Project>

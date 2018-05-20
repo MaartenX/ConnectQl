@@ -77,7 +77,7 @@
     <ProjectReference Include="..\ConnectQl\ConnectQl.csproj" AdditionalProperties="TargetFramework=portable-net45+win8+wpa81+wp8" />
     <ProjectReference Include="..\ConnectQl.Tools.ItemTemplate\ConnectQl.Tools.ItemTemplate.csproj" AdditionalProperties="TargetFramework=net452">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
     </ProjectReference>
     
