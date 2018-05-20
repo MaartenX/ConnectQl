@@ -439,7 +439,7 @@ namespace ConnectQl.Tools.Mef.Intellisense
         /// </param>
         private void FileChanged(object sender, FileSystemEventArgs fileSystemEventArgs)
         {
-            if (!this.watchPaths.Any(path => path.Equals(fileSystemEventArgs.FullPath, StringComparison.OrdinalIgnoreCase)))
+            if (!this.watchPaths.Any(path => path?.Equals(fileSystemEventArgs.FullPath, StringComparison.OrdinalIgnoreCase) ?? false))
             {
                 return;
             }
